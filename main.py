@@ -1,142 +1,237 @@
-import tkinter.messagebox
-import uuid
-from tkinter import *
-import tkinter.font as font
-import json
-from tinydb import TinyDB, Query
-import time
+
 import os
-from tkinter import filedialog as fd
+import json
+import subprocess
+import webbrowser
+import tkinter as tk
+from PIL import Image, ImageTk
+from fireworks import LaunchPad
+from tkinter.filedialog import askopenfile
+from d3tales_fw.Robotics.workflows.wf_writer import *
+from d3tales_fw.Calculators.generate_class import dict2obj
 
-USER = os.getlogin()
-WORKDIR = r"C:\Users\{}\D3tics".format(USER)
+d3orange = "#FF9004"
+d3blue = "#4590B8"
+d3navy = "#1A3260"
 
-if not os.path.exists(WORKDIR):
-    os.makedirs(WORKDIR)
-
-# mainWindow
-root = Tk()
-root.geometry("800x800")
-root.configure(bg="white")
-d3font = font.Font(size=15, weight="bold")
-
-
-global data
-
-def select_file():
-    filetypes = (
-        ('python files', '*.py'),
-    )
-    global filename
-    filename = fd.askopenfilename(
-        title='Open a file',
-        initialdir=r"C:\Users\{}\Desktop".format(USER),
-        filetypes=filetypes)
-    open_py_file["text"] = "Selected file is \n {}".format(filename)
-
-def reset_db():
-    db = TinyDB(r"{}\db.json".format(WORKDIR))
-    db.drop_tables()
-    tkinter.messagebox.showwarning("View Database","Database was reset")
-    json_window.destroy()
-
-def run_script():
-    identifier = uuid.uuid4().__str__()
-    path = "{}/{}".format(WORKDIR,identifier)
-    os.makedirs(path)
-    os.system("python {}".format(filename))
-    with open("{}/rundata.txt".format(path),"w") as f:
-        f.write("This is a demo file")
-    data = {}
-
-    db = TinyDB(r"{}\db.json".format(WORKDIR))
-    db.insert({ "identifier": identifier,
-                "python_file":filename,
-                "username":USER.lower(),
-                "data":data,
-                "last_updated":time.asctime(time.localtime(time.time()))})
-    tkinter.messagebox.showinfo("Run Robot","Run successful! Database is now updated")
+logo = Image.open("images/D3TaLES_logo_transparent_robotics.png")
+d3logo = logo.resize([int(0.3 * s) for s in logo.size])
+d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
 
-    robot_window.destroy()
+class AlertDialog(tk.Toplevel):
 
-def jsonview():
-    global json_window
-    # create window
-    json_window = Toplevel()
-    json_window.geometry("500x500")
-    json_window.title("View Database")
+    def __init__(self, parent, alert_msg="Warning"):
+        super().__init__(parent)
+        self.parent = parent
+        self.title('')
+        frame = tk.Canvas(self, width=300, height=100)
+        frame.grid(columnspan=4, rowspan=5)
+        tk.Label(master=self, text=alert_msg, font=("Raleway", 14, 'bold'), fg=d3navy).grid(row=1, column=1, padx=20,
+                                                                                            pady=2)
+        tk.Button(master=self, text='Close', command=self.destroy).grid(row=2, column=1, padx=20, pady=2)
 
-    # load database
-    db = TinyDB(r"{}\db.json".format(WORKDIR))
-    text = json.dumps(db.all(), indent=2)
-
-    # add data text to window
-    label = Label(json_window, text=text, font="Times", justify='left')
-    label.pack()
-
-    rest_button = Button(json_window, text="Rest database",command=reset_db)
-    rest_button.pack()
-
-def robot():
-    global robot_window
-    # create window
-    robot_window = Toplevel()
-    robot_window.geometry("500x500")
-    robot_window.title("Run Robot")
-
-    # ask for the python file for robot
-    text = "Select python file to run"
-    open_py_label = Label(robot_window, text=text, font="Times", justify='left')
-    open_py_label.pack()
-    open_py = Button(robot_window, text="Browse", wraplength=100,
-                     height=5, width=15,
-                     command=select_file)
-    open_py["font"] = d3font
-    open_py.pack()
-
-    file_selected = "Selected file is "
-    global open_py_file
-    open_py_file = Label(robot_window, text=file_selected, font="Times", justify='left')
-    open_py_file.pack()
-    # run the python file
-    run_py = Button(robot_window, text="Run Now", wraplength=100,
-                     height=5, width=15,
-                     command=run_script)
-    run_py["font"] = d3font
-    run_py.pack()
+    def quitALL(self):
+        self.destroy()
+        self.parent.destroy()
 
 
+class QuitDialog(tk.Toplevel):
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+        frame = tk.Canvas(self, width=200, height=100)
+        frame.grid(columnspan=4, rowspan=5)
+        # warnMessage
+        tk.Label(master=self, text='Are you sure that you want to quit? ', font=("Raleway", 14, 'bold')).grid(row=1,
+                                                                                                              column=1,
+                                                                                                              columnspan=2,
+                                                                                                              padx=20,
+                                                                                                              pady=20)
+        # quitButton
+        tk.Button(master=self, text='Yes', command=self.quitALL, font=("Raleway", 14, 'bold')).grid(row=2, column=1,
+                                                                                                    padx=20, pady=2)
+        # cancelButton
+        tk.Button(master=self, text='No', command=lambda: self.destroy(), font=("Raleway", 14, 'bold')).grid(row=2,
+                                                                                                             column=2,
+                                                                                                             padx=20,
+                                                                                                             pady=2)
+
+    def quitALL(self):
+        self.destroy()
+        self.parent.destroy()
 
 
-info_frame = Frame()
-info_frame.config(bg="white")
-welcome_text = "Hello, {}!\n\n" \
-               "Welcome to the D3TaLES robotics platform.".format(USER.capitalize())
-welcome_label = Label(info_frame, text=welcome_text,bg="white",pady=100,
-                      anchor="w",justify=LEFT)
-welcome_label["font"] = font.Font(size=13,)
-welcome_label.pack()
-info_frame.pack()
+class AddJob(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
 
-buttons_frame = Frame()
-buttons_frame.config(bg="white")
+        self.title('Add a Workflow')
+        self.design_frame()
 
-view_db = Button(buttons_frame, text="View Database",wraplength=100,
-                 height=5,width=15,
-                 command=jsonview)
-view_db["font"] = d3font
-view_db.grid(row=0,column=0,padx=20,pady=50)
+    def design_frame(self):
+        frame = tk.Canvas(self, width=400, height=300)
+        frame.grid(columnspan=4, rowspan=5)
 
-run_robot = Button(buttons_frame, text="Run Robot",wraplength=100,
-                 height=5,width=15, bg="#1a3260", fg="white",
-                 command=robot)
-run_robot["font"] = d3font
-run_robot.grid(row=0,column=2,padx=10,pady=50)
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
 
-buttons_frame.pack()
+        # Text
+        tk.Label(self, text="Add a Workflow", font=("Raleway", 26, 'bold'), fg=d3navy).grid(column=1, row=0)
+        tk.Label(self, text="Select a workflow file: ", font=("Raleway", 14), fg=d3navy).grid(column=0, row=1)
 
-root.mainloop()
+        # buttons
+        tk.Button(self, text="Select a Workflow", command=self.open_file, font=("Raleway", 14), bg=d3blue,
+                  fg='white', height=2, width=30).grid(columnspan=2, column=0, row=2)
+        tk.Button(self, text="Build a Workflow\non ExpFlow", command=self.build_wf, font=("Raleway", 14),
+                  bg=d3navy, fg='white', height=4, width=20).grid(column=2, row=2, padx=10)
+        self.add_txt = tk.StringVar()
+        self.add_txt.set("Add Selected Workflow")
+        tk.Button(self, textvariable=self.add_txt, command=self.add_wf, font=("Raleway", 16), bg=d3orange,
+                  fg='white', height=2, width=45).grid(columnspan=3, column=0, row=4)
+
+        # Selected Workflow
+        tk.Label(self, text="\nSelected Workflow: \n", font=("Raleway", 16), fg=d3navy).grid(column=0, row=3,
+                                                                                                     pady=30)
+        self.selected_txt = tk.StringVar()
+        self.selected_txt.set('')
+        tk.Label(self, textvariable=self.selected_txt, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=1, row=3,
+                                                                                                     pady=30)
+        tk.Label(self, text="", font=("Raleway", 12), fg=d3navy).grid(column=3, row=3, padx=10)
+
+        tk.Canvas(self, width=400, height=50).grid(columnspan=3)
+
+    @property
+    def lpad(self):
+        lpad_file = os.path.join(os.getcwd(), 'd3tales_fw', 'Robotics', 'config', 'robotics_launchpad.yaml')
+        return LaunchPad().from_file(lpad_file)
+
+    def open_file(self):
+        self.selected_txt.set("loading file...")
+        file = askopenfile(parent=self, mode='r', title="Chose a workflow file.", filetypes=[('JSON file', "*.json")])
+        if file:
+            self.json_data = json.load(file)
+            self.selected_txt.set(self.json_data.get("name"))
+
+    def add_wf(self):
+        self.selected_txt.set("adding workflow...")
+        expflow_wf = dict2obj(self.json_data)
+        wf = run_expflow_wf(expflow_wf)
+        info = self.lpad.add_wf(wf)
+        fw_id = list(info.values())[0]
+
+        AlertDialog(self, alert_msg="Your workflow was successfully submitted!\nWorkflow ID: " + str(fw_id))
+        self.add_txt.set("Add Selected Workflow")
+
+    # @staticmethod
+    def build_wf(self):
+        webbrowser.open_new(r"https://d3tales.as.uky.edu/expflow/robotics_wfs/")
 
 
+class RunRobot(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
 
+        self.title('Run Robot')
+        self.design_frame()
+
+    def design_frame(self):
+        frame = tk.Canvas(self, width=400, height=300)
+        frame.grid(columnspan=1, rowspan=4)
+
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
+
+        # Text
+        tk.Label(self, text="Run the Robot", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
+        tk.Label(self, text="The Next Job:\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0, row=1)
+
+        # buttons
+        self.run_txt = tk.StringVar()
+        self.run_txt.set("Run Job")
+        tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy, fg='white', height=1, width=15).grid(column=0, row=2)
+        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot, fg='white', height=2, width=30).grid(column=0, row=3)
+
+        tk.Canvas(self, width=400, height=50).grid(columnspan=3)
+
+    @property
+    def lpad(self):
+        lpad_file = os.path.join(os.getcwd(), 'd3tales_fw', 'Robotics', 'config', 'robotics_launchpad.yaml')
+        return LaunchPad().from_file(lpad_file)
+
+    @property
+    def next_fw(self):
+        fw = self.lpad._get_a_fw_to_run(checkout=False)
+        if fw:
+            return str(fw.name or fw.fw_id)
+        else:
+            return "No ready firework found."
+
+    def run_robot(self):
+        self.run_txt.set("Launching Job...")
+        return_code = subprocess.call('rlaunch singleshot', )
+        if return_code == 0:
+            AlertDialog(self, alert_msg="Firework successfully launched!")
+        self.run_txt.set("Run Job")
+
+    def view_fw_workflows(self):
+        lpad_file = os.path.join(os.getcwd(), "d3tales_fw", "Robotics", "config", "robotics_launchpad.yaml")
+        self.parent.destroy()
+        subprocess.call('lpad -l {} webgui'.format(lpad_file))
+
+
+class RoboticsGUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+
+        self.title('D3TaLES Robotics')
+        self.design_frame()
+
+    def design_frame(self):
+        info_frame = tk.Canvas(self, width=500, height=300)
+        info_frame.grid(columnspan=2, rowspan=4)
+
+        # logo
+        logo = ImageTk.PhotoImage(d3logo)
+        logo_label = tk.Label(image=logo)
+        logo_label.image = logo
+        logo_label.grid(columnspan=2, column=0, row=0)
+        self.iconphoto(False, logo)
+
+        # buttons
+        view_workflows = tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 14),
+                                   bg=d3navy,
+                                   fg='white', height=2, width=15)
+        view_workflows.grid(column=0, row=2)
+        add_job = tk.Button(self, text="Add Job", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
+                            height=2, width=15)
+        add_job.grid(column=0, row=3, pady=10)
+        run_robot = tk.Button(self, text="Run\nRobot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
+                              fg='white', height=4, width=15)
+        run_robot.grid(column=1, row=2, rowspan=2)
+
+        tk.Canvas(self, width=400, height=50).grid(columnspan=2)
+
+        # self.mainloop()
+
+    def open_add(self):
+        window = AddJob(self)
+        window.grab_set()
+
+    def open_run(self):
+        window = RunRobot(self)
+        window.grab_set()
+
+    def view_fw_workflows(self):
+        lpad_file = os.path.join(os.getcwd(), "d3tales_fw", "Robotics", "config", "robotics_launchpad.yaml")
+        self.destroy()
+        subprocess.call('lpad -l {} webgui'.format(lpad_file))
+
+
+if __name__ == "__main__":
+    # subprocess.call("conda activate d3tales_robotics")
+    subprocess.call("set PYTHONPATH=C:\\Users\Lab\\D3talesRobotics\\roboticsUI\\", shell=True)
+    app = RoboticsGUI()
+    app.mainloop()

@@ -7,9 +7,9 @@
             }
         ]
     },
-    "fw_id": 80,
-    "created_on": "2022-04-29T12:48:27.052236",
-    "updated_on": "2022-05-02T21:56:32.846238",
+    "fw_id": 168,
+    "created_on": "2022-05-03T18:11:36.031659",
+    "updated_on": "2022-05-03T18:12:41.038287",
     "launches": [
         {
             "fworker": {
@@ -21,21 +21,71 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 80,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI_dev",
+            "fw_id": 168,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
-            "ip": "172.19.52.130",
+            "ip": "192.168.1.11",
             "trackers": [],
             "action": null,
             "state": "RUNNING",
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2022-05-02T21:56:32.796239",
-                    "updated_on": "2022-05-02T21:56:32.796239"
+                    "created_on": "2022-05-03T18:12:41.037288",
+                    "updated_on": "2022-05-03T18:12:41.037288"
                 }
             ],
-            "launch_id": 112
+            "launch_id": 126
+        }
+    ],
+    "archived_launches": [
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 168,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\d3tales_fw\\Robotics\\management",
+            "host": "CAER-FVJJLM3",
+            "ip": "192.168.1.11",
+            "trackers": [],
+            "action": {
+                "stored_data": {},
+                "exit": false,
+                "update_spec": {
+                    "success": true
+                },
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "COMPLETED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2022-05-03T18:11:57.247921",
+                    "updated_on": "2022-05-03T18:12:27.697556",
+                    "checkpoint": {
+                        "_task_n": 0,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {},
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "COMPLETED",
+                    "created_on": "2022-05-03T18:12:27.699556"
+                }
+            ],
+            "launch_id": 125
         }
     ],
     "state": "RUNNING",

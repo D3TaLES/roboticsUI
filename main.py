@@ -175,6 +175,7 @@ class RunRobot(tk.Toplevel):
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run Job")
+        self.destroy()
 
     def view_fw_workflows(self):
         lpad_file = os.path.join(os.getcwd(), "d3tales_fw", "Robotics", "config", "robotics_launchpad.yaml")

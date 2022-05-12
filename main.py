@@ -1,6 +1,3 @@
-
-import os
-import json
 import subprocess
 import webbrowser
 import tkinter as tk
@@ -135,6 +132,8 @@ class RunRobot(tk.Toplevel):
         self.parent = parent
 
         self.title('Run Robot')
+        print(os.environ)
+        print(os.getcwd())
         self.design_frame()
 
     def design_frame(self):
@@ -232,7 +231,5 @@ class RoboticsGUI(tk.Tk):
 
 
 if __name__ == "__main__":
-    # subprocess.call("conda activate d3tales_robotics")
-    subprocess.call("set PYTHONPATH=C:\\Users\Lab\\D3talesRobotics\\roboticsUI\\", shell=True)
     app = RoboticsGUI()
     app.mainloop()

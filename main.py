@@ -3,7 +3,9 @@ import webbrowser
 import tkinter as tk
 from PIL import Image, ImageTk
 from fireworks import LaunchPad
+from monty.serialization import loadfn
 from tkinter.filedialog import askopenfile
+from app_processing import *
 from d3tales_fw.Robotics.workflows.wf_writer import *
 from d3tales_fw.Calculators.generate_class import dict2obj
 
@@ -22,6 +24,8 @@ class AlertDialog(tk.Toplevel):
         super().__init__(parent)
         self.parent = parent
         self.title('')
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
         frame = tk.Canvas(self, width=300, height=100)
         frame.grid(columnspan=4, rowspan=5)
         tk.Label(master=self, text=alert_msg, font=("Raleway", 14, 'bold'), fg=d3navy).grid(row=1, column=1, padx=20,
@@ -60,6 +64,58 @@ class QuitDialog(tk.Toplevel):
         self.parent.destroy()
 
 
+class SetReagents(tk.Toplevel):
+    def __init__(self, parent, experiment_data):
+        super().__init__(parent)
+        self.parent = parent
+
+        self.title('Set Reagent Locations')
+        self.experiment_data = experiment_data
+        self.molecules = get_exp_reagents(experiment_data)
+        self.options = location_options()
+        self.results_dict = {}
+
+        self.design_frame()
+
+    def design_frame(self):
+        rowspan = len(self.molecules)+2
+        frame = tk.Canvas(self, width=400, height=300)
+        frame.grid(columnspan=2, rowspan=rowspan)
+
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
+
+        # Text
+        tk.Label(self, text="Set Reagent Locations", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0, columnspan=2)
+        tk.Label(self, text="Select the starting vial home position for each reagent. The selected position specifies "
+                            "the column then the row (e.g. A, 03).", font=("Raleway", 16, 'bold'), pady=10, wraplength=600, fg=d3navy).grid(column=0, row=1, columnspan=2)
+
+        # Location Dropdowns
+        results_dict = {}
+        for i, reagent in enumerate(self.molecules):
+            tk.Label(self, text="{}\n{}".format(reagent[0], reagent[1]), justify="center", font=("Raleway", 16,), fg=d3navy).grid(column=0, row=i+2)
+            dropdown_txt = tk.StringVar()
+            dropdown_txt.set(self.options[0])
+            dropdown = tk.OptionMenu(self, dropdown_txt, *self.options)
+            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=30)
+            dropdown.grid(column=1, row=i+2)
+            self.results_dict[reagent] = dropdown_txt
+
+        # button
+        self.run_txt = tk.StringVar()
+        self.run_txt.set("Set Locations and Add Workflow")
+        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.set_parameters,
+                  fg='white', height=2, width=30).grid(column=0, row=rowspan, columnspan=2, pady=10)
+
+        tk.Canvas(self, width=400, height=50+10*rowspan).grid(columnspan=2)
+
+    def set_parameters(self):
+        self.run_txt.set("adding workflow...")
+        exp_params = assign_reagent_locations({r: dt.get() for r, dt in self.results_dict.items()}, self.experiment_data)
+        self.parent.EXP_PARAMS = exp_params
+        self.destroy()
+
+
 class AddJob(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -69,7 +125,7 @@ class AddJob(tk.Toplevel):
 
     def design_frame(self):
         frame = tk.Canvas(self, width=400, height=300)
-        frame.grid(columnspan=4, rowspan=5)
+        frame.grid(columnspan=4, rowspan=6)
 
         logo = ImageTk.PhotoImage(d3logo)
         self.iconphoto(False, logo)
@@ -86,7 +142,7 @@ class AddJob(tk.Toplevel):
         self.add_txt = tk.StringVar()
         self.add_txt.set("Add Selected Workflow")
         tk.Button(self, textvariable=self.add_txt, command=self.add_wf, font=("Raleway", 16), bg=d3orange,
-                  fg='white', height=2, width=45).grid(columnspan=3, column=0, row=4)
+                  fg='white', height=2, width=45).grid(columnspan=3, column=0, row=5)
 
         # Selected Workflow
         tk.Label(self, text="\nSelected Workflow: \n", font=("Raleway", 16), fg=d3navy).grid(column=0, row=3,
@@ -98,6 +154,12 @@ class AddJob(tk.Toplevel):
         tk.Label(self, text="", font=("Raleway", 12), fg=d3navy).grid(column=3, row=3, padx=10)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=3)
+
+        # Name Tag
+        self.name_tag = tk.StringVar()
+        self.name_tag.set('')
+        tk.Label(self, text="Workflow Name Tag", font=("Raleway", 14), fg=d3navy).grid(column=0, row=4)
+        tk.Entry(self, textvariable=self.name_tag, font=("Raleway", 16, 'bold'), width=30, fg=d3navy).grid(column=1, row=4, pady=30)
 
     @property
     def lpad(self):
@@ -112,9 +174,12 @@ class AddJob(tk.Toplevel):
             self.selected_txt.set(self.json_data.get("name"))
 
     def add_wf(self):
-        self.selected_txt.set("adding workflow...")
-        expflow_wf = dict2obj(self.json_data)
-        wf = run_expflow_wf(expflow_wf)
+        self.add_txt.set("adding workflow...")
+        window = SetReagents(self, self.json_data)
+        self.wait_window(window)
+        print(self.EXP_PARAMS)
+        self.add_txt.set("adding workflow...")
+        wf = run_expflow_wf(self.json_data, name_tag=self.name_tag.get(), exp_params=self.EXP_PARAMS)
         info = self.lpad.add_wf(wf)
         fw_id = list(info.values())[0]
 
@@ -138,20 +203,23 @@ class RunRobot(tk.Toplevel):
 
     def design_frame(self):
         frame = tk.Canvas(self, width=400, height=300)
-        frame.grid(columnspan=1, rowspan=4)
+        frame.grid(columnspan=1, rowspan=5)
 
         logo = ImageTk.PhotoImage(d3logo)
         self.iconphoto(False, logo)
 
         # Text
         tk.Label(self, text="Run the Robot", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
-        tk.Label(self, text="The Next Job:\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0, row=1)
+        tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0, row=1)
 
         # buttons
         self.run_txt = tk.StringVar()
-        self.run_txt.set("Run Job")
+        self.run_txt.set("Run a Job")
+        self.run_all_txt = tk.StringVar()
+        self.run_all_txt.set("Run All Ready Jobs")
         tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy, fg='white', height=1, width=15).grid(column=0, row=2)
         tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot, fg='white', height=2, width=30).grid(column=0, row=3)
+        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot_all, fg='white', height=2, width=30).grid(column=0, row=4)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=3)
 
@@ -173,7 +241,15 @@ class RunRobot(tk.Toplevel):
         return_code = subprocess.call('rlaunch singleshot', )
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
-        self.run_txt.set("Run Job")
+        self.run_txt.set("Run a Job")
+        self.destroy()
+
+    def run_robot_all(self):
+        self.run_all_txt.set("Launching all Ready Jobs...")
+        return_code = subprocess.call('rlaunch rapidfire', )
+        if return_code == 0:
+            AlertDialog(self, alert_msg="Firework successfully launched!")
+        self.run_all_txt.set("Run All Ready Jobs")
         self.destroy()
 
     def view_fw_workflows(self):

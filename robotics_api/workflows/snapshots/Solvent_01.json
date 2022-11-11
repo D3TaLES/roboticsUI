@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.2757423520088196,
+            "y": -0.4500865042209625,
+            "z": 0.2219543159008026,
+            "thetaX": 89.54594421386719,
+            "thetaY": 2.1857786178588867,
+            "thetaZ": 27.322296142578125
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10039,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "Solv_01"
+      }
+    ]
+  }
+}

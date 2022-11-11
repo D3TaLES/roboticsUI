@@ -6,7 +6,7 @@ from fireworks import LaunchPad
 from monty.serialization import loadfn
 from tkinter.filedialog import askopenfile
 from app_processing import *
-from d3tales_fw.Robotics.workflows.wf_writer import *
+from robotics_api.workflows.wf_writer import *
 from d3tales_fw.Calculators.generate_class import dict2obj
 
 d3orange = "#FF9004"
@@ -163,7 +163,7 @@ class AddJob(tk.Toplevel):
 
     @property
     def lpad(self):
-        lpad_file = os.path.join(os.getcwd(), 'd3tales_fw', 'Robotics', 'config', 'robotics_launchpad.yaml')
+        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'robotics_launchpad.yaml')
         return LaunchPad().from_file(lpad_file)
 
     def open_file(self):
@@ -225,7 +225,7 @@ class RunRobot(tk.Toplevel):
 
     @property
     def lpad(self):
-        lpad_file = os.path.join(os.getcwd(), 'd3tales_fw', 'Robotics', 'config', 'robotics_launchpad.yaml')
+        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'robotics_launchpad.yaml')
         return LaunchPad().from_file(lpad_file)
 
     @property
@@ -253,7 +253,7 @@ class RunRobot(tk.Toplevel):
         self.destroy()
 
     def view_fw_workflows(self):
-        lpad_file = os.path.join(os.getcwd(), "d3tales_fw", "Robotics", "config", "robotics_launchpad.yaml")
+        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "robotics_launchpad.yaml")
         self.parent.destroy()
         subprocess.call('lpad -l {} webgui'.format(lpad_file))
 
@@ -301,7 +301,7 @@ class RoboticsGUI(tk.Tk):
         window.grab_set()
 
     def view_fw_workflows(self):
-        lpad_file = os.path.join(os.getcwd(), "d3tales_fw", "Robotics", "config", "robotics_launchpad.yaml")
+        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "robotics_launchpad.yaml")
         self.destroy()
         subprocess.call('lpad -l {} webgui'.format(lpad_file))
 

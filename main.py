@@ -7,7 +7,6 @@ from monty.serialization import loadfn
 from tkinter.filedialog import askopenfile
 from app_processing import *
 from robotics_api.workflows.wf_writer import *
-from d3tales_fw.Calculators.generate_class import dict2obj
 
 d3orange = "#FF9004"
 d3blue = "#4590B8"

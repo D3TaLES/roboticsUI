@@ -5,8 +5,8 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 from atomate.utils.utils import env_chk
-from d3tales_fw.D3database.d3database import *
-from d3tales_fw.Processors.d3tales_parser import *
+from d3tales_api.D3database.d3database import *
+from d3tales_api.Processors.d3tales_parser import *
 from argparse import Namespace
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.standard_actions import  *

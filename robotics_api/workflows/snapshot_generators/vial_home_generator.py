@@ -22,7 +22,7 @@ key_zs = {
 }
 
 snapshot_home = os.path.join(Path(
-    "C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "d3tales_fw" / "Robotics" / "workflows" / "snapshots")
+    "C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "workflows" / "snapshots")
 
 with open("VialHome_master.json", 'r') as fn:
     master_data = json.load(fn)

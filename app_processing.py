@@ -13,7 +13,7 @@ def get_exp_reagents(exp_json):
 
 
 def location_options():
-    snapshot_home = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "d3tales_fw" / "Robotics" / "workflows" / "snapshots")
+    snapshot_home = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "workflows" / "snapshots")
     # get vial home options
     v_options_raw = [f.split(".")[0].split("_")[1:3] for f in os.listdir(snapshot_home) if f.startswith("VialHome")]
     v_options_set = set([frozenset(o) for o in v_options_raw if not o[0].isdigit()])

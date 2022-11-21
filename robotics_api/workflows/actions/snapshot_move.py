@@ -8,7 +8,7 @@ from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.workflows.actions import utilities
 from robotics_api.workflows.actions.gripper_move import GripperMove
-from d3tales_fw.Calculators.generate_class import dict2obj
+from d3tales_api.Calculators.generate_class import dict2obj
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
@@ -274,5 +274,5 @@ def sequence_move(sequence_file):
 
 if __name__ == "__main__":
     # some commands for demonstration
-    sn_file = r"C:\Users\Lab\D3talesRobotics\roboticsUI\d3tales_fw\Robotics\snapshots\Cartesian Example.json"
+    sn_file = r"C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\workflows\snapshots\Cartesian Example.json"
     snapshot_move(sn_file, False)

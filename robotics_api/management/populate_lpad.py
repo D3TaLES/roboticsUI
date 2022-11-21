@@ -6,7 +6,6 @@ from fireworks import LaunchPad
 from monty.serialization import loadfn
 from robotics_api.workflows.wf_writer import *
 from robotics_api.workflows.Robotics_FW import *
-from d3tales_fw.Calculators.generate_class import json2obj
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

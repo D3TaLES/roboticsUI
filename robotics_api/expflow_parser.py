@@ -1,6 +1,6 @@
 from fireworks import Firework
 from monty.serialization import loadfn
-from d3tales_fw.Processors.expflow_parser import *
+from d3tales_api.Processors.expflow_parser import *
 from robotics_api.workflows.ExperimentActions import *
 
 BASE_DIR = Path(__file__).resolve().parent

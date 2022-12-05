@@ -8,7 +8,7 @@ from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.workflows.actions import utilities
 from robotics_api.workflows.actions.gripper_move import GripperMove
-from d3tales_api.Calculators.generate_class import dict2obj
+from d3tales_api.Calculators.utils import dict2obj
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20

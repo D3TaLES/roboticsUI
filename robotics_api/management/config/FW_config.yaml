@@ -1,8 +1,8 @@
 ECHO_TEST: FW_config.yaml is loaded for D3TaLES robotics.
 #ADD_USER_PACKAGES:
 #  -workflows.python
-LAUNCHPAD_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\config\robotics_launchpad.yaml
-FWORKER_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\config\my_fireworker.yaml
+LAUNCHPAD_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\robotics_launchpad.yaml
+FWORKER_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\my_fireworker.yaml
 #_launch_dir: /pscratch/cmri235_uksr/d3tales/fw/dev/robotics_api/launch
 # set to FIFO if you want older FireWorks to be run first, FILO if you want recent FireWorks run first.
 # Note that higher priority FireWorks are always run first.

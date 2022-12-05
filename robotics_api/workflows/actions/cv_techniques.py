@@ -67,8 +67,13 @@ class PotentiostatExperiment:
         if not conn:
             print(f"> device[{POTENTIOSTAT_ADDRESS}] must be connected to run the experiment")
             sys.exit(-1)
+        # BL_GetChannelInfos
+        channel_info = self.k_api.GetChannelInfo(self.id_, POTENTIOSTAT_CHANNEL)
+        # BL_LoadFirmware
+        if channel_info.has_no_firmware:
+            self.load_firmware()
 
-    def check_channel(self):
+    def check_kernel(self):
         # BL_GetChannelInfos
         channel_info = self.k_api.GetChannelInfo(self.id_, POTENTIOSTAT_CHANNEL)
         if not channel_info.is_kernel_loaded:
@@ -104,7 +109,7 @@ class PotentiostatExperiment:
     def run_experiment(self):
         try:
             try:
-                self.k_api.TestConnection(self.id_)
+                self.check_connection()
             except Exception:
                 self.id_, self.d_info = self.k_api.Connect(POTENTIOSTAT_ADDRESS, self.time_out)  # Connect
             self.data = []  # Clear Data

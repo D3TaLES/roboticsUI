@@ -19,7 +19,7 @@ d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
 class AlertDialog(tk.Toplevel):
 
-    def __init__(self, parent, alert_msg="Warning"):
+    def __init__(self, parent, alert_msg="Warning. Something went wrong..."):
         super().__init__(parent)
         self.parent = parent
         self.title('')

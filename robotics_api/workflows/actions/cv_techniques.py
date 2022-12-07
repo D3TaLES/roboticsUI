@@ -372,3 +372,7 @@ if __name__ == "__main__":
     experiment = CvExperiment(ex_steps)
     experiment.run_experiment()
     experiment.to_txt("cv_example.txt")
+
+    #
+    # k_api = KBIO_api(ECLIB_DLL_PATH)
+    # print(k_api.FindEChemDev())

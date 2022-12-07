@@ -1,12 +1,14 @@
+import os
+os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
 import subprocess
 import webbrowser
 import tkinter as tk
 from PIL import Image, ImageTk
 from fireworks import LaunchPad
-from monty.serialization import loadfn
 from tkinter.filedialog import askopenfile
 from app_processing import *
 from robotics_api.workflows.wf_writer import *
+
 
 d3orange = "#FF9004"
 d3blue = "#4590B8"

@@ -3,13 +3,13 @@
     "pose": [
       {
         "reachPose": {
-          "targetPose": {
-            "x": 0.313,
-            "y": 0.361,
-            "z": 0.314,
-            "thetaX": 89.54594421386719,
-            "thetaY": 2.1857786178588867,
-            "thetaZ": 142
+          "targetPose":{
+            "x":0.42537200450897217,
+            "y":0.28033646941185,
+            "z":0.03398996964097023,
+            "thetaX":93.77046203613281,
+            "thetaY":2.248286485671997,
+            "thetaZ":129.53530883789062
           },
           "constraint": {
             "speed": {
@@ -20,11 +20,11 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10039,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "Solv_01"
+        "name": "Potentiostat"
       }
     ]
   }

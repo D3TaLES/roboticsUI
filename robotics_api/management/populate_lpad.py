@@ -25,9 +25,9 @@ if __name__ == "__main__":
     except IndexError:
         expflow_file = os.path.join(BASE_DIR, 'example_expflows', param_tag + 'example_expflow.json')
 
-    expflow_wf = loadfn(expflow_file)
-
+    # expflow_wf = loadfn(expflow_file)
     # wf = workflow_function(expflow_wf, name_tag=name_tag)
+
     wf = Workflow([EndWorkflowProcess()])
     lpad = LaunchPad().from_file(lpad_file)
     info = lpad.add_wf(wf)

@@ -129,6 +129,11 @@ def snapshot_move_cartesian(base, coordinate_values):
 
 
 def move_gripper(target_position=None):
+    """
+    Move gripper
+    :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
+    :return: bool, True if action a success
+    """
     # Import the utilities' helper module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     finished = True
@@ -158,6 +163,12 @@ def move_gripper(target_position=None):
 
 
 def snapshot_move(snapshot_file=None, target_position=None):
+    """
+
+    :param snapshot_file: str, path to snapshot file (JSON)
+    :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
+    :return: bool, True if movement was a success
+    """
     # Import the utilities' helper module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     finished = True

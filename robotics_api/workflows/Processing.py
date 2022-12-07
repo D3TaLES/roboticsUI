@@ -5,13 +5,15 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 from atomate.utils.utils import env_chk
+from d3tales_api.Calculators.plotters import *
 from d3tales_api.D3database.d3database import *
 from d3tales_api.Processors.d3tales_parser import *
 from argparse import Namespace
 from robotics_api.workflows.actions.utilities import DeviceConnection
-from robotics_api.workflows.actions.standard_actions import  *
+from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.standard_variables import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
+from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 # Copyright 2021, University of Kentucky
 TESTING = False
@@ -35,6 +37,7 @@ class InitializeRobot(FiretaskBase):
             base_cyclic = BaseCyclicClient(router)
 
         return FWAction(update_spec={"success": True})
+
 
 @explicit_serialize
 class EndWorkflow(FiretaskBase):
@@ -72,10 +75,18 @@ class CVProcessor(FiretaskBase):
 
         processed_data = []
         for cv_location in cv_locations:
+            # Process data file
             data = ProcessCV(cv_location, _id=mol_id, submission_info=submission_info, metadata=metadata,
                              parsing_class=ParseChiCV).data_dict
             processed_data.append(data)
+
+            # Plot CV
+            image_path = ".".join(cv_location.split(".")[:-1]) + ".png"
+            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path)
+
             # TODO  Launch send to storage FireTask
+
+            # Insert data into database
             _id = data["_id"]
             D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
 

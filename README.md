@@ -37,3 +37,10 @@ To run the test job:
 lpad rerun_fws -i 223 
 rlaunch singleshot
 ```
+
+# When you are finished...
+When you are finished, run this job to return the robot to its resting position.  
+```bash
+lpad rerun_fws -i 1 
+rlaunch singleshot
+```

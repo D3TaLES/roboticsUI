@@ -1,6 +1,7 @@
-from pathlib import Path
+import time
+import serial
+from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.snapshot_move import *
-from robotics_api.workflows.actions.example_actions import *
 from robotics_api.workflows.actions.standard_variables import *
 
 
@@ -28,4 +29,34 @@ def vial_home(row, column, action_type="get"):
     return success
 
 
+def cv_elevator(endpoint="down"):
+    """
+    Operate CV elevator
+    :param endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be 'up' or 'down'.
+    :return: bool, True if elevator action was a success
+    """
+    endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
+    endpoint = 1 if endpoint == "up" or str(endpoint) == "1" else endpoint
+    if endpoint not in [0, 1]:
+        raise TypeError("Arg 'direction' must be 1 or 0, OR it must be 'up' or 'down'.")
 
+    arduino = serial.Serial(ELEVATOR_ADDRESS, 115200, timeout=.1)
+    time.sleep(1)  # give the connection a second to settle
+    arduino.write(bytes(str(endpoint), encoding='utf-8'))
+    while True:
+        data = arduino.readline()
+        print("waiting for data...")
+        if data:
+            result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
+            print("CV Elevator Result: ", result_txt)
+            return True if "success" in result_txt else False
+        time.sleep(1)
+
+
+if __name__ == "__main__":
+
+    # list connection ports
+    for port, desc, hwid in sorted(comports()):
+        print("{}: {} [{}]".format(port, desc, hwid))
+
+    cv_elevator(endpoint="up")

@@ -32,7 +32,9 @@ class EF2Experiment(ProcessExpFlowObj):
         class ExpFirework(Firework):
             def __init__(self, firetasks, name=self.name, mol_id=self.molecule_id, priority=self.priority,
                          parents=self.fw_parents, exp_params=self.exp_params, **kwargs):
-                spec = {'_category': 'robotics', '_priority': priority} if priority else {'_category': 'robotics'}
+                spec = {name: "{}_{}".format(mol_id, name), '_category': 'robotics'}
+                if priority:
+                    spec.update({'_priority': priority})
                 if exp_params:
                     spec.update(exp_params)
                 tasks = firetasks

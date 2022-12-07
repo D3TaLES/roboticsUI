@@ -61,12 +61,12 @@ class DispenseLiquid(FiretaskBase):
         reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         _, solv_idx = reagent_locations.get(start_uuid)  # Get Solvent location
 
-        # snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
-        # success = snapshot_move(snapshot_solv)
-        #
-        # # TODO dispense liquid
-        #
-        # return FWAction(update_spec={"success": success, "cap_on": False})
+        snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
+        success = snapshot_move(snapshot_solv)
+
+        # TODO dispense liquid
+
+        return FWAction(update_spec={"success": success, "cap_on": False})
 
 
 @explicit_serialize

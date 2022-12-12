@@ -216,7 +216,7 @@ def example_cartesian_trajectory_movement(base, base_cyclic):
 def main():
     
     # Import the utilities helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
     import utilities
 
     # Parse arguments

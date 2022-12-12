@@ -35,7 +35,7 @@ class EndExperiment(FiretaskBase):
         if fw_spec.get("pot_location"):
             print("send command to elevator")
             success += cv_elevator(endpoint="down")
-            success += snapshot_move(fw_spec.get("pot_location"), target_position=60)
+            success += get_place_vial(fw_spec.get("pot_location"), action_type="get")
             success += snapshot_move(SNAPSHOT_HOME)
 
         vial_uuid = self.get("vial_uuid")
@@ -172,11 +172,10 @@ class RunCV(FiretaskBase):
     # FireTask for running CV
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        expflow_exp = self.get("expflow_exp")
-        data_paths = fw_spec.get("data_paths") or self.get("data_paths", [])
-        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), size=4))
+        cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
+        cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
+        collection_params = fw_spec.get("collection_params") or self.get("collection_params", [])
+        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
         # Move vial to potentiostat elevator
@@ -185,35 +184,30 @@ class RunCV(FiretaskBase):
         else:
             pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
             success += snapshot_move(SNAPSHOT_HOME)
-            success += snapshot_move(pot_location, target_position="open")
-            success += cv_elevator(endpoint="up")
+            success += get_place_vial(pot_location, action_type="place")
             success += snapshot_move(SNAPSHOT_HOME)
+            success += cv_elevator(endpoint="up")
 
         # Prep output file info
-        file_name = time.strftime("exp_%H_%M_%S.csv")
+        file_name = time.strftime("exp{:02d}_%H_%M_%S.csv".format(cv_idx))
         data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / name / time.strftime("%Y%m%d"))
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
-        ex_steps = [
-            voltage_step(0.8, 10),  # 1V 10mV/s
-            voltage_step(0, 10),  # 0V 10mV/s
-            voltage_step(0.8, 10),  # 1V 10mV/s
-            voltage_step(0, 10),  # 0V 10mV/s
-        ]  # TODO specify steps
-        experiment = CvExperiment(ex_steps, load_firm=False)
-        experiment.run_experiment()
+        exp_steps = [voltage_step(**p) for p in collection_params]
+        expt = CvExperiment(exp_steps, load_firm=True)
+        expt.run_experiment()
         time.sleep(TIME_AFTER_CV)
-        experiment.to_txt(data_path)
-        data_paths.append(data_path)
+        expt.to_txt(data_path)
+        cv_locations.append(data_path)
 
         # if TESTING:
         #     import shutil
         #     src_path = Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / "test_cv.csv"
         #     shutil.copyfile(src_path, data_path)
-        return FWAction(update_spec={"cv_locations": data_paths, "success": success, "cap_on": False, "pot_location":
-            pot_location, "name": name})
+        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False, "pot_location":
+            pot_location, "name": name, "cv_idx": cv_idx+1})
 
 
 @explicit_serialize

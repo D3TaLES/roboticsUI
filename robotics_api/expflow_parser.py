@@ -11,8 +11,9 @@ class EF2Experiment(ProcessExpFlowObj):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents
         self.priority = priority
+        self.name = exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'experiment_fw'
+        exp_params.update({"name": self.name})
         self.exp_params = exp_params
-        self.name = getattr(self.expflow_obj, 'name') or 'experiment_fw'
 
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
 
@@ -47,8 +48,12 @@ class EF2Experiment(ProcessExpFlowObj):
     def get_firetask(self, task):
         firetask = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
+        if getattr(task, 'collection_params', None):
+            parsed_params = [vars(p) for p in task.collection_params] if isinstance(task.collection_params, list) else task.collection_params
+            parameters_dict['collection_params'] = parsed_params
         for param in getattr(task, 'parameters', []):
             parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
+        print("Firetask {} added.".format(task.name))
         return firetask(**parameters_dict)
 
     @property
@@ -69,6 +74,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
 
 if __name__=="__main__":
-    expflow_file = os.path.join(BASE_DIR, 'management/example_expflows', 'example_expflow.json')
+    expflow_file = os.path.join(BASE_DIR, 'management/example_expflows', 'cv_robot_diffusion_2_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
+    experiment.firework

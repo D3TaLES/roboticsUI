@@ -2,13 +2,10 @@
 # Copyright 2022, University of Kentucky
 
 import traceback
-from pathlib import Path
 from datetime import datetime
 from atomate.utils.utils import env_chk
-from d3tales_api.Calculators.plotters import *
 from d3tales_api.D3database.d3database import *
 from d3tales_api.Processors.d3tales_parser import *
-from argparse import Namespace
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.standard_variables import *
@@ -33,8 +30,8 @@ class InitializeRobot(FiretaskBase):
         # Create connection to the device and get the router
         with DeviceConnection.createTcpConnection(connector) as router:
             # Create required services
-            base = BaseClient(router)
-            base_cyclic = BaseCyclicClient(router)
+            BaseClient(router)
+            BaseCyclicClient(router)
 
         return FWAction(update_spec={"success": True})
 
@@ -74,6 +71,7 @@ class CVProcessor(FiretaskBase):
             }
 
         processed_data = []
+        print(cv_locations)
         for cv_location in cv_locations:
             # Process data file
             data = ProcessCV(cv_location, _id=mol_id, submission_info=submission_info, metadata=metadata,
@@ -164,4 +162,3 @@ class SendToStorage(FiretaskBase):
         ssh.close()
 
         return FWAction(update_spec={"processed_data": processed_data})
-

@@ -79,7 +79,7 @@ class CVProcessor(FiretaskBase):
             processed_data.append(data)
 
             # Plot CV
-            image_path = ".".join(cv_location.split(".")[:-1]) + ".png"
+            image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
             CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path)
 
             # TODO  Launch send to storage FireTask

@@ -58,6 +58,7 @@ class DispenseLiquid(FiretaskBase):
         start_uuid = self.get("start_uuid")
         end_uuid = self.get("end_uuid")
         volume = self.get("volume")
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})
         reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         _, solv_idx = reagent_locations.get(start_uuid)  # Get Solvent location
 
@@ -65,6 +66,9 @@ class DispenseLiquid(FiretaskBase):
         success = snapshot_move(snapshot_solv)
 
         # TODO dispense liquid
+
+        # TODO calculate concentration
+        metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
 
         return FWAction(update_spec={"success": success, "cap_on": False})
 
@@ -173,6 +177,7 @@ class RunCV(FiretaskBase):
 
     def run_task(self, fw_spec):
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         collection_params = fw_spec.get("collection_params") or self.get("collection_params", [])
         name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
@@ -182,6 +187,7 @@ class RunCV(FiretaskBase):
         if fw_spec.get("pot_location"):
             pot_location = fw_spec.get("pot_location")
         else:
+            metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
             pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
             success += snapshot_move(SNAPSHOT_HOME)
             success += get_place_vial(pot_location, action_type="place")
@@ -195,19 +201,15 @@ class RunCV(FiretaskBase):
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
-        exp_steps = [voltage_step(**p) for p in collection_params]
-        expt = CvExperiment(exp_steps, load_firm=True)
-        expt.run_experiment()
-        time.sleep(TIME_AFTER_CV)
-        expt.to_txt(data_path)
+        # exp_steps = [voltage_step(**p) for p in collection_params]
+        # expt = CvExperiment(exp_steps, load_firm=True)
+        # expt.run_experiment()
+        # time.sleep(TIME_AFTER_CV)
+        # expt.to_txt(data_path)
         cv_locations.append(data_path)
 
-        # if TESTING:
-        #     import shutil
-        #     src_path = Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / "test_cv.csv"
-        #     shutil.copyfile(src_path, data_path)
         return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False, "pot_location":
-            pot_location, "name": name, "cv_idx": cv_idx+1})
+            pot_location, "name": name, "cv_idx": cv_idx+1, "metadata": metadata})
 
 
 @explicit_serialize

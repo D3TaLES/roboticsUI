@@ -7,6 +7,7 @@ from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
 from d3tales_api.Processors.d3tales_parser import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
+from robotics_api.workflows.actions.processing_utils import *
 from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.standard_variables import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -50,7 +51,7 @@ class CVProcessor(FiretaskBase):
     # FireTask for processing CV file
 
     def run_task(self, fw_spec):
-        metadata = fw_spec.get("metadata") or self.get("metadata", [])  # TODO add metadata to fw_specs
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})  # TODO add metadata to fw_specs
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
@@ -71,7 +72,6 @@ class CVProcessor(FiretaskBase):
             }
 
         processed_data = []
-        print(cv_locations)
         for cv_location in cv_locations:
             # Process data file
             data = ProcessCV(cv_location, _id=mol_id, submission_info=submission_info, metadata=metadata,
@@ -87,6 +87,14 @@ class CVProcessor(FiretaskBase):
             # Insert data into database
             _id = data["_id"]
             D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
+
+        # Record meta data
+        all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
+        with open(all_path, 'w') as fn:
+            fn.write(json.dumps(processed_data))
+        summary_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\summary.txt"
+        with open(summary_path, 'w') as fn:
+            fn.write(print_cv_analysis(processed_data, num_electrons=DEFAULT_NUM_ELECTRONS))
 
         return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data})
 
@@ -162,3 +170,5 @@ class SendToStorage(FiretaskBase):
         ssh.close()
 
         return FWAction(update_spec={"processed_data": processed_data})
+
+

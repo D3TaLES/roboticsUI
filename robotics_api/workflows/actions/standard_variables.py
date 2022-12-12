@@ -3,6 +3,12 @@ from pathlib import Path
 
 VIAL_GRIP_TARGET = 60
 
+# ---------  DEFAULT CONDITIONS -------------
+DEFAULT_NUM_ELECTRONS = 1
+DEFAULT_TEMPERATURE = 293
+DEFAULT_CONCENTRATION = 0.10
+DEFAULT_WORKING_ELECTRODE_AREA = 0.070685835
+
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
 SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
@@ -26,7 +32,6 @@ I_RANGE = 'I_RANGE_10mA'
 VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
-DEFAULT_WORKING_ELECTRODE_AREA = 0.070685835
 
 
 # ---------  ARDUINO VARIABLES -------------

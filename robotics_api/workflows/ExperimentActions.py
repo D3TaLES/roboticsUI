@@ -6,8 +6,6 @@ from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
-TESTING = True
-
 
 @explicit_serialize
 class GetSample(FiretaskBase):
@@ -35,7 +33,8 @@ class EndExperiment(FiretaskBase):
         if fw_spec.get("pot_location"):
             print("send command to elevator")
             success += cv_elevator(endpoint="down")
-            success += get_place_vial(fw_spec.get("pot_location"), action_type="get")
+            success += get_place_vial(fw_spec.get("pot_location"), action_type="get",
+                                      pre_position_file=fw_spec.get("pre_pot_location"), raise_amount=0.017)
             success += snapshot_move(SNAPSHOT_HOME)
 
         vial_uuid = self.get("vial_uuid")
@@ -56,16 +55,16 @@ class DispenseLiquid(FiretaskBase):
 
     def run_task(self, fw_spec):
         start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        volume = self.get("volume")
+        # end_uuid = self.get("end_uuid")
+        # volume = self.get("volume")
+        success = True
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         _, solv_idx = reagent_locations.get(start_uuid)  # Get Solvent location
 
-        snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
-        success = snapshot_move(snapshot_solv)
-
         # TODO dispense liquid
+        snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
+        # success += snapshot_move(snapshot_solv)
 
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
@@ -78,9 +77,9 @@ class DispenseSolid(FiretaskBase):
     # FireTask for dispensing solid
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        mass = self.get("mass")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # mass = self.get("mass")
 
         return FWAction(update_spec={})
 
@@ -90,8 +89,8 @@ class TransferApparatus(FiretaskBase):
     # FireTask for transferring apparatus
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
         return FWAction(update_spec={})
 
 
@@ -100,9 +99,9 @@ class Heat(FiretaskBase):
     # FireTask for heating
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        temperature = self.get("temperature")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # temperature = self.get("temperature")
         return FWAction(update_spec={})
 
 
@@ -111,9 +110,9 @@ class HeatStir(FiretaskBase):
     # FireTask for heating and siring
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        temperature = self.get("temperature")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # temperature = self.get("temperature")
         time = self.get("time")
         return FWAction(update_spec={})
 
@@ -132,9 +131,9 @@ class Polish(FiretaskBase):
     # FireTask for polishing electrode
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        size = self.get("size")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # size = self.get("size")
         return FWAction(update_spec={})
 
 
@@ -143,9 +142,9 @@ class Sonicate(FiretaskBase):
     # FireTask for sonicating electrode
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        time = self.get("time")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # time = self.get("time")
         return FWAction(update_spec={})
 
 
@@ -154,9 +153,9 @@ class Rinse(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        time = self.get("time")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # time = self.get("time")
         return FWAction(update_spec={})
 
 
@@ -165,9 +164,9 @@ class Dry(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        end_uuid = self.get("end_uuid")
-        time = self.get("time")
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # time = self.get("time")
         return FWAction(update_spec={})
 
 
@@ -180,17 +179,20 @@ class RunCV(FiretaskBase):
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         collection_params = fw_spec.get("collection_params") or self.get("collection_params", [])
-        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        name = fw_spec.get("name") or self.get("name",
+                                               "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
         # Move vial to potentiostat elevator
         if fw_spec.get("pot_location"):
             pot_location = fw_spec.get("pot_location")
+            pre_pot_location = fw_spec.get("pre_pot_location")
         else:
             metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
             pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
+            pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
             success += snapshot_move(SNAPSHOT_HOME)
-            success += get_place_vial(pot_location, action_type="place")
+            success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.017)
             success += snapshot_move(SNAPSHOT_HOME)
             success += cv_elevator(endpoint="up")
 
@@ -201,15 +203,17 @@ class RunCV(FiretaskBase):
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
-        # exp_steps = [voltage_step(**p) for p in collection_params]
-        # expt = CvExperiment(exp_steps, load_firm=True)
-        # expt.run_experiment()
-        # time.sleep(TIME_AFTER_CV)
-        # expt.to_txt(data_path)
+        if RUN_CV:
+            exp_steps = [voltage_step(**p) for p in collection_params]
+            expt = CvExperiment(exp_steps, load_firm=True)
+            expt.run_experiment()
+            time.sleep(TIME_AFTER_CV)
+            expt.to_txt(data_path)
         cv_locations.append(data_path)
 
-        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False, "pot_location":
-            pot_location, "name": name, "cv_idx": cv_idx+1, "metadata": metadata})
+        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False,
+                                     "pot_location": pot_location, "pre_pot_location": pre_pot_location,
+                                     "name": name, "cv_idx": cv_idx + 1, "metadata": metadata})
 
 
 @explicit_serialize

@@ -6,36 +6,45 @@ from robotics_api.workflows.actions.snapshot_move import *
 from robotics_api.workflows.actions.standard_variables import *
 
 
-def generate_abv_position(snapshot_file):
+def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
     with open(snapshot_file, 'r') as fn:
         master_data = json.load(fn)
 
     # Generate VialHomeAbv files
-    new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] + 0.05
+    new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] + raise_amount
     master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = new_height
     with open(os.path.join(SNAPSHOT_DIR, "temp_abv.json"), "w+") as fn:
         json.dump(master_data, fn, indent=2)
     return os.path.join(SNAPSHOT_DIR, "temp_abv.json")
 
 
-def get_place_vial(snapshot_file, action_type="get"):
+def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT):
     """
     Function that executes an action getting or placing
     Args:
         snapshot_file: str, path to snapshot file
         action_type: str, 'get' if the action is getting a vail, 'place' if action is placing the vial
+        pre_position_file: str, path to snapshot file for teh position that should be touched before and after
+            placing/retrieving the vial
 
     Returns: bool, success of action
     """
-    snapshot_file_above = generate_abv_position(snapshot_file)
+    snapshot_file_above = generate_abv_position(snapshot_file, raise_amount=raise_amount)
 
     # Start open if getting a vial
     success = snapshot_move(target_position='open') if action_type == "get" else True
-    # Go to vial home
+
+    # If pre-position, go there
+    if pre_position_file:
+        success += snapshot_move(pre_position_file)
+    # Go to vial position
     success += snapshot_move(snapshot_file_above)
     target = VIAL_GRIP_TARGET if action_type == "get" else 'open'
     success += snapshot_move(snapshot_file, target_position=target)
     success += snapshot_move(snapshot_file_above)
+    # If pre-position, go there
+    if pre_position_file:
+        success += snapshot_move(pre_position_file)
 
     return success
 
@@ -73,9 +82,10 @@ def cv_elevator(endpoint="down"):
         return False
     time.sleep(1)  # give the connection a second to settle
     arduino.write(bytes(str(endpoint), encoding='utf-8'))
+    print("Command {} given.".format(endpoint))
     while True:
         data = arduino.readline()
-        print("waiting for data...")
+        print("waiting for cv elevator results...")
         if data:
             result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
             print("CV Elevator Result: ", result_txt)
@@ -89,4 +99,4 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    cv_elevator(endpoint="up")
+    cv_elevator(endpoint="down")

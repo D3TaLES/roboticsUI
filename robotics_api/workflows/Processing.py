@@ -74,6 +74,7 @@ class CVProcessor(FiretaskBase):
         processed_data = []
         for cv_location in cv_locations:
             # Process data file
+            print("Data File: ", cv_location)
             data = ProcessCV(cv_location, _id=mol_id, submission_info=submission_info, metadata=metadata,
                              parsing_class=ParseChiCV).data_dict
             processed_data.append(data)

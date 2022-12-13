@@ -20,12 +20,12 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
     """
     name = expflow_wf.get("name") + "_" + name_tag.strip("_")
     exp_params.update({"name": name})
-    f10 = InitializeExperiment(name=name)
+    f10 = InitializeExperiment(name=expflow_wf.get("name") + "_" + name_tag.strip("_"))
     robot_experiments = []
     fws = [f10]
 
     for i, expflow_exp in enumerate(expflow_wf.get("experiments")):
-        exp_params.update({"name": "{}_exp{:02d}".format(name, i+1)})
+        exp_params.update({"name": "{}_exp{:02d}_{}".format(name_tag.strip("_"), i+1, expflow_wf.get("name"))})
         experiment = EF2Experiment(expflow_exp, "Robotics", fw_parents=f10, data_type=kwargs.get('data_type', 'cv'), exp_params=exp_params)
         exp_fw = experiment.firework
         process_fw = CVProcessing(mol_id=experiment.molecule_id, parents=exp_fw, metadata=experiment.metadata, **kwargs)

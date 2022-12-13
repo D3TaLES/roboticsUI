@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 VIAL_GRIP_TARGET = 60
+RAISE_AMOUNT = 0.05
+RUN_CV = True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_NUM_ELECTRONS = 1

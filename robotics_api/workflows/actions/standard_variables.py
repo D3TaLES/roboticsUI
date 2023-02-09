@@ -24,10 +24,12 @@ POTENTIOSTAT_ADDRESS = "USB0"
 POTENTIOSTAT_CHANNEL = 1
 
 N_CYCLES = 0
-SCAN_NUMBER = 2  # Not currently included in CV parameters
+SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
-CUT_ENDS = 0.1  # percentage of front and end of CV to cut
+CUT_BEGINNING = 0.0  # percentage of front of CV to cut
+CUT_END = 0.0  # percentage of end of CV to cut
+MIN_CV_STEPS = 6  # minimum number of CV steps
 
 RECORD_EVERY_DT = 0.01  # seconds
 I_RANGE = 'I_RANGE_10mA'

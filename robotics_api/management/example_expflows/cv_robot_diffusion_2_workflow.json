@@ -175,11 +175,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -196,11 +200,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -216,11 +224,15 @@
                     "end_uuid": "6f80210f-a19b-4e9a-81fc-371b8266e988",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -237,11 +249,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -258,11 +274,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]
@@ -440,11 +460,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -461,11 +485,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -481,11 +509,15 @@
                     "end_uuid": "6f80210f-a19b-4e9a-81fc-371b8266e988",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -502,11 +534,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -523,11 +559,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]
@@ -705,11 +745,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -726,11 +770,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -746,11 +794,15 @@
                     "end_uuid": "6f80210f-a19b-4e9a-81fc-371b8266e988",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -767,11 +819,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -788,11 +844,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]
@@ -970,11 +1030,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -991,11 +1055,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -1011,11 +1079,15 @@
                     "end_uuid": "6f80210f-a19b-4e9a-81fc-371b8266e988",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -1032,11 +1104,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -1053,11 +1129,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]
@@ -1235,11 +1315,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -1256,11 +1340,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -1277,11 +1365,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -1298,11 +1390,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -1319,11 +1415,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]
@@ -1501,11 +1601,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.020
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.020
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.020
                         }
                     ]
@@ -1522,11 +1626,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.050
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.050
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.050
                         }
                     ]
@@ -1542,11 +1650,15 @@
                     "end_uuid": "6f80210f-a19b-4e9a-81fc-371b8266e988",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.100
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.100
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.100
                         }
                     ]
@@ -1563,11 +1675,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.150
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.150
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.150
                         }
                     ]
@@ -1584,11 +1700,15 @@
                     "end_type": "electrochemical_cell",
                     "collection_params": [
                         {
-                            "voltage": 0.9,
+                            "voltage": 0,
                             "scan_rate": 0.200
                         },
                         {
-                            "voltage": 0.0,
+                            "voltage": 0.7,
+                            "scan_rate": 0.200
+                        },
+                        {
+                            "voltage": -0.2,
                             "scan_rate": 0.200
                         }
                     ]

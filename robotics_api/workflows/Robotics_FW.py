@@ -3,17 +3,7 @@
 
 from fireworks import Firework
 from robotics_api.workflows.Processing import *
-from robotics_api.workflows.x_practice import *
 from robotics_api.workflows.ExperimentActions import *
-
-
-class PracticeExperiment(Firework):
-    def __init__(self, name='', parents=None, **kwargs):
-        spec = {'_category': 'processing'}
-        tasks = [
-            Practice()
-        ]
-        super(PracticeExperiment, self).__init__(tasks, parents=parents, spec=spec, name="init_"+name, **kwargs)
 
 
 class InitializeExperiment(Firework):

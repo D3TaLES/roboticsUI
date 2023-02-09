@@ -1,5 +1,6 @@
 import sys
 import time
+import copy
 import warnings
 import datetime
 import numpy as np
@@ -15,7 +16,7 @@ except ModuleNotFoundError:
     warnings.warn("KBIO module not imported.")
 from robotics_api.workflows.actions.standard_variables import *
 
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 @dataclass
@@ -33,11 +34,12 @@ class voltage_step:
 
 
 class PotentiostatExperiment:
-    def __init__(self, nb_words, time_out=10, load_firm=True, cut_ends=0):
+    def __init__(self, nb_words, time_out=10, load_firm=True, cut_beginning=0, cut_end=0):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
         self.id_, self.d_info = self.k_api.Connect(POTENTIOSTAT_ADDRESS, time_out)
-        self.cut_ends = cut_ends
+        self.cut_beginning = cut_beginning
+        self.cut_end = cut_end
         self.time_out = time_out
         self.is_VMP3 = self.d_info.model in KBIO.VMP3_FAMILY
         self.is_VMP300 = self.d_info.model in KBIO.VMP300_FAMILY
@@ -49,7 +51,7 @@ class PotentiostatExperiment:
         self.load_firm = load_firm
 
     @staticmethod
-    def normalize_steps(steps: list, data_class):
+    def normalize_steps(steps: list, data_class, min_steps=None):
         norm_steps = []
         for step in steps:
             if isinstance(steps, object):
@@ -61,6 +63,15 @@ class PotentiostatExperiment:
                     print("WARNING: Each experiment step must a list of 2 or 3 items.")
             else:
                 print("WARNING: Each experiment step must be a 'current_step' object or a list.")
+        if min_steps:
+            num_new_steps = min_steps - len(norm_steps)
+            last_step = copy.deepcopy(norm_steps[-1])
+            new_steps = [last_step for _ in range(num_new_steps)]
+            [setattr(n, last_step.__dir__()[0], 0) for n in new_steps]
+            norm_steps.extend(new_steps)
+        if VERBOSITY:
+            print("-------STEPS-------")
+            [print(s) for s in norm_steps]
         return norm_steps
 
     def check_connection(self):
@@ -130,6 +141,19 @@ class PotentiostatExperiment:
                 data = self.k_api.GetData(self.id_, POTENTIOSTAT_CHANNEL)
                 self.data.append(data)
                 current_values, data_info, data_record = data
+
+                if VERBOSITY:
+                    print("-------------------VOLTAGE-------------------------")
+                    ix = 0
+                    for _ in range(data_info.NbRows):
+                        # progress through record
+                        inx = ix + data_info.NbCols
+                        # extract timestamp and one row
+                        t_high, t_low, *row = data_record[ix:inx]
+                        Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
+                        print(Ewe)
+                        ix = inx
+
                 status = KBIO.PROG_STATE(current_values.State).name
 
                 print("> new messages :")
@@ -153,12 +177,19 @@ class PotentiostatExperiment:
 
         # Cut front and back ends off data
         orig_times = [s["t"] for s in extracted_data]
-        min_idx, max_idx = int(len(orig_times) * self.cut_ends), int(len(orig_times) * (1-self.cut_ends))
+        min_idx, max_idx = int(len(orig_times) * self.cut_beginning), int(len(orig_times) * (1 - self.cut_end))
 
         # Collect data
         times = [s["t"] for s in extracted_data][min_idx:max_idx]
         voltages = [s["Ewe"] for s in extracted_data][min_idx:max_idx]
         currents = [s["I"] for s in extracted_data][min_idx:max_idx]
+
+        # Scan rate
+        if not getattr(self, "scan_rate", None):
+            # TODO fix this scan rate calculator
+            forward_idx = [i for i, _ in enumerate(voltages[:-1]) if voltages[i] > voltages[i+1]]
+            forward_volt, forward_time = [voltages[i] for i in forward_idx], [times[i] for i in forward_idx]
+            self.scan_rate = linregress(forward_time, forward_volt)[0]
 
         with open(outfile, 'w') as fn:
             fn.write(datetime.datetime.now().strftime("%c") + "\n")
@@ -172,7 +203,7 @@ class PotentiostatExperiment:
             fn.write("High E (V) = {:.2f}\n".format(max(voltages)))
             fn.write("Low E (V) = {:.2f}\n".format(min(voltages)))
             # fn.write("Init P/N = {}\n".format(''))
-            fn.write("Scan Rate (V/s) = {:.3f}\n".format(linregress(times, voltages)[0]))
+            fn.write("Scan Rate (V/s) = {:.3f}\n".format(self.scan_rate))
             fn.write("Segment = {}\n".format(len(self.steps)))
             fn.write("Sample Interval (V) = {:.3e}\n".format(self.record_every_de or np.average(np.diff(voltages))))
             # fn.write("Quiet Time (sec) = {}\n".format(''))
@@ -199,13 +230,15 @@ class CpExperiment(PotentiostatExperiment):
                  record_every_dt=RECORD_EVERY_DT,  # seconds
                  record_every_de=RECORD_EVERY_DE,  # Volts
                  i_range=I_RANGE,
-                 cut_ends=CUT_ENDS,
+                 cut_beginning=CUT_BEGINNING,
+                 cut_end=CUT_END,
                  time_out=TIME_OUT,
+                 min_steps=None,
                  load_firm=True):
-        super().__init__(3, time_out=time_out, load_firm=load_firm, cut_ends=cut_ends)
+        super().__init__(3, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
 
         # Set Parameters
-        self.steps = self.normalize_steps(steps, current_step)
+        self.steps = self.normalize_steps(steps, current_step, min_steps=min_steps)
         self.repeat_count = n_cycles
         self.record_every_dt = record_every_dt
         self.record_every_de = record_every_de
@@ -310,13 +343,15 @@ class CvExperiment(PotentiostatExperiment):
                  scan_number=SCAN_NUMBER,
                  record_every_de=RECORD_EVERY_DE,
                  average_over_de=AVERAGE_OVER_DE,
-                 cut_ends=CUT_ENDS,
+                 cut_beginning=CUT_BEGINNING,
+                 cut_end=CUT_END,
                  time_out=TIME_OUT,
+                 min_steps=MIN_CV_STEPS,
                  load_firm=True):
-        super().__init__(6, time_out=time_out, load_firm=load_firm, cut_ends=cut_ends)
+        super().__init__(6, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
 
         # Set Parameters
-        self.steps = self.normalize_steps(steps, voltage_step)
+        self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)
         self.scan_number = scan_number
         self.vs_initial = vs_initial
         self.record_every_de = record_every_de
@@ -347,13 +382,16 @@ class CvExperiment(PotentiostatExperiment):
         }
 
         exp_params = list()
+        scan_rates = []
         for _idx, step in enumerate(self.steps):
             parm = make_ecc_parm(self.k_api, CV_params['voltage_step'], step.voltage, _idx)
             exp_params.append(parm)
+            scan_rates.append(step.scan_rate)
             parm = make_ecc_parm(self.k_api, CV_params['scan_rate'], step.scan_rate, _idx)
             exp_params.append(parm)
             parm = make_ecc_parm(self.k_api, CV_params['vs_initial'], step.vs_init, _idx)
             exp_params.append(parm)
+        self.scan_rate = scan_rates[0] if len(set(scan_rates)) == 1 else None
 
         # repeating factor
         exp_params.append(make_ecc_parm(self.k_api, CV_params['n_cycles'], self.n_cycles))
@@ -409,23 +447,32 @@ def cp_ex():
 
 
 if __name__ == "__main__":
-    ex_steps = [
-        voltage_step(0, 0.1),  # 0V, 0.10V/s
-        voltage_step(1, 0.1),  # 1V, 0.10V/s
-        voltage_step(0, 0.1),  # 0V, 0.10V/s
-        # voltage_step(0, 0.05),  # 1V, 0.05V/s
-        # voltage_step(0, 0.05),  # 0V, 0.05V/s
-    ]
+    scan_rate = 0.1  # 0.05V/s
+    # ex_steps = [
+    #     voltage_step(0, scan_rate),    # 0V, scan_rate
+    #     voltage_step(0.6, scan_rate),  # 0.6V, scan_rate
+    #     voltage_step(-0.2, scan_rate),  # -0.2V, scan_rate
+    #     voltage_step(0, scan_rate),    # 0V, scan_rate
+    #     voltage_step(0, scan_rate),    # 0V, scan_rate
+    #     voltage_step(0, scan_rate),  # 1V, scan_rate
+    #     # voltage_step(0, scan_rate),  # 0V, scan_rate
+    # ]
+    collection_params = [{"voltage": 0, "scan_rate": 0.100},
+                         {"voltage": 0.7, "scan_rate": 0.100},
+                         {"voltage": -0.2, "scan_rate": 0.100}]
+    ex_steps = [voltage_step(**p) for p in collection_params]
     experiment = CvExperiment(ex_steps)
+    # experiment.parameterize()
     experiment.run_experiment()
     parsed_data = experiment.parsed_data
 
     potentials = [s["Ewe"] for s in parsed_data]
     current = [s["I"] for s in parsed_data]
     import matplotlib.pyplot as plt
+
     plt.scatter(potentials, current)
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
 
-    # experiment.to_txt("examples/cv_example.csv")
+    experiment.to_txt("examples/cv_example.csv")

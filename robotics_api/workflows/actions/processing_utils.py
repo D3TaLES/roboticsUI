@@ -79,7 +79,7 @@ def print_cv_analysis(multi_data, num_electrons=DEFAULT_NUM_ELECTRONS):
     out_txt += "\n------------- Cathodic -------------\n"
     out_txt += "Diffusion Coefficient (Randles–Sevcik): \t{}\n".format(diffusion_coef[0])
     out_txt += "Diffusion Coefficient (mean method): \t{}\n".format(diffusion_coef[1])
-    out_txt += "Charge Transfer Rate: \t\t\t{}\n".format(transfer_rate)
+    out_txt += "Charge Transfer Rate: \t\t\t\t{}\n".format(transfer_rate)
 
     return str(out_txt)
 

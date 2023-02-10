@@ -2,6 +2,7 @@
 # Copyright 2022, University of Kentucky
 
 import traceback
+import warnings
 from datetime import datetime
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
@@ -57,19 +58,21 @@ class CVProcessor(FiretaskBase):
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
 
-        submission_info = {}
-        if cv_locations:
-            submission_info = {
-                "processing_id": processing_id,
-                "source": "d3tales_robot",
-                "author": "d3tales_robot",
-                "author_email": 'd3tales@gmail.com',
-                "upload_time": datetime.now().isoformat(),
-                "file_type": cv_locations[0].split('.')[-1],
-                "data_category": "experimentation",
-                "data_type": "cv",
-                "all_files_in_zip": [f.split('/')[-1] for f in cv_locations],
-            }
+        if not cv_locations:
+            warnings.warn("WARNING! No CV locations were found, so no file processing occured.")
+            return FWAction()
+        
+        submission_info = {
+            "processing_id": processing_id,
+            "source": "d3tales_robot",
+            "author": "d3tales_robot",
+            "author_email": 'd3tales@gmail.com',
+            "upload_time": datetime.now().isoformat(),
+            "file_type": cv_locations[0].split('.')[-1],
+            "data_category": "experimentation",
+            "data_type": "cv",
+            "all_files_in_zip": [f.split('/')[-1] for f in cv_locations],
+        }
 
         processed_data = []
         for cv_location in cv_locations:
@@ -89,6 +92,9 @@ class CVProcessor(FiretaskBase):
             _id = data["_id"]
             D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
 
+        # Plot all CVs
+        multi_path = os.path.join("/".join(image_path.split("/")[:-1]), "multi_cv_plot.png")
+        CVPlotter(connector={"scan_data": "data.scan_data","variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path)
         # Record meta data
         all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
         with open(all_path, 'w') as fn:

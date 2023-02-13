@@ -2,7 +2,7 @@ import time
 import serial
 import warnings
 from serial.tools.list_ports import comports
-from robotics_api.workflows.actions.snapshot_move import *
+from robotics_api.workflows.actions.kinova_move import *
 from robotics_api.workflows.actions.standard_variables import *
 
 
@@ -93,10 +93,49 @@ def cv_elevator(endpoint="down"):
         time.sleep(1)
 
 
+def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.00003, angular_z=120):
+    """
+    Function that executes an action getting or placing
+    Args:
+        screw: bool, screw lid if True, unscrew if false
+        starting_position: str, filepath to snapshot of starting location
+        linear_z: float,
+        angular_z: float, rotation increment in degree
+
+    Returns: bool, success of action
+    """
+    snapshot_start = os.path.join(SNAPSHOT_DIR, starting_position)
+    snapshot_top = generate_abv_position(snapshot_start, raise_amount=0.02)
+    if screw:
+        success = snapshot_move(snapshot_top)
+        snapshot_start = generate_abv_position(snapshot_start, raise_amount=0.0005)
+    else:
+        success = snapshot_move(target_position='open')
+    success += snapshot_move(snapshot_start)
+    success += snapshot_move(target_position=VIAL_GRIP_TARGET+4)
+
+    rotation_increment = (angular_z / 20) if screw else (-angular_z / 20)
+    raise_height = linear_z if screw else -linear_z
+    for _ in range(5):
+        success += twist_hand(linear_z=raise_height, angular_z=rotation_increment)
+
+    if screw:
+        success = snapshot_move(target_position='open')
+    else:
+        print("Done unscrewing. ")
+        success += snapshot_move(snapshot_top)
+
+    return success
+
+
 if __name__ == "__main__":
 
     # list connection ports
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    cv_elevator(endpoint="down")
+    # cv_elevator(endpoint="up")
+    # cv_elevator(endpoint="down")
+    screw_lid(screw=False)
+    screw_lid(screw=True)
+    # snapshot_move(SNAPSHOT_HOME)

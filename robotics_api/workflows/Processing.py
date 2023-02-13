@@ -59,7 +59,7 @@ class CVProcessor(FiretaskBase):
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
 
         if not cv_locations:
-            warnings.warn("WARNING! No CV locations were found, so no file processing occured.")
+            warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
             return FWAction()
         
         submission_info = {
@@ -93,8 +93,8 @@ class CVProcessor(FiretaskBase):
             D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
 
         # Plot all CVs
-        multi_path = os.path.join("/".join(image_path.split("/")[:-1]), "multi_cv_plot.png")
-        CVPlotter(connector={"scan_data": "data.scan_data","variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path)
+        multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
+        CVPlotter(connector={"scan_data": "data.scan_data", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path)
         # Record meta data
         all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
         with open(all_path, 'w') as fn:

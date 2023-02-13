@@ -194,7 +194,7 @@ if __name__ == "__main__":
         with utilities.DeviceConnection.createTcpConnection(args) as router:
             action = GripperMove(router, router_real_time, 2)
 
-            action.gripper_move(100)
+            action.gripper_move(55)
             print("Target reached")
             time.sleep(0.2)
             action.cleanup()

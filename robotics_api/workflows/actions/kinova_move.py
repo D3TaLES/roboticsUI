@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import time
 import threading
 from argparse import Namespace
 
@@ -283,7 +284,54 @@ def sequence_move(sequence_file):
     # return finished
 
 
+def twist_hand(linear_x=0,  linear_y=0,  linear_z=0,
+               angular_x=0, angular_y=0, angular_z=0):
+    # Import the utilities' helper module
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    # Create connection to the device and get the router
+    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+
+        command = Base_pb2.TwistCommand()
+        command.reference_frame = Base_pb2.CARTESIAN_REFERENCE_FRAME_TOOL
+        command.duration = 0
+
+        twist = command.twist
+        twist.linear_x = linear_x
+        twist.linear_y = linear_y
+        twist.linear_z = linear_z
+        twist.angular_x = angular_x
+        twist.angular_y = angular_y
+        twist.angular_z = angular_z
+
+        try:
+            e = threading.Event()
+            notification_handle = base.OnNotificationActionTopic(
+                check_for_end_or_abort(e),
+                Base_pb2.NotificationOptions()
+            )
+
+            print("Executing twist action")
+            base.SendTwistCommand(command)
+
+            print("Waiting for twist to finish ...")
+            finished = e.wait(TIMEOUT_DURATION)
+            base.Unsubscribe(notification_handle)
+
+        except Exception:
+            finished = False
+
+        print("Stopping the robot...")
+        base.Stop()
+        time.sleep(1)
+
+    return finished
+
+
 if __name__ == "__main__":
     # some commands for demonstration
     sn_file = r"C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\workflows\snapshots\Cartesian Example.json"
-    snapshot_move(sn_file, False)
+    # snapshot_move(sn_file, False)
+    twist_hand(angular_z=30)

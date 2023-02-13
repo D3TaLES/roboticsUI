@@ -1,4 +1,5 @@
 import os
+import math
 from pathlib import Path
 
 VIAL_GRIP_TARGET = 60
@@ -9,7 +10,8 @@ RUN_CV = True
 DEFAULT_NUM_ELECTRONS = 1
 DEFAULT_TEMPERATURE = 293
 DEFAULT_CONCENTRATION = 0.10
-DEFAULT_WORKING_ELECTRODE_AREA = 0.070685835
+DEFAULT_WORKING_ELECTRODE_RADIUS = 1  # radius assumed in mm
+DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2)) * 0.01  # area given in cm^2
 
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
@@ -37,7 +39,5 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
-
 # ---------  ARDUINO VARIABLES -------------
 ELEVATOR_ADDRESS = "COM4"
-

@@ -1,4 +1,5 @@
 # Copyright 2022, University of Kentucky
+import time
 from nanoid import generate
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.cv_techniques import *
@@ -192,9 +193,10 @@ class RunCV(FiretaskBase):
             pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
             pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
             success += snapshot_move(SNAPSHOT_HOME)
-            success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.017)
+            success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
             success += snapshot_move(SNAPSHOT_HOME)
             success += cv_elevator(endpoint="up")
+            time.sleep(10)
 
         # Prep output file info
         file_name = time.strftime("exp{:02d}_%H_%M_%S.csv".format(cv_idx))
@@ -203,6 +205,7 @@ class RunCV(FiretaskBase):
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
+        print("RUN CV...")
         if RUN_CV:
             exp_steps = [voltage_step(**p) for p in collection_params]
             expt = CvExperiment(exp_steps, load_firm=True)

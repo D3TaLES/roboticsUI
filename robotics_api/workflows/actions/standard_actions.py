@@ -29,6 +29,7 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
 
     Returns: bool, success of action
     """
+    print(snapshot_file)
     snapshot_file_above = generate_abv_position(snapshot_file, raise_amount=raise_amount)
 
     # Start open if getting a vial
@@ -134,8 +135,18 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    # cv_elevator(endpoint="up")
-    # cv_elevator(endpoint="down")
-    screw_lid(screw=False)
-    screw_lid(screw=True)
+    cv_elevator(endpoint="up")
+    cv_elevator(endpoint="down")
+    # screw_lid(screw=False)
+    # screw_lid(screw=True)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Potentiostat.json"), target_position='open')
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
+    #
     # snapshot_move(SNAPSHOT_HOME)
+    # get_place_vial(vial_home("3", "B", action_type='get'), action_type="get")
+
+    # pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
+    # pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
+    # snapshot_move(SNAPSHOT_HOME)
+    # get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)

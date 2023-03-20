@@ -10,6 +10,7 @@ from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.workflows.actions import utilities
 from robotics_api.workflows.actions.gripper_move import GripperMove
 from d3tales_api.Calculators.utils import dict2obj
+from robotics_api.workflows.actions.standard_variables import *
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
@@ -148,7 +149,7 @@ def move_gripper(target_position=None):
 
             if target_position == 'open':
                 print("Moving gripper open...")
-                finished += action.gripper_move(10)
+                finished += action.gripper_move(OPEN_GRIP_TARGET)
                 action.cleanup()
             elif target_position == 'closed':
                 print("Moving gripper closed...")

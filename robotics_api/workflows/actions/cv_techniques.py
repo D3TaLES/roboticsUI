@@ -83,6 +83,7 @@ class PotentiostatExperiment:
         channel_info = self.k_api.GetChannelInfo(self.id_, POTENTIOSTAT_CHANNEL)
         # BL_LoadFirmware
         if channel_info.has_no_firmware and self.load_firm:
+            print("No firmware loaded.")
             self.load_firmware()
         return True
 
@@ -203,7 +204,7 @@ class PotentiostatExperiment:
             fn.write("High E (V) = {:.2f}\n".format(max(voltages)))
             fn.write("Low E (V) = {:.2f}\n".format(min(voltages)))
             # fn.write("Init P/N = {}\n".format(''))
-            fn.write("Scan Rate (V/s) = {:.3f}\n".format(self.scan_rate))
+            fn.write("Scan Rate (V/s) = {:.3f}\n".format(float(self.scan_rate)))
             fn.write("Segment = {}\n".format(len(self.steps)))
             fn.write("Sample Interval (V) = {:.3e}\n".format(self.record_every_de or np.average(np.diff(voltages))))
             # fn.write("Quiet Time (sec) = {}\n".format(''))

@@ -53,6 +53,12 @@ class CVProcessor(FiretaskBase):
 
     def run_task(self, fw_spec):
         metadata = fw_spec.get("metadata") or self.get("metadata", {})  # TODO add metadata to fw_specs
+        meta_update = {"redox_mol_concentration": metadata.get("redox_mol_concentration", DEFAULT_CONCENTRATION),
+                       "temperature": metadata.get("temperature", DEFAULT_TEMPERATURE),
+                       "working_electrode_surface_area": metadata.get("working_electrode_surface_area", DEFAULT_WORKING_ELECTRODE_AREA),
+                       }
+        metadata.update(meta_update)
+
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))

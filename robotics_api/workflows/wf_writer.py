@@ -1,3 +1,4 @@
+import os
 
 # Workflows for running full experiments
 # Copyright 2022, University of Kentucky
@@ -52,3 +53,20 @@ def run_ex_cv(identifiers: list, expflow_wf: dict,  name_tag='', **kwargs):
 
     wf = Workflow(fws, name="{}_workflow".format(name_tag))
     return wf
+
+
+def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
+    """
+    Establishes Fireworks workflow for running an example basic CV
+    """
+    cv_dir = cv_dir or ["/mnt/external_drive/D3TaLES/robotics/roboticsUI/test_data/scaled_down_exp01_robot_diffusion_cp_8sr/20230320/"]
+    cv_locations = [f for f in os.listdir(cv_dir) if f.endswith(".csv")]
+    print(cv_locations)
+    fws = [CVProcessing(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
+
+    wf = Workflow(fws, name="{}_workflow".format(name_tag))
+    return wf
+
+
+if __name__ == "__main__":
+    run_ex_processing()

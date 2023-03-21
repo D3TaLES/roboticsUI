@@ -44,3 +44,7 @@ When you are finished, run this job to return the robot to its resting position.
 lpad rerun_fws -i 1 
 rlaunch singleshot
 ```
+
+[//]: # (export PYTHONPATH=/mnt/external_drive/D3TaLES/robotics/roboticsUI)
+[//]: # (export FW_CONFIG_FILE=/mnt/external_drive/D3TaLES/robotics/roboticsUI/robotics_api/management/config/FW_config.yaml)
+[//]: # (export DB_INFO_FILE=/mnt/research/D3TaLES/database/db_infos.json)

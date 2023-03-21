@@ -103,6 +103,8 @@ class Heat(FiretaskBase):
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # temperature = self.get("temperature")
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})
+        metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec={})
 
 
@@ -114,7 +116,9 @@ class HeatStir(FiretaskBase):
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # temperature = self.get("temperature")
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})
         time = self.get("time")
+        metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec={})
 
 
@@ -124,7 +128,7 @@ class RecordWorkingElectrodeArea(FiretaskBase):
 
     def run_task(self, fw_spec):
         working_electrode_area = self.get("size") or DEFAULT_WORKING_ELECTRODE_AREA
-        return FWAction(update_spec={"working_electrode_area": working_electrode_area})
+        return FWAction(update_spec={"working_electrode_surface_area": working_electrode_area})
 
 
 @explicit_serialize

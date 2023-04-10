@@ -42,3 +42,4 @@ TIME_AFTER_CV = 5  # seconds
 
 # ---------  ARDUINO VARIABLES -------------
 ELEVATOR_ADDRESS = "COM4"
+STIR_PLATE_ADDRESS = "COM3"

@@ -1,5 +1,7 @@
 # Copyright 2022, University of Kentucky
 import time
+import warnings
+
 from nanoid import generate
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.cv_techniques import *
@@ -14,8 +16,8 @@ class GetSample(FiretaskBase):
 
     def run_task(self, fw_spec):
         vial_uuid = self.get("vial_uuid")
-        reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        column, row = reagent_locations.get(vial_uuid)  # Get Sample vial location
+        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
 
         # Start at home
         success = snapshot_move(SNAPSHOT_HOME)
@@ -40,8 +42,8 @@ class EndExperiment(FiretaskBase):
 
         vial_uuid = self.get("vial_uuid")
         cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
-        reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        column, row = reagent_locations.get(vial_uuid)  # Get Sample vial location
+        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
 
         # Place vial back home
         success += vial_home(row, column, action_type='place')
@@ -55,13 +57,13 @@ class DispenseLiquid(FiretaskBase):
     # FireTask for dispensing liquid
 
     def run_task(self, fw_spec):
-        start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # volume = self.get("volume")
+        solv_uuid = self.get("start_uuid")
+        vial_uuid = self.get("end_uuid")
+        volume = self.get("volume")
         success = True
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
-        reagent_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        _, solv_idx = reagent_locations.get(start_uuid)  # Get Solvent location
+        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        _, solv_idx = orig_locations.get(solv_uuid)  # Get Solvent location
 
         # TODO dispense liquid
         snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
@@ -113,13 +115,23 @@ class HeatStir(FiretaskBase):
     # FireTask for heating and siring
 
     def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # temperature = self.get("temperature")
+        vial_uuid = self.get("start_uuid")
+        temperature = self.get("temperature")
+        stir_time = self.get("time")
+        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
-        time = self.get("time")
-        metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec={})
+
+        if not cap_on:
+            warnings.warn("Warning. Vial cap is not on and stirring is about to commence.")
+
+        stir_location = os.path.join(SNAPSHOT_DIR, "Stir_plate.json")
+        success = snapshot_move(SNAPSHOT_HOME)
+        success += snapshot_move(stir_location)
+        success += stir_plate(stir_time=stir_time, temperature=temperature)
+        success += snapshot_move(SNAPSHOT_HOME)
+
+        metadata.update({"temperature": temperature or DEFAULT_TEMPERATURE})
+        return FWAction(update_spec={"success": success, "cap_on": cap_on, "metadata": metadata})
 
 
 @explicit_serialize
@@ -183,19 +195,15 @@ class RunCV(FiretaskBase):
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
-        collection_params = fw_spec.get("collection_params") or self.get("collection_params", [])
-        name = fw_spec.get("name") or self.get("name",
-                                               "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        collect_params = fw_spec.get("collection_params") or self.get("collection_params", [])
+        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
         # Move vial to potentiostat elevator
-        if fw_spec.get("pot_location"):
-            pot_location = fw_spec.get("pot_location")
-            pre_pot_location = fw_spec.get("pre_pot_location")
-        else:
+        pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
+        pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
+        if not fw_spec.get("pot_location") == pot_location:
             metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
-            pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
-            pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
             success += snapshot_move(SNAPSHOT_HOME)
             success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
             success += snapshot_move(SNAPSHOT_HOME)
@@ -211,7 +219,7 @@ class RunCV(FiretaskBase):
         # Run CV experiment
         print("RUN CV...")
         if RUN_CV:
-            exp_steps = [voltage_step(**p) for p in collection_params]
+            exp_steps = [voltage_step(**p) for p in collect_params]
             expt = CvExperiment(exp_steps, load_firm=True)
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
@@ -219,7 +227,7 @@ class RunCV(FiretaskBase):
         cv_locations.append(data_path)
 
         return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False,
-                                     "pot_location": pot_location, "pre_pot_location": pre_pot_location,
+                                     "pot_location": pot_location,
                                      "name": name, "cv_idx": cv_idx + 1, "metadata": metadata})
 
 

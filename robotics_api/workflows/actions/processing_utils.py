@@ -1,5 +1,5 @@
 from d3tales_api.Processors.d3tales_parser import *
-from robotics_api.workflows.standard_variables import *
+from robotics_api.standard_variables import *
 
 
 def cv_meta_calcs(multi_data, num_electrons=DEFAULT_NUM_ELECTRONS, curve_type="anodic"):

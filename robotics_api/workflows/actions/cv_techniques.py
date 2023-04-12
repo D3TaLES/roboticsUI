@@ -14,7 +14,7 @@ try:
     from kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
 except ModuleNotFoundError:
     warnings.warn("KBIO module not imported.")
-from robotics_api.workflows.standard_variables import *
+from robotics_api.standard_variables import *
 
 VERBOSITY = 1
 

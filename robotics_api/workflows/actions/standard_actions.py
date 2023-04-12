@@ -1,9 +1,8 @@
-import time
 import serial
 import warnings
 from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.kinova_move import *
-from robotics_api.workflows.actions.standard_variables import *
+from robotics_api.workflows.standard_variables import *
 
 
 def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):

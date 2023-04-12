@@ -1,5 +1,4 @@
 import sys
-import os
 import json
 import time
 import threading
@@ -10,7 +9,7 @@ from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.workflows.actions import utilities
 from robotics_api.workflows.actions.gripper_move import GripperMove
 from d3tales_api.Calculators.utils import dict2obj
-from robotics_api.workflows.actions.standard_variables import *
+from robotics_api.workflows.standard_variables import *
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20

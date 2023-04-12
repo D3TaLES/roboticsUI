@@ -126,11 +126,11 @@ class HeatStir(FiretaskBase):
 
         stir_location = os.path.join(SNAPSHOT_DIR, "Stir_plate.json")
         success = snapshot_move(SNAPSHOT_HOME)
-        success += snapshot_move(stir_location)
-        success += stir_plate(stir_time=stir_time, temperature=temperature)
+        # success += snapshot_move(stir_location)
+        # success += stir_plate(stir_time=stir_time)  # TODO add temperature once we have temp capacity
         success += snapshot_move(SNAPSHOT_HOME)
 
-        metadata.update({"temperature": temperature or DEFAULT_TEMPERATURE})
+        metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec={"success": success, "cap_on": cap_on, "metadata": metadata})
 
 

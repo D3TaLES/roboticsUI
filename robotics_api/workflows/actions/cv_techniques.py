@@ -458,9 +458,10 @@ if __name__ == "__main__":
     #     voltage_step(0, scan_rate),  # 1V, scan_rate
     #     # voltage_step(0, scan_rate),  # 0V, scan_rate
     # ]
-    collection_params = [{"voltage": 0, "scan_rate": 0.100},
-                         {"voltage": 0.7, "scan_rate": 0.100},
-                         {"voltage": -0.2, "scan_rate": 0.100}]
+    collection_params = [{"voltage": 0., "scan_rate": 0.100},
+                         {"voltage": 1.8, "scan_rate": 0.100},
+                         {"voltage": -0.8, "scan_rate": 0.100},
+                         {"voltage": 0, "scan_rate": 0.100}]
     ex_steps = [voltage_step(**p) for p in collection_params]
     experiment = CvExperiment(ex_steps)
     # experiment.parameterize()
@@ -475,5 +476,7 @@ if __name__ == "__main__":
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
-
-    experiment.to_txt("examples/cv_example.csv")
+    try:
+        experiment.to_txt("examples/cv_example.csv")
+    except:
+        experiment.to_txt("examples/cv_example_backup.csv")

@@ -48,9 +48,9 @@ class EF2Experiment(ProcessExpFlowObj):
     def get_firetask(self, task):
         firetask = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
-        if getattr(task, 'collection_params', None):
-            parsed_params = [vars(p) for p in task.collection_params] if isinstance(task.collection_params, list) else task.collection_params
-            parameters_dict['collection_params'] = parsed_params
+        # if getattr(task, 'collection_params', None):
+        #     parsed_params = [vars(p) for p in task.collection_params] if isinstance(task.collection_params, list) else task.collection_params
+        #     parameters_dict['collection_params'] = parsed_params
         for param in getattr(task, 'parameters', []):
             parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))

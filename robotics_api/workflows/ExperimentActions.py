@@ -195,7 +195,9 @@ class RunCV(FiretaskBase):
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
-        collect_params = fw_spec.get("collection_params") or self.get("collection_params", [])
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
+        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
+        collect_params = generate_col_params(voltage_sequence, scan_rate)
         name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 

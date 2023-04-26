@@ -1,6 +1,7 @@
 import sys
 import time
 import copy
+import pint
 import warnings
 import datetime
 import numpy as np
@@ -31,6 +32,23 @@ class voltage_step:
     voltage: float
     scan_rate: float
     vs_init: bool = False
+
+
+def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V/s"):
+    ureg = pint.UnitRegistry()
+
+    # Get voltages with appropriate units
+    voltages = voltage_sequence.split(',')
+    voltage_units = ureg(voltages[-1]).units
+    for i, v in enumerate(voltages):
+        v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(" ").isnumeric() else v
+        v_unit = ureg(v_unit)
+        voltages[i] = v_unit.to(volt_unit).magnitude
+
+    # Get scan rate with appropriate units
+    scan_rate = ureg(scan_rate).to(scan_unit).magnitude
+    collection_params = [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
+    return collection_params
 
 
 class PotentiostatExperiment:
@@ -238,12 +256,6 @@ class CpExperiment(PotentiostatExperiment):
                  load_firm=True):
         super().__init__(3, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
 
-        # Set Parameters
-        self.steps = self.normalize_steps(steps, current_step, min_steps=min_steps)
-        self.repeat_count = n_cycles
-        self.record_every_dt = record_every_dt
-        self.record_every_de = record_every_de
-        self.i_range = i_range
 
         self.params = self.parameterize()
 

@@ -1,9 +1,8 @@
-import time
 import serial
 import warnings
 from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.kinova_move import *
-from robotics_api.workflows.actions.standard_variables import *
+from robotics_api.standard_variables import *
 
 
 def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
@@ -100,7 +99,7 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
     return success
 
 
-def send_arduino_cmd(command, address):
+def send_arduino_cmd(command, address=ARDUINO_DEFAULT_ADDRESS):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
@@ -110,6 +109,7 @@ def send_arduino_cmd(command, address):
     arduino.write(bytes(str(command), encoding='utf-8'))
     print("Command {} given to {} via Arduino.".format(command, address))
     while True:
+        print("trying to read...")
         data = arduino.readline()
         print("waiting for arduino results...")
         if data:
@@ -146,16 +146,16 @@ def stir_plate(stir_time=None, temperature=None, stir_cmd="off"):
         success = False
         if temperature:
             success += True  # TODO implement heating
-        success += send_arduino_cmd(1, STIR_PLATE_ADDRESS)
+        success += send_arduino_cmd(4, STIR_PLATE_ADDRESS)
         time.sleep(stir_time)
-        success += send_arduino_cmd(0, STIR_PLATE_ADDRESS)
+        success += send_arduino_cmd(3, STIR_PLATE_ADDRESS)
         return success
 
     # If stir_time not provided, default to implementing stir_cmd
-    stir_cmd = 0 if stir_cmd == "down" or str(stir_cmd) == "0" else stir_cmd
-    stir_cmd = 1 if stir_cmd == "up" or str(stir_cmd) == "1" else stir_cmd
-    if stir_cmd not in [0, 1]:
-        raise TypeError("Arg 'stir' must be 1 or 0, OR it must be 'up' or 'down'.")
+    stir_cmd = 3 if stir_cmd == "off" or str(stir_cmd) == "3" else stir_cmd
+    stir_cmd = 4 if stir_cmd == "on" or str(stir_cmd) == "4" else stir_cmd
+    if stir_cmd not in [3, 4]:
+        raise TypeError("Arg 'stir' must be 11 or 10, OR it must be 'up' or 'down'.")
     return send_arduino_cmd(stir_cmd, STIR_PLATE_ADDRESS)
 
 
@@ -165,8 +165,11 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    cv_elevator(endpoint="up")
+    # cv_elevator(endpoint="up")
     cv_elevator(endpoint="down")
+
+    # stir_plate(stir_time=10)
+
     # screw_lid(screw=False)
     # screw_lid(screw=True)
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)

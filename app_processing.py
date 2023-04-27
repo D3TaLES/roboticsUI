@@ -32,7 +32,7 @@ def assign_reagent_locations(raw_app_data, experiment_data):
     # get experiment reagents
     orig_reagents = [e.get("reagents") for e in experiment_data.get("experiments")]
     reagents = list(itertools.chain(*orig_reagents))
-    reagent_locations = {}
+    reagent_locations = {"no_redox_mol": ["A", "01"]}
     for r in reagents:
         r_id = r.get("_id") or r.get("uuid")
         reagent_locations[r_id] = reagent_dict.get(r.get("smiles"))

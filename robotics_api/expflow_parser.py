@@ -19,7 +19,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @property
     def firetasks(self):
-        vial_id = get_id(self.redox_mol)  # TODO change once we have solid dispenser
+        vial_id = get_id(self.redox_mol) or "no_redox_mol"  # TODO change once we have solid dispenser
         all_tasks = [GetSample(vial_uuid=vial_id)]
         for task in self.workflow:
             firetask = self.get_firetask(task)

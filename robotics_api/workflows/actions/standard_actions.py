@@ -165,7 +165,7 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    # cv_elevator(endpoint="up")
+    cv_elevator(endpoint="up")
     cv_elevator(endpoint="down")
 
     # stir_plate(stir_time=10)
@@ -176,10 +176,11 @@ if __name__ == "__main__":
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "Potentiostat.json"), target_position='open')
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
     #
+    # get_place_vial(vial_home("2", "A", action_type='get'), action_type="get")
     # snapshot_move(SNAPSHOT_HOME)
-    # get_place_vial(vial_home("3", "B", action_type='get'), action_type="get")
-
+    #
     # pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
     # pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
+    # snapshot_move(pre_pot_location)
     # snapshot_move(SNAPSHOT_HOME)
     # get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)

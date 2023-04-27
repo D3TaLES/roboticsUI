@@ -1,0 +1,153 @@
+{
+  "_id": {
+    "$oid": "644ac944d74ad022eb2db0f5"
+  },
+  "spec": {
+    "_exp06_volt_robot_diffusion_7mol_8sr": "11BRPR__exp06_volt_robot_diffusion_7mol_8sr",
+    "_category": "robotics",
+    "reagent_locations": {
+      "no_redox_mol": [
+        "A",
+        "02"
+      ],
+      "ce89c719-3bab-4840-88ac-6485d233be47": [
+        "A",
+        "04"
+      ],
+      "29690ed4-bf85-4945-9c2d-907eb942515d": [
+        "solv",
+        "01"
+      ],
+      "c61932ca-04bf-4f81-b6ad-cffb1835c904": [
+        "C",
+        "03"
+      ],
+      "f4c21173-714f-48db-ae56-5756c13b9705": [
+        "B",
+        "04"
+      ],
+      "570429f4-ed29-49ca-8d2c-83b17ec337ce": [
+        "B",
+        "03"
+      ],
+      "eacd8786-f528-4a95-9cd9-afec9333a3d3": [
+        "A",
+        "03"
+      ],
+      "a11adeea-7598-45cb-946e-badd468cb894": [
+        "C",
+        "04"
+      ],
+      "663c0702-25e4-48d5-b937-27063887f263": [
+        "B",
+        "02"
+      ],
+      "496444da-15fb-4fa4-b6b4-85424b0eb132": [
+        "C",
+        "02"
+      ]
+    },
+    "name": "_exp06_volt_robot_diffusion_7mol_8sr",
+    "_tasks": [
+      {
+        "vial_uuid": "a11adeea-7598-45cb-946e-badd468cb894",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.GetSample}}"
+      },
+      {
+        "start_uuid": "a11adeea-7598-45cb-946e-badd468cb894",
+        "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "mass": "32.6mg",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseSolid}}"
+      },
+      {
+        "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+        "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "volume": "10.0mL",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseLiquid}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "temperature": "293K",
+        "time": "60.0s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.HeatStir}}"
+      },
+      {
+        "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+        "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+        "size": "0.0cm^2",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RecordWorkingElectrodeArea}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.500V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.400V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.300V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.200V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.100V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.750V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.050V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+        "voltage_sequence": "-0.75, 0.0, -0.75V",
+        "scan_rate": "0.025V/s",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+      },
+      {
+        "vial_uuid": "a11adeea-7598-45cb-946e-badd468cb894",
+        "_fw_name": "{{robotics_api.workflows.ExperimentActions.EndExperiment}}"
+      }
+    ],
+    "success": true
+  },
+  "fw_id": 61,
+  "created_on": "2023-04-27T19:13:04.663704",
+  "updated_on": "2023-04-27T20:41:34.285397",
+  "launches": [
+    140
+  ],
+  "state": "COMPLETED",
+  "name": "11BRPR__exp06_volt_robot_diffusion_7mol_8sr",
+  "archived_launches": []
+}

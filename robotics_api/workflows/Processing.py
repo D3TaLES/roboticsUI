@@ -94,7 +94,8 @@ class CVProcessor(FiretaskBase):
 
             # Insert data into database
             _id = data["_id"]
-            D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
+            if mol_id:
+                D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
 
         # Plot all CVs
         multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")

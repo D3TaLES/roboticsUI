@@ -37,7 +37,7 @@ class EndExperiment(FiretaskBase):
             print("send command to elevator")
             success += cv_elevator(endpoint="down")
             success += get_place_vial(fw_spec.get("pot_location"), action_type="get",
-                                      pre_position_file=fw_spec.get("pre_pot_location"), raise_amount=0.017)
+                                      pre_position_file=fw_spec.get("pre_pot_location"), raise_amount=0.028)
             success += snapshot_move(SNAPSHOT_HOME)
 
         vial_uuid = self.get("vial_uuid")
@@ -199,6 +199,7 @@ class RunCV(FiretaskBase):
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)
         name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
         # Move vial to potentiostat elevator
@@ -214,12 +215,13 @@ class RunCV(FiretaskBase):
 
         # Prep output file info
         file_name = time.strftime("exp{:02d}_%H_%M_%S.csv".format(cv_idx))
-        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / name / time.strftime("%Y%m%d"))
+        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / name / time.strftime("%Y%m%d")) # TODO add wflow_name
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
         print("RUN CV...")
+        print("COLLECTION PARAMS: ", collect_params)
         if RUN_CV:
             exp_steps = [voltage_step(**p) for p in collect_params]
             expt = CvExperiment(exp_steps, load_firm=True)
@@ -229,7 +231,7 @@ class RunCV(FiretaskBase):
         cv_locations.append(data_path)
 
         return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False,
-                                     "pot_location": pot_location,
+                                     "pot_location": pot_location, "pre_pot_location": pre_pot_location,
                                      "name": name, "cv_idx": cv_idx + 1, "metadata": metadata})
 
 

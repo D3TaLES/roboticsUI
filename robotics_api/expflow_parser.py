@@ -12,7 +12,8 @@ class EF2Experiment(ProcessExpFlowObj):
         self.fw_parents = fw_parents
         self.priority = priority
         self.name = exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'experiment_fw'
-        exp_params.update({"name": self.name})
+        self.wflow_name = exp_params.get("wflow_name") or getattr(self.expflow_obj, 'wflow_name') or 'robotic_wflow'
+        exp_params.update({"name": self.name, "wflow_name": self.wflow_name})
         self.exp_params = exp_params
 
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
@@ -31,7 +32,7 @@ class EF2Experiment(ProcessExpFlowObj):
     def firework(self):
         # Define Firework specific to this experiment
         class ExpFirework(Firework):
-            def __init__(self, firetasks, name=self.name, mol_id=self.molecule_id, priority=self.priority,
+            def __init__(self, firetasks, name=self.name, wflow_name=self.wflow_name, mol_id=self.molecule_id, priority=self.priority,
                          parents=self.fw_parents, exp_params=self.exp_params, **kwargs):
                 spec = {name: "{}_{}".format(mol_id, name), '_category': 'robotics'}
                 if priority:

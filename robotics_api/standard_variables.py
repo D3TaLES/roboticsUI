@@ -16,9 +16,9 @@ DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS **
 
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
-SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "workflows/snapshots")
-SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "workflows/snapshots", "Home.json")
-SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "workflows/snapshots", "EndHome.json")
+SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
+SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "Home.json")
+SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "EndHome.json")
 
 # ---------  POTENTIOSTAT VARIABLES -------------
 

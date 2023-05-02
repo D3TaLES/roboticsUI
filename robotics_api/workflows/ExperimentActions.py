@@ -61,9 +61,17 @@ class DispenseLiquid(FiretaskBase):
         vial_uuid = self.get("end_uuid")
         volume = self.get("volume")
         success = True
+        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         _, solv_idx = orig_locations.get(solv_uuid)  # Get Solvent location
+        success = True
+
+        # Uncap vial if capped
+        if cap_on:
+            # TODO uncap vial
+            cap_on = False
+            BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # TODO dispense liquid
         snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
@@ -72,7 +80,7 @@ class DispenseLiquid(FiretaskBase):
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
 
-        return FWAction(update_spec={"success": success, "cap_on": False})
+        return FWAction(update_spec={"success": success, "cap_on": cap_on})
 
 
 @explicit_serialize
@@ -122,6 +130,7 @@ class HeatStir(FiretaskBase):
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
 
         if not cap_on:
+            # TODO cap vial
             warnings.warn("Warning. Vial cap is not on and stirring is about to commence.")
 
         stir_location = os.path.join(SNAPSHOT_DIR, "Stir_plate.json")
@@ -199,8 +208,14 @@ class RunCV(FiretaskBase):
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)
         name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
+
+        # Uncap vial if capped
+        if cap_on:
+            # TODO uncap vial
+            BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # Move vial to potentiostat elevator
         pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")

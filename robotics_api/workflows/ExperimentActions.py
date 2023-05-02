@@ -215,7 +215,7 @@ class RunCV(FiretaskBase):
 
         # Prep output file info
         file_name = time.strftime("exp{:02d}_%H_%M_%S.csv".format(cv_idx))
-        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / name / time.strftime("%Y%m%d")) # TODO add wflow_name
+        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d")) / name
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
 

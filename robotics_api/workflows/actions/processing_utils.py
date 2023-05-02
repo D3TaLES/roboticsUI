@@ -71,14 +71,14 @@ def print_cv_analysis(multi_data, num_electrons=DEFAULT_NUM_ELECTRONS):
 
     diffusion_coef, transfer_rate = cv_meta_calcs(multi_data, num_electrons=num_electrons, curve_type="anodic")
     out_txt += "\n\n------------- Anodic -------------\n"
-    out_txt += "Diffusion Coefficient (Randles-Sevcik): \t{}\n".format(diffusion_coef[0])
-    out_txt += "Diffusion Coefficient (mean method): \t{}\n".format(diffusion_coef[1])
+    out_txt += "Diffusion Coefficient (average): \t{}\n".format(diffusion_coef[0])
+    out_txt += "Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
     out_txt += "Charge Transfer Rate: \t\t\t{}\n".format(transfer_rate)
 
     diffusion_coef, transfer_rate = cv_meta_calcs(multi_data, num_electrons=1, curve_type="cathodic")
     out_txt += "\n------------- Cathodic -------------\n"
-    out_txt += "Diffusion Coefficient (Randles-Sevcik): \t{}\n".format(diffusion_coef[0])
-    out_txt += "Diffusion Coefficient (mean method): \t{}\n".format(diffusion_coef[1])
+    out_txt += "Diffusion Coefficient (average): \t{}\n".format(diffusion_coef[0])
+    out_txt += "Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
     out_txt += "Charge Transfer Rate: \t\t\t\t{}\n".format(transfer_rate)
 
     return str(out_txt)

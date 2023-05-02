@@ -88,7 +88,7 @@ class CVProcessor(FiretaskBase):
 
             # Plot CV
             image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
-            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path)
+            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path, title=f"CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL)
 
             # TODO  Launch send to storage FireTask
 
@@ -100,7 +100,7 @@ class CVProcessor(FiretaskBase):
         # Plot all CVs
         multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
         CVPlotter(connector={"scan_data": "data.scan_data", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(
-            processed_data, fig_path=multi_path, title=f"CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
+            processed_data, fig_path=multi_path, title=f"Multi CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
         # Record meta data
         all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
         with open(all_path, 'w') as fn:

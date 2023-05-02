@@ -40,6 +40,11 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
+# ---------  PLOTTING VARIABLES -------------
+MULTI_PLOT_XLABEL = "Potential (V)"
+MULTI_PLOT_YLABEL = "Current (A)"
+MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
+
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_DEFAULT_ADDRESS = "COM4"
 ELEVATOR_ADDRESS = "COM4"

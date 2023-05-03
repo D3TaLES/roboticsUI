@@ -1,5 +1,7 @@
 import os
 os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
+ROBOT_FWORKER = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\config\\fireworker_robot.yaml')
+PROCESS_FWORKER = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\config\\fireworker_process.yaml')
 import subprocess
 import webbrowser
 import tkinter as tk
@@ -164,7 +166,7 @@ class AddJob(tk.Toplevel):
 
     @property
     def lpad(self):
-        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'robotics_launchpad.yaml')
+        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'launchpad_robot.yaml')
         return LaunchPad().from_file(lpad_file)
 
     def open_file(self):
@@ -226,7 +228,7 @@ class RunRobot(tk.Toplevel):
 
     @property
     def lpad(self):
-        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'robotics_launchpad.yaml')
+        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'launchpad_robot.yaml')
         return LaunchPad().from_file(lpad_file)
 
     @property
@@ -239,7 +241,7 @@ class RunRobot(tk.Toplevel):
 
     def run_robot(self):
         self.run_txt.set("Launching Job...")
-        return_code = subprocess.call('rlaunch singleshot', )
+        return_code = subprocess.call('rlaunch -w {} singleshot'.format(ROBOT_FWORKER), )
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run a Job")
@@ -247,14 +249,14 @@ class RunRobot(tk.Toplevel):
 
     def run_robot_all(self):
         self.run_all_txt.set("Launching all Ready Jobs...")
-        return_code = subprocess.call('rlaunch rapidfire', )
+        return_code = subprocess.call('rlaunch -w {} rapidfire'.format(ROBOT_FWORKER), )
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_all_txt.set("Run All Ready Jobs")
         self.destroy()
 
     def view_fw_workflows(self):
-        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "robotics_launchpad.yaml")
+        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "launchpad_robot.yaml")
         self.parent.destroy()
         subprocess.call('lpad -l {} webgui'.format(lpad_file))
 
@@ -302,7 +304,7 @@ class RoboticsGUI(tk.Tk):
         window.grab_set()
 
     def view_fw_workflows(self):
-        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "robotics_launchpad.yaml")
+        lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "launchpad_robot.yaml")
         self.destroy()
         subprocess.call('lpad -l {} webgui'.format(lpad_file))
 

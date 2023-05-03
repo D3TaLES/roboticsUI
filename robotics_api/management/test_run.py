@@ -6,7 +6,7 @@ from fireworks.core.rocket_launcher import launch_rocket
 
 # set up the LaunchPad
 BASE_DIR = Path(__file__).resolve().parent.parent
-lpad_file = os.path.join(BASE_DIR, 'management', 'config/robotics_launchpad.yaml')
+lpad_file = os.path.join(BASE_DIR, 'management', 'config/launchpad_robot.yaml')
 launchpad = LaunchPad().from_file(lpad_file)
 
 launch_rocket(launchpad)

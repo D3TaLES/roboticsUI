@@ -18,7 +18,7 @@ param_tag = ''
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-lpad_file = os.path.join(BASE_DIR, 'management', 'config/robotics_launchpad.yaml')
+lpad_file = os.path.join(BASE_DIR, 'management', 'config/launchpad_robot.yaml')
 
 if __name__ == "__main__":
     try:

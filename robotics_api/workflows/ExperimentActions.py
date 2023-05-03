@@ -96,16 +96,6 @@ class DispenseSolid(FiretaskBase):
 
 
 @explicit_serialize
-class TransferApparatus(FiretaskBase):
-    # FireTask for transferring apparatus
-
-    def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        return FWAction(update_spec={})
-
-
-@explicit_serialize
 class Heat(FiretaskBase):
     # FireTask for heating
 
@@ -153,29 +143,7 @@ class RecordWorkingElectrodeArea(FiretaskBase):
 
 
 @explicit_serialize
-class Polish(FiretaskBase):
-    # FireTask for polishing electrode
-
-    def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # size = self.get("size")
-        return FWAction(update_spec={})
-
-
-@explicit_serialize
-class Sonicate(FiretaskBase):
-    # FireTask for sonicating electrode
-
-    def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # time = self.get("time")
-        return FWAction(update_spec={})
-
-
-@explicit_serialize
-class Rinse(FiretaskBase):
+class RinseElectrode(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
@@ -186,7 +154,18 @@ class Rinse(FiretaskBase):
 
 
 @explicit_serialize
-class Dry(FiretaskBase):
+class CleanElectrode(FiretaskBase):
+    # FireTask for dispensing solvent
+
+    def run_task(self, fw_spec):
+        # start_uuid = self.get("start_uuid")
+        # end_uuid = self.get("end_uuid")
+        # time = self.get("time")
+        return FWAction(update_spec={})
+
+
+@explicit_serialize
+class ProcessCVBenchmarking(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):

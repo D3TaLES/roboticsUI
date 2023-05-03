@@ -13,19 +13,20 @@ class EF2Experiment(ProcessExpFlowObj):
         self.priority = priority
         self.name = exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'experiment_fw'
         self.wflow_name = exp_params.get("wflow_name") or getattr(self.expflow_obj, 'wflow_name') or 'robotic_wflow'
-        exp_params.update({"name": self.name, "wflow_name": self.wflow_name})
+        self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
+        self.solv_id = get_id(self.solvent) or "no_solvent"
+        exp_params.update({"name": self.name, "wflow_name": self.wflow_name, "rom_id": self.rom_id, "solv_id": self.solv_id})
         self.exp_params = exp_params
 
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
 
     @property
     def firetasks(self):
-        vial_id = get_id(self.redox_mol) or "no_redox_mol"  # TODO change once we have solid dispenser
-        all_tasks = [GetSample(vial_uuid=vial_id)]
+        all_tasks = [GetSample(vial_uuid=self.rom_id)]  # TODO change once we have solid dispenser
         for task in self.workflow:
             firetask = self.get_firetask(task)
             all_tasks.append(firetask)
-        all_tasks.append(EndExperiment(vial_uuid=vial_id))
+        all_tasks.append(EndExperiment(vial_uuid=self.rom_id))
         return all_tasks
 
     @property
@@ -34,7 +35,7 @@ class EF2Experiment(ProcessExpFlowObj):
         class ExpFirework(Firework):
             def __init__(self, firetasks, name=self.name, wflow_name=self.wflow_name, mol_id=self.molecule_id, priority=self.priority,
                          parents=self.fw_parents, exp_params=self.exp_params, **kwargs):
-                spec = {'_category': 'robotics'}
+                spec = {'_category': 'robotics', "wflow_name": wflow_name}
                 if priority:
                     spec.update({'_priority': priority})
                 if exp_params:
@@ -63,19 +64,17 @@ class EF2Experiment(ProcessExpFlowObj):
         return {
             "transfer_liquid": DispenseLiquid,  # needs: VOLUME
             "transfer_solid": DispenseSolid,  # needs: MASS
-            "transfer_apparatus": TransferApparatus,
             "heat": Heat,  # needs: TEMPERATURE
             "heat_stir": HeatStir,  # needs: TEMPERATURE, TIME
             "measure_working_electrode_area": RecordWorkingElectrodeArea,  # needs: SIZE
-            "polish": Polish,  # needs: MATERIAL, SIZE
-            "sonicate": Sonicate,  # needs: TIME
-            "rinse": Rinse,  # needs: TIME
-            "dry": Dry,  # needs: TIME
+            "rinse_electrode": RinseElectrode,  # needs: TIME
+            "clean_electrode": CleanElectrode,
             "collect_cv_data": RunCV,
+            "process_cv_benchmarking": ProcessCVBenchmarking,
         }
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     expflow_file = os.path.join(BASE_DIR, 'management/example_expflows', 'cv_robot_diffusion_2_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')

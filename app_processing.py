@@ -19,9 +19,9 @@ def location_options():
     v_options_set = set([frozenset(o) for o in v_options_raw if not o[0].isdigit()])
     v_options = sorted([sorted(list(s), reverse=True) for s in v_options_set])
     # get solvent options
-    s_options_raw = [f.split(".")[0].split("_")[1] for f in os.listdir(snapshot_home) if f.startswith("Solvent")]
-    s_options = [['solv', i] for i in s_options_raw]
-    return v_options + s_options
+    # s_options_raw = [f.split(".")[0].split("_")[1] for f in os.listdir(snapshot_home) if f.startswith("Solvent")]
+    # s_options = [['solv', i] for i in s_options_raw]
+    return v_options  # + s_options
 
 
 def assign_reagent_locations(raw_app_data, experiment_data):

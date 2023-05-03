@@ -259,12 +259,12 @@ class TestMovement(FiretaskBase):
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
         # Parse arguments
-        connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
-
-        # Create connection to the device and get the router
-        with DeviceConnection.createTcpConnection(connector) as router:
-            # Create required services
-            base = BaseClient(router)
+        # connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+        #
+        # # Create connection to the device and get the router
+        # with DeviceConnection.createTcpConnection(connector) as router:
+        #     # Create required services
+        #     base = BaseClient(router)
             # base_cyclic = BaseCyclicClient(router)
             #
             # # Example core

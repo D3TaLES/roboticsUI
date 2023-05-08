@@ -40,6 +40,8 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
+AUTO_VOLT_BUFFER = 0.1  # Volts
+
 # ---------  PLOTTING VARIABLES -------------
 MULTI_PLOT_XLABEL = "Potential (V)"
 MULTI_PLOT_YLABEL = "Current (A)"

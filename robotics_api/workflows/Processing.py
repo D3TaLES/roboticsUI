@@ -46,6 +46,42 @@ class EndWorkflow(FiretaskBase):
 
 
 @explicit_serialize
+class RecordWorkingElectrodeArea(FiretaskBase):
+    # FireTask for recording size of working electrode
+
+    def run_task(self, fw_spec):
+        working_electrode_area = self.get("size") or DEFAULT_WORKING_ELECTRODE_AREA
+        return FWAction(update_spec={"working_electrode_surface_area": working_electrode_area})
+
+
+@explicit_serialize
+class ProcessCVBenchmarking(FiretaskBase):
+    # FireTask for dispensing solvent
+
+    def run_task(self, fw_spec):
+        mol_id = fw_spec.get("mol_id") or self.get("mol_id")
+        cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
+        cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
+        if not cv_locations:
+            warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
+            return FWAction()
+
+        cv_location = cv_locations[-1]
+        data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
+
+        # Plot CV
+        image_path = "cv_benchmark_{}_plot.png".format(".".join(cv_location.split(".")[:-1]))
+        CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
+                                                                       title=f"CV Plot for {mol_id}",
+                                                                       xlabel=MULTI_PLOT_XLABEL,
+                                                                       ylabel=MULTI_PLOT_YLABEL)
+        high_e, low_e = round(data.CVData.high_e, 2), round(data.CVData.low_e, 2)
+        voltage_sequence = "0, {}, {}, 0".format(high_e + AUTO_VOLT_BUFFER, low_e - AUTO_VOLT_BUFFER)
+
+        return FWAction(update_spec={"voltage_sequence": voltage_sequence})
+
+
+@explicit_serialize
 class CVProcessor(FiretaskBase):
     # FireTask for processing CV file
 
@@ -53,7 +89,8 @@ class CVProcessor(FiretaskBase):
         metadata = fw_spec.get("metadata") or self.get("metadata", {})  # TODO add metadata to fw_specs
         meta_update = {"redox_mol_concentration": metadata.get("redox_mol_concentration", DEFAULT_CONCENTRATION),
                        "temperature": metadata.get("temperature", DEFAULT_TEMPERATURE),
-                       "working_electrode_surface_area": metadata.get("working_electrode_surface_area", DEFAULT_WORKING_ELECTRODE_AREA),
+                       "working_electrode_surface_area": metadata.get("working_electrode_surface_area",
+                                                                      DEFAULT_WORKING_ELECTRODE_AREA),
                        }
         metadata.update(meta_update)
 
@@ -65,7 +102,7 @@ class CVProcessor(FiretaskBase):
         if not cv_locations:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
             return FWAction()
-        
+
         submission_info = {
             "processing_id": processing_id,
             "source": "d3tales_robot",
@@ -88,7 +125,10 @@ class CVProcessor(FiretaskBase):
 
             # Plot CV
             image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
-            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path, title=f"CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL)
+            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
+                                                                           title=f"CV Plot for {mol_id}",
+                                                                           xlabel=MULTI_PLOT_XLABEL,
+                                                                           ylabel=MULTI_PLOT_YLABEL)
 
             # TODO  Launch send to storage FireTask
 
@@ -99,8 +139,10 @@ class CVProcessor(FiretaskBase):
 
         # Plot all CVs
         multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
-        CVPlotter(connector={"scan_data": "data.scan_data", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(
-            processed_data, fig_path=multi_path, title=f"Multi CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
+        CVPlotter(connector={"scan_data": "data.scan_data",
+                             "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(
+            processed_data, fig_path=multi_path, title=f"Multi CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL,
+            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
         # Record meta data
         all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
         with open(all_path, 'w') as fn:
@@ -130,7 +172,8 @@ class SendToStorage(FiretaskBase):
         submission_data = fw_spec["submission_data"]
         data_category = submission_data["data_category"]
         data_type = submission_data["data_type"]
-        destination_path = "{}/d3tales/{}/{}/{}".format(storage_base_loc, fw_spec.get("mol_id"), data_category, data_type)
+        destination_path = "{}/d3tales/{}/{}/{}".format(storage_base_loc, fw_spec.get("mol_id"), data_category,
+                                                        data_type)
         destination = os.path.join(destination_path, filepath.split("/")[-1]).replace("//", "/")
 
         def mkdir_p(sftp, remote_directory):
@@ -183,5 +226,3 @@ class SendToStorage(FiretaskBase):
         ssh.close()
 
         return FWAction(update_spec={"processed_data": processed_data})
-
-

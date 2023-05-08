@@ -11,41 +11,20 @@ from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 
 @explicit_serialize
-class GetSample(FiretaskBase):
-    # FireTask for getting solid sample
-
-    def run_task(self, fw_spec):
-        vial_uuid = self.get("vial_uuid")
-        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
-
-        # Start at home
-        success = snapshot_move(SNAPSHOT_HOME)
-        # Get vial
-        success += vial_home(row, column, action_type='get')
-
-        return FWAction(update_spec={"success": success, "cap_on": False})
-
-
-@explicit_serialize
 class EndExperiment(FiretaskBase):
     # FireTask for getting solid sample
 
     def run_task(self, fw_spec):
-        success = True
-        if fw_spec.get("pot_location"):
-            print("send command to elevator")
-            success += cv_elevator(endpoint="down")
-            success += get_place_vial(fw_spec.get("pot_location"), action_type="get",
-                                      pre_position_file=fw_spec.get("pre_pot_location"), raise_amount=0.028)
-            success += snapshot_move(SNAPSHOT_HOME)
-
         vial_uuid = self.get("vial_uuid")
         cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
+        success = True
+
+        if fw_spec.get("at_potentiostat"):
+            retrieve_vial_from_potentiostat()
 
         # Place vial back home
+        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
         success += vial_home(row, column, action_type='place')
         success += snapshot_move(SNAPSHOT_HOME)
 
@@ -88,11 +67,18 @@ class DispenseSolid(FiretaskBase):
     # FireTask for dispensing solid
 
     def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
+        # TODO Change once we have solid dispensing
+        start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # mass = self.get("mass")
+        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
 
-        return FWAction(update_spec={})
+        column, row = orig_locations.get(start_uuid)  # Get Sample vial location
+        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        success += vial_home(row, column, action_type='get')  # Get vial
+        cap_on = False  # TODO Change once we have capping/uncapping
+
+        return FWAction(update_spec={"success": success, "cap_on": cap_on})
 
 
 @explicit_serialize
@@ -134,15 +120,6 @@ class HeatStir(FiretaskBase):
 
 
 @explicit_serialize
-class RecordWorkingElectrodeArea(FiretaskBase):
-    # FireTask for recording size of working electrode
-
-    def run_task(self, fw_spec):
-        working_electrode_area = self.get("size") or DEFAULT_WORKING_ELECTRODE_AREA
-        return FWAction(update_spec={"working_electrode_surface_area": working_electrode_area})
-
-
-@explicit_serialize
 class RinseElectrode(FiretaskBase):
     # FireTask for dispensing solvent
 
@@ -164,15 +141,53 @@ class CleanElectrode(FiretaskBase):
         return FWAction(update_spec={})
 
 
-@explicit_serialize
-class ProcessCVBenchmarking(FiretaskBase):
+class TestElectrode(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # time = self.get("time")
-        return FWAction(update_spec={})
+        start_uuid = self.get("start_uuid")  # should be solvent UUID
+        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
+        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
+        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        collect_params = generate_col_params(voltage_sequence, scan_rate)
+
+        # Get solvent vial
+        column, row = orig_locations.get(start_uuid)  # Get Sample vial location
+        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        success += vial_home(row, column, action_type='get')  # Get vial
+        cap_on = False  # TODO Change once we have capping/uncapping
+
+        # Uncap vial if capped
+        if cap_on:
+            # TODO uncap vial
+            BaseException("Vial cap is on! CV cannot be run with cap on.")
+
+        # Move vial to potentiostat elevator
+        success += move_vial_to_potentiostat(fw_spec)
+
+        # Prep output file info
+        file_name = time.strftime("ElectrodeTest_%H_%M_%S.csv")
+        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d") / name)
+        os.makedirs(data_dir, exist_ok=True)
+        data_path = os.path.join(data_dir, file_name)
+
+        # Run CV experiment
+        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
+        if RUN_CV:
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True)
+            expt.run_experiment()
+            time.sleep(TIME_AFTER_CV)
+            expt.to_txt(data_path)
+
+        # Place vial back home
+        retrieve_vial_from_potentiostat()
+        success += vial_home(row, column, action_type='place')
+        success += snapshot_move(SNAPSHOT_HOME)
+
+        return FWAction(update_spec={"electrode_test_locations": data_path, "success": success, "cap_on": cap_on,
+                                     "name": name, "wflow_name": wflow_name})
 
 
 @explicit_serialize
@@ -180,14 +195,16 @@ class RunCV(FiretaskBase):
     # FireTask for running CV
 
     def run_task(self, fw_spec):
+        cv_type = fw_spec.get("cv_type") or self.get("cv_type", None)
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)
-        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
+        at_potentiostat = self.get("at_potentiostat") or fw_spec.get("at_potentiostat", False)
+        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
@@ -197,36 +214,27 @@ class RunCV(FiretaskBase):
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # Move vial to potentiostat elevator
-        pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
-        pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
-        if not fw_spec.get("pot_location") == pot_location:
-            metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
-            success += snapshot_move(SNAPSHOT_HOME)
-            success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
-            success += snapshot_move(SNAPSHOT_HOME)
-            success += cv_elevator(endpoint="up")
-            time.sleep(10)
+        metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
+        success += move_vial_to_potentiostat(at_potentiostat=at_potentiostat)
 
         # Prep output file info
-        file_name = time.strftime("exp{:02d}_%H_%M_%S.csv".format(cv_idx))
-        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d")) / name
+        file_name = time.strftime("{}_%H_%M_%S.csv".format(cv_type or "exp{:02d}".format(cv_idx)))
+        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d") / name)
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
 
         # Run CV experiment
-        print("RUN CV...")
-        print("COLLECTION PARAMS: ", collect_params)
+        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
         if RUN_CV:
-            exp_steps = [voltage_step(**p) for p in collect_params]
-            expt = CvExperiment(exp_steps, load_firm=True)
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True)
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
         cv_locations.append(data_path)
 
-        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": False,
-                                     "pot_location": pot_location, "pre_pot_location": pre_pot_location,
-                                     "name": name, "cv_idx": cv_idx + 1, "metadata": metadata})
+        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": cap_on,
+                                     "at_potentiostat": at_potentiostat, "name": name, "wflow_name": wflow_name,
+                                     "cv_idx": cv_idx + 1, "metadata": metadata})
 
 
 @explicit_serialize

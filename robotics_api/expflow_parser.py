@@ -1,60 +1,79 @@
 from fireworks import Firework
+from itertools import groupby
 from monty.serialization import loadfn
 from d3tales_api.Processors.expflow_parser import *
+from robotics_api.workflows.Processing import *
+from robotics_api.workflows.Robotics_FW import *
 from robotics_api.workflows.ExperimentActions import *
 
 BASE_DIR = Path(__file__).resolve().parent
 
 
 class EF2Experiment(ProcessExpFlowObj):
-    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params=None, **kwargs):
+    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params=None,
+                 **kwargs):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents
         self.priority = priority
-        self.name = exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'experiment_fw'
+        self.name = "{}_{}".format(self.molecule_id, exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'exp')
         self.wflow_name = exp_params.get("wflow_name") or getattr(self.expflow_obj, 'wflow_name') or 'robotic_wflow'
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.solv_id = get_id(self.solvent) or "no_solvent"
-        exp_params.update({"name": self.name, "wflow_name": self.wflow_name, "rom_id": self.rom_id, "solv_id": self.solv_id})
+        exp_params.update(
+            {"name": self.name, "wflow_name": self.wflow_name, "mol_id": self.rom_id, "solv_id": self.solv_id})
         self.exp_params = exp_params
+        self.end_exp = None
 
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
 
     @property
-    def firetasks(self):
-        all_tasks = [GetSample(vial_uuid=self.rom_id)]  # TODO change once we have solid dispenser
+    def task_clusters(self):
+        all_tasks, task_cluster = [], []
+        previous_name = ""
         for task in self.workflow:
-            firetask = self.get_firetask(task)
-            all_tasks.append(firetask)
-        all_tasks.append(EndExperiment(vial_uuid=self.rom_id))
+            if "process" in task.name:
+                all_tasks.append(task_cluster) if task_cluster else None
+                all_tasks.append([task])
+                task_cluster = []
+            elif "collect" in task.name and "collect" not in previous_name:
+                all_tasks.append(task_cluster) if task_cluster else None
+                task_cluster = [task]
+            else:
+                task_cluster.append(task)
+            previous_name = task.name
+        all_tasks.append(task_cluster) if task_cluster else None
+        # print([[t.name for t in c] for c in all_tasks])
         return all_tasks
 
     @property
-    def firework(self):
-        # Define Firework specific to this experiment
-        class ExpFirework(Firework):
-            def __init__(self, firetasks, name=self.name, wflow_name=self.wflow_name, mol_id=self.molecule_id, priority=self.priority,
-                         parents=self.fw_parents, exp_params=self.exp_params, **kwargs):
-                spec = {'_category': 'robotics', "wflow_name": wflow_name}
-                if priority:
-                    spec.update({'_priority': priority})
-                if exp_params:
-                    spec.update(exp_params)
-                spec.update({name: "{}_{}".format(mol_id, name.strip("_"))})
-                tasks = firetasks
-                super(ExpFirework, self).__init__(tasks, parents=parents, spec=spec, name="{}_{}".format(mol_id, name),
-                                                  **kwargs)
-
+    def fireworks(self):
         # Return active Firework
-        return ExpFirework(self.firetasks)
+        fireworks = []
+        parent = self.fw_parents
+        for cluster in self.task_clusters:
+            fw_type = cluster[0].name
+            tasks = [self.get_firetask(task) for task in cluster]
+            if "process" in fw_type:
+                fw = CVProcessing(tasks, name="{}_{}".format(self.name, fw_type), parents=parent,
+                                  metadata=self.metadata, mol_id=self.molecule_id, priority=self.priority+1)
+                parent = fw if "benchmark" in fw_type else parent
+            else:
+                name = fw_type if "collect" in fw_type else "prep"
+                fw = ExpFirework(tasks, name="{}_{}".format(self.name, name), wflow_name=self.wflow_name,
+                                 priority=self.priority, parents=parent, exp_params=self.exp_params)
+                parent = fw
+            fireworks.append(fw)
+
+        self.end_exp = ExpFirework([EndExperiment(vial_uuid=self.rom_id)], name="{}_end_experiment".format(self.name),
+                                   wflow_name=self.wflow_name, priority=self.priority, parents=parent,
+                                   exp_params=self.exp_params)  # TODO Change once we have solid dispensing
+        fireworks.append(self.end_exp)
+        return fireworks
 
     def get_firetask(self, task):
         firetask = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
-        # if getattr(task, 'collection_params', None):
-        #     parsed_params = [vars(p) for p in task.collection_params] if isinstance(task.collection_params, list) else task.collection_params
-        #     parameters_dict['collection_params'] = parsed_params
-        for param in getattr(task, 'parameters', []):
+        for param in getattr(task, 'parameters', []) or []:
             parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))
         return firetask(**parameters_dict)
@@ -70,7 +89,9 @@ class EF2Experiment(ProcessExpFlowObj):
             "rinse_electrode": RinseElectrode,  # needs: TIME
             "clean_electrode": CleanElectrode,
             "collect_cv_data": RunCV,
+            "process_cv_data": CVProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
+            "test_electrode": TestElectrode,
         }
 
 
@@ -78,4 +99,4 @@ if __name__ == "__main__":
     expflow_file = os.path.join(BASE_DIR, 'management/example_expflows', 'cv_robot_diffusion_2_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
-    experiment.firework
+    experiment.fireworks

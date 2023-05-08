@@ -159,6 +159,31 @@ def stir_plate(stir_time=None, temperature=None, stir_cmd="off"):
     return send_arduino_cmd(stir_cmd, STIR_PLATE_ADDRESS)
 
 
+def move_vial_to_potentiostat(at_potentiostat):
+    # Move vial to potentiostat elevator
+    success = True
+    pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
+    pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
+    if not at_potentiostat:
+        success += snapshot_move(SNAPSHOT_HOME)
+        success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
+        success += snapshot_move(SNAPSHOT_HOME)
+        success += cv_elevator(endpoint="up")
+        time.sleep(10)
+    return success
+
+
+def retrieve_vial_from_potentiostat():
+    # Move vial to potentiostat elevator
+    success = True
+    pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
+    pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
+    success += cv_elevator(endpoint="down")
+    success += get_place_vial(pot_location, action_type="get", pre_position_file=pre_pot_location, raise_amount=0.028)
+    success += snapshot_move(SNAPSHOT_HOME)
+    return success
+
+
 if __name__ == "__main__":
 
     # list connection ports

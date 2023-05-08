@@ -1,0 +1,3285 @@
+{
+    "_id": "2be75083-6df4-4c57-a5d9-bc1f9fd227aa",
+    "name": "8CVCollect_BenchmarkCV_test1",
+    "parent_uuid": "661d6628-e83a-452d-943a-b880cd2ab12a",
+    "parent_name": "EXAMPLE 8CVCollect BenchmarkCV",
+    "author": 2,
+    "experiments": [
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "d898611b-d492-4b0f-b4a6-ff5b8a062eb4",
+                    "name": "cyclopenta-1,3-diene;iron(2+)",
+                    "smiles": "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "d898611b-d492-4b0f-b4a6-ff5b8a062eb4",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "18.6",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "56a3d14b-4c99-424f-898f-f8ba3aa5d5f2",
+                    "name": "10-[2-(2-methoxyethoxy)ethyl]phenothiazine",
+                    "smiles": "COCCOCCN1C2=C(C=CC=C2)SC3=C1C=CC=C3",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "56a3d14b-4c99-424f-898f-f8ba3aa5d5f2",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "30.1",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "04144b3a-282f-4c3e-b4d5-e563fe7a188b",
+                    "name": "1,4-ditert-butyl-2,5-dimethoxybenzene",
+                    "smiles": "CC(C)(C)C1=C(OC)C=C(C(C)(C)C)C(OC)=C1",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "04144b3a-282f-4c3e-b4d5-e563fe7a188b",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "25.0",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "a9c46fbd-0f2d-42eb-824b-def74a247783",
+                    "name": "1,4-ditert-butyl-2,5-bis(2-methoxyethoxy)benzene",
+                    "smiles": "CC(C)(C)C1=C(OCCOC)C=C(C(C)(C)C)C(OCCOC)=C1",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "a9c46fbd-0f2d-42eb-824b-def74a247783",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "33.8",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "56459eb0-89a9-44a4-801b-e66b8b817498",
+                    "name": "9-ethylcarbazole",
+                    "smiles": "CCN1C2=C(C=CC=C2)C3=C1C=CC=C3",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "56459eb0-89a9-44a4-801b-e66b8b817498",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "19.5",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "d1ca99e5-e868-43bb-bc65-cf5900e327b7",
+                    "name": "iron(2+);1,2,3,4,5-pentamethylcyclopenta-1,3-diene",
+                    "smiles": "C[c-]1c(c(c(c1C)C)C)C.C[c-]1c(c(c(c1C)C)C)C.[Fe+2]",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "d1ca99e5-e868-43bb-bc65-cf5900e327b7",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "32.6",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "d7c68a3f-5169-4a2c-9c10-312a28527468",
+                    "name": "5,10-dimethylphenazine",
+                    "smiles": "CN1C2=C(C=CC=C2)N(C)C3=C1C=CC=C3",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "d7c68a3f-5169-4a2c-9c10-312a28527468",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "21.0",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "8b04d717-64e3-413d-95fa-9486c51771b7",
+            "name": "",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "90af6754-cabe-4f15-a496-59cebec02bdf",
+                    "name": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "506f7432-b0f1-4e1a-8a76-b92dc331f17b",
+                    "name": "1-hydroxy-2,2,6,6-tetramethylpiperidine",
+                    "smiles": "CC1(C)CCCC(C)(C)N1[O]",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "Platinum wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Polycrystalline platinum electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Silver/Silver electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "beaker that will hold solution",
+                    "reusable": "on",
+                    "name": "solution beaker",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": "1",
+                    "description": "test electrode with blank solvent",
+                    "name": "test_electrode",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 0,
+                    "parameters": null
+                },
+                {
+                    "sequence": "2",
+                    "description": "measure surface area of working electrode",
+                    "name": "measure_working_electrode_area",
+                    "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "start_position": "Polycrystalline platinum electrode",
+                    "start_type": "electrode_working",
+                    "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "end_position": "Platinum wire electrode",
+                    "end_type": "electrode_counter",
+                    "action_count": 1,
+                    "parameters": [
+                        {
+                            "description": "size",
+                            "value": "0.0",
+                            "unit": "cm^2"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "3",
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "506f7432-b0f1-4e1a-8a76-b92dc331f17b",
+                    "start_position": "TEMPO",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 2,
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "15.6",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "4",
+                    "description": "measure solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 3,
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "10.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "5",
+                    "description": "heat and stir solution to mix",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution beaker",
+                    "end_type": "beaker",
+                    "action_count": 4,
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60.0",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "6",
+                    "description": "Run CV benchmarking ",
+                    "name": "collect_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 5,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.1",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "7",
+                    "description": "process test_electrode data",
+                    "name": "process_cv_benchmarking",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 6,
+                    "parameters": null
+                },
+                {
+                    "sequence": "8",
+                    "description": "collect cv 1",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 7,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.500",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "9",
+                    "description": "collect cv 2",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 8,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.400",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "10",
+                    "description": "collect cv 3",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 9,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.300",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "11",
+                    "description": "collect cv 4",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 10,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.200",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "12",
+                    "description": "collect cv 5",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 11,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.100",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "13",
+                    "description": "collect cv 6",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 12,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.075",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "14",
+                    "description": "collect cv 7",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 13,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.050",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "15",
+                    "description": "collect cv 8",
+                    "name": "collect_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution beaker",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 14,
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.9, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025",
+                            "unit": "V/s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": "16",
+                    "description": "process all CV data",
+                    "name": "process_cv_data",
+                    "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "start_position": "potentiostat__test",
+                    "start_type": "instrument",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__test",
+                    "end_type": "instrument",
+                    "action_count": 15,
+                    "parameters": null
+                }
+            ],
+            "author": null
+        }
+    ],
+    "variable_props": [
+        "Reagent--redox_active_molecule(s)_(a.k.a._redox_core)",
+        "Action3--measure_redox-active_molecule--mass"
+    ]
+}

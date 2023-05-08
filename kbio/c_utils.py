@@ -6,24 +6,27 @@ and can be imported as a whole when low level C interfacing is required.
 
 import binascii
 
-from ctypes import (
-    c_bool,
-    c_byte,
-    c_int8,
-    c_uint8,
-    c_int32,
-    c_uint32,
-    c_float,
-    c_double,
-    c_void_p,
-    c_char_p,
-    Structure,
-    POINTER,
-    sizeof,
-    addressof,
-    string_at,
-    WinDLL,
-)
+try:
+    from ctypes import (
+        c_bool,
+        c_byte,
+        c_int8,
+        c_uint8,
+        c_int32,
+        c_uint32,
+        c_float,
+        c_double,
+        c_void_p,
+        c_char_p,
+        Structure,
+        POINTER,
+        sizeof,
+        addressof,
+        string_at,
+        WinDLL,
+    )
+except:
+    pass
 
 #------------------------------------------------------------------------------#
 

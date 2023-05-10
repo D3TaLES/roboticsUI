@@ -34,9 +34,10 @@ class ExpFirework(Firework):
 
 
 class CVProcessing(Firework):
-    def __init__(self, f_tasks, name="cv_process", mol_id=None, priority=None, parents=None, metadata=None, **kwargs):
+    def __init__(self, f_tasks, name="cv_process", mol_id=None, priority=None, parents=None, metadata=None, exp_params=None, **kwargs):
         spec = {'_category': 'processing'}
         spec.update({'priority': priority}) if priority else None
+        spec.update(exp_params) if exp_params else None
         tasks = f_tasks or [
             CVProcessor(mol_id=mol_id, metadata=metadata, name=name),
             # SendToStorage(),

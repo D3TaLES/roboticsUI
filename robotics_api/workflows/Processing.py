@@ -51,23 +51,27 @@ class ProcessCVBenchmarking(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
+        name = fw_spec.get("name") or self.get("name")
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         if not cv_locations:
             warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=dict(**fw_spec))
+            return FWAction(update_spec=dict(**updated_specs))
 
         cv_location = cv_locations[-1]
         if not os.path.isfile(cv_location):
             warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=dict(**fw_spec))
+            return FWAction(update_spec=dict(**updated_specs))
         data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
+        new_location = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_cv.csv")
+        os.rename(cv_location, new_location)
 
         # Plot CV
-        image_path = "{}_benchmark_plot.png".format(".".join(cv_location.split(".")[:-1]))
+        image_path = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_plot.png")
         CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
-                                                                       title=f"CV Plot for {mol_id}",
+                                                                       title=f"Benchmark CV Plot for {name}",
                                                                        xlabel=MULTI_PLOT_XLABEL,
                                                                        ylabel=MULTI_PLOT_YLABEL)
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
@@ -78,7 +82,10 @@ class ProcessCVBenchmarking(FiretaskBase):
         voltage_sequence = "0, {}, {}, 0V".format(forward_peak + AUTO_VOLT_BUFFER, reverse_peak - AUTO_VOLT_BUFFER)
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
 
-        return FWAction(update_spec=dict(voltage_sequence=voltage_sequence, **fw_spec))
+        updated_specs.update({"voltage_sequence": voltage_sequence, "cv_locations": [], "cv_idx": 0,
+                              "benchmark_location": new_location})
+        print(updated_specs)
+        return FWAction(update_spec=dict(**updated_specs))
 
 
 @explicit_serialize
@@ -86,6 +93,7 @@ class CVProcessor(FiretaskBase):
     # FireTask for processing CV file
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         metadata = fw_spec.get("metadata") or self.get("metadata", {})  # TODO add metadata to fw_specs
         meta_update = {"redox_mol_concentration": metadata.get("redox_mol_concentration", DEFAULT_CONCENTRATION),
                        "temperature": metadata.get("temperature", DEFAULT_TEMPERATURE),
@@ -98,10 +106,11 @@ class CVProcessor(FiretaskBase):
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
+        name = fw_spec.get("name") or self.get("name")
 
         if not cv_locations:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
-            return FWAction(update_spec=dict(**fw_spec))
+            return FWAction(update_spec=dict(**updated_specs))
 
         submission_info = {
             "processing_id": processing_id,
@@ -126,7 +135,7 @@ class CVProcessor(FiretaskBase):
             # Plot CV
             image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
             CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
-                                                                           title=f"CV Plot for {mol_id}",
+                                                                           title=f"CV Plot for {name}",
                                                                            xlabel=MULTI_PLOT_XLABEL,
                                                                            ylabel=MULTI_PLOT_YLABEL)
 
@@ -138,6 +147,7 @@ class CVProcessor(FiretaskBase):
                 D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
 
         # Plot all CVs
+        print(processed_data)
         multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
         CVPlotter(connector={"scan_data": "data.scan_data",
                              "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(

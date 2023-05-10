@@ -86,7 +86,8 @@ class RecordWorkingElectrodeArea(FiretaskBase):
     # FireTask for recording size of working electrode
 
     def run_task(self, fw_spec):
-        working_electrode_area = self.get("size", ) or DEFAULT_WORKING_ELECTRODE_AREA
+        # working_electrode_area = self.get("size", ) or DEFAULT_WORKING_ELECTRODE_AREA
+        working_electrode_area = DEFAULT_WORKING_ELECTRODE_AREA
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         metadata.update({"working_electrode_surface_area": working_electrode_area})
         return FWAction(update_spec={"metadata": metadata})

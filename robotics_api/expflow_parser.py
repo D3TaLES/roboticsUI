@@ -20,7 +20,7 @@ class EF2Experiment(ProcessExpFlowObj):
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.solv_id = get_id(self.solvent) or "no_solvent"
         exp_params.update(
-            {"name": self.name, "wflow_name": self.wflow_name, "mol_id": self.rom_id, "solv_id": self.solv_id})
+            {"name": self.name, "wflow_name": self.wflow_name, "mol_id": self.molecule_id, "solv_id": self.solv_id})
         self.exp_params = exp_params
         self.end_exp = None
 
@@ -54,7 +54,7 @@ class EF2Experiment(ProcessExpFlowObj):
             fw_type = cluster[0].name
             tasks = [self.get_firetask(task) for task in cluster]
             if "process" in fw_type:
-                fw = CVProcessing(tasks, name="{}_{}".format(self.name, fw_type), parents=parent,
+                fw = CVProcessing(tasks, name="{}_{}".format(self.name, fw_type), parents=parent, exp_params=self.exp_params,
                                   metadata=self.metadata, mol_id=self.molecule_id, priority=self.priority-1)
                 parent = fw if "benchmark" in fw_type else parent
             else:

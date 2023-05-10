@@ -20,3 +20,8 @@ To run the test job:
 lpad rerun_fws -i 223 
 rlaunch singleshot
 ```
+
+To pause all electrode test jobs: 
+```bash
+lpad pause_fws -s READY
+```

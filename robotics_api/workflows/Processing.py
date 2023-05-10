@@ -2,6 +2,7 @@
 # Copyright 2022, University of Kentucky
 
 import traceback
+from statistics import mean
 from datetime import datetime
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
@@ -46,15 +47,6 @@ class EndWorkflow(FiretaskBase):
 
 
 @explicit_serialize
-class RecordWorkingElectrodeArea(FiretaskBase):
-    # FireTask for recording size of working electrode
-
-    def run_task(self, fw_spec):
-        working_electrode_area = self.get("size") or DEFAULT_WORKING_ELECTRODE_AREA
-        return FWAction(update_spec={"working_electrode_surface_area": working_electrode_area})
-
-
-@explicit_serialize
 class ProcessCVBenchmarking(FiretaskBase):
     # FireTask for dispensing solvent
 
@@ -63,22 +55,30 @@ class ProcessCVBenchmarking(FiretaskBase):
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         if not cv_locations:
-            warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
-            return FWAction()
+            warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
+            return FWAction(update_spec=dict(**fw_spec))
 
         cv_location = cv_locations[-1]
+        if not os.path.isfile(cv_location):
+            warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
+            return FWAction(update_spec=dict(**fw_spec))
         data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
 
         # Plot CV
-        image_path = "cv_benchmark_{}_plot.png".format(".".join(cv_location.split(".")[:-1]))
+        image_path = "{}_benchmark_plot.png".format(".".join(cv_location.split(".")[:-1]))
         CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
                                                                        title=f"CV Plot for {mol_id}",
                                                                        xlabel=MULTI_PLOT_XLABEL,
                                                                        ylabel=MULTI_PLOT_YLABEL)
-        high_e, low_e = round(data.CVData.high_e, 2), round(data.CVData.low_e, 2)
-        voltage_sequence = "0, {}, {}, 0".format(high_e + AUTO_VOLT_BUFFER, low_e - AUTO_VOLT_BUFFER)
+        descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
+        peaks_dict = descriptor_cal.peaks(data)
+        forward_peak = mean([p[0] for p in peaks_dict.get("forward", [])])
+        reverse_peak = mean([p[0] for p in peaks_dict.get("reverse", [])])
 
-        return FWAction(update_spec={"voltage_sequence": voltage_sequence})
+        voltage_sequence = "0, {}, {}, 0V".format(forward_peak + AUTO_VOLT_BUFFER, reverse_peak - AUTO_VOLT_BUFFER)
+        print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
+
+        return FWAction(update_spec=dict(voltage_sequence=voltage_sequence, **fw_spec))
 
 
 @explicit_serialize
@@ -101,7 +101,7 @@ class CVProcessor(FiretaskBase):
 
         if not cv_locations:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
-            return FWAction()
+            return FWAction(update_spec=dict(**fw_spec))
 
         submission_info = {
             "processing_id": processing_id,

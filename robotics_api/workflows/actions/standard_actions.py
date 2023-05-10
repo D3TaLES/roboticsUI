@@ -169,7 +169,7 @@ def move_vial_to_potentiostat(at_potentiostat):
         success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
         success += snapshot_move(SNAPSHOT_HOME)
         success += cv_elevator(endpoint="up")
-        time.sleep(10)
+        time.sleep(5)
     return success
 
 

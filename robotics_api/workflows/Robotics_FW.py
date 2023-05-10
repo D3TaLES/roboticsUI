@@ -55,7 +55,7 @@ class TestRobot(Firework):
 
 class TestProcess(Firework):
     def __init__(self, priority=None, parents=None, **kwargs):
-        spec = {'_category': 'robotics', '_priority': priority} if priority else {'_category': 'processing'}
+        spec = {'_category': 'processing', '_priority': priority} if priority else {'_category': 'processing'}
         tasks = [ScriptTask.from_str('echo "Processing example..."')]
         super(TestProcess, self).__init__(tasks, parents=parents, spec=spec, name="test_process", **kwargs)
 

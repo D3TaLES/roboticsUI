@@ -35,7 +35,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 all_tasks.append(task_cluster) if task_cluster else None
                 all_tasks.append([task])
                 task_cluster = []
-            elif "collect" in task.name and "collect" not in previous_name:
+            elif ("collect" in task.name) != ("collect" in previous_name):
                 all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = [task]
             else:
@@ -55,7 +55,7 @@ class EF2Experiment(ProcessExpFlowObj):
             tasks = [self.get_firetask(task) for task in cluster]
             if "process" in fw_type:
                 fw = CVProcessing(tasks, name="{}_{}".format(self.name, fw_type), parents=parent,
-                                  metadata=self.metadata, mol_id=self.molecule_id, priority=self.priority+1)
+                                  metadata=self.metadata, mol_id=self.molecule_id, priority=self.priority-1)
                 parent = fw if "benchmark" in fw_type else parent
             else:
                 name = fw_type if "collect" in fw_type else "prep"
@@ -91,7 +91,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_data": RunCV,
             "process_cv_data": CVProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
-            "test_electrode": TestElectrode,
+            "collect_electrode_test": TestElectrode,
         }
 
 

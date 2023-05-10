@@ -82,6 +82,17 @@ class DispenseSolid(FiretaskBase):
 
 
 @explicit_serialize
+class RecordWorkingElectrodeArea(FiretaskBase):
+    # FireTask for recording size of working electrode
+
+    def run_task(self, fw_spec):
+        working_electrode_area = self.get("size", ) or DEFAULT_WORKING_ELECTRODE_AREA
+        metadata = fw_spec.get("metadata") or self.get("metadata", {})
+        metadata.update({"working_electrode_surface_area": working_electrode_area})
+        return FWAction(update_spec={"metadata": metadata})
+
+
+@explicit_serialize
 class Heat(FiretaskBase):
     # FireTask for heating
 
@@ -91,7 +102,7 @@ class Heat(FiretaskBase):
         # temperature = self.get("temperature")
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec={})
+        return FWAction(update_spec={"metadata": metadata})
 
 
 @explicit_serialize
@@ -141,8 +152,9 @@ class CleanElectrode(FiretaskBase):
         return FWAction(update_spec={})
 
 
+@explicit_serialize
 class TestElectrode(FiretaskBase):
-    # FireTask for dispensing solvent
+    # FireTask for testing electrode cleanliness
 
     def run_task(self, fw_spec):
         start_uuid = self.get("start_uuid")  # should be solvent UUID
@@ -165,7 +177,7 @@ class TestElectrode(FiretaskBase):
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # Move vial to potentiostat elevator
-        success += move_vial_to_potentiostat(fw_spec)
+        success += move_vial_to_potentiostat(at_potentiostat=False)
 
         # Prep output file info
         file_name = time.strftime("ElectrodeTest_%H_%M_%S.csv")
@@ -202,8 +214,8 @@ class RunCV(FiretaskBase):
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)
-        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
-        at_potentiostat = self.get("at_potentiostat") or fw_spec.get("at_potentiostat", False)
+        cap_on = fw_spec.get("cap_on", False) or self.get("cap_on")
+        at_potentiostat = fw_spec.get("at_potentiostat", False) or self.get("at_potentiostat")
         name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
@@ -214,12 +226,13 @@ class RunCV(FiretaskBase):
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # Move vial to potentiostat elevator
-        metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
-        success += move_vial_to_potentiostat(at_potentiostat=at_potentiostat)
+        # metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
+        at_potentiostat = move_vial_to_potentiostat(at_potentiostat=at_potentiostat)
+        print("AT POTENTIOSTAT: ", at_potentiostat)
 
         # Prep output file info
         file_name = time.strftime("{}_%H_%M_%S.csv".format(cv_type or "exp{:02d}".format(cv_idx)))
-        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d") / name)
+        data_dir = os.path.join(Path(DATA_DIR) / wflow_name / time.strftime("%Y%m%d") / name)
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
 

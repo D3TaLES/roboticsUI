@@ -476,19 +476,20 @@ if __name__ == "__main__":
                          {"voltage": 0, "scan_rate": 0.100}]
     ex_steps = [voltage_step(**p) for p in collection_params]
     experiment = CvExperiment(ex_steps)
+    print(experiment.steps)
     # experiment.parameterize()
-    experiment.run_experiment()
-    parsed_data = experiment.parsed_data
-
-    potentials = [s["Ewe"] for s in parsed_data]
-    current = [s["I"] for s in parsed_data]
-    import matplotlib.pyplot as plt
-
-    plt.scatter(potentials, current)
-    plt.ylabel("Current")
-    plt.xlabel("Voltage")
-    plt.savefig("examples/cv_example.png")
-    try:
-        experiment.to_txt("examples/cv_example.csv")
-    except:
-        experiment.to_txt("examples/cv_example_backup.csv")
+    # experiment.run_experiment()
+    # parsed_data = experiment.parsed_data
+    #
+    # potentials = [s["Ewe"] for s in parsed_data]
+    # current = [s["I"] for s in parsed_data]
+    # import matplotlib.pyplot as plt
+    #
+    # plt.scatter(potentials, current)
+    # plt.ylabel("Current")
+    # plt.xlabel("Voltage")
+    # plt.savefig("examples/cv_example.png")
+    # try:
+    #     experiment.to_txt("examples/cv_example.csv")
+    # except:
+    #     experiment.to_txt("examples/cv_example_backup.csv")

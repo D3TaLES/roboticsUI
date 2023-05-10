@@ -5,7 +5,7 @@ from pathlib import Path
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = True
+RUN_CV = False
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_NUM_ELECTRONS = 1
@@ -16,6 +16,7 @@ DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS **
 
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
+DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
 SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
 SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "Home.json")
 SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "EndHome.json")
@@ -40,7 +41,7 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
-AUTO_VOLT_BUFFER = 0.1  # Volts
+AUTO_VOLT_BUFFER = 0.3  # Volts
 
 # ---------  PLOTTING VARIABLES -------------
 MULTI_PLOT_XLABEL = "Potential (V)"

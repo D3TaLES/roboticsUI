@@ -15,7 +15,7 @@ class EF2Experiment(ProcessExpFlowObj):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents
         self.priority = priority
-        self.name = "{}_{}".format(self.molecule_id, exp_params.get("name") or getattr(self.expflow_obj, 'name') or 'exp')
+        self.name = "{}_{}".format(exp_params.get("name") or getattr(self.expflow_obj, 'name', 'exp'), self.molecule_id)
         self.wflow_name = exp_params.get("wflow_name") or getattr(self.expflow_obj, 'wflow_name') or 'robotic_wflow'
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.solv_id = get_id(self.solvent) or "no_solvent"

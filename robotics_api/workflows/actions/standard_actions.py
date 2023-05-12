@@ -190,8 +190,8 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    cv_elevator(endpoint="up")
-    # cv_elevator(endpoint="down")
+    # cv_elevator(endpoint="up")
+    cv_elevator(endpoint="down")
 
     # stir_plate(stir_time=10)
 

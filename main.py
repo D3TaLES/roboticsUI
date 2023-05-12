@@ -1,5 +1,7 @@
 import os
 os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
+HOME_DIR = os.path.dirname(os.path.realpath(__file__))
+LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 ROBOT_FWORKER = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')
 import subprocess
@@ -203,6 +205,7 @@ class RunBase(tk.Toplevel):
         self.category = None
         self.run_txt = tk.StringVar()
         self.run_all_txt = tk.StringVar()
+        self.run_cont_txt = tk.StringVar()
 
     @property
     def lpad(self):
@@ -220,21 +223,33 @@ class RunBase(tk.Toplevel):
         else:
             return "No ready firework found."
 
-    def run_robot(self):
-        self.run_txt.set("Launching Job...")
+    def run_job(self):
+        self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
+        os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
+        os.chdir(HOME_DIR)
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run a Job")
         self.destroy()
 
-    def run_robot_all(self):
-        self.run_all_txt.set("Launching all Ready Jobs...")
+    def run_job_all(self):
+        self.run_all_txt.set("Launching all Ready {} Jobs...".format(self.category.capitalize()))
+        os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} rapidfire'.format(self.fireworker), )
+        os.chdir(HOME_DIR)
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_all_txt.set("Run All Ready Jobs")
         self.destroy()
+
+    def run_job_continuous(self):
+        self.parent.destroy()
+        os.chdir(LAUNCH_DIR)
+        subprocess.call('cls', shell=True)
+        print(os.getcwd())
+        print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category.upper()))
+        subprocess.call('rlaunch -w {} rapidfire --nlaunches infinite --sleep 10'.format(self.fireworker), )
 
     def view_fw_workflows(self):
         lpad_file = os.path.join(os.getcwd(), "robotics_api", "management", "config", "launchpad_robot.yaml")
@@ -253,7 +268,7 @@ class RunRobot(RunBase):
         self.design_frame()
 
     def design_frame(self):
-        frame = tk.Canvas(self, width=400, height=300)
+        frame = tk.Canvas(self, width=400, height=400)
         frame.grid(columnspan=1, rowspan=5)
 
         logo = ImageTk.PhotoImage(d3logo)
@@ -264,13 +279,13 @@ class RunRobot(RunBase):
         tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0, row=1)
 
         # buttons
-        self.run_txt = tk.StringVar()
         self.run_txt.set("Run a Job")
-        self.run_all_txt = tk.StringVar()
         self.run_all_txt.set("Run All Ready Jobs")
+        self.run_cont_txt.set("Run Jobs Continuously")
         tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy, fg='white', height=1, width=15).grid(column=0, row=2)
-        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot, fg='white', height=2, width=30).grid(column=0, row=3)
-        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot_all, fg='white', height=2, width=30).grid(column=0, row=4)
+        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job, fg='white', height=2, width=30).grid(column=0, row=3)
+        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_all, fg='white', height=2, width=30).grid(column=0, row=4)
+        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=3)
 
@@ -286,8 +301,8 @@ class RunProcess(RunBase):
         self.design_frame()
 
     def design_frame(self):
-        frame = tk.Canvas(self, width=400, height=300)
-        frame.grid(columnspan=1, rowspan=5)
+        frame = tk.Canvas(self, width=400, height=400)
+        frame.grid(columnspan=1, rowspan=6)
 
         logo = ImageTk.PhotoImage(d3logo)
         self.iconphoto(False, logo)
@@ -299,9 +314,11 @@ class RunProcess(RunBase):
         # buttons
         self.run_txt.set("Run a Job")
         self.run_all_txt.set("Run All Ready Jobs")
+        self.run_cont_txt.set("Run Jobs Continuously")
         tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy, fg='white', height=1, width=15).grid(column=0, row=2)
-        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot, fg='white', height=2, width=30).grid(column=0, row=3)
-        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_robot_all, fg='white', height=2, width=30).grid(column=0, row=4)
+        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job, fg='white', height=2, width=30).grid(column=0, row=3)
+        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_all, fg='white', height=2, width=30).grid(column=0, row=4)
+        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=3)
 
@@ -332,9 +349,9 @@ class RoboticsGUI(tk.Tk):
         add_job = tk.Button(self, text="Add Job", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
                             height=2, width=15)
         add_job.grid(column=0, row=3, pady=10)
-        run_robot = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
+        run_job = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
                               fg='white', height=2, width=15)
-        run_robot.grid(column=1, row=2)
+        run_job.grid(column=1, row=2)
         run_process = tk.Button(self, text="Run Processing", command=self.open_run_process, font=("Raleway", 14), bg=d3orange,
                               fg='white', height=2, width=15)
         run_process.grid(column=1, row=3)

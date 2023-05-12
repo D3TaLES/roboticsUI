@@ -25,3 +25,8 @@ To pause all electrode test jobs:
 ```bash
 lpad pause_fws -s READY
 ```
+
+To continuously run processing jobs: 
+```bash
+rlaunch -w 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml' rapidfire --nlaunches infinite --sleep 10
+```

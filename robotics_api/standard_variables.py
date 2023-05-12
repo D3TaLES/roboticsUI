@@ -5,7 +5,7 @@ from pathlib import Path
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = False
+RUN_CV = True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_NUM_ELECTRONS = 1
@@ -31,8 +31,8 @@ N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
-CUT_BEGINNING = 0.0  # percentage of front of CV to cut
-CUT_END = 0.0  # percentage of end of CV to cut
+CUT_BEGINNING = 0.005  # percentage as decimal of front of CV to cut
+CUT_END = 0.0  # percentage as decimal of end of CV to cut
 MIN_CV_STEPS = 6  # minimum number of CV steps
 
 RECORD_EVERY_DT = 0.01  # seconds

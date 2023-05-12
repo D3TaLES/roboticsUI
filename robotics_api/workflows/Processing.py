@@ -84,7 +84,6 @@ class ProcessCVBenchmarking(FiretaskBase):
 
         updated_specs.update({"voltage_sequence": voltage_sequence, "cv_locations": [], "cv_idx": 0,
                               "benchmark_location": new_location})
-        print(updated_specs)
         return FWAction(update_spec=dict(**updated_specs))
 
 
@@ -102,6 +101,7 @@ class CVProcessor(FiretaskBase):
                        }
         metadata.update(meta_update)
 
+        test_electrode_data = fw_spec.get("test_electrode_data") or self.get("test_electrode_data", [])
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
@@ -124,27 +124,36 @@ class CVProcessor(FiretaskBase):
             "all_files_in_zip": [f.split('/')[-1] for f in cv_locations],
         }
 
-        processed_data = []
-        for cv_location in cv_locations:
+        def process_local_data(cv_loc, insert=True):
             # Process data file
-            print("Data File: ", cv_location)
-            data = ProcessCV(cv_location, _id=mol_id, submission_info=submission_info, metadata=metadata,
+            print("Data File: ", cv_loc)
+            if not os.path.isfile(cv_loc):
+                warnings.warn("WARNING. File {} not found. Processing did not occur.".format(cv_loc))
+                return None
+            data = ProcessCV(cv_loc, _id=mol_id, submission_info=submission_info, metadata=metadata,
                              parsing_class=ParseChiCV).data_dict
-            processed_data.append(data)
-
             # Plot CV
-            image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
+            image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
             CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
                                                                            title=f"CV Plot for {name}",
                                                                            xlabel=MULTI_PLOT_XLABEL,
                                                                            ylabel=MULTI_PLOT_YLABEL)
-
             # TODO  Launch send to storage FireTask
 
             # Insert data into database
             _id = data["_id"]
-            if mol_id:
+            if mol_id and insert:
                 D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
+            return data
+
+        for test_loc in test_electrode_data:
+            process_local_data(test_loc, insert=False)
+
+        processed_data = []
+        for cv_location in cv_locations:
+            data = process_local_data(cv_location)
+            if data:
+                processed_data.append(data)
 
         # Plot all CVs
         print(processed_data)
@@ -161,7 +170,8 @@ class CVProcessor(FiretaskBase):
         with open(summary_path, 'w') as fn:
             fn.write(print_cv_analysis(processed_data, num_electrons=DEFAULT_NUM_ELECTRONS))
 
-        return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data})
+        return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data,
+                                     'processing_ids': [d.get("_id") for d in processed_data]})
 
 
 @explicit_serialize

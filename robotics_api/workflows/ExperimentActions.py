@@ -36,6 +36,7 @@ class DispenseLiquid(FiretaskBase):
     # FireTask for dispensing liquid
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         solv_uuid = self.get("start_uuid")
         vial_uuid = self.get("end_uuid")
         volume = self.get("volume")
@@ -59,7 +60,8 @@ class DispenseLiquid(FiretaskBase):
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
 
-        return FWAction(update_spec={"success": success, "cap_on": cap_on})
+        updated_specs.update({"success": success, "cap_on": cap_on})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -68,6 +70,7 @@ class DispenseSolid(FiretaskBase):
 
     def run_task(self, fw_spec):
         # TODO Change once we have solid dispensing
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # mass = self.get("mass")
@@ -78,7 +81,8 @@ class DispenseSolid(FiretaskBase):
         success += vial_home(row, column, action_type='get')  # Get vial
         cap_on = False  # TODO Change once we have capping/uncapping
 
-        return FWAction(update_spec={"success": success, "cap_on": cap_on})
+        updated_specs.update({"success": success, "cap_on": cap_on})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -86,11 +90,13 @@ class RecordWorkingElectrodeArea(FiretaskBase):
     # FireTask for recording size of working electrode
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         # working_electrode_area = self.get("size", ) or DEFAULT_WORKING_ELECTRODE_AREA
         working_electrode_area = DEFAULT_WORKING_ELECTRODE_AREA
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         metadata.update({"working_electrode_surface_area": working_electrode_area})
-        return FWAction(update_spec={"metadata": metadata})
+        updated_specs.update({"metadata": metadata})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -98,12 +104,14 @@ class Heat(FiretaskBase):
     # FireTask for heating
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # temperature = self.get("temperature")
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec={"metadata": metadata})
+        updated_specs.update({"metadata": metadata})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -111,6 +119,7 @@ class HeatStir(FiretaskBase):
     # FireTask for heating and siring
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         vial_uuid = self.get("start_uuid")
         temperature = self.get("temperature")
         stir_time = self.get("time")
@@ -128,7 +137,8 @@ class HeatStir(FiretaskBase):
         success += snapshot_move(SNAPSHOT_HOME)
 
         metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec={"success": success, "cap_on": cap_on, "metadata": metadata})
+        updated_specs.update({"success": success, "cap_on": cap_on, "metadata": metadata})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -136,10 +146,11 @@ class RinseElectrode(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # time = self.get("time")
-        return FWAction(update_spec={})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -147,10 +158,11 @@ class CleanElectrode(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # time = self.get("time")
-        return FWAction(update_spec={})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -158,12 +170,16 @@ class TestElectrode(FiretaskBase):
     # FireTask for testing electrode cleanliness
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         start_uuid = self.get("start_uuid")  # should be solvent UUID
         orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        test_electrode_data = fw_spec.get("test_electrode_data") or self.get("test_electrode_data", [])
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
-        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        name = fw_spec.get("name") or self.get("name",
+                                               "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(
+            generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         collect_params = generate_col_params(voltage_sequence, scan_rate)
 
         # Get solvent vial
@@ -182,9 +198,11 @@ class TestElectrode(FiretaskBase):
 
         # Prep output file info
         file_name = time.strftime("ElectrodeTest_%H_%M_%S.csv")
-        data_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d") / name)
+        data_dir = os.path.join(
+            Path("C:/Users") / "Lab" / "D3talesRobotics" / "data" / wflow_name / time.strftime("%Y%m%d") / name)
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, file_name)
+        test_electrode_data.append(data_path)
 
         # Run CV experiment
         print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
@@ -199,8 +217,9 @@ class TestElectrode(FiretaskBase):
         success += vial_home(row, column, action_type='place')
         success += snapshot_move(SNAPSHOT_HOME)
 
-        return FWAction(update_spec={"electrode_test_locations": data_path, "success": success, "cap_on": cap_on,
-                                     "name": name, "wflow_name": wflow_name})
+        updated_specs.update({"test_electrode_data": test_electrode_data, "success": success, "cap_on": cap_on,
+                              "name": name, "wflow_name": wflow_name})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -208,6 +227,7 @@ class RunCV(FiretaskBase):
     # FireTask for running CV
 
     def run_task(self, fw_spec):
+        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         cv_type = fw_spec.get("cv_type") or self.get("cv_type", None)
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
@@ -217,8 +237,10 @@ class RunCV(FiretaskBase):
         collect_params = generate_col_params(voltage_sequence, scan_rate)
         cap_on = fw_spec.get("cap_on", False) or self.get("cap_on")
         at_potentiostat = fw_spec.get("at_potentiostat", False) or self.get("at_potentiostat")
-        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
-        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        name = fw_spec.get("name") or self.get("name",
+                                               "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(
+            generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
         success = True
 
         # Uncap vial if capped
@@ -227,7 +249,6 @@ class RunCV(FiretaskBase):
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # Move vial to potentiostat elevator
-        # metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA})
         at_potentiostat = move_vial_to_potentiostat(at_potentiostat=at_potentiostat)
         print("AT POTENTIOSTAT: ", at_potentiostat)
 
@@ -246,9 +267,10 @@ class RunCV(FiretaskBase):
             expt.to_txt(data_path)
         cv_locations.append(data_path)
 
-        return FWAction(update_spec={"cv_locations": cv_locations, "success": success, "cap_on": cap_on,
-                                     "at_potentiostat": at_potentiostat, "name": name, "wflow_name": wflow_name,
-                                     "cv_idx": cv_idx + 1, "metadata": metadata})
+        updated_specs.update({"cv_locations": cv_locations, "success": success, "cap_on": cap_on,
+                              "at_potentiostat": at_potentiostat, "name": name, "wflow_name": wflow_name,
+                              "cv_idx": cv_idx + 1, "metadata": metadata})
+        return FWAction(update_spec=updated_specs)
 
 
 @explicit_serialize
@@ -260,23 +282,14 @@ class TestMovement(FiretaskBase):
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
         # Parse arguments
-        # connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
-        #
-        # # Create connection to the device and get the router
-        # with DeviceConnection.createTcpConnection(connector) as router:
-        #     # Create required services
-        #     base = BaseClient(router)
-            # base_cyclic = BaseCyclicClient(router)
-            #
-            # # Example core
-            # success = True
-            #
-            # success &= example_move_to_home_position(base)
-            # success &= example_cartesian_action_movement(base, base_cyclic)
-            # success &= example_angular_action_movement(base)
-            #
-            # success &= example_move_to_home_position(base)
-            # success &= example_cartesian_trajectory_movement(base, base_cyclic)
-            # success &= example_angular_trajectory_movement(base)
+        connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
 
-        # return FWAction(update_spec={"success": success})
+        # Create connection to the device and get the router
+        with DeviceConnection.createTcpConnection(connector) as router:
+            # Create required services
+            base = BaseClient(router)
+            base_cyclic = BaseCyclicClient(router)
+            # Example core
+            success = True
+
+        return FWAction(update_spec={"success": success})

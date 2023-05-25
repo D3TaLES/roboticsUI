@@ -62,7 +62,7 @@ class ProcessCVBenchmarking(FiretaskBase):
 
         cv_location = cv_locations[-1]
         if not os.path.isfile(cv_location):
-            warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
+            warnings.warn("WARNING! CV file {} not found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.".format(cv_location))
             return FWAction(update_spec=dict(**updated_specs))
         data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
         new_location = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_cv.csv")
@@ -76,10 +76,13 @@ class ProcessCVBenchmarking(FiretaskBase):
                                                                        ylabel=MULTI_PLOT_YLABEL)
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
         peaks_dict = descriptor_cal.peaks(data)
-        forward_peak = mean([p[0] for p in peaks_dict.get("forward", [])])
-        reverse_peak = mean([p[0] for p in peaks_dict.get("reverse", [])])
+        print(peaks_dict)
+        forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
+        reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
 
-        voltage_sequence = "0, {}, {}, 0V".format(forward_peak + AUTO_VOLT_BUFFER, reverse_peak - AUTO_VOLT_BUFFER)
+        voltage_sequence = "{}, {}, {}V".format(reverse_peak - AUTO_VOLT_BUFFER, forward_peak + AUTO_VOLT_BUFFER,
+                                                reverse_peak - AUTO_VOLT_BUFFER)
+
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
 
         updated_specs.update({"voltage_sequence": voltage_sequence, "cv_locations": [], "cv_idx": 0,

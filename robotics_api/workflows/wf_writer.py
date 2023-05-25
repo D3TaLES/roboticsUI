@@ -20,13 +20,12 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params={}, **kwargs):
         Fireworks Workflow object
     """
     name = expflow_wf.get("name") + "_" + name_tag.strip("_")
-    exp_params.update({"name": name})
     f10 = InitializeExperiment(name=expflow_wf.get("name") + ("_" + name_tag).strip("_"))
     fws = [f10]
     robot_experiments = []
 
     for i, expflow_exp in enumerate(expflow_wf.get("experiments")):
-        exp_params.update({"name": "exp{:02d}".format(i+1), "wflow_name": expflow_wf.get("name")})
+        exp_params.update({"name": "exp{:02d}".format(i+1), "wflow_name": name})
         experiment = EF2Experiment(expflow_exp, "Robotics", fw_parents=f10, data_type=kwargs.get('data_type', 'cv'), exp_params=exp_params, priority=2)
         fws.extend(experiment.fireworks)
         robot_experiments.append(experiment.end_exp)

@@ -27,6 +27,7 @@ ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\ECl
 POTENTIOSTAT_ADDRESS = "USB0"
 POTENTIOSTAT_CHANNEL = 1
 
+RCOMP_LEVEL = 85
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
@@ -43,10 +44,12 @@ TIME_AFTER_CV = 5  # seconds
 
 AUTO_VOLT_BUFFER = 0.3  # Volts
 
-# ---------  PLOTTING VARIABLES -------------
+# ---------  PROCESSING VARIABLES -------------
 MULTI_PLOT_XLABEL = "Potential (V)"
 MULTI_PLOT_YLABEL = "Current (A)"
 MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
+
+PEAK_WIDTH = 0.5
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_DEFAULT_ADDRESS = "COM4"

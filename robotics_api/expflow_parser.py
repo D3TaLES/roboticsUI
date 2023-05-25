@@ -10,11 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class EF2Experiment(ProcessExpFlowObj):
-    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params=None,
+    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params=0,
                  **kwargs):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents
-        self.priority = priority
+        self.priority = priority if priority > 2 else 2
         self.name = "{}_{}".format(exp_params.get("name") or getattr(self.expflow_obj, 'name', 'exp'), self.molecule_id)
         self.wflow_name = exp_params.get("wflow_name") or getattr(self.expflow_obj, 'wflow_name') or 'robotic_wflow'
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
@@ -50,17 +50,18 @@ class EF2Experiment(ProcessExpFlowObj):
         # Return active Firework
         fireworks = []
         parent = self.fw_parents
-        for cluster in self.task_clusters:
+        for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
             tasks = [self.get_firetask(task) for task in cluster]
+            priority = self.priority-2 if i == 0 else self.priority-1 if "process" in fw_type else self.priority
             if "process" in fw_type:
                 fw = CVProcessing(tasks, name="{}_{}".format(self.name, fw_type), parents=parent, exp_params=self.exp_params,
-                                  metadata=self.metadata, mol_id=self.molecule_id, priority=self.priority-1)
+                                  metadata=self.metadata, mol_id=self.molecule_id, priority=priority)
                 parent = fw if "benchmark" in fw_type else parent
             else:
                 name = fw_type if "collect" in fw_type else "prep"
                 fw = ExpFirework(tasks, name="{}_{}".format(self.name, name), wflow_name=self.wflow_name,
-                                 priority=self.priority, parents=parent, exp_params=self.exp_params)
+                                 priority=priority, parents=parent, exp_params=self.exp_params)
                 parent = fw
             fireworks.append(fw)
 

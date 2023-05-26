@@ -16,9 +16,9 @@ key_xs = {
 }
 key_zs = {
     "01": 0,
-    "02": 0.074,
-    "03": 0.120,
-    "04": 0.166,
+    "02": 0.054,
+    "03": 0.100,
+    "04": 0.146,
 }
 
 snapshot_home = os.path.join(Path(
@@ -39,10 +39,10 @@ for column, row in itertools.product(key_ys, key_xs):
     with open(os.path.join(snapshot_home, out_name), "w+") as fn:
         json.dump(master_data, fn, indent=2)
 
-    # Generate VialHomeAbv files
-    master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = key_zs.get(row) + 0.1
-    out_name_abv = "VialHome_{}_{}_Abv.json".format(column, row)
-    with open(os.path.join(snapshot_home, out_name_abv), "w+") as fn:
-        json.dump(master_data, fn, indent=2)
+    # # Generate VialHomeAbv files
+    # master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = key_zs.get(row) + 0.1
+    # out_name_abv = "VialHome_{}_{}_Abv.json".format(column, row)
+    # with open(os.path.join(snapshot_home, out_name_abv), "w+") as fn:
+    #     json.dump(master_data, fn, indent=2)
 
 

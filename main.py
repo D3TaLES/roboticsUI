@@ -190,6 +190,7 @@ class AddJob(tk.Toplevel):
 
         AlertDialog(self, alert_msg="Your workflow was successfully submitted!\nWorkflow ID: " + str(fw_id))
         self.add_txt.set("Add Selected Workflow")
+        self.destroy()
 
     # @staticmethod
     def build_wf(self):

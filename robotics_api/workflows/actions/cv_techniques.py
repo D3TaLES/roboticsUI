@@ -85,7 +85,6 @@ class PotentiostatExperiment:
             num_new_steps = min_steps - len(norm_steps)
             last_step = copy.deepcopy(norm_steps[-1])
             new_steps = [last_step for _ in range(num_new_steps)]
-            [setattr(n, last_step.__dir__()[0], 0) for n in new_steps]
             norm_steps.extend(new_steps)
         if VERBOSITY:
             print("-------STEPS-------")

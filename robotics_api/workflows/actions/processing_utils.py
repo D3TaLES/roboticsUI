@@ -63,6 +63,13 @@ def all_cvs_data(multi_data, num_electrons=1):
     return single_cvs
 
 
+def get_e_half(multi_data, scan_rate=0.1):
+    for d in multi_data:
+        d_sr = d.get("data", {}).get("conditions", {}).get("scan_rate", {}).get("value", None)
+        if scan_rate == d_sr:
+            return d.get("data", {}).get("e_half")
+
+
 def print_cv_analysis(multi_data, num_electrons=DEFAULT_NUM_ELECTRONS):
     out_txt = ""
 
@@ -75,11 +82,12 @@ def print_cv_analysis(multi_data, num_electrons=DEFAULT_NUM_ELECTRONS):
     out_txt += "Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
     out_txt += "Charge Transfer Rate: \t\t\t{}\n".format(transfer_rate)
 
-    diffusion_coef, transfer_rate = cv_meta_calcs(multi_data, num_electrons=1, curve_type="cathodic")
-    out_txt += "\n------------- Cathodic -------------\n"
-    out_txt += "Diffusion Coefficient (average): \t{}\n".format(diffusion_coef[0])
-    out_txt += "Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
-    out_txt += "Charge Transfer Rate: \t\t\t\t{}\n".format(transfer_rate)
+    out_txt += "\n------------- Potential -------------\n"
+    out_txt += "E1/2 at 0.1V/s: \t{}\n".format(get_e_half(multi_data, scan_rate=0.1))
+
+    out_txt += "\n------------- Processing IDs -------------\n"
+    for d in multi_data:
+        out_txt += d.get("_id") + '\n'
 
     return str(out_txt)
 

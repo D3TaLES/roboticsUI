@@ -235,6 +235,7 @@ class RunBase(tk.Toplevel):
         self.destroy()
 
     def run_job_all(self):
+        self.parent.destroy()
         self.run_all_txt.set("Launching all Ready {} Jobs...".format(self.category.capitalize()))
         os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} rapidfire'.format(self.fireworker), )
@@ -242,7 +243,6 @@ class RunBase(tk.Toplevel):
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_all_txt.set("Run All Ready Jobs")
-        self.destroy()
 
     def run_job_continuous(self):
         self.parent.destroy()

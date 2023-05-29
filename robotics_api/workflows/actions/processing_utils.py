@@ -23,7 +23,7 @@ def cv_meta_calcs(multi_data, electron_num=1, curve_type="anodic"):
         "A": "conditions.working_electrode_surface_area",
 
         "D": "diffusion",
-        # "scan_data": "scan_data",
+        "scan_data": "middle_sweep",
     }
 
     try:
@@ -45,7 +45,7 @@ def all_cvs_data(multi_data):
         "A": "data.conditions.working_electrode_surface_area",
         "v": "data.conditions.scan_rate",
         "C": "data.conditions.redox_mol_concentration",
-        "scan_data": "data.scan_data"
+        "scan_data": "data.middle_sweep"
     }
 
     single_cvs = []
@@ -110,9 +110,9 @@ def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robo
 
         # Plot CV
         image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
-        CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path, title=f"CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL)
+        CVPlotter(connector={"scan_data": "data.middle_sweep"}).live_plot(data, fig_path=image_path, title=f"CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
-    # CVPlotter(connector={"scan_data": "data.scan_data", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True, title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
+    # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True, title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
     # p = print_cv_analysis(processed_data)
     p = cv_meta_calcs(processed_data, curve_type="cathodic")
     print(p)

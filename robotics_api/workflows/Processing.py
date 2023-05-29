@@ -171,7 +171,7 @@ class CVProcessor(FiretaskBase):
             fn.write(json.dumps(processed_data))
         summary_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\summary.txt"
         with open(summary_path, 'w') as fn:
-            fn.write(print_cv_analysis(processed_data, num_electrons=DEFAULT_NUM_ELECTRONS))
+            fn.write(print_cv_analysis(processed_data))
 
         return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data,
                                      'processing_ids': [d.get("_id") for d in processed_data]})

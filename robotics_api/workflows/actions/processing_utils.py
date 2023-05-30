@@ -30,13 +30,13 @@ def cv_meta_calcs(multi_data, electron_num=1, curve_type="anodic", verbose=VERBO
     try:
         # Calculate diffusion constant
         if verbose:
-            print("Calculating {} diffusion coefficient for {} oxidation...".format(curve_type, electron_num))
+            print("Calculating {} diffusion coefficient for oxidation {}...".format(curve_type, electron_num))
         diffusion_cal = CVDiffusionCalculator(connector=connector)
         diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True)
 
         # Calculate charge transfer rates
         if verbose:
-            print("Calculating {} charge transfer rate for {} oxidation...".format(curve_type, electron_num))
+            print("Calculating {} charge transfer rate for oxidation {}...".format(curve_type, electron_num))
         [d.update({"diffusion": float(diffusion_coef[1])}) for d in processed_data]
         transfer_cal = CVChargeTransferCalculator(connector=connector)
         transfer_rate = transfer_cal.calculate(processed_data, sci_notation=True)

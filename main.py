@@ -96,7 +96,6 @@ class SetReagents(tk.Toplevel):
                             "the column then the row (e.g. A, 03).", font=("Raleway", 16, 'bold'), pady=10, wraplength=600, fg=d3navy).grid(column=0, row=1, columnspan=2)
 
         # Location Dropdowns
-        results_dict = {}
         for i, reagent in enumerate(self.molecules):
             tk.Label(self, text="{}\n{}".format(reagent[0], reagent[1]), justify="center", font=("Raleway", 16,), fg=d3navy).grid(column=0, row=i+2)
             dropdown_txt = tk.StringVar()
@@ -197,6 +196,93 @@ class AddJob(tk.Toplevel):
         webbrowser.open_new(r"https://d3tales.as.uky.edu/expflow/robotics_wfs/")
 
 
+class ManageJobs(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.title('Manage Jobs')
+        self.fw_action = tk.StringVar()
+        self.fw_specs = tk.StringVar()
+        self.fw_output = tk.Text(self)
+        self.fw_options = ["get_fws", "rerun_fws", "pause_fws", "defuse_fws"]
+        self.wflow_action = tk.StringVar()
+        self.wflow_specs = tk.StringVar()
+        self.wflow_output = tk.Text(self)
+        self.wflow_options = ["get_wflows", "rerun_wflows", "defuse_wflows", "delete_wflows"]
+        self.design_frame()
+
+    def design_frame(self):
+        frame = tk.Canvas(self, width=400, height=600)
+        frame.grid(columnspan=2, rowspan=10)
+
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
+
+        # Text
+        tk.Label(self, text="Manage Fireworks", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=0, row=0, columnspan=2, pady=10)
+
+        # Dropdown
+        tk.Label(self, text="Fireworks Action: ", justify="center", font=("Raleway", 16,), fg=d3navy).grid(column=0, row=1)
+        self.fw_action.set("get_fws")
+        dropdown = tk.OptionMenu(self, self.fw_action, *self.fw_options)
+        dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=30)
+        dropdown.grid(column=1, row=1)
+
+        # Specification tags
+        self.fw_specs.set('-s FIZZLED')
+        tk.Label(self, text="Specifications: ", font=("Raleway", 14), fg=d3navy).grid(column=0, row=2)
+        tk.Entry(self, textvariable=self.fw_specs, font=("Raleway", 16, 'bold'), width=30, fg=d3navy).grid(column=1, row=2)
+
+        # Button
+        tk.Button(self, text="Run Fireworks Action", command=self.do_fw_action, font=("Raleway", 10), bg=d3blue, fg='white', height=1, width=15).grid(column=1, row=3)
+
+        # Output
+        self.fw_output = tk.Text(self, wrap=tk.WORD, font=("Consolas", 10), width=70, height=5)
+        self.fw_output.grid(column=0, row=4, columnspan=2)
+
+        tk.Canvas(self, width=400, height=50).grid(columnspan=2)
+
+
+        # Text
+        tk.Label(self, text="Manage Workflows", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=0, row=5, columnspan=2, pady=10)
+
+        # Dropdown
+        tk.Label(self, text="Workflows Action: ", justify="center", font=("Raleway", 16,), fg=d3navy).grid(column=0, row=6)
+        self.wflow_action.set("get_wflows")
+        dropdown = tk.OptionMenu(self, self.wflow_action, *self.wflow_options)
+        dropdown.config(font=("Raleway", 14), bg=d3orange, fg='white', height=2, width=30)
+        dropdown.grid(column=1, row=6)
+
+        # Specification tags
+        self.wflow_specs.set('-s FIZZLED')
+        tk.Label(self, text="Specifications: ", font=("Raleway", 14), fg=d3navy).grid(column=0, row=7)
+        tk.Entry(self, textvariable=self.wflow_specs, font=("Raleway", 16, 'bold'), width=30, fg=d3navy).grid(column=1, row=7)
+
+        # Button
+        tk.Button(self, text="Run Workflow Action", command=self.do_wflow_action, font=("Raleway", 10), bg=d3orange, fg='white', height=1, width=15).grid(column=1, row=8)
+
+        # Output
+        self.wflow_output = tk.Text(self, wrap=tk.WORD, font=("Consolas", 10), width=70, height=5)
+        self.wflow_output.grid(column=0, row=9, columnspan=2)
+
+    @property
+    def lpad(self):
+        lpad_file = os.path.join(os.getcwd(), 'robotics_api', 'management', 'config', 'launchpad_robot.yaml')
+        return LaunchPad().from_file(lpad_file)
+
+    def do_fw_action(self):
+        cmd = "lpad {} {}".format(self.fw_action.get(), self.fw_specs.get())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        output, err = p.communicate()
+        self.fw_output.insert(tk.INSERT, output)
+
+    def do_wflow_action(self):
+        cmd = "lpad {} {}".format(self.wflow_action.get(), self.wflow_specs.get())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        output, err = p.communicate()
+        self.wflow_output.insert(tk.INSERT, output.decode("utf-8") )
+
+
 class RunBase(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -215,7 +301,6 @@ class RunBase(tk.Toplevel):
 
     @property
     def next_fw(self):
-
         m_fw = self.lpad.fireworks.find_one({"state": "READY", "spec._category": self.category}, {"fw_id": 1, "spec": 1},
                                             sort=[("spec._priority", -1)])
         fw = self.lpad.get_fw_by_id(m_fw["fw_id"]) if m_fw else None
@@ -329,7 +414,7 @@ class RoboticsGUI(tk.Tk):
 
     def design_frame(self):
         info_frame = tk.Canvas(self, width=500, height=300)
-        info_frame.grid(columnspan=2, rowspan=4)
+        info_frame.grid(columnspan=2, rowspan=5)
 
         # logo
         logo = ImageTk.PhotoImage(d3logo)
@@ -340,22 +425,28 @@ class RoboticsGUI(tk.Tk):
 
         # buttons
         view_workflows = tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 14),
-                                   bg=d3navy,
-                                   fg='white', height=2, width=15)
-        view_workflows.grid(column=0, row=2)
+                                   bg=d3navy, fg='white', height=1, width=15)
+        view_workflows.grid(column=0, row=2, pady=5)
+        manage_jobs = tk.Button(self, text="Manage Jobs", command=self.open_manage, font=("Raleway", 14),
+                                bg=d3navy, fg='white', height=1, width=15)
+        manage_jobs.grid(column=0, row=3, pady=5)
         add_job = tk.Button(self, text="Add Job", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
-                            height=2, width=15)
-        add_job.grid(column=0, row=3, pady=10)
+                            height=1, width=15)
+        add_job.grid(column=0, row=4, pady=5)
         run_job = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
-                              fg='white', height=2, width=15)
-        run_job.grid(column=1, row=2)
+                              fg='white', height=1, width=15)
+        run_job.grid(column=1, row=2, pady=5)
         run_process = tk.Button(self, text="Run Processing", command=self.open_run_process, font=("Raleway", 14), bg=d3orange,
-                              fg='white', height=2, width=15)
-        run_process.grid(column=1, row=3)
+                              fg='white', height=1, width=15)
+        run_process.grid(column=1, row=3, pady=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=2)
 
         # self.mainloop()
+
+    def open_manage(self):
+        window = ManageJobs(self)
+        window.grab_set()
 
     def open_add(self):
         window = AddJob(self)

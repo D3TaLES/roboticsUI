@@ -275,12 +275,14 @@ class ManageJobs(tk.Toplevel):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
         self.fw_output.insert(tk.INSERT, output)
+        AlertDialog(self, alert_msg="Your action has been completed!")
 
     def do_wflow_action(self):
         cmd = "lpad {} {}".format(self.wflow_action.get(), self.wflow_specs.get())
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
         self.wflow_output.insert(tk.INSERT, output.decode("utf-8") )
+        AlertDialog(self, alert_msg="Your action has been completed!")
 
 
 class RunBase(tk.Toplevel):

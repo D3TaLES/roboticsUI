@@ -207,8 +207,8 @@ if __name__ == "__main__":
     # get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
     # snapshot_move(SNAPSHOT_HOME)
     #
-    # cv_elevator(endpoint="up")
-    # cv_elevator(endpoint="down")
+    cv_elevator(endpoint="up")
+    cv_elevator(endpoint="down")
     #
     # get_place_vial(pot_location, action_type="get", pre_position_file=pre_pot_location, raise_amount=0.028)
     # snapshot_move(SNAPSHOT_HOME)

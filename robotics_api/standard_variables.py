@@ -41,7 +41,7 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
-AUTO_VOLT_BUFFER = 0.3  # Volts
+AUTO_VOLT_BUFFER = 0.25  # Volts
 
 # ---------  PROCESSING VARIABLES -------------
 MULTI_PLOT_XLABEL = "Potential (V)"

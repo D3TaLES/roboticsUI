@@ -314,9 +314,8 @@ class iRCompExperiment(PotentiostatExperiment):
                 freq, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _,\
                 abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
 
-                # compute timestamp in seconds
+                # Convert data into Floats
                 t = self.k_api.ConvertNumericIntoSingle(t)
-                # Ewe and current as floats
                 Freq = self.k_api.ConvertNumericIntoSingle(freq)
                 abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
                 abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
@@ -334,6 +333,56 @@ class iRCompExperiment(PotentiostatExperiment):
                                        'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
                 ix = inx
         return extracted_data
+
+    def run_experiment(self):
+        try:
+            if not self.check_connection():
+                self.id_, self.d_info = self.k_api.Connect(POTENTIOSTAT_ADDRESS, self.time_out)  # Connect
+
+            # Clear Data
+            self.data = []
+
+            # BL_LoadTechnique
+            self.k_api.LoadTechnique(self.id_, POTENTIOSTAT_CHANNEL, self.tech_file, self.params, first=True, last=True,
+                                     display=(VERBOSITY > 1))
+            # BL_StartChannel
+            self.k_api.StartChannel(self.id_, POTENTIOSTAT_CHANNEL)
+
+            # experiment loop
+            print("Start PZIR cycle...")
+            while True:
+                # BL_GetData
+                data = self.k_api.GetData(self.id_, POTENTIOSTAT_CHANNEL)
+                self.data.append(data)
+                current_values, data_info, data_record = data
+
+                if VERBOSITY:
+                    print("-------------------'something goes here'-------------------------") #TODO figure out what goes there
+                    ix = 0
+                    for _ in range(data_info.NbRows):
+                        # progress through record
+                        inx = ix + data_info.NbCols
+                        # extract timestamp and one row
+                        row = data_record[ix:inx]
+                        t = self.k_api.ConvertNumericIntoSingle(row[-2])
+                        freq = self.k_api.ConvertNumericIntoSingle(row[0])
+                        I_range = self.k_api.ConvertNumericIntoSingle(row[-1])
+                        print('freq={} \n Current_range={}'.format(freq, I_range))
+                        ix = inx
+
+                status = KBIO.PROG_STATE(current_values.State).name
+
+                print("> new messages :")
+                self.print_messages()
+                if status == 'STOP':
+                    break
+                time.sleep(1)
+            print("> experiment done")
+        except KeyboardInterrupt:
+            print(".. interrupted")
+
+        # BL_Disconnect
+        self.k_api.Disconnect(self.id_)
 
 
 class CpExperiment(PotentiostatExperiment):

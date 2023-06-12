@@ -26,7 +26,6 @@ ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\ECl
 POTENTIOSTAT_ADDRESS = "USB0"
 POTENTIOSTAT_CHANNEL = 1
 
-RCOMP_LEVEL = 85
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
@@ -42,6 +41,12 @@ TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
 AUTO_VOLT_BUFFER = 0.25  # Volts
+
+# iR Compensation Variables
+RCOMP_LEVEL = 85
+INITIAL_FREQUENCY = 0
+FINAL_FREQUENCY = 0
+AMPLITUDE_VOLTAGE = 0
 
 # ---------  PROCESSING VARIABLES -------------
 MULTI_PLOT_XLABEL = "Potential (V)"

@@ -138,6 +138,9 @@ class PotentiostatExperiment:
     def tech_file(self):
         return ''
 
+    def experiment_print(self, data_info, data_record):
+        return None
+
     def run_experiment(self):
         try:
             if not self.check_connection():
@@ -161,16 +164,7 @@ class PotentiostatExperiment:
                 current_values, data_info, data_record = data
 
                 if VERBOSITY:
-                    print("-------------------VOLTAGE-------------------------")
-                    ix = 0
-                    for _ in range(data_info.NbRows):
-                        # progress through record
-                        inx = ix + data_info.NbCols
-                        # extract timestamp and one row
-                        t_high, t_low, *row = data_record[ix:inx]
-                        Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
-                        print(Ewe)
-                        ix = inx
+                    self.experiment_print(data_info, data_record)
 
                 status = KBIO.PROG_STATE(current_values.State).name
 
@@ -230,6 +224,7 @@ class PotentiostatExperiment:
             fn.write("Potential/V, Current/A\n")
             fn.writelines(["{:.3e}, {:.3e}\n".format(v, i) for v, i in zip(voltages, currents)])
 
+
 class iRCompExperiment(PotentiostatExperiment):
     #TODO documentation
 
@@ -240,14 +235,11 @@ class iRCompExperiment(PotentiostatExperiment):
                  average_n_times=5,#TODO Find best N of times
                  wait_for_steady=0,#TODO what does this mean
                  sweep=True,#TODO test True/False
-                 rcomp_level=85,
+                 rcomp_level=RCOMP_LEVEL,
                  rcmp_mode=0,
-                 cut_beginning=CUT_BEGINNING,
-                 cut_end=CUT_END,
                  time_out=TIME_OUT,
-                 min_steps=None,
                  load_firm=True):
-        super().__init__(8, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
+        super().__init__(8, time_out=time_out, load_firm=load_firm, cut_beginning=0, cut_end=0)
 
         # Initialize Parameters
         self.final_frequency = final_frequency
@@ -329,11 +321,24 @@ class iRCompExperiment(PotentiostatExperiment):
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 Ec = self.k_api.ConvertNumericIntoSingle(ece_raw)
 
-                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'freq':Freq, 'abs_ewe': abs_Ewe,
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
                                        'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
                 ix = inx
         return extracted_data
+
+    def experiment_print(self, data_info, data_record):
+        # TODO CHANGE
+        print("-------------------VOLTAGE-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            t_high, t_low, *row = data_record[ix:inx]
+            Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
+            print(Ewe)
+            ix = inx
 
 
 class CpExperiment(PotentiostatExperiment):
@@ -440,6 +445,19 @@ class CpExperiment(PotentiostatExperiment):
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'I': i, 'cycle': cycle})
                 ix = inx
         return extracted_data
+
+    def experiment_print(self, data_info, data_record):
+        print("-------------------VOLTAGE-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            t_high, t_low, *row = data_record[ix:inx]
+            Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
+            print(Ewe)
+            ix = inx
+
 
 
 class CvExperiment(PotentiostatExperiment):

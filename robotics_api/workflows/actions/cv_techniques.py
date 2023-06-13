@@ -158,7 +158,7 @@ class PotentiostatExperiment:
             self.k_api.StartChannel(self.id_, POTENTIOSTAT_CHANNEL)
 
             # experiment loop
-            print("Start CV cycle...")
+            print("Start {} cycle...".format(self.tech_file[:-4]))
             while True:
                 # BL_GetData
                 data = self.k_api.GetData(self.id_, POTENTIOSTAT_CHANNEL)
@@ -172,7 +172,6 @@ class PotentiostatExperiment:
                 status = KBIO.PROG_STATE(current_values.State).name
 
                 print("> new messages :")
-                print(status)
                 self.print_messages()
                 if status == 'STOP':
                     break
@@ -235,7 +234,7 @@ class iRCompExperiment(PotentiostatExperiment):
                  amplitude_voltage=0.5,  # Set this manually
                  final_frequency=FINAL_FREQUENCY,  # TODO this
                  initial_frequency=INITIAL_FREQUENCY,  # TODO this
-                 average_n_times=1,  # TODO Find best N of times
+                 average_n_times=5,  # TODO Find best N of times
                  wait_for_steady=0,  # TODO what does this mean
                  sweep=True,
                  rcomp_level=RCOMP_LEVEL,
@@ -617,7 +616,8 @@ def cv_ex():
         experiment.to_txt("examples/cv_example_backup.csv")
 
 if __name__ == "__main__":
-    experiment = iRCompExperiment(amplitude_voltage=0.5)
-    experiment.run_experiment()
-    parsed_data = experiment.parsed_data
-    experiment.to_txt("examples/iR_test_ferrocene.csv")
+    for i in range(INITIAL_FREQUENCY, FINAL_FREQUENCY, 5):
+        experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=i)
+        experiment.run_experiment()
+        parsed_data = experiment.parsed_data
+        experiment.to_txt("examples/iR_testing/iR_test_ferrocene_{}.csv".format(str(i)))

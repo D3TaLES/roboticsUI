@@ -1,6 +1,7 @@
 import sys
 import time
 import copy
+import json
 
 import pandas as pd
 import pint
@@ -616,8 +617,13 @@ def cv_ex():
         experiment.to_txt("examples/cv_example_backup.csv")
 
 if __name__ == "__main__":
-    for i in range(INITIAL_FREQUENCY, FINAL_FREQUENCY, 5):
+    data = []
+    # for i in range(INITIAL_FREQUENCY, FINAL_FREQUENCY, 5):
+    for i in [0.1, 0.2, 0.5, 0.7, 1, 2.5, 5, 7.5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1250, 1500, 1750, 2000, 2500, 3000]:
         experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=i)
         experiment.run_experiment()
         parsed_data = experiment.parsed_data
-        experiment.to_txt("examples/iR_testing/iR_test_ferrocene_{}.csv".format(str(i)))
+        print(parsed_data)
+        data.append(parsed_data)
+    with open(r'C:/Users/Lab/D3talesRobotics/roboticsUI/robotics_api/workflows/actions/examples/iR_testing/iR_freq_test_2.JSON', "w") as f:
+        json.dump(data, f)

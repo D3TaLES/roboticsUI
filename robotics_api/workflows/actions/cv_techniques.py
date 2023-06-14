@@ -624,6 +624,6 @@ if __name__ == "__main__":
         experiment.run_experiment()
         parsed_data = experiment.parsed_data
         print(parsed_data)
-        data.append(parsed_data)
+        data.append(parsed_data[[0]])
     with open(r'C:/Users/Lab/D3talesRobotics/roboticsUI/robotics_api/workflows/actions/examples/iR_testing/iR_freq_test_2.JSON', "w") as f:
         json.dump(data, f)

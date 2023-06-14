@@ -46,7 +46,7 @@ AUTO_VOLT_BUFFER = 0.25  # Volts
 # ---------  PROCESSING VARIABLES -------------
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
-MULTI_PLOT_XLABEL = "Potential (V) vs Ag/Ag+"
+MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"
 MULTI_PLOT_YLABEL = None  # uses default D3TaLES API y label
 MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 

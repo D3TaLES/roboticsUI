@@ -258,7 +258,7 @@ class PushToDB_Exp(tk.Toplevel):
         self.design_frame()
 
     def design_frame(self):
-        rowspan = len(self.processing_fws) + 2
+        rowspan = len(self.processing_fws) + 3
         frame = tk.Canvas(self, width=400, height=600)
         frame.grid(columnspan=2, rowspan=rowspan)
 
@@ -273,33 +273,41 @@ class PushToDB_Exp(tk.Toplevel):
                  fg=d3navy).grid(column=0, row=1)
         self.push_dict = {}
         for i, fw_id in enumerate(self.processing_fws.keys()):
-            fw_name = self.processing_fws[fw_id]
             push_var = tk.BooleanVar()
-            checkbox = tk.Checkbutton(self, text=fw_name, variable=push_var, onvalue=True, offvalue=False, justify="left")
+            checkbox = tk.Checkbutton(self, text=self.processing_fws[fw_id], variable=push_var, onvalue=True, offvalue=False, justify="left")
             checkbox.grid(column=0, row=i + 2)
-            button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"), command=lambda: self.open(fw_name))
+            button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"), command=lambda fw_id=fw_id: self.dir_open(fw_id))
             button.grid(column=1, row=i + 2)
             self.push_dict[fw_id] = push_var
 
         # Button
         tk.Button(self, text="Push selected data to D3TaLES DB".format(self.workflow), command=self.push_wf,
                   font=("Raleway", 16), bg=d3orange, fg='white', height=2, width=45).grid(columnspan=3, column=0,
-                                                                                          row=rowspan - 1)
+                                                                                          row=rowspan-1)
 
-
-    def open(self, fw_name):
-        print(os.path.join(fw_name))
-        # os.system("explorer C:\\ folder dir")
+    def dir_open(self, fw_id):
+        query = self.lpad.fireworks.find_one({'fw_id': int(fw_id)}, {"spec.cv_locations": 1})
+        exp_dir = "\\".join(query.get("spec", {}).get("cv_locations", [""])[0].split("\\")[:-1])
+        os.system("explorer {}".format(exp_dir))
 
     def push_wf(self):
         fw_ids = [i for i, b in self.push_dict.items() if b.get()]
         launch_ids = []
         [launch_ids.extend(l.get("launches")) for l in self.lpad.fireworks.find({'fw_id': {"$in": fw_ids}}, {"launches": 1})]
-        processing_ids = self.lpad.launches.find({'launch_id': {"$in": launch_ids}}).distinct("action.update_spec.processing_ids")
-        for p_id in processing_ids:
-            data = D3Database(database="robotics_backend", collection_name="experimentation").coll.find_one({"_id": p_id})
-            BackDB(collection_name="experimentation", instance=data)
-            FrontDB(instance={"experiment_data.experiment_ids": [p_id]}, _id=data.get("mol_id"))
+        launches = [self.lpad.launches.find_one({'launch_id': l_id}, {"action.update_spec": 1}) for l_id in launch_ids]
+        for launch in launches:
+            print(launch)
+            p_ids = launch.get("action", {}).get("update_spec", {}).get("processing_ids")
+            print(p_ids)
+            m_id = launch.get("action", {}).get("update_spec", {}).get("metadata_id")
+            meta_dict = D3Database(database="robotics_backend", collection_name="metadata").coll.find_one({"_id": m_id}).get("metadata")
+            for p_id in p_ids:
+                p_data = D3Database(database="robotics_backend", collection_name="experimentation").coll.find_one({"_id": p_id})
+                BackDB(collection_name="experimentation", instance=p_data)
+            CV2Front(id_list=p_ids, metadata_dict=meta_dict, run_processing=False, insert=True)
+
+        AlertDialog(self, alert_msg="All data has been pushed for experiments {}!".format(
+            ", ".join([self.processing_fws[i] for i in fw_ids])))
 
     def get_processing_fws(self, workflow_nodes):
         query = self.lpad.fireworks.find({'fw_id': {"$in": workflow_nodes},

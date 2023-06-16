@@ -44,6 +44,7 @@ TIME_AFTER_CV = 5  # seconds
 AUTO_VOLT_BUFFER = 0.25  # Volts
 
 # ---------  PROCESSING VARIABLES -------------
+RUN_ANODIC = False
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
 MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"

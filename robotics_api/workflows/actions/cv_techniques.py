@@ -2,6 +2,7 @@ import sys
 import time
 import copy
 import json
+import math
 
 import pandas as pd
 import pint
@@ -574,6 +575,8 @@ class CvExperiment(PotentiostatExperiment):
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
                 i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                # apply iR compensation #TODO implement the rcomp %
+                Ewe = Ewe - i*self.rcomp_level*0.0085
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'cycle': cycle})
                 ix = inx
@@ -591,13 +594,13 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-def cv_ex():
+def cv_ex(RCOMP_LEVEL):
     SCAN_RATE = 0.500  # V/s
     collection_params = [{"voltage": 0., "scan_rate": SCAN_RATE},
                          {"voltage": 0.8, "scan_rate": SCAN_RATE},
                          {"voltage": 0, "scan_rate": SCAN_RATE}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    experiment = CvExperiment(ex_steps)
+    experiment = CvExperiment(ex_steps, rcomp_level=RCOMP_LEVEL)
     print(experiment.steps)
     # experiment.parameterize()
     experiment.run_experiment()
@@ -617,13 +620,10 @@ def cv_ex():
         experiment.to_txt("examples/cv_example_backup.csv")
 
 if __name__ == "__main__":
-    data = []
-    # for i in range(INITIAL_FREQUENCY, FINAL_FREQUENCY, 5):
-    for i in [0.1, 0.2, 0.5, 0.7, 1, 2.5, 5, 7.5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1250, 1500, 1750, 2000, 2500, 3000]:
-        experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=i)
-        experiment.run_experiment()
-        parsed_data = experiment.parsed_data
-        print(parsed_data)
-        data.append(parsed_data[[0]])
-    with open(r'C:/Users/Lab/D3talesRobotics/roboticsUI/robotics_api/workflows/actions/examples/iR_testing/iR_freq_test_2.JSON', "w") as f:
-        json.dump(data, f)
+    experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=25)
+    experiment.run_experiment()
+    parsed_data = experiment.parsed_data
+    Energy = parsed_data['Ewe'] - parsed_data['Ece']
+    Energy_abs = parsed_data['abs_Ewe'] - parsed_data['abs_Ece']
+    RCOMP_LEVEL = math.sqrt((Energy/parsed_data['I'])**2-(Energy_abs/parsed_data['abs_ice'])**2)
+    cv_ex(RCOMP_LEVEL)

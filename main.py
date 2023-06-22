@@ -331,7 +331,7 @@ class ManageJobs(tk.Toplevel):
         self.wflow_specs = tk.StringVar()
         self.wflow_output = tk.Text(self)
         self.return_wflow_ids = tk.BooleanVar()
-        self.wflow_options = ["get_wflows", "rerun_wflows", "defuse_wflows", "delete_wflows"]
+        self.wflow_options = ["get_wflows", "defuse_wflows", "delete_wflows"]
         self.design_frame()
 
     def design_frame(self):

@@ -5,10 +5,9 @@ from pathlib import Path
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = True
+RUN_CV = False
 
 # ---------  DEFAULT CONDITIONS -------------
-DEFAULT_NUM_ELECTRONS = 1
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 1  # radius assumed in mm
@@ -27,11 +26,12 @@ ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\ECl
 POTENTIOSTAT_ADDRESS = "USB0"
 POTENTIOSTAT_CHANNEL = 1
 
+RCOMP_LEVEL = 85
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
-CUT_BEGINNING = 0.005  # percentage as decimal of front of CV to cut
+CUT_BEGINNING = 0.007  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 MIN_CV_STEPS = 6  # minimum number of CV steps
 
@@ -41,12 +41,17 @@ VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
 
-AUTO_VOLT_BUFFER = 0.3  # Volts
+AUTO_VOLT_BUFFER = 0.25  # Volts
 
-# ---------  PLOTTING VARIABLES -------------
-MULTI_PLOT_XLABEL = "Potential (V)"
-MULTI_PLOT_YLABEL = "Current (A)"
+# ---------  PROCESSING VARIABLES -------------
+RUN_ANODIC = False
+CONVERT_A_TO_MA = True
+PLOT_CURRENT_DENSITY = True
+MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"
+MULTI_PLOT_YLABEL = None  # uses default D3TaLES API y label
 MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
+
+PEAK_WIDTH = 0.5
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_DEFAULT_ADDRESS = "COM4"

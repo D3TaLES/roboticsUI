@@ -6,7 +6,7 @@
           "targetPose": {
             "x": 0.595,
             "y": 0.09,
-            "z": 0.074,
+            "z": 0.054,
             "thetaX": 87.46157836914062,
             "thetaY": 2.005779504776001,
             "thetaZ": 95.33666229248047
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "VialHome_A_04"
+        "name": "VialHome_master"
       }
     ]
   }

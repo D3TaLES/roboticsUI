@@ -85,7 +85,6 @@ class PotentiostatExperiment:
             num_new_steps = min_steps - len(norm_steps)
             last_step = copy.deepcopy(norm_steps[-1])
             new_steps = [last_step for _ in range(num_new_steps)]
-            [setattr(n, last_step.__dir__()[0], 0) for n in new_steps]
             norm_steps.extend(new_steps)
         if VERBOSITY:
             print("-------STEPS-------")
@@ -360,6 +359,7 @@ class CvExperiment(PotentiostatExperiment):
                  cut_end=CUT_END,
                  time_out=TIME_OUT,
                  min_steps=MIN_CV_STEPS,
+                 rcomp_level=RCOMP_LEVEL,
                  load_firm=True):
         super().__init__(6, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
 
@@ -370,6 +370,7 @@ class CvExperiment(PotentiostatExperiment):
         self.record_every_de = record_every_de
         self.average_over_de = average_over_de
         self.n_cycles = n_cycles
+        self.rcomp_level = rcomp_level  # TODO figure out iR comp
 
         self.params = self.parameterize()
         self.data = []

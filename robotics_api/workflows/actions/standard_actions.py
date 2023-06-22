@@ -190,9 +190,6 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    # cv_elevator(endpoint="up")
-    cv_elevator(endpoint="down")
-
     # stir_plate(stir_time=10)
 
     # screw_lid(screw=False)
@@ -202,12 +199,21 @@ if __name__ == "__main__":
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
     #
     # snapshot_move(SNAPSHOT_HOME)
-    # vial_home("2", "A", action_type='get')
+    # vial_home("4", "C", action_type='get')
     # snapshot_move(SNAPSHOT_HOME)
-    # snapshot_move(SNAPSHOT_END_HOME)
     #
     # pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
     # pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
-    # snapshot_move(pre_pot_location)
-    # snapshot_move(SNAPSHOT_HOME)
     # get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
+    # snapshot_move(SNAPSHOT_HOME)
+    #
+    cv_elevator(endpoint="up")
+    cv_elevator(endpoint="down")
+    #
+    # get_place_vial(pot_location, action_type="get", pre_position_file=pre_pot_location, raise_amount=0.028)
+    # snapshot_move(SNAPSHOT_HOME)
+    # vial_home("4", "C", action_type='place')
+    # snapshot_move(SNAPSHOT_HOME)
+
+
+    # snapshot_move(SNAPSHOT_END_HOME)

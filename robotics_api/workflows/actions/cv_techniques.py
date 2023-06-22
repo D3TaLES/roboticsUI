@@ -154,6 +154,7 @@ class PotentiostatExperiment:
             self.data = []
 
             # BL_LoadTechnique
+            print(self.id_)
             self.k_api.LoadTechnique(self.id_, POTENTIOSTAT_CHANNEL, self.tech_file, self.params, first=True, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
@@ -620,10 +621,11 @@ def cv_ex(RCOMP_LEVEL):
         experiment.to_txt("examples/cv_example_backup.csv")
 
 if __name__ == "__main__":
-    experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=25)
-    experiment.run_experiment()
-    parsed_data = experiment.parsed_data
-    Energy = parsed_data['Ewe'] - parsed_data['Ece']
-    Energy_abs = parsed_data['abs_Ewe'] - parsed_data['abs_Ece']
-    RCOMP_LEVEL = math.sqrt((Energy/parsed_data['I'])**2-(Energy_abs/parsed_data['abs_ice'])**2)
-    cv_ex(RCOMP_LEVEL)
+    data=[]
+    for i in range(100, 5000, 100):
+        experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=i)
+        experiment.run_experiment()
+        parsed_data = experiment.parsed_data
+        data.append(parsed_data[0])
+    with open(r'C:/Users/Lab/D3talesRobotics/roboticsUI/robotics_api/workflows/actions/examples/iR_testing/ir_test_3.json', 'w') as fn:
+        json.dump(data, fn)

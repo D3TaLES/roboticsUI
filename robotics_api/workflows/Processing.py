@@ -10,6 +10,7 @@ from d3tales_api.Processors.back2front import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.processing_utils import *
 from robotics_api.workflows.actions.standard_actions import *
+from robotics_api.workflows.actions.status_db_manipulations import *
 from robotics_api.standard_variables import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
@@ -27,15 +28,23 @@ class InitializeRobot(FiretaskBase):
         # Import the utilities helper module
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-        # Parse arguments
-        connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
-
         # Create connection to the device and get the router
+        connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
         with DeviceConnection.createTcpConnection(connector) as router:
-            # Create required services
             BaseClient(router)
             BaseCyclicClient(router)
 
+        return FWAction(update_spec={"success": True})
+
+
+@explicit_serialize
+class InitializeStatusDB(FiretaskBase):
+    # FireTask for initializing status database contents
+
+    def run_task(self, fw_spec):
+        reagent_locations = fw_spec.get("reagent_locations") or self.get("reagent_locations") or {}
+        reset_vial_db(reagent_locations)
+        reset_station_db()
         return FWAction(update_spec={"success": True})
 
 
@@ -158,7 +167,7 @@ class CVProcessor(FiretaskBase):
             # Insert data into database
             _id = data["_id"]
             if mol_id and insert:
-                D3Database(database="robotics_backend", collection_name="experimentation", instance=data).insert(_id)
+                D3Database(database="robotics", collection_name="experimentation", instance=data).insert(_id)
             return data
 
         for test_loc in test_electrode_data:
@@ -183,7 +192,7 @@ class CVProcessor(FiretaskBase):
         print("Calculating metadata...")
         metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
         metadata_id = str(uuid.uuid4())
-        D3Database(database="robotics_backend", collection_name="metadata", instance=dict(metadata=metadata_dict),
+        D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
                    validate_schema=False).insert(metadata_id)
 
         # Record all data

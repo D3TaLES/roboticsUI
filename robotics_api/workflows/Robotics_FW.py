@@ -7,10 +7,11 @@ from robotics_api.workflows.ExperimentActions import *
 
 
 class InitializeExperiment(Firework):
-    def __init__(self, name='', parents=None, **kwargs):
+    def __init__(self, name='', parents=None, reagent_locations=None, **kwargs):
         spec = {'_category': 'processing'}
         tasks = [
-            InitializeRobot()
+            InitializeRobot(),
+            InitializeStatusDB(reagent_locations=reagent_locations)
         ]
         super(InitializeExperiment, self).__init__(tasks, parents=parents, spec=spec, name="init_"+name, **kwargs)
 

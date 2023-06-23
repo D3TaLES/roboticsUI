@@ -6,6 +6,7 @@ from nanoid import generate
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.standard_actions import *
+from robotics_api.workflows.actions.status_db_manipulations import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
@@ -16,7 +17,6 @@ class EndExperiment(FiretaskBase):
 
     def run_task(self, fw_spec):
         vial_uuid = self.get("vial_uuid")
-        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         success = True
 
@@ -28,7 +28,7 @@ class EndExperiment(FiretaskBase):
         success += vial_home(row, column, action_type='place')
         success += snapshot_move(SNAPSHOT_HOME)
 
-        return FWAction(update_spec={"success": success, "cap_on": cap_on})
+        return FWAction(update_spec={"success": success})
 
 
 @explicit_serialize
@@ -40,17 +40,15 @@ class DispenseLiquid(FiretaskBase):
         solv_uuid = self.get("start_uuid")
         vial_uuid = self.get("end_uuid")
         volume = self.get("volume")
-        success = True
-        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
         orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
         _, solv_idx = orig_locations.get(solv_uuid)  # Get Solvent location
         success = True
 
         # Uncap vial if capped
-        if cap_on:
+        if VialStatus(r_uuid=vial_uuid).get_prop("capped"):
             # TODO uncap vial
-            cap_on = False
+            VialStatus(r_uuid=vial_uuid).update_capped(False)
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # TODO dispense liquid
@@ -60,7 +58,7 @@ class DispenseLiquid(FiretaskBase):
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
 
-        updated_specs.update({"success": success, "cap_on": cap_on})
+        updated_specs.update({"success": success})
         return FWAction(update_spec=updated_specs)
 
 
@@ -79,9 +77,8 @@ class DispenseSolid(FiretaskBase):
         column, row = orig_locations.get(start_uuid)  # Get Sample vial location
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         success += vial_home(row, column, action_type='get')  # Get vial
-        cap_on = False  # TODO Change once we have capping/uncapping
 
-        updated_specs.update({"success": success, "cap_on": cap_on})
+        updated_specs.update({"success": success})
         return FWAction(update_spec=updated_specs)
 
 
@@ -123,10 +120,9 @@ class HeatStir(FiretaskBase):
         vial_uuid = self.get("start_uuid")
         temperature = self.get("temperature")
         stir_time = self.get("time")
-        cap_on = self.get("cap_on") or fw_spec.get("cap_on", False)
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
 
-        if not cap_on:
+        if not VialStatus(r_uuid=vial_uuid).get_prop("capped"):
             # TODO cap vial
             warnings.warn("Warning. Vial cap is not on and stirring is about to commence.")
 
@@ -137,7 +133,7 @@ class HeatStir(FiretaskBase):
         success += snapshot_move(SNAPSHOT_HOME)
 
         metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        updated_specs.update({"success": success, "cap_on": cap_on, "metadata": metadata})
+        updated_specs.update({"success": success, "metadata": metadata})
         return FWAction(update_spec=updated_specs)
 
 
@@ -186,10 +182,9 @@ class TestElectrode(FiretaskBase):
         column, row = orig_locations.get(start_uuid)  # Get Sample vial location
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         success += vial_home(row, column, action_type='get')  # Get vial
-        cap_on = False  # TODO Change once we have capping/uncapping
 
         # Uncap vial if capped
-        if cap_on:
+        if VialStatus(r_uuid=start_uuid).get_prop("capped"):
             # TODO uncap vial
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
@@ -217,7 +212,7 @@ class TestElectrode(FiretaskBase):
         success += vial_home(row, column, action_type='place')
         success += snapshot_move(SNAPSHOT_HOME)
 
-        updated_specs.update({"test_electrode_data": test_electrode_data, "success": success, "cap_on": cap_on,
+        updated_specs.update({"test_electrode_data": test_electrode_data, "success": success,
                               "name": name, "wflow_name": wflow_name})
         return FWAction(update_spec=updated_specs)
 
@@ -227,6 +222,7 @@ class RunCV(FiretaskBase):
     # FireTask for running CV
 
     def run_task(self, fw_spec):
+        vial_uuid = self.get("start_uuid")
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         cv_type = fw_spec.get("cv_type") or self.get("cv_type", None)
         cv_idx = fw_spec.get("cv_idx") or self.get("cv_idx", 1)
@@ -235,7 +231,6 @@ class RunCV(FiretaskBase):
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)
-        cap_on = fw_spec.get("cap_on", False) or self.get("cap_on")
         at_potentiostat = fw_spec.get("at_potentiostat", False) or self.get("at_potentiostat")
         name = fw_spec.get("name") or self.get("name",
                                                "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
@@ -244,7 +239,7 @@ class RunCV(FiretaskBase):
         success = True
 
         # Uncap vial if capped
-        if cap_on:
+        if VialStatus(r_uuid=vial_uuid).get_prop("capped"):
             # TODO uncap vial
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
@@ -267,7 +262,7 @@ class RunCV(FiretaskBase):
             expt.to_txt(data_path)
         cv_locations.append(data_path)
 
-        updated_specs.update({"cv_locations": cv_locations, "success": success, "cap_on": cap_on,
+        updated_specs.update({"cv_locations": cv_locations, "success": success,
                               "at_potentiostat": at_potentiostat, "name": name, "wflow_name": wflow_name,
                               "cv_idx": cv_idx + 1, "metadata": metadata})
         return FWAction(update_spec=updated_specs)

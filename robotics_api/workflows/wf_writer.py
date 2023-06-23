@@ -20,7 +20,8 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params={}, **kwargs):
         Fireworks Workflow object
     """
     name = expflow_wf.get("name") + "_" + name_tag.strip("_")
-    f10 = InitializeExperiment(name=expflow_wf.get("name") + ("_" + name_tag).strip("_"))
+    reagents = exp_params.get("reagent_locations", {})
+    f10 = InitializeExperiment(name=expflow_wf.get("name") + ("_" + name_tag).strip("_"), reagent_locations=reagents)
     fws = [f10]
     robot_experiments = []
 

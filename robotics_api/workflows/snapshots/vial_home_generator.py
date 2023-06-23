@@ -24,7 +24,7 @@ key_zs = {
 snapshot_home = os.path.join(Path(
     "C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "workflows" / "snapshots")
 
-with open("VialHome_master.json", 'r') as fn:
+with open("VialHomeMaster.json", 'r') as fn:
     master_data = json.load(fn)
 
 for column, row in itertools.product(key_ys, key_xs):

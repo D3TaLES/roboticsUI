@@ -1,22 +1,26 @@
 {
     "spec": {
         "_category": "processing",
+        "reagent_locations": {
+            "550c6dd3-af09-4351-ae1d-deea22ebc41f": "None",
+            "29690ed4-bf85-4945-9c2d-907eb942515d": "A_02"
+        },
+        "experiment_locations": {
+            "exp01": "A_04"
+        },
         "_tasks": [
             {
                 "_fw_name": "{{robotics_api.workflows.Processing.InitializeRobot}}"
             },
             {
-                "reagent_locations": {
-                    "550c6dd3-af09-4351-ae1d-deea22ebc41f": "B_03",
-                    "29690ed4-bf85-4945-9c2d-907eb942515d": "A_02"
-                },
+                "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
                 "_fw_name": "{{robotics_api.workflows.Processing.InitializeStatusDB}}"
             }
         ]
     },
-    "fw_id": 667,
-    "created_on": "2023-06-23T21:18:50.621027",
-    "updated_on": "2023-06-23T21:20:44.349048",
+    "fw_id": 694,
+    "created_on": "2023-06-26T21:38:20.036309",
+    "updated_on": "2023-06-26T21:52:59.389652",
     "launches": [
         {
             "fworker": {
@@ -28,7 +32,7 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 667,
+            "fw_id": 694,
             "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
             "ip": "172.19.52.212",
@@ -38,13 +42,197 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-06-23T21:20:44.348017",
-                    "updated_on": "2023-06-23T21:20:44.348017"
+                    "created_on": "2023-06-26T21:52:59.389652",
+                    "updated_on": "2023-06-26T21:52:59.389652"
                 }
             ],
-            "launch_id": 792
+            "launch_id": 801
+        }
+    ],
+    "archived_launches": [
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 694,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "host": "CAER-FVJJLM3",
+            "ip": "172.19.52.212",
+            "trackers": [],
+            "action": {
+                "stored_data": {
+                    "_message": "runtime error during task",
+                    "_task": {
+                        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
+                        "_fw_name": "{{robotics_api.workflows.Processing.InitializeStatusDB}}"
+                    },
+                    "_exception": {
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 47, in run_task\n    reset_vial_db(reagent_locations, current_wflow_name=wflow_name)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\status_db_manipulations.py\", line 131, in reset_vial_db\n    VialStatus().coll.delete_many({})\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\status_db_manipulations.py\", line 26, in __init__\n    self.home_location = self.id.split(\"_\")\nAttributeError: 'NoneType' object has no attribute 'split'\n",
+                        "_details": null
+                    }
+                },
+                "exit": true,
+                "update_spec": {},
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "FIZZLED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-06-26T21:42:49.775184",
+                    "updated_on": "2023-06-26T21:42:49.819546",
+                    "checkpoint": {
+                        "_task_n": 1,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "FIZZLED",
+                    "created_on": "2023-06-26T21:42:49.821540",
+                    "checkpoint": {
+                        "_task_n": 1,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                }
+            ],
+            "launch_id": 798
+        },
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 694,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "host": "CAER-FVJJLM3",
+            "ip": "172.19.52.212",
+            "trackers": [],
+            "action": {
+                "stored_data": {},
+                "exit": false,
+                "update_spec": {
+                    "success": true
+                },
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "COMPLETED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-06-26T21:43:53.790116",
+                    "updated_on": "2023-06-26T21:43:55.338986",
+                    "checkpoint": {
+                        "_task_n": 1,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "COMPLETED",
+                    "created_on": "2023-06-26T21:43:55.339982"
+                }
+            ],
+            "launch_id": 799
+        },
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 694,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "host": "CAER-FVJJLM3",
+            "ip": "172.19.52.212",
+            "trackers": [],
+            "action": {
+                "stored_data": {
+                    "_message": "runtime error during task",
+                    "_task": {
+                        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
+                        "_fw_name": "{{robotics_api.workflows.Processing.InitializeStatusDB}}"
+                    },
+                    "_exception": {
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 47, in run_task\n    reset_vial_db(reagent_locations, current_wflow_name=wflow_name)\nTypeError: reset_vial_db() missing 1 required positional argument: 'experiment_locs'\n",
+                        "_details": null
+                    }
+                },
+                "exit": true,
+                "update_spec": {},
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "FIZZLED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-06-26T21:52:25.538749",
+                    "updated_on": "2023-06-26T21:52:25.555406",
+                    "checkpoint": {
+                        "_task_n": 1,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "FIZZLED",
+                    "created_on": "2023-06-26T21:52:25.556434",
+                    "checkpoint": {
+                        "_task_n": 1,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                }
+            ],
+            "launch_id": 800
         }
     ],
     "state": "RUNNING",
-    "name": "init_8CVCollect_BenchmarkCV_test1_singlemulti_test"
+    "name": "init_8CVCollect_BenchmarkCV_test1_single_"
 }

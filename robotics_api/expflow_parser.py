@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class EF2Experiment(ProcessExpFlowObj):
-    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params=0,
+    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_params={},
                  **kwargs):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents

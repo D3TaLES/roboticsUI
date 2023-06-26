@@ -16,15 +16,15 @@ class EndExperiment(FiretaskBase):
     # FireTask for getting solid sample
 
     def run_task(self, fw_spec):
-        vial_uuid = self.get("vial_uuid")
-        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
+        vial = VialStatus(r_uuid=self.get("vial_uuid"), wflow_name=wf_name)
         success = True
 
-        if fw_spec.get("at_potentiostat"):
-            retrieve_vial_from_potentiostat()
+        if "potentiostat" in vial.current_location:
+            retrieve_vial_from_potentiostat(vial.current_location)
 
         # Place vial back home
-        column, row = orig_locations.get(vial_uuid)  # Get Sample vial location
+        column, row = vial.home_location
         success += vial_home(row, column, action_type='place')
         success += snapshot_move(SNAPSHOT_HOME)
 
@@ -37,23 +37,21 @@ class DispenseLiquid(FiretaskBase):
 
     def run_task(self, fw_spec):
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
-        solv_uuid = self.get("start_uuid")
-        vial_uuid = self.get("end_uuid")
+        wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
+        solv = VialStatus(r_uuid=self.get("start_uuid"), wflow_name=wf_name) # TODO figure out solvent stuff
+        vial = VialStatus(r_uuid=self.get("end_uuid"), wflow_name=wf_name)
+        metadata = fw_spec.get("metadata", self.get("metadata", {}))
         volume = self.get("volume")
-        metadata = fw_spec.get("metadata") or self.get("metadata", {})
-        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
-        _, solv_idx = orig_locations.get(solv_uuid)  # Get Solvent location
         success = True
 
         # Uncap vial if capped
-        if VialStatus(r_uuid=vial_uuid).get_prop("capped"):
+        if vial.capped:
             # TODO uncap vial
-            VialStatus(r_uuid=vial_uuid).update_capped(False)
+            vial.update_capped(False)
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # TODO dispense liquid
-        snapshot_solv = os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
-        # success += snapshot_move(snapshot_solv)
+        # success += snapshot_move(solv.location_snapshot)
 
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
@@ -69,14 +67,13 @@ class DispenseSolid(FiretaskBase):
     def run_task(self, fw_spec):
         # TODO Change once we have solid dispensing
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
-        start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
-        # mass = self.get("mass")
-        orig_locations = self.get("reagent_locations") or fw_spec.get("reagent_locations", {})
+        wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
+        vial = VialStatus(r_uuid=self.get("start_uuid"), wflow_name=wf_name)
+        end_uuid = self.get("end_uuid")
+        mass = self.get("mass")
 
-        column, row = orig_locations.get(start_uuid)  # Get Sample vial location
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        success += vial_home(row, column, action_type='get')  # Get vial
+        success += get_place_vial(vial.current_location, action_type='get')
 
         updated_specs.update({"success": success})
         return FWAction(update_spec=updated_specs)
@@ -90,7 +87,7 @@ class RecordWorkingElectrodeArea(FiretaskBase):
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         # working_electrode_area = self.get("size", ) or DEFAULT_WORKING_ELECTRODE_AREA
         working_electrode_area = DEFAULT_WORKING_ELECTRODE_AREA
-        metadata = fw_spec.get("metadata") or self.get("metadata", {})
+        metadata = fw_spec.get("metadata", self.get("metadata", {}))
         metadata.update({"working_electrode_surface_area": working_electrode_area})
         updated_specs.update({"metadata": metadata})
         return FWAction(update_spec=updated_specs)
@@ -105,7 +102,7 @@ class Heat(FiretaskBase):
         # start_uuid = self.get("start_uuid")
         # end_uuid = self.get("end_uuid")
         # temperature = self.get("temperature")
-        metadata = fw_spec.get("metadata") or self.get("metadata", {})
+        metadata = fw_spec.get("metadata", self.get("metadata", {}))
         metadata.update({"temperature": DEFAULT_TEMPERATURE})
         updated_specs.update({"metadata": metadata})
         return FWAction(update_spec=updated_specs)
@@ -117,12 +114,13 @@ class HeatStir(FiretaskBase):
 
     def run_task(self, fw_spec):
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
-        vial_uuid = self.get("start_uuid")
+        wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
+        vial = VialStatus(r_uuid=self.get("start_uuid"), wflow_name=wf_name)
         temperature = self.get("temperature")
         stir_time = self.get("time")
         metadata = fw_spec.get("metadata") or self.get("metadata", {})
 
-        if not VialStatus(r_uuid=vial_uuid).get_prop("capped"):
+        if not vial.capped:
             # TODO cap vial
             warnings.warn("Warning. Vial cap is not on and stirring is about to commence.")
 
@@ -172,10 +170,8 @@ class TestElectrode(FiretaskBase):
         test_electrode_data = fw_spec.get("test_electrode_data") or self.get("test_electrode_data", [])
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        name = fw_spec.get("name") or self.get("name",
-                                               "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
-        wflow_name = fw_spec.get("wflow_name") or self.get("name", "no_name_{}".format(
-            generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        name = fw_spec.get("name") or self.get("name", "no_name_{}".format(generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", size=4)))
+        wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         collect_params = generate_col_params(voltage_sequence, scan_rate)
 
         # Get solvent vial
@@ -184,7 +180,7 @@ class TestElectrode(FiretaskBase):
         success += vial_home(row, column, action_type='get')  # Get vial
 
         # Uncap vial if capped
-        if VialStatus(r_uuid=start_uuid).get_prop("capped"):
+        if VialStatus(r_uuid=start_uuid, wflow_name=wflow_name).capped:
             # TODO uncap vial
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
@@ -239,7 +235,7 @@ class RunCV(FiretaskBase):
         success = True
 
         # Uncap vial if capped
-        if VialStatus(r_uuid=vial_uuid).get_prop("capped"):
+        if VialStatus(r_uuid=vial_uuid).capped:
             # TODO uncap vial
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 

@@ -7,13 +7,14 @@ from robotics_api.workflows.ExperimentActions import *
 
 
 class InitializeExperiment(Firework):
-    def __init__(self, name='', parents=None, reagent_locations=None, **kwargs):
-        spec = {'_category': 'processing'}
+    def __init__(self, wflow_name='', parents=None, exp_params=None, **kwargs):
+        spec = {'_category': 'processing', }
+        spec.update(exp_params) if exp_params else None
         tasks = [
             InitializeRobot(),
-            InitializeStatusDB(reagent_locations=reagent_locations)
+            InitializeStatusDB(wflow_name=wflow_name)
         ]
-        super(InitializeExperiment, self).__init__(tasks, parents=parents, spec=spec, name="init_"+name, **kwargs)
+        super(InitializeExperiment, self).__init__(tasks, parents=parents, spec=spec, name="init_"+wflow_name, **kwargs)
 
 
 class EndWorkflowProcess(Firework):

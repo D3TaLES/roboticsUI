@@ -1,8 +1,9 @@
 import serial
 import warnings
 from serial.tools.list_ports import comports
-from robotics_api.workflows.actions.kinova_move import *
 from robotics_api.standard_variables import *
+from robotics_api.workflows.actions.kinova_move import *
+from robotics_api.workflows.actions.status_db_manipulations import *
 
 
 def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
@@ -46,21 +47,6 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
     if pre_position_file:
         success += snapshot_move(pre_position_file)
 
-    return success
-
-
-def vial_home(row, column, action_type="get"):
-    """
-    Function that executes an action getting or placing
-    Args:
-        row: str or int or float, row of vial home location, e.g., 04
-        column: str, column of vial home location, e.g., A
-        action_type: str, 'get' if the action is getting a vail, 'place' if action is placing the vial
-
-    Returns: bool, success of action
-    """
-    snapshot_vial = os.path.join(SNAPSHOT_DIR, "VialHome_{}_{:02}.json".format(column, int(row)))
-    success = get_place_vial(snapshot_vial, action_type=action_type)
     return success
 
 
@@ -159,29 +145,82 @@ def stir_plate(stir_time=None, temperature=None, stir_cmd="off"):
     return send_arduino_cmd(stir_cmd, STIR_PLATE_ADDRESS)
 
 
-def move_vial_to_potentiostat(at_potentiostat):
+def move_vial_to_potentiostat(potentiostat: str):
     # Move vial to potentiostat elevator
     success = True
+    # TODO enable multiple potentiostats
     pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
     pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
-    if not at_potentiostat:
-        success += snapshot_move(SNAPSHOT_HOME)
-        success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
-        success += snapshot_move(SNAPSHOT_HOME)
-        success += cv_elevator(endpoint="up")
-        time.sleep(5)
+    success += snapshot_move(SNAPSHOT_HOME)
+    success += get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
+    success += snapshot_move(SNAPSHOT_HOME)
+    success += cv_elevator(endpoint="up")
+    time.sleep(5)
     return success
 
 
-def retrieve_vial_from_potentiostat():
+def retrieve_vial_from_potentiostat(potentiostat: str):
     # Move vial to potentiostat elevator
     success = True
+    # TODO enable multiple potentiostats
     pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
     pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
     success += cv_elevator(endpoint="down")
     success += get_place_vial(pot_location, action_type="get", pre_position_file=pre_pot_location, raise_amount=0.028)
     success += snapshot_move(SNAPSHOT_HOME)
     return success
+
+
+def check_robot():
+    return StationStatus("robot_grip").available
+
+
+class VialMove(VialStatus):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.id:
+            raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
+
+    def get_vial(self, throw_error=False):
+        success = False
+        if self.current_location == "robot_grip":
+            return True
+        elif "potentiostat" in self.current_location:
+            if check_robot():
+                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+                success += retrieve_vial_from_potentiostat(self.current_location)
+                self.update_position("robot_grip")
+        else:
+            if check_robot():
+                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+                success += get_place_vial(self.current_location, action_type='place')
+                self.update_position("robot_grip")
+        if throw_error and not success:
+            raise Exception(f"Vial {self.id} was not successfully retrieved.")
+        return success
+
+    def place_vial(self, target_location, throw_error=False):
+        success = False
+        if not self.current_location == "robot_grip":
+            self.get_vial(throw_error=True)
+        elif "potentiostat" in target_location:
+            if check_robot():
+                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+                success += move_vial_to_potentiostat(target_location)
+                self.update_position(target_location)
+        else:
+            if check_robot():
+                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+                success += get_place_vial(self.current_location, action_type='get')
+                self.update_position(target_location)
+        if throw_error and not success:
+            raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
+
+        return success
+
+    def update_position(self, position):
+        self.update_location(position)
+        StationStatus(position).update_content(self.id)
 
 
 if __name__ == "__main__":

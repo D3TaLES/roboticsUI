@@ -29,10 +29,10 @@ class InitializeRobot(FiretaskBase):
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
         # Create connection to the device and get the router
-        connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
-        with DeviceConnection.createTcpConnection(connector) as router:
-            BaseClient(router)
-            BaseCyclicClient(router)
+        # connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+        # with DeviceConnection.createTcpConnection(connector) as router:
+        #     BaseClient(router)
+        #     BaseCyclicClient(router)
 
         return FWAction(update_spec={"success": True})
 
@@ -43,8 +43,10 @@ class InitializeStatusDB(FiretaskBase):
 
     def run_task(self, fw_spec):
         reagent_locations = fw_spec.get("reagent_locations") or self.get("reagent_locations") or {}
-        reset_vial_db(reagent_locations)
-        reset_station_db()
+        experiment_locations = fw_spec.get("experiment_locations") or self.get("experiment_locations") or {}
+        wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
+        reset_vial_db(reagent_locations, experiment_locations, current_wflow_name=wflow_name)
+        reset_station_db(current_wflow_name=wflow_name)
         return FWAction(update_spec={"success": True})
 
 

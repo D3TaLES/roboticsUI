@@ -72,57 +72,75 @@ class QuitDialog(tk.Toplevel):
         self.parent.destroy()
 
 
-class SetReagents(tk.Toplevel):
+class SetLocations(tk.Toplevel):
     def __init__(self, parent, experiment_data):
         super().__init__(parent)
         self.parent = parent
 
-        self.title('Set Reagent Locations')
+        self.title('Set Locations')
         self.experiment_data = experiment_data
-        self.molecules = get_exp_reagents(experiment_data)
-        self.options = location_options()
-        self.results_dict = {}
+        self.reagents = get_exp_reagents(experiment_data)
+        self.experiments = get_exps(experiment_data)
+        self.reagent_options = reagent_location_options()
+        self.vial_options = vial_location_options()
+        self.reagents_dict = {}
+        self.exp_dict = {}
 
         self.design_frame()
 
     def design_frame(self):
-        rowspan = len(self.molecules) + 2
+        rowspan = max([len(self.reagents), len(self.experiments)]) + 3
         frame = tk.Canvas(self, width=400, height=300)
-        frame.grid(columnspan=2, rowspan=rowspan)
+        frame.grid(columnspan=4, rowspan=rowspan)
 
         logo = ImageTk.PhotoImage(d3logo)
         self.iconphoto(False, logo)
 
         # Text
-        tk.Label(self, text="Set Reagent Locations", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0,
-                                                                                                   columnspan=2)
-        tk.Label(self, text="Select the starting vial home position for each reagent. The selected position specifies "
-                            "the column then the row (e.g. A, 03).", font=("Raleway", 16, 'bold'), pady=10,
-                 wraplength=600, fg=d3navy).grid(column=0, row=1, columnspan=2)
+        tk.Label(self, text="Set Locations", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0, columnspan=4)
+        tk.Label(self, text="Set Reagent Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=0, row=2, columnspan=2)
+        tk.Label(self, text="Select the starting position for each reagent.", font=("Raleway", 16, 'bold'), pady=10,
+                 wraplength=600, fg=d3navy).grid(column=0, row=2, columnspan=2)
+        tk.Label(self, text="Set Experiment Vial Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=2, row=2, columnspan=2)
+        tk.Label(self, text="Select the starting vial home position for each experiment. The selected position"
+                            "specifies the column then the row (e.g., A_03 is column A, row 03).",
+                 font=("Raleway", 16, 'bold'), pady=10, wraplength=600, fg=d3navy).grid(column=2, row=2, columnspan=2)
 
-        # Location Dropdowns
-        for i, reagent in enumerate(self.molecules):
+        # Ragent location Dropdowns
+        for i, reagent in enumerate(self.reagents):
             tk.Label(self, text="{}\n{}".format(reagent[0], reagent[1]), justify="center", font=("Raleway", 16,),
-                     fg=d3navy).grid(column=0, row=i + 2)
+                     fg=d3navy).grid(column=0, row=i + 3)
             dropdown_txt = tk.StringVar()
-            dropdown_txt.set(self.options[0])
-            dropdown = tk.OptionMenu(self, dropdown_txt, *self.options)
-            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=30)
-            dropdown.grid(column=1, row=i + 2)
-            self.results_dict[reagent] = dropdown_txt
+            dropdown_txt.set(self.reagent_options[0])
+            dropdown = tk.OptionMenu(self, dropdown_txt, *self.reagent_options)
+            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=10)
+            dropdown.grid(column=1, row=i + 3)
+            self.reagents_dict[reagent[1]] = dropdown_txt
+
+        # Vial location Dropdowns
+        for i, exp in enumerate(self.experiments):
+            tk.Label(self, text="{}".format(exp), justify="center", font=("Raleway", 16,),
+                     fg=d3navy).grid(column=2, row=i + 3)
+            dropdown_txt = tk.StringVar()
+            dropdown_txt.set(self.vial_options[0])
+            dropdown = tk.OptionMenu(self, dropdown_txt, *self.vial_options)
+            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=10)
+            dropdown.grid(column=3, row=i + 3)
+            self.exp_dict[exp] = dropdown_txt
 
         # button
         self.run_txt = tk.StringVar()
         self.run_txt.set("Set Locations and Add Workflow")
         tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.set_parameters,
-                  fg='white', height=2, width=30).grid(column=0, row=rowspan, columnspan=2, pady=10)
+                  fg='white', height=2, width=30).grid(column=1, row=rowspan, columnspan=2, pady=10)
 
         tk.Canvas(self, width=400, height=50 + 10 * rowspan).grid(columnspan=2)
 
     def set_parameters(self):
         self.run_txt.set("adding workflow...")
-        exp_params = assign_reagent_locations({r: dt.get() for r, dt in self.results_dict.items()},
-                                              self.experiment_data)
+        exp_params = assign_locations({r: dt.get() for r, dt in self.reagents_dict.items()},
+                                      {r: dt.get() for r, dt in self.exp_dict.items()},
+                                      self.experiment_data)
         self.parent.EXP_PARAMS = exp_params
         self.destroy()
 
@@ -187,7 +205,7 @@ class AddJob(tk.Toplevel):
 
     def add_wf(self):
         self.add_txt.set("adding workflow...")
-        window = SetReagents(self, self.json_data)
+        window = SetLocations(self, self.json_data)
         self.wait_window(window)
         print(self.EXP_PARAMS)
         self.add_txt.set("adding workflow...")
@@ -603,7 +621,7 @@ class RoboticsGUI(tk.Tk):
                                 fg='white', height=1, width=15)
         run_process.grid(column=1, row=3, pady=5)
         push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),
-                               bg=d3navy, fg='white', height=1, width=15)
+                               bg=d3blue, fg='white', height=1, width=15)
         push_to_db.grid(column=1, row=4, pady=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=2)

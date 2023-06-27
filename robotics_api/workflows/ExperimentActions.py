@@ -214,6 +214,15 @@ class TestElectrode(FiretaskBase):
 
 
 @explicit_serialize
+class BenchmarkCV(FiretaskBase):
+    # FireTask for testing electrode cleanliness
+
+    def run_task(self, fw_spec):
+
+        return FWAction(update_spec={})
+
+
+@explicit_serialize
 class RunCV(FiretaskBase):
     # FireTask for running CV
 

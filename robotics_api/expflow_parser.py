@@ -92,7 +92,8 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_data": RunCV,
             "process_cv_data": CVProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
-            "collect_electrode_test": TestElectrode,
+            "collect_electrode_test_data": TestElectrode,
+            "collect_cv_benchmark_data": BenchmarkCV,
         }
 
 

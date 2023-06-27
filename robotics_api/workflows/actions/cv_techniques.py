@@ -353,6 +353,160 @@ class iRCompExperiment(PotentiostatExperiment):
             ix = inx
 
 
+class EisExperiment(PotentiostatExperiment):
+    # TODO documentation
+    def __init__(self,
+                 vs_initial=0, #depends on the molecule
+                 vs_final=0, #depends on the molecule
+                 Initial_Voltage_step=0,
+                 Final_Voltage_step=0,
+                 Duration_step=0.5,
+                 Step_number=41,
+                 Record_every_dT=0.25,
+                 Record_every_dI=0.1,
+                 Final_frequency=0,
+                 Initial_frequency=0,
+                 sweep=True,
+                 Amplitude_Voltage=0.5,
+                 Frequency_number=15,
+                 Average_N_times=5,
+                 Correction=False,
+                 Wait_for_steady=0,
+                 time_out=TIME_OUT,
+                 load_firm=True):
+        super().__init__(15, time_out=time_out, load_firm=load_firm, cut_beginning=0, cut_end=0)
+
+        # Initialize Parameters
+        self.vs_initial = vs_initial
+        self.vs_final = vs_final
+        self.Initial_Voltage_step = Initial_Voltage_step
+        self.Final_Voltage_step = Final_Voltage_step
+        self.Duration_step = Duration_step
+        self.Step_number = Step_number
+        self.Record_every_dT = Record_every_dT
+        self.Record_every_dI = Record_every_dI
+        self.Final_frequency = Final_frequency
+        self.Initial_frequency = Initial_frequency
+        self.sweep = sweep
+        self.Amplitude_Voltage = Amplitude_Voltage
+        self.Frequency_number = Frequency_number
+        self.Average_N_times = Average_N_times
+        self.Correction = Correction
+        self.Wait_for_steady = Wait_for_steady
+
+        # Set Parameters
+        self.params = self.parameterize()
+        self.data = []
+
+
+    @property
+    def tech_file(self):
+        # pick the correct ecc file based on the instrument family
+        return 'peis.ecc' if self.is_VMP3 else 'peis4.ecc'
+
+    def parameterize(self):
+        iR_params = {
+            'vs_initial': self.vs_initial,
+            'vs_final': self.vs_final,
+            'Initial_Voltage_step': self.Initial_Voltage_step,
+            'Final_Voltage_step': self.Final_Voltage_step,
+            'Duration_step': self.Duration_step,
+            'Step_number': self.Step_number,
+            'Record_every_dT': self.Record_every_dT,
+            'Record_every_dI': self.Record_every_dI,
+            'Final_frequency': self.Final_frequency,
+            'Initial_frequency': self.Initial_frequency,
+            'sweep': self.sweep,
+            'Amplitude_Voltage': self.Amplitude_Voltage,
+            'Frequency_number': self.Frequency_number,
+            'Average_N_times': self.Average_N_times,
+            'Correction': self.Correction,
+            'Wait_for_steady': self.Wait_for_steady
+        }
+
+        exp_params = list()
+
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_initial'], self.vs_initial))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_final'], self.vs_final))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_Voltage_step'], self.Initial_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_Voltage_step'], self.Final_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Duration_step'], self.Duration_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Step_number'], self.Step_number))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dT'], self.Record_every_dT))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dI'], self.Record_every_dI))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_frequency'], self.Final_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_frequency'], self.Initial_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], self.sweep))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Amplitude_Voltage'], self.Amplitude_Voltage))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Frequency_number'], self.Frequency_number))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Average_N_times'], self.Average_N_times))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Correction'], self.Correction))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Wait_for_steady'], self.Wait_for_steady))
+
+        # make the technique parameter array
+        ecc_params = make_ecc_parms(self.k_api, *exp_params)
+        return ecc_params
+
+    @property
+    def parsed_data(self, strict_error=False):
+        extracted_data = []
+        for data_step in self.data:
+            current_values, data_info, data_record = data_step
+            tech_name = TECH_ID(data_info.TechniqueID).name
+            if data_info.NbCols != self.nb_words:
+                if strict_error:
+                    raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+                continue
+            ix = 0
+            for _ in range(data_info.NbRows):
+                # progress through record
+                inx = ix + data_info.NbCols
+                row = data_record[ix:inx]
+                freq, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
+                    abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
+
+                # compute timestamp in seconds
+                t = self.k_api.ConvertNumericIntoSingle(t)
+                # Ewe and current as floats
+                Freq = self.k_api.ConvertNumericIntoSingle(freq)
+                abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+                abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
+                abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+                abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
+                i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                i_range = self.k_api.ConvertNumericIntoSingle(i_range)
+                phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+                phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
+                                       'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
+                ix = inx
+
+        return extracted_data
+
+    def to_txt(self, outfile, header='', note=''):
+        extracted_data = self.parsed_data
+        df = pd.DataFrame(extracted_data)
+        df.to_csv(outfile)
+
+    def experiment_print(self, data_info, data_record):
+        print("-------------------time / frequency / current-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            row = data_record[ix:inx]
+            t = self.k_api.ConvertNumericIntoSingle(row[-2])
+            freq = self.k_api.ConvertNumericIntoSingle(row[0])
+            curr = self.k_api.ConvertNumericIntoSingle(row[5])
+            print('-------------------{} / {} / {}-------------------------'.format(t, freq, curr))
+            ix = inx
+
+
 class CpExperiment(PotentiostatExperiment):
     """
     Class to run Chrono-Potentiometry technique experiments
@@ -577,7 +731,7 @@ class CvExperiment(PotentiostatExperiment):
                 Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
                 i = self.k_api.ConvertNumericIntoSingle(i_raw)
                 # apply iR compensation #TODO implement the rcomp %
-                Ewe = Ewe - i*self.rcomp_level*0.0085
+                Ewe = Ewe - i*self.rcomp_level*0.85
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'cycle': cycle})
                 ix = inx
@@ -627,5 +781,5 @@ if __name__ == "__main__":
         experiment.run_experiment()
         parsed_data = experiment.parsed_data
         data.append(parsed_data[0])
-    with open(r'C:/Users/Lab/D3talesRobotics/roboticsUI/robotics_api/workflows/actions/examples/iR_testing/ir_test_3.json', 'w') as fn:
+    with open(r'something', 'w') as fn:
         json.dump(data, fn)

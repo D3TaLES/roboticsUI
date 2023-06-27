@@ -26,11 +26,28 @@ class EF2Experiment(ProcessExpFlowObj):
 
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
 
+    @staticmethod
+    def setup_task(collect_task, default_analysis="cv"):
+        if "_cv_" in collect_task.name or "electrode" in collect_task.name:
+            analysis = "cv"
+        elif "_ir_" in collect_task.name:
+            analysis = "ir"
+        # TODO setup more instruments
+        else:
+            analysis = default_analysis
+        task_dict = copy.deepcopy(collect_task.__dict__)
+        task_dict["name"] = f"setup_{analysis}"
+        new_task = dict2obj(task_dict)
+        return new_task
+
     @property
     def task_clusters(self):
         all_tasks, task_cluster = [], []
-        previous_name = ""
-        for task in self.workflow:
+        if "collect" in self.workflow[0].name:
+            task_cluster.append(self.setup_task(self.workflow[0]))
+        for i, task in enumerate(self.workflow):
+            previous_name = self.workflow[i - 1].name if i > 0 else ""
+            next_name = self.workflow[i + 1].name if i + 1 < len(self.workflow) else ""
             if "process" in task.name:
                 all_tasks.append(task_cluster) if task_cluster else None
                 all_tasks.append([task])
@@ -40,9 +57,12 @@ class EF2Experiment(ProcessExpFlowObj):
                 task_cluster = [task]
             else:
                 task_cluster.append(task)
-            previous_name = task.name
+
+            if "collect" in next_name and "collect" not in task.name:
+                task_cluster.append(self.setup_task(self.workflow[i + 1]))
+
         all_tasks.append(task_cluster) if task_cluster else None
-        # print([[t.name for t in c] for c in all_tasks])
+        print([[t.name for t in c] for c in all_tasks])
         return all_tasks
 
     @property
@@ -92,8 +112,11 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_data": RunCV,
             "process_cv_data": CVProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
+            "collect_electrode_test": TestElectrode,  # TODO remove eventually
             "collect_electrode_test_data": TestElectrode,
             "collect_cv_benchmark_data": BenchmarkCV,
+
+            "setup_cv": SetupPotentiostat,
         }
 
 

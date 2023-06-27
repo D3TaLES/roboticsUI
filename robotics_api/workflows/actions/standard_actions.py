@@ -181,10 +181,13 @@ class VialMove(VialStatus):
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
 
-    def get_vial(self, throw_error=False):
+    def retrieve(self, throw_error=False):
         success = False
         if self.current_location == "robot_grip":
-            return True
+            if StationStatus("robot_grip").current_content == self.id:
+                return True
+            warnings.warn(f"Vial {self.id} location is listed as robot_grip, but robot grip current_content is "
+                          f"listed as {StationStatus('robot_grip').current_content}.")
         elif "potentiostat" in self.current_location:
             if check_robot():
                 success = snapshot_move(SNAPSHOT_HOME)  # Start at home
@@ -199,11 +202,12 @@ class VialMove(VialStatus):
             raise Exception(f"Vial {self.id} was not successfully retrieved.")
         return success
 
-    def place_vial(self, target_location, throw_error=False):
+    def place(self, target_location, throw_error=False):
         success = False
+        target_location = self.home_snapshot if target_location == "home" else target_location
         if not self.current_location == "robot_grip":
-            self.get_vial(throw_error=True)
-        elif "potentiostat" in target_location:
+            self.retrieve(throw_error=True)
+        if "potentiostat" in target_location:
             if check_robot():
                 success = snapshot_move(SNAPSHOT_HOME)  # Start at home
                 success += move_vial_to_potentiostat(target_location)
@@ -211,12 +215,30 @@ class VialMove(VialStatus):
         else:
             if check_robot():
                 success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-                success += get_place_vial(self.current_location, action_type='get')
+                success += get_place_vial(target_location, action_type='get')
                 self.update_position(target_location)
         if throw_error and not success:
             raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
 
         return success
+
+    def cap(self):
+        if self.capped:
+            return True
+        else:
+            success = False  # TODO cap vial
+            if success:
+                self.update_capped(True)
+                return True
+
+    def uncap(self):
+        if not self.capped:
+            return True
+        else:
+            success = False  # TODO cap vial
+            if success:
+                self.update_capped(False)
+                return True
 
     def update_position(self, position):
         self.update_location(position)

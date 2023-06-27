@@ -1,8 +1,9 @@
 # Copyright 2022, University of Kentucky
+import abc
 import time
 import warnings
-
 from nanoid import generate
+from six import add_metaclass
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.standard_actions import *
@@ -17,15 +18,10 @@ class EndExperiment(FiretaskBase):
 
     def run_task(self, fw_spec):
         wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
-        vial = VialStatus(r_uuid=self.get("vial_uuid"), wflow_name=wf_name)
-        success = True
-
-        if "potentiostat" in vial.current_location:
-            retrieve_vial_from_potentiostat(vial.current_location)
+        vial = VialMove(r_uuid=self.get("vial_uuid"), wflow_name=wf_name)
 
         # Place vial back home
-        column, row = vial.home_location
-        success += vial_home(row, column, action_type='place')
+        success = vial.place(vial.home_snapshot)
         success += snapshot_move(SNAPSHOT_HOME)
 
         return FWAction(update_spec={"success": success})
@@ -38,20 +34,19 @@ class DispenseLiquid(FiretaskBase):
     def run_task(self, fw_spec):
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         wf_name = fw_spec.get("wflow_name", self.get("wflow_name"))
-        solv = VialStatus(r_uuid=self.get("start_uuid"), wflow_name=wf_name) # TODO figure out solvent stuff
-        vial = VialStatus(r_uuid=self.get("end_uuid"), wflow_name=wf_name)
+        solv = StationStatus(state_id=self.get("start_uuid"), wflow_name=wf_name) # TODO figure out solvent stuff
+        vial = VialMove(r_uuid=self.get("end_uuid"), wflow_name=wf_name)
         metadata = fw_spec.get("metadata", self.get("metadata", {}))
         volume = self.get("volume")
         success = True
 
         # Uncap vial if capped
-        if vial.capped:
-            # TODO uncap vial
-            vial.update_capped(False)
+        success += vial.uncap
+        if not success:
             BaseException("Vial cap is on! CV cannot be run with cap on.")
 
         # TODO dispense liquid
-        # success += snapshot_move(solv.location_snapshot)
+        # success += vial.place(solv)
 
         # TODO calculate concentration
         metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
@@ -72,8 +67,7 @@ class DispenseSolid(FiretaskBase):
         end_uuid = self.get("end_uuid")
         mass = self.get("mass")
 
-        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        success += get_place_vial(vial.current_location, action_type='get')
+        success = True  # TODO measure solids
 
         updated_specs.update({"success": success})
         return FWAction(update_spec=updated_specs)
@@ -211,6 +205,20 @@ class TestElectrode(FiretaskBase):
         updated_specs.update({"test_electrode_data": test_electrode_data, "success": success,
                               "name": name, "wflow_name": wflow_name})
         return FWAction(update_spec=updated_specs)
+
+
+@explicit_serialize
+class SetupPotentiostat(FiretaskBase):
+    # FireTask for testing electrode cleanliness
+
+    def run_task(self, fw_spec):
+
+        return FWAction(update_spec={})
+
+
+@add_metaclass(abc.ABCMeta)
+class RunPotentiostatBase(FiretaskBase):
+    _fw_name = "RunPotentiostatBase"
 
 
 @explicit_serialize

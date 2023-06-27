@@ -31,6 +31,7 @@ class VialStatus(RobotStatusDB):
 
         if self.id:
             self.home_location = self.id.split("_")
+            self.home_snapshot = os.path.join(SNAPSHOT_DIR, "VialHome_{}_{:02}.json".format(self.home_location[0], int(self.home_location[1])))
             self.experiment_name = self.get_prop("experiment_name")
             self.reagent_uuid = self.get_prop("reagent_uuid")
             self.vial_content = self.get_prop("vial_content") or []
@@ -42,8 +43,7 @@ class VialStatus(RobotStatusDB):
     @property
     def location_snapshot(self):
         if self.current_location == "home":
-            column, row = self.home_location  # Get vial home location
-            return os.path.join(SNAPSHOT_DIR, "VialHome_{}_{:02}.json".format(column, int(row)))
+            return self.home_snapshot
         elif self.current_location == "solv":
             _, solv_idx = self.home_location  # Get solvent location
             return os.path.join(SNAPSHOT_DIR, "Solvent_{:02}.json".format(int(solv_idx)))
@@ -82,7 +82,7 @@ class StationStatus(RobotStatusDB):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, instance: dict = None, override_lists: bool = True,
+    def __init__(self, _id: str = None, state_id: str = None, instance: dict = None, override_lists: bool = True,
                  wflow_name: str = None):
         """
         Initiate class
@@ -91,7 +91,12 @@ class StationStatus(RobotStatusDB):
         :param override_lists: bool,
         :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
         """
-        super().__init__(apparatus_type='stations', _id=_id, instance=instance, override_lists=override_lists)
+        super().__init__(apparatus_type='stations', _id=_id, instance=instance, override_lists=override_lists, wflow_name=wflow_name)
+        if state_id:
+            self.id = self.coll.find_one({"state": state_id}).get("_id")
+            if wflow_name:
+                self.check_wflow_name()
+
         self.available = self.get_prop("available")
         self.state = self.get_prop("state")
         self.current_content = self.get_prop("current_content")
@@ -114,11 +119,18 @@ class StationStatus(RobotStatusDB):
         self.update_status(new_content, "content")
 
 
-def reset_station_db(station_name=None, current_wflow_name=""):
-    all_stations = ["potentiostat_01", "robot_grip"]
+def reset_station_db(station_name=None, reagent_locs=None, current_wflow_name=""):
+    # Check reagent locations 1-to-1 status
+    reagent_locs = reagent_locs or {}
+    if len(reagent_locs.values()) > len(set(reagent_locs.values())):
+        duplicates = {x for x in reagent_locs.values() if reagent_locs.values().count(x) > 1}
+        raise ValueError("More than one reagent is assigned the same station: " + ", ".join(duplicates))
+    reagent_dict = {v: r for r, v in reagent_locs.items()}
+
+    all_stations = ["potentiostat_01", "solvent_01", "robot_grip"]
     stations = [station_name] if station_name else all_stations
     for station in stations:
-        state = "down" if "potentiostat" in station else ""
+        state = "down" if "potentiostat" in station else reagent_dict.get(station, "")
         StationStatus(instance={
             "_id": station,
             "current_wflow_name": current_wflow_name,

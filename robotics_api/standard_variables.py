@@ -5,7 +5,7 @@ from pathlib import Path
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = False
+RUN_CV = True
 CAPPED_DEFAULT = False
 
 # ---------  DEFAULT CONDITIONS -------------

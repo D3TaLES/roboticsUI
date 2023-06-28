@@ -42,21 +42,13 @@ class InitializeStatusDB(FiretaskBase):
     # FireTask for initializing status database contents
 
     def run_task(self, fw_spec):
-        reagent_locations = fw_spec.get("reagent_locations") or self.get("reagent_locations") or {}
-        experiment_locations = fw_spec.get("experiment_locations") or self.get("experiment_locations") or {}
-        wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
-        reset_vial_db(reagent_locations, experiment_locations, current_wflow_name=wflow_name)
-        reset_station_db(current_wflow_name=wflow_name)
+        reagents = fw_spec.get("reagents") or self.get("reagents") or {}
+        experiments = fw_spec.get("experiment_locations") or self.get("experiment_locations") or {}
+        wf_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
+        reset_reagent_db(reagents, current_wflow_name=wf_name)
+        reset_vial_db(experiments, current_wflow_name=wflow_name)
+        reset_station_db(current_wflow_name=wf_name)
         return FWAction(update_spec={"success": True})
-
-
-@explicit_serialize
-class EndWorkflow(FiretaskBase):
-    # FireTask for ending a workflow
-    def run_task(self, fw_spec):
-        # Place vial back home
-        success = snapshot_move(SNAPSHOT_END_HOME)
-        return FWAction(update_spec={"success": success})
 
 
 @explicit_serialize
@@ -66,7 +58,7 @@ class ProcessCVBenchmarking(FiretaskBase):
     def run_task(self, fw_spec):
         updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
-        name = fw_spec.get("name") or self.get("name")
+        name = fw_spec.get("full_name") or self.get("full_name")
         cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         if not cv_locations:
@@ -128,7 +120,7 @@ class CVProcessor(FiretaskBase):
         cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
-        name = fw_spec.get("name") or self.get("name")
+        name = fw_spec.get("full_name") or self.get("full_name")
 
         if not cv_locations:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")

@@ -5,7 +5,7 @@ from pathlib import Path
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = True
+RUN_CV = False
 CAPPED_DEFAULT = False
 
 # ---------  DEFAULT CONDITIONS -------------
@@ -58,3 +58,12 @@ PEAK_WIDTH = 0.5
 ARDUINO_DEFAULT_ADDRESS = "COM4"
 ELEVATOR_ADDRESS = "COM4"
 STIR_PLATE_ADDRESS = "COM4"
+
+# ---------  LOCATION VARIABLES -------------
+STATIONS = ["potentiostat_01", "solvent_01", "robot_grip"]
+VIALS = [
+    "A_01", "A_02", "A_03", "A_04",
+    "B_01", "B_02", "B_03", "B_04",
+    "C_01", "C_02", "C_03", "C_04",
+]
+SOLVENT_VIALS = {"solvent_01": "A_02"}

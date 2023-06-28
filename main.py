@@ -113,7 +113,7 @@ class SetLocations(tk.Toplevel):
             dropdown_txt = tk.StringVar()
             dropdown_txt.set(self.reagent_options[0])
             dropdown = tk.OptionMenu(self, dropdown_txt, *self.reagent_options)
-            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=10)
+            dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=15)
             dropdown.grid(column=1, row=i + 3)
             self.reagents_dict[reagent[1]] = dropdown_txt
 

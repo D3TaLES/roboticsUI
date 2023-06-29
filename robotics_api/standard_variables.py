@@ -2,11 +2,15 @@ import os
 import math
 from pathlib import Path
 
+RUN_CV = False
+CAPPED_DEFAULT = False
+CAPPED_ERROR = False
+
+# ---------  ROBOT VARIABLES -------------
+KINOVA_01_IP = "192.168.1.10"
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 30
 RAISE_AMOUNT = 0.05
-RUN_CV = False
-CAPPED_DEFAULT = False
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -18,8 +22,8 @@ DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS **
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
 SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
-SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "Home.json")
-SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "EndHome.json")
+SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
+SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
 
 # ---------  POTENTIOSTAT VARIABLES -------------
 
@@ -56,11 +60,11 @@ PEAK_WIDTH = 0.5
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_DEFAULT_ADDRESS = "COM4"
-ELEVATOR_ADDRESS = "COM4"
-STIR_PLATE_ADDRESS = "COM4"
+ELEVATOR_01_ADDRESS = "COM4"
+STIR_PLATE_01_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
-STATIONS = ["potentiostat_01", "solvent_01", "robot_grip"]
+STATIONS = ["potentiostat_01", "solvent_01", "robot_grip", "stir-heat_01"]
 VIALS = [
     "A_01", "A_02", "A_03", "A_04",
     "B_01", "B_02", "B_03", "B_04",

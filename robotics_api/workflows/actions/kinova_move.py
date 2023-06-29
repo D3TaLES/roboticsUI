@@ -140,7 +140,7 @@ def move_gripper(target_position=None):
     finished = True
 
     # Create connection to the device and get the router
-    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create connection to the device and get therouter
         with utilities.DeviceConnection.createUdpConnection(connector) as router_real_time:
@@ -175,7 +175,7 @@ def snapshot_move(snapshot_file=None, target_position=None):
     finished = True
 
     # Create connection to the device and get the router
-    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create required services
         base = BaseClient(router)
@@ -225,7 +225,7 @@ def sequence_move(sequence_file):
     finished = True
 
     # Create connection to the device and get the router
-    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create required services
         base = BaseClient(router)
@@ -289,7 +289,7 @@ def twist_hand(linear_x=0,  linear_y=0,  linear_z=0,
     # Import the utilities' helper module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     # Create connection to the device and get the router
-    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create required services
         base = BaseClient(router)

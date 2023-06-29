@@ -19,11 +19,11 @@ class EF2Experiment(ProcessExpFlowObj):
         self.wflow_name = wflow_name
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.solv_id = get_id(self.solvent) or "no_solvent"
-        self.exp_params = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
-                           "mol_id": self.molecule_id, "solv_id": self.solv_id}
+        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
         self.end_exp = None
 
-        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
+        self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
+                         "mol_id": self.molecule_id, "solv_id": self.solv_id, "metadata": self.metadata}
 
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):
@@ -43,7 +43,7 @@ class EF2Experiment(ProcessExpFlowObj):
     def task_clusters(self):
         all_tasks, task_cluster = [], []
         if "collect" in self.workflow[0].name:
-            task_cluster.append(self.collect_task(self.workflow[0], tag="setup"))
+            task_cluster = [self.collect_task(self.workflow[0], tag="setup")]
         for i, task in enumerate(self.workflow):
             # Get previous and next non-processing name
             next_name = self.workflow[i + 1].name if i + 1 < len(self.workflow) else ""
@@ -70,7 +70,8 @@ class EF2Experiment(ProcessExpFlowObj):
             else:
                 task_cluster.append(task)
                 if "collect" in next_name and "collect" not in task.name:
-                    task_cluster.append(self.collect_task(self.workflow[i + 1], tag="setup"))
+                    all_tasks.append(task_cluster) if task_cluster else None
+                    task_cluster = [self.collect_task(self.workflow[i + 1], tag="setup")]
 
             # Finish experiment if at end
             if "collect" in task.name and not next_name:
@@ -89,15 +90,23 @@ class EF2Experiment(ProcessExpFlowObj):
         for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
             tasks = [self.get_firetask(task) for task in cluster]
-            priority = self.priority-2 if i == 0 else self.priority-1 if "process" in fw_type else self.priority
+            priority = self.priority - 2 if i == 0 else self.priority - 1 if "process" in fw_type else self.priority
             if "process" in fw_type:
-                fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=parent, exp_params=self.exp_params,
-                                  metadata=self.metadata, mol_id=self.molecule_id, priority=priority)
+                fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=parent,
+                                  fw_specs=self.fw_specs, mol_id=self.molecule_id, priority=priority)
                 parent = fw if "benchmark" in fw_type else parent
+            elif "setup" in fw_type:
+                name = "{}_{}".format(self.full_name, fw_type)
+                fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=priority,
+                                            analysis=fw_type.split("_")[1], parents=parent, fw_specs=self.fw_specs)
+                parent = fw
+            elif "collect" in fw_type:
+                fw = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), wflow_name=self.wflow_name,
+                                      priority=priority, parents=parent, fw_specs=self.fw_specs)
+                parent = fw
             else:
-                name = fw_type if "collect" in fw_type else "prep"
-                fw = ExpFirework(tasks, name="{}_{}".format(self.full_name, name), wflow_name=self.wflow_name,
-                                 priority=priority, parents=parent, exp_params=self.exp_params)
+                fw = RobotFirework(tasks, name="{}_robot".format(self.full_name), wflow_name=self.wflow_name,
+                                   priority=priority, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
                 self.end_exp = fw
             fireworks.append(fw)

@@ -29,10 +29,10 @@ class InitializeRobot(FiretaskBase):
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
         # Create connection to the device and get the router
-        # connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
-        # with DeviceConnection.createTcpConnection(connector) as router:
-        #     BaseClient(router)
-        #     BaseCyclicClient(router)
+        connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+        with DeviceConnection.createTcpConnection(connector) as router:
+            BaseClient(router)
+            BaseCyclicClient(router)
 
         return FWAction(update_spec={"success": True})
 
@@ -43,11 +43,11 @@ class InitializeStatusDB(FiretaskBase):
 
     def run_task(self, fw_spec):
         reagents = fw_spec.get("reagents") or self.get("reagents") or {}
-        experiments = fw_spec.get("experiment_locations") or self.get("experiment_locations") or {}
-        wf_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
-        reset_reagent_db(reagents, current_wflow_name=wf_name)
+        experiments = fw_spec.get("experiment_vials") or self.get("experiment_vials") or {}
+        wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
+        reset_reagent_db(reagents, current_wflow_name=wflow_name)
         reset_vial_db(experiments, current_wflow_name=wflow_name)
-        reset_station_db(current_wflow_name=wf_name)
+        reset_station_db(current_wflow_name=wflow_name)
         return FWAction(update_spec={"success": True})
 
 
@@ -56,24 +56,23 @@ class ProcessCVBenchmarking(FiretaskBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
+        metadata = fw_spec.get("metadata", {})
+        location_data = fw_spec.get("location_data", {})
+
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
         name = fw_spec.get("full_name") or self.get("full_name")
-        cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
-        cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
+        cv_locations = location_data.get("benchmark_locations")
         if not cv_locations:
             warnings.warn("WARNING! No CV locations found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=dict(**updated_specs))
+            return FWAction(update_spec={"metadata": metadata, "location_data": location_data})
 
         cv_location = cv_locations[-1]
         if not os.path.isfile(cv_location):
             warnings.warn(
                 "WARNING! CV file {} not found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.".format(
                     cv_location))
-            return FWAction(update_spec=dict(**updated_specs))
+            return FWAction(update_spec={"metadata": metadata, "location_data": location_data})
         data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
-        new_location = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_cv.csv")
-        os.rename(cv_location, new_location)
 
         # Plot CV
         image_path = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_plot.png")
@@ -96,9 +95,8 @@ class ProcessCVBenchmarking(FiretaskBase):
 
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
 
-        updated_specs.update({"voltage_sequence": voltage_sequence, "cv_locations": [], "cv_idx": 0,
-                              "benchmark_location": new_location})
-        return FWAction(update_spec=dict(**updated_specs))
+        return FWAction(update_spec={"voltage_sequence": voltage_sequence,
+                                     "metadata": metadata, "location_data": location_data})
 
 
 @explicit_serialize
@@ -106,25 +104,18 @@ class CVProcessor(FiretaskBase):
     # FireTask for processing CV file
 
     def run_task(self, fw_spec):
-        updated_specs = {k: v for k, v in fw_spec.items() if not k.startswith("_")}
-        metadata = fw_spec.get("metadata") or self.get("metadata", {})  # TODO add metadata to fw_specs
-        meta_update = {"redox_mol_concentration": metadata.get("redox_mol_concentration", DEFAULT_CONCENTRATION),
-                       "temperature": metadata.get("temperature", DEFAULT_TEMPERATURE),
-                       "working_electrode_surface_area": metadata.get("working_electrode_surface_area",
-                                                                      DEFAULT_WORKING_ELECTRODE_AREA),
-                       }
-        metadata.update(meta_update)
+        metadata = fw_spec.get("metadata", {})
+        location_data = fw_spec.get("location_data", {})
 
-        test_electrode_data = fw_spec.get("test_electrode_data") or self.get("test_electrode_data", [])
-        cv_locations = fw_spec.get("cv_locations") or self.get("cv_locations", [])
-        cv_locations = cv_locations if isinstance(cv_locations, list) else [cv_locations]
+        solv_locations = location_data.get("solv_locations")
+        cv_locations = location_data.get("cv_locations")
         processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         mol_id = fw_spec.get("mol_id") or self.get("mol_id")
         name = fw_spec.get("full_name") or self.get("full_name")
 
         if not cv_locations:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
-            return FWAction(update_spec=dict(**updated_specs))
+            return FWAction(update_spec={"metadata": metadata, "location_data": location_data})
 
         submission_info = {
             "processing_id": processing_id,
@@ -164,8 +155,8 @@ class CVProcessor(FiretaskBase):
                 D3Database(database="robotics", collection_name="experimentation", instance=data).insert(_id)
             return data
 
-        for test_loc in test_electrode_data:
-            process_local_data(test_loc, insert=False)
+        for solv_loc in solv_locations:
+            process_local_data(solv_loc, insert=False)
 
         processed_data = []
         for cv_location in cv_locations:
@@ -198,7 +189,8 @@ class CVProcessor(FiretaskBase):
             fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
 
         return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data,
-                                     'processing_ids': [d.get("_id") for d in processed_data], "metadata_id": metadata_id})
+                                     'processing_ids': [d.get("_id") for d in processed_data],
+                                     "metadata_id": metadata_id, "metadata": metadata, "location_data": location_data})
 
 
 @explicit_serialize

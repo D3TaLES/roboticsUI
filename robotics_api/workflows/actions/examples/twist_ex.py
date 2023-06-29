@@ -23,6 +23,7 @@ from kortex_api.SessionManager import SessionManager
 
 from kortex_api.autogen.messages import Session_pb2, Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
+from robotics_api.standard_variables import *
 from robotics_api.workflows.actions import utilities
 
 # Maximum allowed waiting time during actions (in seconds)
@@ -119,7 +120,7 @@ def main():
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     from argparse import Namespace
 
-    connector = Namespace(ip="192.168.1.10", username="admin", password="admin")
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create required services
         base = BaseClient(router)

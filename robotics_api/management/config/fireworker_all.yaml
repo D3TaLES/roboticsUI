@@ -1,4 +1,4 @@
 name: robotics_pc
-category: ["robotics", "processing"]
+category: ["robotics", "processing", "instrument_setup", "instrument"]
 query: "{}"
 env:

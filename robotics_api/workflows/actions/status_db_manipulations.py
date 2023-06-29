@@ -1,3 +1,4 @@
+import time
 from robotics_api.standard_variables import *
 from d3tales_api.D3database.d3database import RobotStatusDB
 
@@ -8,33 +9,43 @@ class VialStatus(RobotStatusDB):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, exp_name: str = None, instance: dict = None,
-                 override_lists: bool = True, wflow_name: str = None):
+    def __init__(self, _id: str = None, exp_name: str = None, **kwargs):
         """
         Initiate class
         :param _id: str, _id
         :param exp_name: str, experiment name
-        :param instance: dict, instance to insert or validate
-        :param override_lists: bool,
-        :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
         """
-        super().__init__(apparatus_type='vials', _id=_id, instance=instance, override_lists=override_lists)
+        super().__init__(apparatus_type='vials', _id=_id, **kwargs)
         if exp_name:
-            self.id = self.coll.find_one({"experiment_name": exp_name}).get("_id")
-            if wflow_name:
+            print(exp_name)
+            self.id = (self.coll.find_one({"experiment_name": exp_name}) or {}).get("_id")
+            if not self.id:
+                raise NameError(f"No vial is associated with experiment name {exp_name}.")
+            if kwargs.get("wflow_name"):
                 self.check_wflow_name()
 
         if self.id:
+            self.experiment_name = self.get_prop("experiment_name")
+            self.current_wflow_name = self.get_prop("current_wflow_name")
             self.home_location = self.id.split("_")
             self.home_snapshot = os.path.join(SNAPSHOT_DIR, "VialHome_{}_{:02}.json".format(self.home_location[0],
                                                                                             int(self.home_location[1])))
-            self.experiment_name = self.get_prop("experiment_name")
-            self.reagent_uuid = self.get_prop("reagent_uuid")
-            self.vial_content = self.get_prop("vial_content") or []
-            self.capped = self.get_prop("capped")
-            self.current_location = self.get_prop("current_location")
-            self.location_history = self.get_prop("location_history") or []
-            self.current_wflow_name = self.get_prop("current_wflow_name")
+
+    @property
+    def vial_content(self):
+        return self.get_prop("vial_content") or []
+
+    @property
+    def capped(self):
+        return self.get_prop("capped") or []
+
+    @property
+    def current_location(self):
+        return self.get_prop("current_location") or []
+
+    @property
+    def location_history(self):
+        return self.get_prop("location_history") or []
 
     def update_capped(self, value: bool):
         """
@@ -69,40 +80,68 @@ class StationStatus(RobotStatusDB):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, state_id: str = None, instance: dict = None, override_lists: bool = True,
-                 wflow_name: str = None):
+    def __init__(self, _id: str = None, state_id: str = None, **kwargs):
         """
         Initiate class
         :param _id: str, _id
-        :param instance: dict, instance to insert or validate
-        :param override_lists: bool,
-        :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
         """
-        super().__init__(apparatus_type='stations', _id=_id, instance=instance, override_lists=override_lists,
-                         wflow_name=wflow_name)
+        super().__init__(apparatus_type='stations', _id=_id, **kwargs)
         if state_id:
             self.id = self.coll.find_one({"state": state_id}).get("_id")
-            if wflow_name:
+            if kwargs.get("wflow_name"):
                 self.check_wflow_name()
         if self.id:
             self.type = self.id.split("_")[0]
-            self.available = self.get_prop("available")
-            self.state = self.get_prop("state")
-            self.current_content = self.get_prop("current_content")
-            self.content_history = self.get_prop("content_history") or []
             self.current_wflow_name = self.get_prop("current_wflow_name")
-
             self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json")
             self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json")
             self.raise_amount = RAISE_AMOUNT
 
-    def get_available(self, name_str):
+    @property
+    def available(self):
+        return self.get_prop("available")
+
+    @property
+    def state(self):
+        return self.get_prop("state")
+
+    @property
+    def current_content(self):
+        return self.get_prop("current_content")
+
+    @property
+    def content_history(self):
+        return self.get_prop("content_history")
+
+    def place_vial(self, vial, **kwargs):
+        return
+
+    def retrieve_vial(self, vial, **kwargs):
+        return
+
+    def get_all_available(self, name_str):
         """
-        Get available prop for instance with _id
+        Get all available stations with name_str in name
         :param name_str: str, name string
         :return: prop
         """
         return self.coll.find({"_id": {"$regex": name_str}}).distinct("_id")
+
+    def get_first_available(self, name_str, wait=True):
+        """
+        Get first available stations with name_str in name
+        :param name_str: str, name string
+        :param wait: bool, wait for available station if True
+        :return: prop
+        """
+        available_stations = self.get_all_available(name_str)
+        if not wait:
+            return available_stations[0] if available_stations else None
+        while not available_stations:
+            available_stations = self.get_all_available(name_str)
+            print(f"Waiting for available {name_str} station...")
+            time.sleep(10)
+        return available_stations[0]
 
     def update_available(self, value: bool):
         """
@@ -126,6 +165,13 @@ class StationStatus(RobotStatusDB):
         """
         self.update_status(new_content, "content")
 
+    def empty(self):
+        """
+        Empty station content and update availability
+        """
+        self.update_status("", "content")
+        self.update_available(True)
+
 
 class ReagentStatus(RobotStatusDB):
     """
@@ -133,14 +179,8 @@ class ReagentStatus(RobotStatusDB):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, instance: dict = None, wflow_name: str = None):
-        """
-        Initiate class
-        :param _id: str, _id
-        :param instance: dict, instance to insert or validate
-        :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
-        """
-        super().__init__(apparatus_type='reagents', _id=_id, instance=instance, wflow_name=wflow_name)
+    def __init__(self, **kwargs):
+        super().__init__(apparatus_type='reagents', **kwargs)
 
         self.description = self.get_prop("description")
         self.location = self.get_prop("location")
@@ -186,10 +226,12 @@ def reset_station_db(current_wflow_name=""):
 
 def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_DEFAULT):
     # Check experiment locations 1-to-1 status
+    experiment_locs.update(SOLVENT_VIALS)
     if check_duplicates(experiment_locs.values()):
         raise ValueError(
             "More than one experiment is assigned the same vial(s): " + check_duplicates(experiment_locs.values()))
     exp_dict = {v: r for r, v in experiment_locs.items()}
+    print("EXPERIMENT DICT: ", exp_dict)
 
     # Set up vial locations DB
     VialStatus().coll.delete_many({})
@@ -206,8 +248,7 @@ def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_
 
 
 if __name__ == "__main__":
-    wflow_name = ""  # "8CVCollect_BenchmarkCV_test1_single_test"
-    # reset_station_db()
+    wf_name = "8CVCollect_BenchmarkCV_test1_single_test"
     # reset_vial_db({'ae70a9cb-90f6-49ff-8b77-a192be06b703': 'A_02', 'cca7e96e-44e5-423f-9946-7fe951ab5170': 'A_03',
     #                'f3f68664-1c70-45b4-bf77-02a1364bfe89': 'A_04'})
     # VialStatus("A_02").update_location("potentiostat_01")
@@ -215,6 +256,9 @@ if __name__ == "__main__":
     # StationStatus("potentiostat_01").update_available(True)
     # print(VialStatus("A_02", wflow_name=wflow_name).capped)
     # print(VialStatus(r_uuid="550c6dd3-af09-4351-ae1d-deea22ebc41f", wflow_name=wflow_name).capped)
+    experiments = {
+        "exp01": "A_04"
+    }
     reagents = [
         {
             "_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
@@ -239,4 +283,6 @@ if __name__ == "__main__":
             "type": "solvent"
         }
     ]
-    reset_reagent_db(reagents, current_wflow_name=wflow_name)
+    reset_reagent_db(reagents, current_wflow_name=wf_name)
+    reset_vial_db(experiments, current_wflow_name=wf_name)
+    reset_station_db(current_wflow_name=wf_name)

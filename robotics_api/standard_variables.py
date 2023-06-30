@@ -18,6 +18,11 @@ DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 1  # radius assumed in mm
 DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2)) * 0.01  # area given in cm^2
 
+TIME_UNIT = "s"
+MASS_UNIT = "mg"
+VOLUME_UNIT = "mL"
+TEMPERATURE_UNIT = "K"
+
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")

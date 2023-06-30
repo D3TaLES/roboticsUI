@@ -378,7 +378,7 @@ class PotentiostatStation(StationStatus):
                 self.update_state("down")
                 return True
 
-    def retrieve_vial(self, vial: VialMove):
+    def retrieve_vial(self, vial: VialMove, **kwargs):
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content != vial_id:
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
@@ -434,31 +434,16 @@ if __name__ == "__main__":
         print("{}: {} [{}]".format(port, desc, hwid))
 
     # VialMove(_id="A_02").place_station(PotentiostatStation("potentiostat_01"))
-    print(VialMove(_id="A_04").current_location)
-
-    # stir_plate(stir_time=10)
 
     # screw_lid(screw=False)
     # screw_lid(screw=True)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Potentiostat.json"), target_position='open')
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json"), target_position=VIAL_GRIP_TARGET)
-    #
-    # snapshot_move(SNAPSHOT_HOME)
-    # vial_home("4", "C", action_type='get')
-    # snapshot_move(SNAPSHOT_HOME)
-    #
-    # pot_location = os.path.join(SNAPSHOT_DIR, "Potentiostat.json")
-    # pre_pot_location = os.path.join(SNAPSHOT_DIR, "Pre_potentiostat.json")
-    # get_place_vial(pot_location, action_type="place", pre_position_file=pre_pot_location, raise_amount=0.028)
-    # snapshot_move(SNAPSHOT_HOME)
     #
     # cv_elevator(endpoint="up")
     # cv_elevator(endpoint="down")
     #
-    # get_place_vial(pot_location, action_type="get", pre_position_file=pre_pot_location, raise_amount=0.028)
     # snapshot_move(SNAPSHOT_HOME)
-    # vial_home("4", "C", action_type='place')
-    # snapshot_move(SNAPSHOT_HOME)
-    #
     # snapshot_move(SNAPSHOT_END_HOME)
+
+    # r = ReagentStatus(r_name="Acetonitrile")
+    # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
+

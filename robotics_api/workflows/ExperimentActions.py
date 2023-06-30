@@ -54,7 +54,7 @@ class DispenseLiquid(RoboticsBase):
         self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
 
         if solvent.location == "experiment_vial":
-            self.exp_vial.update_content(solvent.id)
+            self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
         else:
             self.success += self.exp_vial.place_station(solv_station)
             self.success += solv_station.dispense(volume)
@@ -74,7 +74,7 @@ class DispenseSolid(RoboticsBase):
         mass = self.get("mass")
         reagent = ReagentStatus(_id=self.get("start_uuid"))
         if reagent.location == "experiment_vial":
-            self.exp_vial.update_content(reagent.id)
+            self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
         else:
             pass  # TODO Dispense solid
 

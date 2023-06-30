@@ -1,5 +1,6 @@
 import time
 from robotics_api.standard_variables import *
+from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.D3database.d3database import RobotStatusDB
 
 
@@ -62,15 +63,44 @@ class VialStatus(RobotStatusDB):
         """
         self.update_status(new_location, "location")
 
-    def update_content(self, new_content):
+    def update_vial_content(self, new_content):
         """
         Update status for a vial location or station vial
-        :param new_content: str, new vial content
+        :param new_content: dict, new vial content
         """
-        vial_content = self.vial_content
-        vial_content.append(new_content)
+        self.vial_content.append(new_content)
+        self.insert(self.id, override_lists=True, instance={"vial_content": self.vial_content})
+
+    def clear_vial_content(self):
+        """
+        Clear vial content
+        """
+        self.insert(self.id, override_lists=True, instance={"vial_content": []})
+
+    def add_reagent(self, reagent, amount, default_unit):
+        """
+        Update status for a vial location or station vial
+        :param reagent: str or obj, new reagent for vial content
+        :param amount: str or float, amount for new reagent
+        :param default_unit: str, default unit for reagent amount
+        """
+        reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+        if not reagent:
+            raise NameError("No reagent {} exists in the reagent database.".format(reagent))
+        existing_reagent = [i for i in self.vial_content if i.get("reagent_uuid") == reagent.id]
+        other_reagents = [i for i in self.vial_content if i.get("reagent_uuid") != reagent.id]
+        if existing_reagent:
+            old_amount = unit_conversion(existing_reagent[0].get("amount"), default_unit=default_unit)
+            new_amount = old_amount + unit_conversion(amount, default_unit=default_unit)
+        else:
+            new_amount = unit_conversion(amount, default_unit=default_unit)
+        new_vial_content = [{
+            "reagent_uuid": reagent.id,
+            "name": reagent.name,
+            "amount": f"{new_amount}{default_unit}"
+        }]
         self.insert(self.id, override_lists=True, instance={
-            "vial_content": vial_content
+            "vial_content": other_reagents + new_vial_content
         })
 
 
@@ -179,8 +209,18 @@ class ReagentStatus(RobotStatusDB):
     Copyright 2021, University of Kentucky
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, r_name=None, r_smiles=None, **kwargs):
         super().__init__(apparatus_type='reagents', **kwargs)
+        if r_name:
+            self.id = (self.coll.find_one({"name": r_name}) or {}).get("_id")
+            if not self.id:
+                raise NameError(f"No reagent is associated with name {r_name}.")
+        elif r_smiles:
+            self.id = (self.coll.find_one({"smiles": r_smiles}) or {}).get("_id")
+            if not self.id:
+                raise NameError(f"No reagent is associated with smiles {r_smiles}.")
+        if self.id and kwargs.get("wflow_name"):
+            self.check_wflow_name()
 
         self.description = self.get_prop("description")
         self.location = self.get_prop("location")
@@ -283,6 +323,6 @@ if __name__ == "__main__":
             "type": "solvent"
         }
     ]
-    reset_reagent_db(reagents, current_wflow_name=wf_name)
-    reset_vial_db(experiments, current_wflow_name=wf_name)
-    reset_station_db(current_wflow_name=wf_name)
+    # reset_reagent_db(reagents, current_wflow_name=wf_name)
+    # reset_vial_db(experiments, current_wflow_name=wf_name)
+    # reset_station_db(current_wflow_name=wf_name)

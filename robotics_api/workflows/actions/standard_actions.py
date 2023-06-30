@@ -352,7 +352,10 @@ class PotentiostatStation(StationStatus):
             raise Exception("To operate a potentiostat, a potentiostat name must be provided.")
         if "potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
-        self.elevator_address = eval("ELEVATOR_{:02d}_ADDRESS".format(int(self.id.split("_")[-1])))
+        self.potentiostat = self.id.split("_")[-2]
+        self.p_channel = int(self.id.split("_")[-1])
+        self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
+        self.elevator_address = eval(f"ELEVATOR_{self.potentiostat}_{self.p_channel:02d}_ADDRESS")
         self.raise_amount = raise_amount
 
     def initiate_cv(self, vial: VialMove = None):

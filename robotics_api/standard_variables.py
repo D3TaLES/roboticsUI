@@ -33,8 +33,8 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 # ---------  POTENTIOSTAT VARIABLES -------------
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
-POTENTIOSTAT_ADDRESS = "USB0"
-POTENTIOSTAT_CHANNEL = 1
+POTENTIOSTAT_A_ADDRESS = "USB0"
+POTENTIOSTAT_B_ADDRESS = "USB0"
 
 RCOMP_LEVEL = 85
 N_CYCLES = 0
@@ -65,14 +65,25 @@ PEAK_WIDTH = 0.5
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_DEFAULT_ADDRESS = "COM4"
-ELEVATOR_01_ADDRESS = "COM4"
+ELEVATOR_A_01_ADDRESS = "COM4"
 STIR_PLATE_01_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
-STATIONS = ["potentiostat_01", "solvent_01", "robot_grip", "stir-heat_01"]
+STATIONS = ["potentiostat_A_01", "solvent_01", "robot_grip", "stir-heat_01"]
 VIALS = [
     "A_01", "A_02", "A_03", "A_04",
     "B_01", "B_02", "B_03", "B_04",
     "C_01", "C_02", "C_03", "C_04",
 ]
 SOLVENT_VIALS = {"solvent_01": "A_02"}
+
+
+# ---------  FIREWORKS VARIABLES -------------
+HOME_DIR = os.path.dirname(os.path.realpath(__file__))
+LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
+LAUNCHPAD = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\launchpad_robot.yaml')
+ROBOT_FWORKER = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
+PROCESS_FWORKER = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')

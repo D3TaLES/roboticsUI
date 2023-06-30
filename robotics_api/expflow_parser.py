@@ -23,7 +23,8 @@ class EF2Experiment(ProcessExpFlowObj):
         self.end_exp = None
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
-                         "mol_id": self.molecule_id, "solv_id": self.solv_id, "metadata": self.metadata}
+                         "mol_id": self.molecule_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
+                         "metadata": self.metadata}
 
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):

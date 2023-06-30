@@ -1,6 +1,7 @@
 # Copyright 2022, University of Kentucky
 import abc
 from six import add_metaclass
+from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.standard_actions import *
@@ -19,14 +20,21 @@ class RoboticsBase(FiretaskBase):
         print(f"EXPERIMENT: {self.exp_name}")
 
         self.success = True
+        self.lpad = LaunchPad().from_file(LAUNCHPAD)
         self.metadata = fw_spec.get("metadata", {})
-        self.location_data = fw_spec.get("location_data", {})
+        self.collection_data = fw_spec.get("collection_data", [])
+        self.processing_data = fw_spec.get("processing_data", [])
 
         self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
         print(f"VIAL: {self.exp_vial}")
 
     def updated_specs(self):
-        return {"success": self.success, "metadata": self.metadata, "location_data": self.location_data}
+        # When updating specs, check for open potentiostat
+        if StationStatus().get_all_available("potentiostat"):
+            paused_fws = lpad.fireworks.find({"state": "PAUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
+            [lpad.rerun_fw(fw) for fw in paused_fws]
+        return {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
+                "processing_data": self.processing_data}
 
 
 @explicit_serialize
@@ -58,9 +66,6 @@ class DispenseLiquid(RoboticsBase):
         else:
             self.success += self.exp_vial.place_station(solv_station)
             self.success += solv_station.dispense(volume)
-
-        # TODO calculate concentration
-        self.metadata.update({"redox_mol_concentration": DEFAULT_CONCENTRATION})
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -155,6 +160,10 @@ class SetupPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
+        # Pause all other setup fireworks
+        setup_fws = self.lpad.fireworks.find({"state": "READY", "name": {"$regex": "_setup_"}}).distinct("fw_id")
+        [self.lpad.pause_fw(fw) for fw in setup_fws]
+
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         if start_reagent.type == "solvent":
@@ -203,7 +212,9 @@ class BenchmarkCV(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        self.location_data.update({"benchmark_locations": []})
+        self.collection_data.append({"cv_tag": "benchmark_cv",
+                                     "vial_contents": [],
+                                     "data_location": ""})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -220,27 +231,26 @@ class RunCV(RoboticsBase):
         collect_params = generate_col_params(voltage_sequence, scan_rate)
 
         # Prep output file info
+        cv_tag = self.metadata.get("cv_tag")
+        cv_vial = self.metadata.get("cv_vial")
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        cv_tag = self.metadata.get("cv_tag")
-        data_path = os.path.join(data_dir,
-                                 time.strftime("{}_%H_%M_%S.csv".format(cv_tag or "exp{:02d}".format(cv_idx))))
+        data_path = os.path.join(data_dir, time.strftime("{}_%H_%M_%S.csv".format(cv_tag or f"exp{cv_idx:02d}")))
 
         # Run CV experiment
         print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
-        potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))  # TODO setup multi potentiostats
-        potentiostat.initiate_cv()
+        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        potent.initiate_cv()
         if RUN_CV:
-            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True)
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True,
+                                potentiostat_address=potent.p_address, potentiostat_channel=potent.p_channel)
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
 
-        locations_name = "{}_locations".format(cv_tag.split("_")[0] if cv_tag else "cv")
-        locations = self.location_data.get(locations_name, [])
-        locations.append(data_path)
-
         self.metadata.update({"cv_tag": ""} if cv_tag else {"cv_idx": cv_idx + 1})
-        self.location_data.update({locations_name: locations})
+        self.collection_data.append({"cv_tag": cv_tag,
+                                     "vial_contents": cv_vial.vial_content,
+                                     "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

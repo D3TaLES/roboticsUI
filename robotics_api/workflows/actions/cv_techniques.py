@@ -52,10 +52,13 @@ def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V
 
 
 class PotentiostatExperiment:
-    def __init__(self, nb_words, time_out=10, load_firm=True, cut_beginning=0, cut_end=0):
+    def __init__(self, nb_words, time_out=10, load_firm=True, cut_beginning=0, cut_end=0,
+                 potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
-        self.id_, self.d_info = self.k_api.Connect(POTENTIOSTAT_ADDRESS, time_out)
+        self.id_, self.d_info = self.k_api.Connect(potentiostat_address, time_out)
+        self.potent_address = potentiostat_address
+        self.potent_channel = potentiostat_channel
         self.cut_beginning = cut_beginning
         self.cut_end = cut_end
         self.time_out = time_out
@@ -94,10 +97,10 @@ class PotentiostatExperiment:
     def check_connection(self):
         conn = self.k_api.TestConnection(self.id_)
         if not conn:
-            print(f"> device[{POTENTIOSTAT_ADDRESS}] must be connected to run the experiment")
+            print(f"> device[{self.potent_address}] must be connected to run the experiment")
             return False
         # BL_GetChannelInfos
-        channel_info = self.k_api.GetChannelInfo(self.id_, POTENTIOSTAT_CHANNEL)
+        channel_info = self.k_api.GetChannelInfo(self.id_, self.potent_channel)
         # BL_LoadFirmware
         if channel_info.has_no_firmware and self.load_firm:
             print("No firmware loaded.")
@@ -106,7 +109,7 @@ class PotentiostatExperiment:
 
     def check_kernel(self):
         # BL_GetChannelInfos
-        channel_info = self.k_api.GetChannelInfo(self.id_, POTENTIOSTAT_CHANNEL)
+        channel_info = self.k_api.GetChannelInfo(self.id_, self.potent_channel)
         if not channel_info.is_kernel_loaded:
             print("> kernel must be loaded in order to run the experiment")
             sys.exit(-1)
@@ -123,13 +126,13 @@ class PotentiostatExperiment:
             fpga_path = None
         print(f"> Loading {firmware_path} ...")
         # create a map from channel set
-        channel_map = self.k_api.channel_map({POTENTIOSTAT_CHANNEL})
+        channel_map = self.k_api.channel_map({self.potent_channel})
         # BL_LoadFirmware
         self.k_api.LoadFirmware(self.id_, channel_map, firmware=firmware_path, fpga=fpga_path, force=True)
 
     def print_messages(self):
         while True:
-            msg = self.k_api.GetMessage(self.id_, POTENTIOSTAT_CHANNEL)
+            msg = self.k_api.GetMessage(self.id_, self.potent_channel)
             if not msg:
                 break
             print(msg)
@@ -141,22 +144,22 @@ class PotentiostatExperiment:
     def run_experiment(self):
         try:
             if not self.check_connection():
-                self.id_, self.d_info = self.k_api.Connect(POTENTIOSTAT_ADDRESS, self.time_out)  # Connect
+                self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
 
             # Clear Data
             self.data = []
 
             # BL_LoadTechnique
-            self.k_api.LoadTechnique(self.id_, POTENTIOSTAT_CHANNEL, self.tech_file, self.params, first=True, last=True,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
-            self.k_api.StartChannel(self.id_, POTENTIOSTAT_CHANNEL)
+            self.k_api.StartChannel(self.id_, self.potent_channel)
 
             # experiment loop
             print("Start CV cycle...")
             while True:
                 # BL_GetData
-                data = self.k_api.GetData(self.id_, POTENTIOSTAT_CHANNEL)
+                data = self.k_api.GetData(self.id_, self.potent_channel)
                 self.data.append(data)
                 current_values, data_info, data_record = data
 
@@ -252,9 +255,8 @@ class CpExperiment(PotentiostatExperiment):
                  cut_end=CUT_END,
                  time_out=TIME_OUT,
                  min_steps=None,
-                 load_firm=True):
-        super().__init__(3, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
-
+                 **kwargs):
+        super().__init__(3, time_out=time_out, cut_beginning=cut_beginning, cut_end=cut_end, **kwargs)
 
         self.params = self.parameterize()
 
@@ -360,8 +362,8 @@ class CvExperiment(PotentiostatExperiment):
                  time_out=TIME_OUT,
                  min_steps=MIN_CV_STEPS,
                  rcomp_level=RCOMP_LEVEL,
-                 load_firm=True):
-        super().__init__(6, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
+                 **kwargs):
+        super().__init__(6, time_out=time_out, cut_beginning=cut_beginning, cut_end=cut_end, **kwargs)
 
         # Set Parameters
         self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)

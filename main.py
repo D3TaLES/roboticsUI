@@ -1,13 +1,6 @@
 import os
 
 os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
-HOME_DIR = os.path.dirname(os.path.realpath(__file__))
-LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
-LAUNCHPAD = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\launchpad_robot.yaml')
-ROBOT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
-PROCESS_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')
 import subprocess
 import webbrowser
 import tkinter as tk
@@ -15,6 +8,7 @@ from PIL import Image, ImageTk
 from fireworks import LaunchPad
 from tkinter.filedialog import askopenfile
 from app_processing import *
+from robotics_api.standard_variables import *
 from robotics_api.workflows.wf_writer import *
 
 d3orange = "#FF9004"

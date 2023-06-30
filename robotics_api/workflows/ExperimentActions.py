@@ -28,13 +28,15 @@ class RoboticsBase(FiretaskBase):
         self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
         print(f"VIAL: {self.exp_vial}")
 
-    def updated_specs(self):
+    def updated_specs(self, **kwargs):
         # When updating specs, check for open potentiostat
         if StationStatus().get_all_available("potentiostat"):
-            paused_fws = lpad.fireworks.find({"state": "PAUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
-            [lpad.rerun_fw(fw) for fw in paused_fws]
-        return {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
-                "processing_data": self.processing_data}
+            paused_fws = self.lpad.fireworks.find({"state": "PAUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
+            [self.lpad.rerun_fw(fw) for fw in paused_fws]
+        specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
+                 "processing_data": self.processing_data}
+        specs.update(dict(**kwargs))
+        return specs
 
 
 @explicit_serialize
@@ -118,8 +120,8 @@ class Heat(RoboticsBase):
 class HeatStir(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
-        temperature = self.get("temperature")
-        stir_time = self.get("time")
+        # temperature = self.get("temperature")
+        # stir_time = self.get("time")
 
         self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
 
@@ -168,20 +170,22 @@ class SetupPotentiostat(RoboticsBase):
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         if start_reagent.type == "solvent":
             solvent = SolventStation(start_reagent.location)
-            cv_vial = VialMove(_id=solvent.blank_vial)
-            self.metadata.update({"cv_tag": f"solv_{start_reagent.name.replace(' ', '_')}"})
+            collect_vial = VialMove(_id=solvent.blank_vial)
+            self.metadata.update({"collect_tag": "solv_cv"})
         else:
-            cv_vial = self.exp_vial
+            collect_vial = self.exp_vial
+            cycle = self.metadata.get("cv_cycle", 0)
+            self.metadata.update({"collect_tag": f"Cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1})
 
         # Uncap vial if capped
-        self.success += cv_vial.uncap(raise_error=CAPPED_ERROR)
+        self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
 
         # Move vial to potentiostat elevator
         potentiostat = StationStatus().get_first_available("potentiostat")
         print("POTENTIOSTAT: ", potentiostat)
-        self.success += cv_vial.place_station(PotentiostatStation(potentiostat))
+        self.success += collect_vial.place_station(PotentiostatStation(potentiostat))
 
-        self.metadata.update({"potentiostat": potentiostat, "cv_vial": cv_vial.id})
+        self.metadata.update({"potentiostat": potentiostat, "collect_vial": collect_vial.id})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -191,15 +195,15 @@ class FinishPotentiostat(RoboticsBase):
         self.setup_task(fw_spec)
 
         potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
-        vial_id = self.metadata.get("cv_vial") or potentiostat.current_content
+        vial_id = self.metadata.get("collect_vial") or potentiostat.current_content
 
         if vial_id:
             # Get vial
-            cv_vial = VialMove(_id=vial_id)
-            # self.success += cv_vial.retrieve(raise_error=True)
-            # self.success += cv_vial.cap(raise_error=CAPPED_ERROR)
+            collect_vial = VialMove(_id=vial_id)
+            # self.success += collect_vial.retrieve(raise_error=True)
+            # self.success += collect_vial.cap(raise_error=CAPPED_ERROR)
             print("STARTING HOME PLACEMENT")
-            self.success += cv_vial.place_home()
+            self.success += collect_vial.place_home()
             print("ENDING HOME PLACEMENT")
 
         return FWAction(update_spec=self.updated_specs())
@@ -212,7 +216,7 @@ class BenchmarkCV(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        self.collection_data.append({"cv_tag": "benchmark_cv",
+        self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": [],
                                      "data_location": ""})
         return FWAction(update_spec=self.updated_specs())
@@ -231,12 +235,13 @@ class RunCV(RoboticsBase):
         collect_params = generate_col_params(voltage_sequence, scan_rate)
 
         # Prep output file info
-        cv_tag = self.metadata.get("cv_tag")
-        cv_vial = self.metadata.get("cv_vial")
+        collect_tag = self.metadata.get("collect_tag")
+        collect_vial = self.metadata.get("collect_vial")
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        data_path = os.path.join(data_dir, time.strftime("{}_%H_%M_%S.csv".format(cv_tag or f"exp{cv_idx:02d}")))
+        file_tag = f"exp{cv_idx:02d}" if collect_tag.startswith("Cycle") else collect_tag
+        data_path = os.path.join(data_dir, time.strftime(f"{file_tag}_%H_%M_%S.csv"))
 
         # Run CV experiment
         print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
@@ -249,8 +254,8 @@ class RunCV(RoboticsBase):
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
 
-        self.metadata.update({"cv_tag": ""} if cv_tag else {"cv_idx": cv_idx + 1})
-        self.collection_data.append({"cv_tag": cv_tag,
-                                     "vial_contents": cv_vial.vial_content,
+        self.metadata.update({"cv_idx": cv_idx + 1})
+        self.collection_data.append({"collect_tag": collect_tag,
+                                     "vial_contents": collect_vial.vial_content,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

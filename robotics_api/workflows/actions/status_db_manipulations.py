@@ -1,4 +1,6 @@
 import time
+from rdkit.Chem import MolFromSmiles
+from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.standard_variables import *
 from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.D3database.d3database import RobotStatusDB
@@ -231,6 +233,13 @@ class ReagentStatus(RobotStatusDB):
         self.source = self.get_prop("source")
         self.type = self.get_prop("type")
         self.current_wflow_name = self.get_prop("current_wflow_name")
+
+    @property
+    def molecular_weight(self):
+        if not self.smiles:
+            raise Exception(f"Cannot calculate molecular weight because no SMILES is associated with {self}.")
+        rdkmol = MolFromSmiles(self.smiles)
+        return CalcExactMolWt(rdkmol)
 
 
 def check_duplicates(test_list):

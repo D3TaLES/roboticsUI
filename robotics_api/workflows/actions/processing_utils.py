@@ -1,6 +1,29 @@
 from d3tales_api.Processors.d3tales_parser import *
 from d3tales_api.Processors.back2front import *
 from robotics_api.standard_variables import *
+from robotics_api.workflows.actions.status_db_manipulations import ReagentStatus
+
+
+def collection_dict(coll_data):
+    tags = set([d.get("collect_tag") for d in coll_data])
+    return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
+
+
+def get_rmol_concentration(vial_content, fw_spec):
+    rom_id = fw_spec.get("rom_id")
+    solv_id = fw_spec.get("solv_id")
+    rom_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == rom_id]
+    solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
+    if not rom_mass or not solv_vol:
+        raise Exception(f"Redox mol calculation did not work...check all variables: rom_id={rom_id}, "
+                        f"solv_id={solv_id}, rom_mass={rom_mass}, solv_vol={solv_vol}")
+    rom_mw = "{}g/mol".format(ReagentStatus(_id=rom_id).molecular_weight)
+    ureg = pint.UnitRegistry()
+    volume = ureg(solv_vol[0])
+    mass = ureg(rom_mass[0])
+    mw = ureg(rom_mw)
+    concentration = mass/mw/volume
+    return "{}M".format(concentration.to('M').magnitude)
 
 
 def all_cvs_data(multi_data, verbose=1):

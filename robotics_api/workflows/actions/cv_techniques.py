@@ -437,17 +437,29 @@ class CvExperiment(PotentiostatExperiment):
                 # progress through record
                 inx = ix + data_info.NbCols
                 row = data_record[ix:inx]
-                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                if self.is_VMP3:
+                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                    print(self.k_api.ConvertNumericIntoSingle(t_high),
+                          self.k_api.ConvertNumericIntoSingle(t_low),
+                          self.k_api.ConvertNumericIntoSingle(ec_raw),
+                          self.k_api.ConvertNumericIntoSingle(i_raw),
+                          self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                          self.k_api.ConvertNumericIntoSingle(cycle)
+                          )
+                    Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
+                else:
+                    t_high, t_low, i_raw, ewe_raw, cycle = row
+                    Ec = None
 
                 # compute timestamp in seconds
                 t = current_values.TimeBase * (t_high << 32) + t_low
                 # Ewe and current as floats
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-                Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
                 i = self.k_api.ConvertNumericIntoSingle(i_raw)
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'cycle': cycle})
                 ix = inx
+        # print([e.get("Ewe") for e in extracted_data])
         return extracted_data
 
 

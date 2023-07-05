@@ -177,7 +177,7 @@ class SetupPotentiostat(RoboticsBase):
         else:
             collect_vial = self.exp_vial
             cycle = self.metadata.get("cv_cycle", 0)
-            self.metadata.update({"collect_tag": f"Cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1})
+            self.metadata.update({"collect_tag": f"Cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1, "cv_idx": 1})
 
         # Uncap vial if capped
         self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)

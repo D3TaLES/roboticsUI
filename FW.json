@@ -1,74 +1,91 @@
 {
     "spec": {
-        "_category": "processing",
-        "reagents": [
-            {
-                "_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                "name": "cyclopenta-1,3-diene;iron(2+)",
-                "smiles": "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]",
-                "source": "sigma_aldrich",
-                "type": "redox_molecule",
-                "description": "redox active molecule(s) (a.k.a. redox core)",
-                "notes": "",
-                "purity": "",
-                "location": "experiment_vial"
+        "_category": "instrument",
+        "_priority": 2,
+        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
+        "name": "exp01_11DELT_collect_cv_data",
+        "full_name": "exp01_11DELT",
+        "exp_name": "exp01",
+        "mol_id": "11DELT",
+        "rom_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+        "solv_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+        "metadata": {
+            "experiment_run_id": "6ff055ec-e7f3-42f5-933f-eff7fecb155d",
+            "molecule_id": "11DELT",
+            "working_electrode_surface_area": 0.031415926535897934,
+            "temperature": "293K",
+            "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+            "electrode_counter": "screen-printed micro-electrode (counter)",
+            "electrode_reference": "Ag/Ag+ wire electrode",
+            "electrode_working": "screen-printed micro-electrode (working)",
+            "solvent": [
+                {
+                    "name": "Acetonitrile",
+                    "purity": ""
+                }
+            ],
+            "redox_mol_concentration": {
+                "value": 0.009999,
+                "unit": "M"
             },
-            {
-                "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                "name": "Acetonitrile",
-                "smiles": "CC#N",
-                "source": "sigma_aldrich",
-                "type": "solvent",
-                "description": "solvent",
-                "notes": "with 0.25M TEABF4 supporting electrolyte",
-                "purity": "",
-                "location": "solvent_01"
-            }
-        ],
-        "experiment_vials": {
-            "exp01": "A_04"
+            "collect_tag": "Cycle01_cv",
+            "potentiostat": "potentiostat_A_01",
+            "collect_vial_id": "A_04",
+            "cv_idx": 2,
+            "mass": "18.6mg",
+            "cv_cycle": 1
         },
         "_tasks": [
             {
-                "_fw_name": "{{robotics_api.workflows.Processing.InitializeRobot}}"
-            },
-            {
-                "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
-                "_fw_name": "{{robotics_api.workflows.Processing.InitializeStatusDB}}"
+                "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                "voltage_sequence": "0, 0.5, -0.2V",
+                "scan_rate": "0.1V/s",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
             }
-        ]
+        ],
+        "success": 19,
+        "collection_data": [
+            {
+                "collect_tag": "solv_cv",
+                "vial_contents": [],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_\\20230705\\exp01_11DELT\\solv_cv_16_06_02.csv"
+            }
+        ],
+        "processing_data": []
     },
-    "fw_id": 828,
-    "created_on": "2023-06-28T14:38:37.951023",
-    "updated_on": "2023-06-28T15:05:47.057587",
+    "fw_id": 1358,
+    "created_on": "2023-07-05T19:44:51.339662",
+    "updated_on": "2023-07-05T20:16:48.491728",
     "launches": [
         {
             "fworker": {
                 "name": "robotics_pc",
                 "category": [
                     "robotics",
-                    "processing"
+                    "processing",
+                    "instrument"
                 ],
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 828,
+            "fw_id": 1358,
             "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
-            "ip": "172.19.52.212",
+            "ip": "192.168.1.11",
             "trackers": [],
             "action": null,
             "state": "RUNNING",
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-06-28T15:05:47.056589",
-                    "updated_on": "2023-06-28T15:05:47.056589"
+                    "created_on": "2023-07-05T20:16:48.490730",
+                    "updated_on": "2023-07-05T20:16:48.490730"
                 }
             ],
-            "launch_id": 806
+            "launch_id": 973
         }
     ],
     "state": "RUNNING",
-    "name": "init_8CVCollect_BenchmarkCV_test1_single_"
+    "name": "exp01_11DELT_collect_cv_data"
 }

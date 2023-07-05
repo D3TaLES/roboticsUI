@@ -23,7 +23,7 @@ class RoboticsBase(FiretaskBase):
         self.lpad = LaunchPad().from_file(LAUNCHPAD)
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data", [])
-        self.processing_data = fw_spec.get("processing_data", [])
+        self.processing_data = fw_spec.get("processing_data", {})
 
         self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
         print(f"VIAL: {self.exp_vial}")
@@ -221,9 +221,31 @@ class BenchmarkCV(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
+        # CV parameters and keywords
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
+        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
+        collect_params = generate_col_params(voltage_sequence, scan_rate)
+
+        # Prep output file info
+        collect_vial_id = self.metadata.get("collect_vial_id")
+        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
+        os.makedirs(data_dir, exist_ok=True)
+        data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.csv"))
+
+        # Run CV experiment
+        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
+        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        potent.initiate_cv()
+        if RUN_CV:
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True,
+                                potentiostat_address=potent.p_address, potentiostat_channel=potent.p_channel)
+            expt.run_experiment()
+            time.sleep(TIME_AFTER_CV)
+            expt.to_txt(data_path)
+
         self.collection_data.append({"collect_tag": "benchmark_cv",
-                                     "vial_contents": [],
-                                     "data_location": ""})
+                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -245,7 +267,7 @@ class RunCV(RoboticsBase):
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        file_tag = f"exp{cv_idx:02d}" if collect_tag.startswith("Cycle") else collect_tag
+        file_tag = f"cv{cv_idx:02d}" if collect_tag.startswith("Cycle") else collect_tag
         data_path = os.path.join(data_dir, time.strftime(f"{file_tag}_%H_%M_%S.csv"))
 
         # Run CV experiment

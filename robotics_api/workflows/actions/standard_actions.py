@@ -438,15 +438,12 @@ if __name__ == "__main__":
 
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
 
-    # screw_lid(screw=False)
-    # screw_lid(screw=True)
-    #
-    # cv_elevator(endpoint="up")
-    # cv_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
+    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     #
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"))
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)

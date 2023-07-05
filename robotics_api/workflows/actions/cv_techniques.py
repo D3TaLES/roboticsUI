@@ -439,13 +439,6 @@ class CvExperiment(PotentiostatExperiment):
                 row = data_record[ix:inx]
                 if self.is_VMP3:
                     t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
-                    print(self.k_api.ConvertNumericIntoSingle(t_high),
-                          self.k_api.ConvertNumericIntoSingle(t_low),
-                          self.k_api.ConvertNumericIntoSingle(ec_raw),
-                          self.k_api.ConvertNumericIntoSingle(i_raw),
-                          self.k_api.ConvertNumericIntoSingle(ewe_raw),
-                          self.k_api.ConvertNumericIntoSingle(cycle)
-                          )
                     Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
                 else:
                     t_high, t_low, i_raw, ewe_raw, cycle = row
@@ -459,7 +452,6 @@ class CvExperiment(PotentiostatExperiment):
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'cycle': cycle})
                 ix = inx
-        # print([e.get("Ewe") for e in extracted_data])
         return extracted_data
 
 
@@ -478,7 +470,7 @@ if __name__ == "__main__":
     SCAN_RATE = 0.500  # V/s
     collection_params = [{"voltage": 0., "scan_rate": SCAN_RATE},
                          {"voltage": 0.8, "scan_rate": SCAN_RATE},
-                         {"voltage": 0, "scan_rate": SCAN_RATE}]
+                         {"voltage": -0.4, "scan_rate": SCAN_RATE}]
     ex_steps = [voltage_step(**p) for p in collection_params]
     experiment = CvExperiment(ex_steps)
     print(experiment.steps)

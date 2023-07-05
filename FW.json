@@ -1,10 +1,9 @@
 {
     "spec": {
-        "_category": "instrument",
-        "_priority": 2,
-        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_",
-        "name": "exp01_11DELT_collect_cv_data",
+        "_category": "processing",
+        "_priority": 1,
         "full_name": "exp01_11DELT",
+        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_TEST",
         "exp_name": "exp01",
         "mol_id": "11DELT",
         "rom_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
@@ -14,7 +13,7 @@
             "molecule_id": "11DELT",
             "working_electrode_surface_area": 0.031415926535897934,
             "temperature": "293K",
-            "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+            "instrument": "robotics_potentiostat_A_01",
             "electrode_counter": "screen-printed micro-electrode (counter)",
             "electrode_reference": "Ag/Ag+ wire electrode",
             "electrode_working": "screen-printed micro-electrode (working)",
@@ -24,14 +23,11 @@
                     "purity": ""
                 }
             ],
-            "redox_mol_concentration": {
-                "value": 0.009999,
-                "unit": "M"
-            },
+            "redox_mol_concentration": "0.009999291027687096M",
             "collect_tag": "Cycle01_cv",
             "potentiostat": "potentiostat_A_01",
             "collect_vial_id": "A_04",
-            "cv_idx": 2,
+            "cv_idx": 9,
             "mass": "18.6mg",
             "cv_cycle": 1
         },
@@ -39,24 +35,166 @@
             {
                 "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
                 "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.1V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+                "_fw_name": "{{robotics_api.workflows.Processing.CVProcessor}}"
             }
         ],
-        "success": 19,
+        "success": 14,
         "collection_data": [
             {
                 "collect_tag": "solv_cv",
                 "vial_contents": [],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_\\20230705\\exp01_11DELT\\solv_cv_16_06_02.csv"
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\solv_cv_17_26_18.csv"
+            },
+            {
+                "collect_tag": "benchmark_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\benchmark_17_45_14.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp01_17_45_47.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp02_17_45_57.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp03_17_46_06.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp04_17_46_17.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp05_17_46_29.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp06_17_46_48.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp07_17_47_12.csv"
+            },
+            {
+                "collect_tag": "Cycle01_cv",
+                "vial_contents": [
+                    {
+                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+                        "name": "cyclopenta-1,3-diene;iron(2+)",
+                        "amount": "18.6mg"
+                    },
+                    {
+                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "name": "Acetonitrile",
+                        "amount": "10.0mL"
+                    }
+                ],
+                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp08_17_47_44.csv"
             }
         ],
         "processing_data": []
     },
-    "fw_id": 1358,
-    "created_on": "2023-07-05T19:44:51.339662",
-    "updated_on": "2023-07-05T20:16:48.491728",
+    "fw_id": 1365,
+    "created_on": "2023-07-05T21:25:01.841888",
+    "updated_on": "2023-07-05T21:54:16.677682",
     "launches": [
         {
             "fworker": {
@@ -69,7 +207,7 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 1358,
+            "fw_id": 1365,
             "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
             "ip": "192.168.1.11",
@@ -79,13 +217,143 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-07-05T20:16:48.490730",
-                    "updated_on": "2023-07-05T20:16:48.490730"
+                    "created_on": "2023-07-05T21:54:16.676682",
+                    "updated_on": "2023-07-05T21:54:16.676682"
                 }
             ],
-            "launch_id": 973
+            "launch_id": 1000
+        }
+    ],
+    "archived_launches": [
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing",
+                    "instrument"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 1365,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "host": "CAER-FVJJLM3",
+            "ip": "192.168.1.11",
+            "trackers": [],
+            "action": {
+                "stored_data": {
+                    "_message": "runtime error during task",
+                    "_task": {
+                        "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                        "_fw_name": "{{robotics_api.workflows.Processing.CVProcessor}}"
+                    },
+                    "_exception": {
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 202, in run_task\n    self.processing_data.update({'processed_data': processed_data, \"metadata_id\": metadata_id,\nAttributeError: 'list' object has no attribute 'update'\n",
+                        "_details": null
+                    }
+                },
+                "exit": true,
+                "update_spec": {},
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "FIZZLED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-07-05T21:49:48.272861",
+                    "updated_on": "2023-07-05T21:50:55.805405",
+                    "checkpoint": {
+                        "_task_n": 0,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {},
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "FIZZLED",
+                    "created_on": "2023-07-05T21:50:55.806716",
+                    "checkpoint": {
+                        "_task_n": 0,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {},
+                        "_all_mod_spec": []
+                    }
+                }
+            ],
+            "launch_id": 997
+        },
+        {
+            "fworker": {
+                "name": "robotics_pc",
+                "category": [
+                    "robotics",
+                    "processing",
+                    "instrument"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 1365,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "host": "CAER-FVJJLM3",
+            "ip": "192.168.1.11",
+            "trackers": [],
+            "action": {
+                "stored_data": {
+                    "_message": "runtime error during task",
+                    "_task": {
+                        "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                        "_fw_name": "{{robotics_api.workflows.Processing.CVProcessor}}"
+                    },
+                    "_exception": {
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 203, in run_task\n    self.processing_data.update({'processed_data': processed_data, \"metadata_id\": metadata_id,\nAttributeError: 'list' object has no attribute 'update'\n",
+                        "_details": null
+                    }
+                },
+                "exit": true,
+                "update_spec": {},
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "FIZZLED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-07-05T21:52:24.228543",
+                    "updated_on": "2023-07-05T21:52:53.354329",
+                    "checkpoint": {
+                        "_task_n": 0,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {},
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "FIZZLED",
+                    "created_on": "2023-07-05T21:52:53.355316",
+                    "checkpoint": {
+                        "_task_n": 0,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {},
+                        "_all_mod_spec": []
+                    }
+                }
+            ],
+            "launch_id": 998
         }
     ],
     "state": "RUNNING",
-    "name": "exp01_11DELT_collect_cv_data"
+    "name": "exp01_11DELT_process_cv_data"
 }

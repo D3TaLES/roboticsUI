@@ -55,8 +55,8 @@ class ProcessBase(FiretaskBase):
 
     def setup_task(self, fw_spec, data_len_error=True):
         self.metadata = fw_spec.get("metadata", {})
-        self.collection_data = fw_spec.get("collection_data", {})
-        self.processing_data = fw_spec.get("processing_data", {})
+        self.collection_data = fw_spec.get("collection_data") or {}
+        self.processing_data = fw_spec.get("processing_data") or {}
         self.mol_id = fw_spec.get("mol_id") or self.get("mol_id")
         self.name = fw_spec.get("full_name") or self.get("full_name")
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
@@ -115,7 +115,8 @@ class ProcessBase(FiretaskBase):
         # Insert data into database
         _id = p_data["_id"]
         if self.mol_id and insert:
-            D3Database(database="robotics", collection_name="experimentation", instance=p_data).insert(_id)
+            D3Database(database="robotics", collection_name="experimentation",
+                       instance=p_data, validate_schema=False).insert(_id)
         return p_data
 
 
@@ -126,7 +127,7 @@ class ProcessCVBenchmarking(ProcessBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
 
-        cv_data = self.coll_dict.get(self.collect_tag)
+        cv_data = self.coll_dict.get("benchmark_cv")
 
         # Check Benchmarking data file
         if not cv_data:
@@ -139,7 +140,7 @@ class ProcessCVBenchmarking(ProcessBase):
 
         # Process benchmarking data
         self.metadata.update({"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
-        p_data = self.process_cv_data(cv_loc, metadata=self.metadata, title_tag="Benchmark")
+        p_data = self.process_cv_data(cv_loc, metadata=self.metadata, title_tag="Benchmark", insert=False)
 
         # Calculate new voltage sequence
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})

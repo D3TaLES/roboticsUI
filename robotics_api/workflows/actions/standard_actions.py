@@ -30,7 +30,6 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
         release_vial: bool,
     Returns: bool, success of action
     """
-    print(snapshot_file)
     snapshot_file_above = generate_abv_position(snapshot_file, raise_amount=raise_amount)
 
     # Start open if getting a vial
@@ -265,8 +264,9 @@ class SolventStation(StationStatus):
     def dispense(self, volume):
         self.update_available(False)
         # TODO figure out solvent stuff
+        actual_volume = volume
         self.update_available(True)
-        return False
+        return actual_volume
 
 
 class StirHeatStation(StationStatus):
@@ -436,7 +436,7 @@ if __name__ == "__main__":
     for port, desc, hwid in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hwid))
 
-    # VialMove(_id="A_02").place_station(PotentiostatStation("potentiostat_01"))
+    # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
 
     # screw_lid(screw=False)
     # screw_lid(screw=True)
@@ -446,6 +446,7 @@ if __name__ == "__main__":
     #
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
+    snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)

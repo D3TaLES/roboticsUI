@@ -160,8 +160,8 @@ class CVProcessor(ProcessBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        solv_data = self.coll_dict.get("solv")
-        cv_data = self.coll_dict.get(self.collect_tag)
+        solv_data = self.coll_dict.get("solv", [])
+        cv_data = self.coll_dict.get(self.collect_tag, [])
 
         # Process solvent CV data
         for d in solv_data:

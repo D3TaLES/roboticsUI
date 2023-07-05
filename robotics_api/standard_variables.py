@@ -2,7 +2,7 @@ import os
 import math
 from pathlib import Path
 
-RUN_CV = False
+RUN_CV = True
 CAPPED_DEFAULT = False
 CAPPED_ERROR = False
 
@@ -69,7 +69,10 @@ ELEVATOR_A_01_ADDRESS = "COM4"
 STIR_PLATE_01_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
-STATIONS = ["potentiostat_A_01", "solvent_01", "robot_grip", "stir-heat_01"]
+DISPENSE_STATIONS = ["solvent_01"]
+MEASUREMENT_STATIONS = ["potentiostat_A_01"]
+ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
+STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
     "A_01", "A_02", "A_03", "A_04",
     "B_01", "B_02", "B_03", "B_04",
@@ -87,3 +90,5 @@ ROBOT_FWORKER = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')
+PROCESS_INSTRUMENT_FWORKER = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process_instrument.yaml')

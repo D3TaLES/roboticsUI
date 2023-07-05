@@ -27,12 +27,11 @@ class VialStatus(RobotStatusDB):
             if kwargs.get("wflow_name"):
                 self.check_wflow_name()
 
-        if self.id:
-            self.experiment_name = self.get_prop("experiment_name")
-            self.current_wflow_name = self.get_prop("current_wflow_name")
-            self.home_location = self.id.split("_")
-            self.home_snapshot = os.path.join(SNAPSHOT_DIR, "VialHome_{}_{:02}.json".format(self.home_location[0],
-                                                                                            int(self.home_location[1])))
+        self.experiment_name = self.get_prop("experiment_name") if self.id else None
+        self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
+        self.home_location = self.id.split("_") if self.id else None
+        self.home_snapshot = os.path.join(
+            SNAPSHOT_DIR, f"VialHome_{self.home_location[0]}_{self.home_location[1]:02}.json") if self.id else None
 
     @property
     def vial_content(self):
@@ -49,6 +48,10 @@ class VialStatus(RobotStatusDB):
     @property
     def location_history(self):
         return self.get_prop("location_history") or []
+
+    @property
+    def current_station(self):
+        return StationStatus(_id=self.current_location)
 
     def update_capped(self, value: bool):
         """
@@ -122,12 +125,11 @@ class StationStatus(RobotStatusDB):
             self.id = self.coll.find_one({"state": state_id}).get("_id")
             if kwargs.get("wflow_name"):
                 self.check_wflow_name()
-        if self.id:
-            self.type = self.id.split("_")[0]
-            self.current_wflow_name = self.get_prop("current_wflow_name")
-            self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json")
-            self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json")
-            self.raise_amount = RAISE_AMOUNT
+        self.type = self.id.split("_")[0] if self.id else None
+        self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
+        self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json") if self.id else None
+        self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json") if self.id else None
+        self.raise_amount = RAISE_AMOUNT
 
     @property
     def available(self):
@@ -157,7 +159,7 @@ class StationStatus(RobotStatusDB):
         :param name_str: str, name string
         :return: prop
         """
-        return self.coll.find({"_id": {"$regex": name_str}}).distinct("_id")
+        return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
 
     def get_first_available(self, name_str, wait=True):
         """
@@ -242,7 +244,9 @@ class ReagentStatus(RobotStatusDB):
         return CalcExactMolWt(rdkmol)
 
 
-def check_duplicates(test_list):
+def check_duplicates(test_list, exemptions=None):
+    for e in exemptions or [""]:
+        test_list = [t for t in test_list if e not in t]
     if len(test_list) > len(set(test_list)):
         duplicates = {r for r in test_list if test_list.count(r) > 1}
         return ", ".join(duplicates)
@@ -251,8 +255,9 @@ def check_duplicates(test_list):
 def reset_reagent_db(reagents_list, current_wflow_name=""):
     # Check reagent locations 1-to-1 status
     reagent_locs = [r.get("location") for r in reagents_list]
-    if check_duplicates(reagent_locs):
-        raise ValueError("More than one reagent is assigned the same station: " + check_duplicates(reagent_locs))
+    duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent"])
+    if duplicate_reagents:
+        raise ValueError("More than one reagent is assigned the same station: " + duplicate_reagents)
 
     ReagentStatus().coll.delete_many({})
     for r in reagents_list:
@@ -261,6 +266,7 @@ def reset_reagent_db(reagents_list, current_wflow_name=""):
 
 
 def reset_station_db(current_wflow_name=""):
+    StationStatus().coll.delete_many({})
     for station in STATIONS:
         state = "down" if "potentiostat" in station else ""
         StationStatus(instance={

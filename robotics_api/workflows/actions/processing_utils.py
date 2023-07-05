@@ -41,7 +41,7 @@ def all_cvs_data(multi_data, verbose=1):
         single_cvs.append("\n---------- CV {} ----------".format(i + 1))
         [single_cvs.append("{}: \t{}".format(prop, i_data.get("data", {}).get(prop))) for prop in
          i_data.get("data", {}).keys()]
-        for prop in ['e_half', 'middle_sweep', 'peak_splittings', 'peaks', 'reversibility']:
+        for prop in ['e_half', 'middle_sweep', 'peak_splittings.py', 'peaks', 'reversibility']:
             try:
                 value = getattr(CVDescriptorCalculator(connector=connector), prop)(i_data)
                 single_cvs.append("{}: \t{}".format(prop, value))
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                              -1.797e-06, -1.402e-06, -9.199e-07, -3.241e-07, 4.383e-07, 1.445e-06, 2.79e-06, 4.632e-06,
                              7.157e-06], 'modeplot_data': 'lines', 'name': 'cv',
                        'line': {'color': '#003396', 'width': 3}}], 'reversibility': ['quasi-reversible'],
-        'e_half': [0.077], 'peak_splittings': [0.1], 'middle_sweep': [
+        'e_half': [0.077], 'peak_splittings.py': [0.1], 'middle_sweep': [
             [[-0.238, -5.654e-07], [0.005711, 2.271e-05], [0.0153, 2.306e-05], [0.02557, 2.87e-05],
              [0.03585, 3.692e-05], [0.04586, 4.694e-05], [0.05636, 5.857e-05], [0.06653, 7.105e-05],
              [0.07625, 8.408e-05], [0.08676, 9.698e-05], [0.09653, 0.0001084], [0.1068, 0.0001176], [0.117, 0.0001233],
@@ -1214,7 +1214,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['irreversible'], 'e_half': [0.098], 'peak_splittings': [2.193], 'middle_sweep': [
+                     'reversibility': ['irreversible'], 'e_half': [0.098], 'peak_splittings.py': [2.193], 'middle_sweep': [
                          [[0.01522, -3.383e-07], [0.02538, -1.054e-07], [0.03549, -5.698e-08], [0.04604, -7.075e-09],
                           [0.05577, 2.768e-08], [0.06598, 6.438e-08], [0.07622, 9.599e-08], [0.08616, 1.156e-07],
                           [0.09662, 1.368e-07], [0.1065, 1.532e-07], [0.1173, 1.725e-07], [0.1267, 1.885e-07],
@@ -1643,7 +1643,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.132],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.132],
                      'middle_sweep': [
                          [[-0.1555, -6.04e-08], [0.01492, 4.357e-05], [0.02529, 5.465e-05], [0.03553, 6.814e-05],
                           [0.04556, 8.445e-05], [0.06574, 0.0001125], [0.07607, 0.0001444], [0.08641, 0.0001675],
@@ -2002,7 +2002,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.133],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.133],
                      'middle_sweep': [
                          [[-0.006334, 4.586e-06], [0.005064, 1.271e-05], [0.0149, 2.745e-05], [0.02545, 3.981e-05],
                           [0.03538, 5.413e-05], [0.04542, 7.073e-05], [0.05599, 8.913e-05], [0.07613, 0.000124],
@@ -2363,7 +2363,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.087], 'peak_splittings': [0.122],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.087], 'peak_splittings.py': [0.122],
                      'middle_sweep': [
                          [[0.00536, -2.633e-06], [0.00471, 1.414e-05], [0.01519, 2.59e-05], [0.02586, 3.684e-05],
                           [0.03563, 4.982e-05], [0.0458, 6.507e-05], [0.05664, 8.198e-05], [0.07688, 0.0001163],
@@ -2728,7 +2728,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.112],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.112],
                      'middle_sweep': [
                          [[-0.01279, 1.227e-06], [0.004578, 1.488e-05], [0.01633, 2.29e-05], [0.0255, 3.197e-05],
                           [0.03401, 4.313e-05], [0.0453, 5.626e-05], [0.05598, 7.119e-05], [0.06814, 8.711e-05],
@@ -3091,7 +3091,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.091],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.091],
                      'middle_sweep': [
                          [[-0.02447, -5.547e-06], [0.004794, 1.479e-05], [0.01501, 1.883e-05], [0.02535, 2.545e-05],
                           [0.03547, 3.405e-05], [0.04553, 4.432e-05], [0.05573, 5.602e-05], [0.06623, 6.87e-05],
@@ -3456,7 +3456,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.091],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.091],
                      'middle_sweep': [
                          [[-0.0634, -1.272e-06], [0.005042, 1.803e-05], [0.01477, 1.93e-05], [0.02529, 2.452e-05],
                           [0.03533, 3.18e-05], [0.04576, 4.089e-05], [0.05586, 5.13e-05], [0.06587, 6.265e-05],
@@ -3823,7 +3823,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings': [0.091],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.081], 'peak_splittings.py': [0.091],
                      'middle_sweep': [
                          [[-0.06916, 1.538e-06], [0.004709, 1.611e-05], [0.01505, 1.619e-05], [0.02506, 2.066e-05],
                           [0.03538, 2.693e-05], [0.04539, 3.487e-05], [0.05542, 4.394e-05], [0.06573, 5.387e-05],
@@ -4190,7 +4190,7 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['quasi-reversible'], 'e_half': [0.077], 'peak_splittings': [0.081],
+                     'reversibility': ['quasi-reversible'], 'e_half': [0.077], 'peak_splittings.py': [0.081],
                      'middle_sweep': [
                          [[-0.0669, -1.986e-06], [0.004908, 1.215e-05], [0.01538, 1.197e-05], [0.02544, 1.538e-05],
                           [0.03571, 2.021e-05], [0.04597, 2.632e-05], [0.05603, 3.337e-05], [0.06629, 4.098e-05],

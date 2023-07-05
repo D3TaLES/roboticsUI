@@ -31,8 +31,8 @@ class RoboticsBase(FiretaskBase):
     def updated_specs(self, **kwargs):
         # When updating specs, check for open potentiostat
         if StationStatus().get_all_available("potentiostat"):
-            paused_fws = self.lpad.fireworks.find({"state": "PAUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
-            [self.lpad.rerun_fw(fw) for fw in paused_fws]
+            defused_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
+            [self.lpad.reignite_fw(fw) for fw in defused_fws]
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
                  "processing_data": self.processing_data}
         specs.update(dict(**kwargs))
@@ -66,8 +66,9 @@ class DispenseLiquid(RoboticsBase):
         if solvent.location == "experiment_vial":
             self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
         else:
-            self.success += self.exp_vial.place_station(solv_station)
-            self.success += solv_station.dispense(volume)
+            # self.success += self.exp_vial.place_station(solv_station) TODO setup liquid dispensing
+            actual_volume = solv_station.dispense(volume)
+            self.exp_vial.add_reagent(solvent, amount=actual_volume, default_unit=VOLUME_UNIT)
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -163,8 +164,9 @@ class SetupPotentiostat(RoboticsBase):
         self.setup_task(fw_spec)
 
         # Pause all other setup fireworks
-        setup_fws = self.lpad.fireworks.find({"state": "READY", "name": {"$regex": "_setup_"}}).distinct("fw_id")
-        [self.lpad.pause_fw(fw) for fw in setup_fws]
+        setup_fws = self.lpad.fireworks.find({"state": {"$in": ["READY", "WAITING"]},
+                                              "name": {"$regex": "_setup_"}}).distinct("fw_id")
+        [self.lpad.defuse_fw(fw) for fw in setup_fws]
 
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
@@ -181,11 +183,14 @@ class SetupPotentiostat(RoboticsBase):
         self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
 
         # Move vial to potentiostat elevator
-        potentiostat = StationStatus().get_first_available("potentiostat")
+        if collect_vial.current_station.type == "potentiostat":
+            potentiostat = collect_vial.current_station.id
+        else:
+            potentiostat = StationStatus().get_first_available("potentiostat")
+            self.success += collect_vial.place_station(PotentiostatStation(potentiostat))
         print("POTENTIOSTAT: ", potentiostat)
-        self.success += collect_vial.place_station(PotentiostatStation(potentiostat))
 
-        self.metadata.update({"potentiostat": potentiostat, "collect_vial": collect_vial.id})
+        self.metadata.update({"potentiostat": potentiostat, "collect_vial_id": collect_vial.id})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -195,7 +200,7 @@ class FinishPotentiostat(RoboticsBase):
         self.setup_task(fw_spec)
 
         potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
-        vial_id = self.metadata.get("collect_vial") or potentiostat.current_content
+        vial_id = self.metadata.get("collect_vial_id") or potentiostat.current_content
 
         if vial_id:
             # Get vial
@@ -236,7 +241,7 @@ class RunCV(RoboticsBase):
 
         # Prep output file info
         collect_tag = self.metadata.get("collect_tag")
-        collect_vial = self.metadata.get("collect_vial")
+        collect_vial_id = self.metadata.get("collect_vial_id")
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
@@ -256,6 +261,6 @@ class RunCV(RoboticsBase):
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
-                                     "vial_contents": collect_vial.vial_content,
+                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

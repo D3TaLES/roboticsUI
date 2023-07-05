@@ -455,6 +455,7 @@ class RunBase(tk.Toplevel):
 
         self.fireworker = None
         self.category = None
+        self.category_str = ""
         self.run_txt = tk.StringVar()
         self.run_all_txt = tk.StringVar()
         self.run_cont_txt = tk.StringVar()
@@ -475,7 +476,7 @@ class RunBase(tk.Toplevel):
             return "No ready firework found."
 
     def run_job(self):
-        self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
+        self.run_txt.set("Launching {} Job...".format(self.category_str.capitalize()))
         os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
         os.chdir(HOME_DIR)
@@ -488,14 +489,14 @@ class RunBase(tk.Toplevel):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
         subprocess.call('cls', shell=True)
-        print('LAUNCHING ALL READY {} JOBS...\n\n'.format(self.category.upper()))
+        print('LAUNCHING ALL READY {} JOBS...\n\n'.format(self.category_str.upper()))
         subprocess.call('rlaunch -w {} rapidfire'.format(self.fireworker), )
 
     def run_job_continuous(self):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
         subprocess.call('cls', shell=True)
-        print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category.upper()))
+        print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category_str.upper()))
         subprocess.call('rlaunch -w {} rapidfire --nlaunches infinite --sleep 10'.format(self.fireworker), )
 
     def view_fw_workflows(self):
@@ -511,6 +512,7 @@ class RunRobot(RunBase):
         self.title('Run Robot')
         self.fireworker = ROBOT_FWORKER
         self.category = "robotics"
+        self.category_str = "robotics"
         self.design_frame()
 
     def design_frame(self):
@@ -546,9 +548,10 @@ class RunProcess(RunBase):
         super().__init__(parent)
         self.parent = parent
 
-        self.title('Run Processing')
-        self.fireworker = PROCESS_FWORKER
-        self.category = "processing"
+        self.title('Run Processing/Instrument')
+        self.fireworker = PROCESS_INSTRUMENT_FWORKER
+        self.category = {"$in": ["processing", "instrument"]}
+        self.category_str = "processing and instrument"
         self.design_frame()
 
     def design_frame(self):
@@ -559,7 +562,7 @@ class RunProcess(RunBase):
         self.iconphoto(False, logo)
 
         # Text
-        tk.Label(self, text="Run Robotic Processing", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
+        tk.Label(self, text="Run Robotic Processing and Instruments", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
         tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0,
                                                                                                                row=1)
 
@@ -608,11 +611,11 @@ class RoboticsGUI(tk.Tk):
                             height=1, width=15)
         add_job.grid(column=0, row=4, pady=5)
         run_job = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
-                            fg='white', height=1, width=15)
+                            fg='white', height=1, width=20)
         run_job.grid(column=1, row=2, pady=5)
-        run_process = tk.Button(self, text="Run Processing", command=self.open_run_process, font=("Raleway", 14),
+        run_process = tk.Button(self, text="Run Process/Instruments", command=self.open_run_process, font=("Raleway", 14),
                                 bg=d3orange,
-                                fg='white', height=1, width=15)
+                                fg='white', height=1, width=20)
         run_process.grid(column=1, row=3, pady=5)
         push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),
                                bg=d3blue, fg='white', height=1, width=15)

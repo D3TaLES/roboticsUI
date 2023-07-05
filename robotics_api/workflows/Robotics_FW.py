@@ -35,7 +35,7 @@ class RobotFirework(Firework):
 
 class InstrumentPrepFirework(Firework):
     def __init__(self, f_tasks, analysis="", name="", wflow_name="", priority=None, parents=None, fw_specs=None, **kwargs):
-        spec = {'_category': 'instrument_setup', '_priority': priority, "analysis": analysis,
+        spec = {'_category': 'robotics', '_priority': priority, "analysis": analysis,
                 "wflow_name": wflow_name, "name": name.strip("_")}
         spec.update(fw_specs or {})
         super(InstrumentPrepFirework, self).__init__(f_tasks, parents=parents, spec=spec, name=name.strip("_"), **kwargs)

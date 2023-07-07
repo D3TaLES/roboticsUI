@@ -113,9 +113,6 @@ class VialMove(VialStatus):
 
     def retrieve(self, raise_error=False):
         success = False
-        print("current_location", self.current_location)
-        print("robot c", StationStatus("robot_grip").current_content)
-        print("vial", self.id)
         if self.current_location == "robot_grip":
             if StationStatus("robot_grip").current_content == self.id:
                 return True
@@ -135,10 +132,8 @@ class VialMove(VialStatus):
             else:
                 success += get_place_vial(self.current_location, action_type='get')
             success += snapshot_move(SNAPSHOT_HOME)
-            print("success: ", success)
             self.update_position("robot_grip")
         else:
-            print(self.current_location)
             warnings.warn(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot currently "
                           f"contains {StationStatus('robot_grip').current_content}.")
         if raise_error and not success:

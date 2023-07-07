@@ -50,6 +50,7 @@ I_RANGE = 'I_RANGE_10mA'
 VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
+MAX_WAIT_TIME = 300  # seconds
 
 AUTO_VOLT_BUFFER = 0.25  # Volts
 

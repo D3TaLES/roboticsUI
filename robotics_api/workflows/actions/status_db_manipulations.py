@@ -177,6 +177,20 @@ class StationStatus(RobotStatusDB):
             time.sleep(10)
         return available_stations[0]
 
+    def wait_till_available(self, max_time=None):
+        """
+        Wait until station is available
+        :param max_time: int, maximum time to wait in seconds
+        """
+        total_time = 0
+        while not self.available:
+            print(f"Waiting for station {self} to become available...")
+            time.sleep(10)
+            total_time += 10
+            if max_time and total_time >= max_time:
+                raise Exception(f"Waited for {total_time} seconds and station {self} is still not available.")
+        return True
+
     def update_available(self, value: bool):
         """
         Get available prop for instance with _id

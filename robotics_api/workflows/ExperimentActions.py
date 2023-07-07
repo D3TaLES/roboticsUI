@@ -33,6 +33,7 @@ class RoboticsBase(FiretaskBase):
         if StationStatus().get_all_available("potentiostat"):
             defused_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
             [self.lpad.reignite_fw(fw) for fw in defused_fws]
+        # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
                  "processing_data": self.processing_data}
         specs.update(dict(**kwargs))
@@ -186,7 +187,12 @@ class SetupPotentiostat(RoboticsBase):
         if collect_vial.current_station.type == "potentiostat":
             potentiostat = collect_vial.current_station.id
         else:
-            potentiostat = StationStatus().get_first_available("potentiostat")
+            # Use the same potentiostat as previous actions in this experiment if applicable
+            if self.metadata.get("potentiostat"):
+                potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
+                self.success += potentiostat.wait_till_available(max_time=MAX_WAIT_TIME)
+            else:
+                potentiostat = StationStatus().get_first_available("potentiostat")
             self.success += collect_vial.place_station(PotentiostatStation(potentiostat))
         print("POTENTIOSTAT: ", potentiostat)
 
@@ -236,17 +242,23 @@ class BenchmarkCV(RoboticsBase):
         print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_cv()
+        ir_comp = None
         if RUN_CV:
+            # Benchmark CV for voltage range
             expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True,
                                 potentiostat_address=potent.p_address, potentiostat_channel=potent.p_channel)
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
 
+            # iR compensation
+            # TODO iR compensation
+            ir_comp = 0
+
         self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(ir_comp=ir_comp))
 
 
 @explicit_serialize
@@ -257,6 +269,7 @@ class RunCV(RoboticsBase):
         self.setup_task(fw_spec)
 
         # CV parameters and keywords
+        ir_comp = fw_spec.get("ir_comp") or self.get("ir_comp", "")
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         collect_params = generate_col_params(voltage_sequence, scan_rate)

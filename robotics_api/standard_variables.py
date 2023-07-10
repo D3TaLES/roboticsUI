@@ -23,8 +23,8 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "EndHome
 # ---------  POTENTIOSTAT VARIABLES -------------
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
-POTENTIOSTAT_ADDRESS = "USB0"
-POTENTIOSTAT_CHANNEL = 2
+POTENTIOSTAT_A_ADDRESS = "USB0"
+# POTENTIOSTAT_B_ADDRESS = "USB1"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters

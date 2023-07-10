@@ -55,8 +55,8 @@ def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V
 
 
 class PotentiostatExperiment:
-    def __init__(self, nb_words, time_out=10, load_firm=True, cut_beginning=0, cut_end=0,
-                 potentiostat_address=POTENTIOSTAT_ADDRESS, potentiostat_channel=1):
+    def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
+                 potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
         self.id_, self.d_info = self.k_api.Connect(potentiostat_address, time_out)
@@ -169,7 +169,6 @@ class PotentiostatExperiment:
                 # BL_GetData
                 exp_data = self.k_api.GetData(self.id_, self.potent_channel)
                 self.data.append(exp_data)
-                print(exp_data)
                 current_values, data_info, data_record = exp_data
 
                 if VERBOSITY:
@@ -249,9 +248,8 @@ class iRCompExperiment(PotentiostatExperiment):
                  sweep=True,
                  rcomp_level=RCOMP_LEVEL,
                  rcmp_mode=0,  # always software unless an SP-300 series and running loop function
-                 time_out=TIME_OUT,
-                 load_firm=True):
-        super().__init__(15, time_out=time_out, load_firm=load_firm, cut_beginning=0, cut_end=0)
+                 **kwargs):
+        super().__init__(15, **kwargs)
 
         # Initialize Parameters
         self.final_frequency = final_frequency
@@ -378,9 +376,8 @@ class EisExperiment(PotentiostatExperiment):
                  Average_N_times=5,
                  Correction=False,
                  Wait_for_steady=0,
-                 time_out=TIME_OUT,
-                 load_firm=True):
-        super().__init__(15, time_out=time_out, load_firm=load_firm, cut_beginning=0, cut_end=0)
+                 **kwargs):
+        super().__init__(15, **kwargs)
 
         # Initialize Parameters
         self.vs_initial = vs_initial
@@ -527,12 +524,9 @@ class CpExperiment(PotentiostatExperiment):
                  record_every_dt=RECORD_EVERY_DT,  # seconds
                  record_every_de=RECORD_EVERY_DE,  # Volts
                  i_range=I_RANGE,
-                 cut_beginning=CUT_BEGINNING,
-                 cut_end=CUT_END,
-                 time_out=TIME_OUT,
                  repeat_count=0,
-                 load_firm=True):
-        super().__init__(3, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
+                 **kwargs):
+        super().__init__(3, **kwargs)
 
         self.record_every_dt = record_every_dt
         self.record_every_de = record_every_de
@@ -651,13 +645,10 @@ class CvExperiment(PotentiostatExperiment):
                  scan_number=SCAN_NUMBER,
                  record_every_de=RECORD_EVERY_DE,
                  average_over_de=AVERAGE_OVER_DE,
-                 cut_beginning=CUT_BEGINNING,
-                 cut_end=CUT_END,
-                 time_out=TIME_OUT,
                  min_steps=MIN_CV_STEPS,
                  rcomp_level=RCOMP_LEVEL,
-                 load_firm=True):
-        super().__init__(6, time_out=time_out, load_firm=load_firm, cut_beginning=cut_beginning, cut_end=cut_end)
+                 **kwargs):
+        super().__init__(6, **kwargs)
 
         # Set Parameters
         self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)
@@ -731,20 +722,33 @@ class CvExperiment(PotentiostatExperiment):
                 # progress through record
                 inx = ix + data_info.NbCols
                 row = data_record[ix:inx]
-                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                if self.is_VMP3:
+                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                    Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
+                else:
+                    t_high, t_low, i_raw, ewe_raw, cycle = row
+                    Ec = None
 
                 # compute timestamp in seconds
                 t = current_values.TimeBase * (t_high << 32) + t_low
                 # Ewe and current as floats
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-                Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
                 curr = self.k_api.ConvertNumericIntoSingle(i_raw)
-                # apply iR compensation #TODO implement the rcomp %
+                # apply iR compensation  # TODO implement the rcomp %
                 Ewe = Ewe - curr * self.rcomp_level * 0.85
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
                 ix = inx
         return extracted_data
+
+    def experiment_print(self, data_info, data_record):
+        print("-------------------VOLTAGE-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            inx = ix + data_info.NbCols
+            t_high, t_low, Ewe_raw, *row = data_record[ix:inx]
+            print(self.k_api.ConvertNumericIntoSingle(Ewe_raw))
+            ix = inx
 
 
 def cp_ex():
@@ -758,31 +762,30 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-def cv_ex(r_comp=RCOMP_LEVEL):
-    SCAN_RATE = 0.500  # V/s
-    collection_params = [{"voltage": 0., "scan_rate": SCAN_RATE},
-                         {"voltage": 0.8, "scan_rate": SCAN_RATE},
-                         {"voltage": 0, "scan_rate": SCAN_RATE}]
+def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+    collection_params = [{"voltage": 0., "scan_rate": scan_rate},
+                         {"voltage": 0.8, "scan_rate": scan_rate},
+                         {"voltage": -0.3, "scan_rate": scan_rate},
+                         {"voltage": 0, "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    exp = CvExperiment(ex_steps, rcomp_level=r_comp)
-    print(exp.steps)
-    # experiment.parameterize()
+    exp = CvExperiment(ex_steps, rcomp_level=r_comp,
+                       potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
-    parsed_data = exp.parsed_data
 
+    parsed_data = exp.parsed_data
     potentials = [s["Ewe"] for s in parsed_data]
     current = [s["I"] for s in parsed_data]
-    import matplotlib.pyplot as plt
 
+    import matplotlib.pyplot as plt
     plt.scatter(potentials, current)
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
-    experiment.save_parsed_data("examples/cv_data.json")
-    experiment.to_txt("examples/cv_example_backup.csv")
+    exp.save_parsed_data("examples/cv_data.json")
+    exp.to_txt("examples/cv_example_backup.csv")
 
 
-if __name__ == "__main__":
+def ir_comp_ex():
     data = []
     for frequency in range(100, 5000, 100):
         experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency)
@@ -791,3 +794,8 @@ if __name__ == "__main__":
         data.append(p_data[0])
     with open(r'something', 'w') as fn:
         json.dump(data, fn)
+
+
+if __name__ == "__main__":
+    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
+

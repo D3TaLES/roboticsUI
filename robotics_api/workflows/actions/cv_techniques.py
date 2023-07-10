@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 import copy
@@ -189,6 +190,10 @@ class PotentiostatExperiment:
     @property
     def parsed_data(self):
         return []
+
+    def save_parsed_data(self, out_file):
+        with open(out_file, 'w') as fn:
+            json.dump(self.parsed_data, fn)
 
     def to_txt(self, outfile, header='', note=''):
         extracted_data = self.parsed_data
@@ -480,6 +485,7 @@ if __name__ == "__main__":
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
+    experiment.save_parsed_data("examples/parsed_data_example.json")
     try:
         experiment.to_txt("examples/cv_example.csv")
     except:

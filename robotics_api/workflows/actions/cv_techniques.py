@@ -747,8 +747,13 @@ class CvExperiment(PotentiostatExperiment):
         ix = 0
         for _ in range(data_info.NbRows):
             inx = ix + data_info.NbCols
-            t_high, t_low, Ewe_raw, *row = data_record[ix:inx]
-            print(self.k_api.ConvertNumericIntoSingle(Ewe_raw))
+            if self.is_VMP3:
+                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            else:
+                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+
+            print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
             ix = inx
 
 

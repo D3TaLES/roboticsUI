@@ -59,7 +59,7 @@ class PotentiostatExperiment:
                  potentiostat_address=POTENTIOSTAT_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
-        self.id_, self.d_info = self.k_api.Connect(self.potentiostat_address, time_out)
+        self.id_, self.d_info = self.k_api.Connect(potentiostat_address, time_out)
         self.potent_address = potentiostat_address
         self.potent_channel = potentiostat_channel
         self.cut_beginning = cut_beginning

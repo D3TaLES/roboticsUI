@@ -49,8 +49,11 @@ FINAL_FREQUENCY = 60
 
 
 # ---------  PROCESSING VARIABLES -------------
-MULTI_PLOT_XLABEL = "Potential (V)"
-MULTI_PLOT_YLABEL = "Current (A)"
+RUN_ANODIC = False
+CONVERT_A_TO_MA = True
+PLOT_CURRENT_DENSITY = True
+MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"
+MULTI_PLOT_YLABEL = None  # uses default D3TaLES API y label
 MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5

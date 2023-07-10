@@ -6,6 +6,7 @@ from statistics import mean
 from datetime import datetime
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
+from d3tales_api.Processors.back2front import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.processing_utils import *
 from robotics_api.workflows.actions.standard_actions import *
@@ -15,6 +16,7 @@ from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
 # Copyright 2021, University of Kentucky
 TESTING = False
+VERBOSE = 1
 
 
 @explicit_serialize
@@ -62,7 +64,9 @@ class ProcessCVBenchmarking(FiretaskBase):
 
         cv_location = cv_locations[-1]
         if not os.path.isfile(cv_location):
-            warnings.warn("WARNING! CV file {} not found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.".format(cv_location))
+            warnings.warn(
+                "WARNING! CV file {} not found for CV benchmarking, so DEFAULT VOLTAGE RANGES WILL BE USED.".format(
+                    cv_location))
             return FWAction(update_spec=dict(**updated_specs))
         data = ProcessCV(cv_location, _id=mol_id, parsing_class=ParseChiCV).data_dict
         new_location = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_cv.csv")
@@ -70,10 +74,14 @@ class ProcessCVBenchmarking(FiretaskBase):
 
         # Plot CV
         image_path = os.path.join("\\".join(cv_location.split("\\")[:-1]), "benchmark_plot.png")
-        CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
-                                                                       title=f"Benchmark CV Plot for {name}",
-                                                                       xlabel=MULTI_PLOT_XLABEL,
-                                                                       ylabel=MULTI_PLOT_YLABEL)
+        CVPlotter(connector={"scan_data": "data.scan_data",
+                             "we_surface_area": "data.conditions.working_electrode_surface_area"
+                             }).live_plot(data, fig_path=image_path,
+                                          title=f"Benchmark CV Plot for {name}",
+                                          xlabel=MULTI_PLOT_XLABEL,
+                                          ylabel=MULTI_PLOT_YLABEL,
+                                          current_density=PLOT_CURRENT_DENSITY,
+                                          a_to_ma=CONVERT_A_TO_MA)
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
         peaks_dict = descriptor_cal.peaks(data)
         print(peaks_dict)
@@ -137,10 +145,14 @@ class CVProcessor(FiretaskBase):
                              parsing_class=ParseChiCV).data_dict
             # Plot CV
             image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
-            CVPlotter(connector={"scan_data": "data.scan_data"}).live_plot(data, fig_path=image_path,
-                                                                           title=f"CV Plot for {name}",
-                                                                           xlabel=MULTI_PLOT_XLABEL,
-                                                                           ylabel=MULTI_PLOT_YLABEL)
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
+                                 }).live_plot(data, fig_path=image_path,
+                                              title=f"CV Plot for {name}",
+                                              xlabel=MULTI_PLOT_XLABEL,
+                                              ylabel=MULTI_PLOT_YLABEL,
+                                              current_density=PLOT_CURRENT_DENSITY,
+                                              a_to_ma=CONVERT_A_TO_MA)
             # TODO  Launch send to storage FireTask
 
             # Insert data into database
@@ -161,21 +173,29 @@ class CVProcessor(FiretaskBase):
         # Plot all CVs
         multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
         CVPlotter(connector={"scan_data": "data.scan_data",
-                             "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(
+                             "variable_prop": "data.conditions.scan_rate.value",
+                             "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
             processed_data, fig_path=multi_path, title=f"Multi CV Plot for {mol_id}", xlabel=MULTI_PLOT_XLABEL,
-            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
+            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
+            a_to_ma=CONVERT_A_TO_MA)
 
-        # Record meta data
+        # Meta Properties
         print("Calculating metadata...")
+        metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
+        metadata_id = str(uuid.uuid4())
+        D3Database(database="robotics_backend", collection_name="metadata", instance=dict(metadata=metadata_dict),
+                   validate_schema=False).insert(metadata_id)
+
+        # Record all data
         all_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\all_data.txt"
         with open(all_path, 'w') as fn:
             fn.write(json.dumps(processed_data))
         summary_path = "\\".join(cv_locations[0].split("\\")[:-1]) + "\\summary.txt"
         with open(summary_path, 'w') as fn:
-            fn.write(print_cv_analysis(processed_data))
+            fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
 
         return FWAction(update_spec={'submission_info': submission_info, 'processed_data': processed_data,
-                                     'processing_ids': [d.get("_id") for d in processed_data]})
+                                     'processing_ids': [d.get("_id") for d in processed_data], "metadata_id": metadata_id})
 
 
 @explicit_serialize

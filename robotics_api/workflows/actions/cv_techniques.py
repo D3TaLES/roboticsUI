@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 import copy
@@ -781,8 +782,8 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
-    exp.save_parsed_data("examples/cv_data.json")
-    exp.to_txt("examples/cv_example_backup.csv")
+    exp.save_parsed_data("examples/parsed_data_example.json")
+    exp.to_txt("examples/cv_example.csv")
 
 
 def ir_comp_ex():
@@ -798,4 +799,3 @@ def ir_comp_ex():
 
 if __name__ == "__main__":
     cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
-

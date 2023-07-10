@@ -1,51 +1,9 @@
 from d3tales_api.Processors.d3tales_parser import *
+from d3tales_api.Processors.back2front import *
 from robotics_api.standard_variables import *
 
-VERBOSE=1
 
-def cv_meta_calcs(multi_data, electron_num=1, curve_type="anodic", verbose=VERBOSE):
-    processed_data = []
-    for i in multi_data:
-        try:
-            data_dict = i.get('data')
-            data_dict["n"] = electron_num
-            data_dict["current_cathodic"] = data_dict.get("forward", {})[electron_num - 1][1]
-            data_dict["current_anodic"] = data_dict.get("reverse", {})[electron_num - 1][1]
-            processed_data.append(data_dict)
-        except:
-            pass
-    connector = {
-        "n": "n",
-        "i_p": "current_{}".format(curve_type),
-        "X": "peak_splittings.{}".format(electron_num - 1),
-        "v": "conditions.scan_rate",
-        "T": "conditions.temperature",
-        "C": "conditions.redox_mol_concentration",
-        "A": "conditions.working_electrode_surface_area",
-
-        "D": "diffusion",
-        "scan_data": "middle_sweep",
-    }
-
-    try:
-        # Calculate diffusion constant
-        if verbose:
-            print("Calculating {} diffusion coefficient for oxidation {}...".format(curve_type, electron_num))
-        diffusion_cal = CVDiffusionCalculator(connector=connector)
-        diffusion_coef = diffusion_cal.calculate(processed_data, sci_notation=True)
-
-        # Calculate charge transfer rates
-        if verbose:
-            print("Calculating {} charge transfer rate for oxidation {}...".format(curve_type, electron_num))
-        [d.update({"diffusion": float(diffusion_coef[1])}) for d in processed_data]
-        transfer_cal = CVChargeTransferCalculator(connector=connector)
-        transfer_rate = transfer_cal.calculate(processed_data, sci_notation=True)
-        return diffusion_coef, transfer_rate
-    except:
-        return [None, None], None
-
-
-def all_cvs_data(multi_data, verbose=VERBOSE):
+def all_cvs_data(multi_data, verbose=1):
     connector = {
         "A": "data.conditions.working_electrode_surface_area",
         "v": "data.conditions.scan_rate",
@@ -69,15 +27,8 @@ def all_cvs_data(multi_data, verbose=VERBOSE):
     return single_cvs
 
 
-def get_e_half(multi_data, scan_rate=0.1):
-    for d in multi_data:
-        d_sr = d.get("data", {}).get("conditions", {}).get("scan_rate", {}).get("value", None)
-        if scan_rate == d_sr:
-            return d.get("data", {}).get("e_half")
-
-
-def print_cv_analysis(multi_data, **kwargs):
-    e_halfs = get_e_half(multi_data, scan_rate=0.1)
+def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
+    e_halfs = metadata.get("oxidation_potential")
 
     out_txt = ""
 
@@ -85,26 +36,37 @@ def print_cv_analysis(multi_data, **kwargs):
     out_txt += '\n'.join(all_cvs_data(multi_data, **kwargs))
     out_txt += '\n'
 
-    print("E 1/2s: ", e_halfs)
     for i, e_half in enumerate(e_halfs):
         out_txt += "\n------------- Metadata for Oxidation {} -------------\n".format(i + 1)
-        out_txt += "E1/2 at 0.1V/s: \t{}\n".format(e_half)
+        e_half_sr = e_half.get("conditions", {}).get("scan_rate", {})
+        out_txt += "E1/2 at {}{}: \t{} {}\n".format(e_half_sr.get("value"), e_half_sr.get("unit"), e_half.get("value"), e_half.get("unit"))
 
-        diffusion_coef, transfer_rate = cv_meta_calcs(multi_data, electron_num=i + 1, curve_type="cathodic", **kwargs)
-        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
-        out_txt += "Cathodic Diffusion Coefficient (average): \t{}\n".format(diffusion_coef[0])
-        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{}\n".format(transfer_rate)
+        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="cathodic")
+        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
+        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i+1, notes="cathodic")
+        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
 
-        diffusion_coef, transfer_rate = cv_meta_calcs(multi_data, electron_num=i + 1, curve_type="anodic", **kwargs)
-        out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{}\n".format(diffusion_coef[1])
-        out_txt += "Anodic Diffusion Coefficient (average): \t{}\n".format(diffusion_coef[0])
-        out_txt += "Anodic Charge Transfer Rate: \t\t\t{}\n".format(transfer_rate)
+    if run_anodic:
+        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="anodic")
+        out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
+        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i+1, notes="anodic")
+        out_txt += "Anodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for d in multi_data:
         out_txt += d.get("_id") + '\n'
 
     return str(out_txt)
+
+
+def prop_by_order(prop_list, order=1, notes=None):
+    result_prop = [p for p in prop_list if p.get("order") == order]
+    if notes:
+        result_prop = [p for p in result_prop if notes in p.get("notes")]
+    if result_prop:
+        if len(result_prop) > 1:
+            warnings.warn("WARNING! More than one meta property has order {} and notes {}".format(order, notes))
+        return result_prop[0]
 
 
 def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robot_diffusion_2\\20230209\\",
@@ -126,8 +88,8 @@ def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robo
                                                                           ylabel=MULTI_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
     # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True, title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
-    p = print_cv_analysis(processed_data)
-    # p = cv_meta_calcs(processed_data, curve_type="cathodic")
+    metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
+    p = print_cv_analysis(processed_data, metadata_dict)
     print(p)
 
 

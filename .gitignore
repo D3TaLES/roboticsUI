@@ -1,2 +1,6 @@
 **/__pycache__
+__pycache__/*
+**/FW.json
+d3tales_api/
+logs
 db_infos.json

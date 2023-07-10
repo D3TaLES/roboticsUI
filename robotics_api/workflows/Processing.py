@@ -276,3 +276,11 @@ class SendToStorage(FiretaskBase):
         ssh.close()
 
         return FWAction(update_spec={"processed_data": processed_data})
+
+
+@explicit_serialize
+class EndWorkflow(FiretaskBase):
+    # FireTask for ending a workflow
+    def run_task(self, fw_spec):
+        success = snapshot_move(SNAPSHOT_END_HOME)
+        return FWAction(update_spec={"success": success})

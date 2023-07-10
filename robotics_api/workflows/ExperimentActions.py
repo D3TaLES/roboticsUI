@@ -42,14 +42,6 @@ class RoboticsBase(FiretaskBase):
 
 
 @explicit_serialize
-class EndWorkflow(FiretaskBase):
-    # FireTask for ending a workflow
-    def run_task(self, fw_spec):
-        success = snapshot_move(SNAPSHOT_END_HOME)
-        return FWAction(update_spec={"success": success})
-
-
-@explicit_serialize
 class DispenseLiquid(RoboticsBase):
     # FireTask for dispensing liquid
 

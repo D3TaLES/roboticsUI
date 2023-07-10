@@ -782,7 +782,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
-    exp.save_parsed_data("examples/parsed_data_example.json")
+    exp.save_parsed_data("examples/cv_data_example.json")
     exp.to_txt("examples/cv_example.csv")
 
 

@@ -34,9 +34,12 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 POTENTIOSTAT_A_ADDRESS = "USB0"
+<<<<<<< HEAD
 POTENTIOSTAT_B_ADDRESS = "USB1"
+=======
+# POTENTIOSTAT_B_ADDRESS = "USB1"
+>>>>>>> jmch
 
-RCOMP_LEVEL = 85
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
@@ -53,6 +56,12 @@ TIME_AFTER_CV = 5  # seconds
 MAX_WAIT_TIME = 300  # seconds
 
 AUTO_VOLT_BUFFER = 0.25  # Volts
+
+# iR Compensation Variables
+RCOMP_LEVEL = 85
+INITIAL_FREQUENCY = 5
+FINAL_FREQUENCY = 60
+
 
 # ---------  PROCESSING VARIABLES -------------
 RUN_ANODIC = False

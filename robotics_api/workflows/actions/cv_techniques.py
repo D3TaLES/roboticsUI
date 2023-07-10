@@ -2,6 +2,9 @@ import json
 import sys
 import time
 import copy
+import json
+
+import pandas as pd
 import pint
 import warnings
 import datetime
@@ -53,7 +56,7 @@ def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V
 
 
 class PotentiostatExperiment:
-    def __init__(self, nb_words, time_out=10, load_firm=True, cut_beginning=0, cut_end=0,
+    def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
                  potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
@@ -71,6 +74,7 @@ class PotentiostatExperiment:
         self.params = {}
         self.record_every_de = None
         self.load_firm = load_firm
+        self.scan_rate = None
 
     @staticmethod
     def normalize_steps(steps: list, data_class, min_steps=None):
@@ -142,6 +146,9 @@ class PotentiostatExperiment:
     def tech_file(self):
         return ''
 
+    def experiment_print(self, data_info, data_record):
+        return None
+
     def run_experiment(self):
         try:
             if not self.check_connection():
@@ -151,30 +158,22 @@ class PotentiostatExperiment:
             self.data = []
 
             # BL_LoadTechnique
+            print(self.id_)
             self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
 
             # experiment loop
-            print("Start CV cycle...")
+            print("Start {} cycle...".format(self.tech_file[:-4]))
             while True:
                 # BL_GetData
-                data = self.k_api.GetData(self.id_, self.potent_channel)
-                self.data.append(data)
-                current_values, data_info, data_record = data
+                exp_data = self.k_api.GetData(self.id_, self.potent_channel)
+                self.data.append(exp_data)
+                current_values, data_info, data_record = exp_data
 
                 if VERBOSITY:
-                    print("-------------------VOLTAGE-------------------------")
-                    ix = 0
-                    for _ in range(data_info.NbRows):
-                        # progress through record
-                        inx = ix + data_info.NbCols
-                        # extract timestamp and one row
-                        t_high, t_low, *row = data_record[ix:inx]
-                        Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
-                        print(Ewe)
-                        ix = inx
+                    self.experiment_print(data_info, data_record)
 
                 status = KBIO.PROG_STATE(current_values.State).name
 
@@ -195,8 +194,8 @@ class PotentiostatExperiment:
         return []
 
     def save_parsed_data(self, out_file):
-        with open(out_file, 'w') as fn:
-            json.dump(self.parsed_data, fn)
+        with open(out_file, 'w') as f:
+            json.dump(self.parsed_data, f)
 
     def to_txt(self, outfile, header='', note=''):
         extracted_data = self.parsed_data
@@ -213,36 +212,307 @@ class PotentiostatExperiment:
         # Scan rate
         if not getattr(self, "scan_rate", None):
             # TODO fix this scan rate calculator
-            forward_idx = [i for i, _ in enumerate(voltages[:-1]) if voltages[i] > voltages[i+1]]
+            forward_idx = [i for i, _ in enumerate(voltages[:-1]) if voltages[i] > voltages[i + 1]]
             forward_volt, forward_time = [voltages[i] for i in forward_idx], [times[i] for i in forward_idx]
             self.scan_rate = linregress(forward_time, forward_volt)[0]
 
-        with open(outfile, 'w') as fn:
-            fn.write(datetime.datetime.now().strftime("%c") + "\n")
-            fn.write("Cyclic Voltammetry\n")
-            fn.write("File: {}\n".format(outfile))
-            fn.write("Data Source: KBIO Potentiostat\n")
-            fn.write("Instrument Model: {}\n".format(self.d_info.model))
-            fn.write("Header: {}\n".format(header))
-            fn.write("Note: {}\n\n".format(note))
-            fn.write("Init E (V) = {:.2f}\n".format(voltages[0]))
-            fn.write("High E (V) = {:.2f}\n".format(max(voltages)))
-            fn.write("Low E (V) = {:.2f}\n".format(min(voltages)))
+        with open(outfile, 'w') as f:
+            f.write(datetime.datetime.now().strftime("%c") + "\n")
+            f.write("Cyclic Voltammetry\n")
+            f.write("File: {}\n".format(outfile))
+            f.write("Data Source: KBIO Potentiostat\n")
+            f.write("Instrument Model: {}\n".format(self.d_info.model))
+            f.write("Header: {}\n".format(header))
+            f.write("Note: {}\n\n".format(note))
+            f.write("Init E (V) = {:.2f}\n".format(voltages[0]))
+            f.write("High E (V) = {:.2f}\n".format(max(voltages)))
+            f.write("Low E (V) = {:.2f}\n".format(min(voltages)))
             # fn.write("Init P/N = {}\n".format(''))
-            fn.write("Scan Rate (V/s) = {:.3f}\n".format(float(self.scan_rate)))
-            fn.write("Segment = {}\n".format(len(self.steps)))
-            fn.write("Sample Interval (V) = {:.3e}\n".format(self.record_every_de or np.average(np.diff(voltages))))
+            f.write("Scan Rate (V/s) = {:.3f}\n".format(float(self.scan_rate)))
+            f.write("Segment = {}\n".format(len(self.steps)))
+            f.write("Sample Interval (V) = {:.3e}\n".format(self.record_every_de or np.average(np.diff(voltages))))
             # fn.write("Quiet Time (sec) = {}\n".format(''))
             # fn.write("Sensitivity (A/V) = {}\n".format(''))
-            fn.write("\n")
-            fn.write("Potential/V, Current/A\n")
-            fn.writelines(["{:.3e}, {:.3e}\n".format(v, i) for v, i in zip(voltages, currents)])
+            f.write("\n")
+            f.write("Potential/V, Current/A\n")
+            f.writelines(["{:.3e}, {:.3e}\n".format(v, i) for v, i in zip(voltages, currents)])
+
+
+class iRCompExperiment(PotentiostatExperiment):
+    # TODO documentation
+    def __init__(self,
+                 amplitude_voltage=0.5,  # Set this manually
+                 final_frequency=FINAL_FREQUENCY,  # TODO this
+                 initial_frequency=INITIAL_FREQUENCY,  # TODO this
+                 average_n_times=5,  # TODO Find best N of times
+                 wait_for_steady=0,  # TODO what does this mean
+                 sweep=True,
+                 rcomp_level=RCOMP_LEVEL,
+                 rcmp_mode=0,  # always software unless an SP-300 series and running loop function
+                 **kwargs):
+        super().__init__(15, **kwargs)
+
+        # Initialize Parameters
+        self.final_frequency = final_frequency
+        self.initial_frequency = initial_frequency
+        self.amplitude_voltage = amplitude_voltage
+        self.average_n_times = average_n_times
+        self.wait_for_steady = wait_for_steady
+        self.sweep = sweep
+        self.rcomp_level = rcomp_level
+        self.rcmp_mode = rcmp_mode
+
+        # Set Parameters
+        self.params = self.parameterize()
+        self.data = []
+
+    @property
+    def tech_file(self):
+        # pick the correct ecc file based on the instrument family
+        return 'pzir.ecc' if self.is_VMP3 else 'pzir4.ecc'
+
+    def parameterize(self):
+        iR_params = {
+            'final_frequency': ECC_parm("Final_frequency", float),
+            'initial_frequency': ECC_parm("Initial_frequency", float),
+            'amplitude_voltage': ECC_parm("Amplitude_Voltage", float),
+            'average_n_times': ECC_parm("Average_N_times", int),
+            'wait_for_steady': ECC_parm("Wait_for_steady", float),
+            'sweep': ECC_parm("sweep", bool),
+            'rcomp_level': ECC_parm("Rcomp_Level", float),
+            # 'rcmp_mode': ECC_parm("Rcmp_Mode", int),
+        }
+
+        exp_params = list()
+
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['final_frequency'], self.final_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['initial_frequency'], self.initial_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['amplitude_voltage'], self.amplitude_voltage))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['average_n_times'], self.average_n_times))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['wait_for_steady'], self.wait_for_steady))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], self.sweep))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['rcomp_level'], self.rcomp_level))
+        # exp_params.append(make_ecc_parm(self.k_api, iR_params['rcmp_mode'], self.rcmp_mode))
+
+        # make the technique parameter array
+        ecc_params = make_ecc_parms(self.k_api, *exp_params)
+        return ecc_params
+
+    @property
+    def parsed_data(self, strict_error=False):
+        extracted_data = []
+        for data_step in self.data:
+            current_values, data_info, data_record = data_step
+            tech_name = TECH_ID(data_info.TechniqueID).name
+            if data_info.NbCols != self.nb_words:
+                if strict_error:
+                    raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+                continue
+            ix = 0
+            for _ in range(data_info.NbRows):
+                # progress through record
+                inx = ix + data_info.NbCols
+                row = data_record[ix:inx]
+                f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
+                    abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
+
+                # compute timestamp in seconds
+                t = self.k_api.ConvertNumericIntoSingle(t)
+                # Ewe and current as floats
+                Freq = self.k_api.ConvertNumericIntoSingle(f)
+                abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+                abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
+                abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+                abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
+                i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                i_range = self.k_api.ConvertNumericIntoSingle(i_range)
+                phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+                phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
+                                       'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
+                ix = inx
+
+        return extracted_data
+
+    def to_txt(self, outfile, header='', note=''):
+        extracted_data = self.parsed_data
+        df = pd.DataFrame(extracted_data)
+        df.to_csv(outfile)
+
+    def experiment_print(self, data_info, data_record):
+        # TODO CHANGE
+        print("-------------------time / frequency-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            row = data_record[ix:inx]
+            t = self.k_api.ConvertNumericIntoSingle(row[-2])
+            freq = self.k_api.ConvertNumericIntoSingle(row[0])
+            print('-------------------{} / {}-------------------------'.format(t, freq))
+            ix = inx
+
+
+class EisExperiment(PotentiostatExperiment):
+    # TODO documentation
+    def __init__(self,
+                 vs_initial=0,  # depends on the molecule
+                 vs_final=0,  # depends on the molecule
+                 Initial_Voltage_step=0,
+                 Final_Voltage_step=0,
+                 Duration_step=0.5,
+                 Step_number=41,
+                 Record_every_dT=0.25,
+                 Record_every_dI=0.1,
+                 Final_frequency=0,
+                 Initial_frequency=0,
+                 sweep=True,
+                 Amplitude_Voltage=0.5,
+                 Frequency_number=15,
+                 Average_N_times=5,
+                 Correction=False,
+                 Wait_for_steady=0,
+                 **kwargs):
+        super().__init__(15, **kwargs)
+
+        # Initialize Parameters
+        self.vs_initial = vs_initial
+        self.vs_final = vs_final
+        self.Initial_Voltage_step = Initial_Voltage_step
+        self.Final_Voltage_step = Final_Voltage_step
+        self.Duration_step = Duration_step
+        self.Step_number = Step_number
+        self.Record_every_dT = Record_every_dT
+        self.Record_every_dI = Record_every_dI
+        self.Final_frequency = Final_frequency
+        self.Initial_frequency = Initial_frequency
+        self.sweep = sweep
+        self.Amplitude_Voltage = Amplitude_Voltage
+        self.Frequency_number = Frequency_number
+        self.Average_N_times = Average_N_times
+        self.Correction = Correction
+        self.Wait_for_steady = Wait_for_steady
+
+        # Set Parameters
+        self.params = self.parameterize()
+        self.data = []
+
+    @property
+    def tech_file(self):
+        # pick the correct ecc file based on the instrument family
+        return 'peis.ecc' if self.is_VMP3 else 'peis4.ecc'
+
+    def parameterize(self):
+        iR_params = {
+            'vs_initial': self.vs_initial,
+            'vs_final': self.vs_final,
+            'Initial_Voltage_step': self.Initial_Voltage_step,
+            'Final_Voltage_step': self.Final_Voltage_step,
+            'Duration_step': self.Duration_step,
+            'Step_number': self.Step_number,
+            'Record_every_dT': self.Record_every_dT,
+            'Record_every_dI': self.Record_every_dI,
+            'Final_frequency': self.Final_frequency,
+            'Initial_frequency': self.Initial_frequency,
+            'sweep': self.sweep,
+            'Amplitude_Voltage': self.Amplitude_Voltage,
+            'Frequency_number': self.Frequency_number,
+            'Average_N_times': self.Average_N_times,
+            'Correction': self.Correction,
+            'Wait_for_steady': self.Wait_for_steady
+        }
+
+        exp_params = list()
+
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_initial'], self.vs_initial))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_final'], self.vs_final))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_Voltage_step'], self.Initial_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_Voltage_step'], self.Final_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Duration_step'], self.Duration_step))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Step_number'], self.Step_number))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dT'], self.Record_every_dT))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dI'], self.Record_every_dI))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_frequency'], self.Final_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_frequency'], self.Initial_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], self.sweep))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Amplitude_Voltage'], self.Amplitude_Voltage))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Frequency_number'], self.Frequency_number))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Average_N_times'], self.Average_N_times))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Correction'], self.Correction))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['Wait_for_steady'], self.Wait_for_steady))
+
+        # make the technique parameter array
+        ecc_params = make_ecc_parms(self.k_api, *exp_params)
+        return ecc_params
+
+    @property
+    def parsed_data(self, strict_error=False):
+        extracted_data = []
+        for data_step in self.data:
+            current_values, data_info, data_record = data_step
+            tech_name = TECH_ID(data_info.TechniqueID).name
+            if data_info.NbCols != self.nb_words:
+                if strict_error:
+                    raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+                continue
+            ix = 0
+            for _ in range(data_info.NbRows):
+                # progress through record
+                inx = ix + data_info.NbCols
+                row = data_record[ix:inx]
+                f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
+                    abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
+
+                # compute timestamp in seconds
+                t = self.k_api.ConvertNumericIntoSingle(t)
+                # Ewe and current as floats
+                Freq = self.k_api.ConvertNumericIntoSingle(f)
+                abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+                abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
+                abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+                abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
+                i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                i_range = self.k_api.ConvertNumericIntoSingle(i_range)
+                phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+                phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
+                                       'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
+                ix = inx
+
+        return extracted_data
+
+    def to_txt(self, outfile, header='', note=''):
+        extracted_data = self.parsed_data
+        df = pd.DataFrame(extracted_data)
+        df.to_csv(outfile)
+
+    def experiment_print(self, data_info, data_record):
+        print("-------------------time / frequency / current-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            row = data_record[ix:inx]
+            t = self.k_api.ConvertNumericIntoSingle(row[-2])
+            freq = self.k_api.ConvertNumericIntoSingle(row[0])
+            i = self.k_api.ConvertNumericIntoSingle(row[5])
+            print('-------------------{} / {} / {}-------------------------'.format(t, freq, i))
+            ix = inx
 
 
 class CpExperiment(PotentiostatExperiment):
     """
     Class to run Chrono-Potentiometry technique experiments
-        :param steps : list of lists OR current_step objects: current (A), duration (s), vs_init (bool, default False)
         :param n_cycles : Number of cycle, integer ≥ 0
         :param record_every_dt : recording on dt (s), float ≥ 0
         :param record_every_de : recording on dE (V), float ≥ 0
@@ -251,24 +521,19 @@ class CpExperiment(PotentiostatExperiment):
     """
 
     def __init__(self,
-                 steps: list,  # list of lists OR current_step objects: current, duration, vs_init
                  n_cycles=N_CYCLES,
                  record_every_dt=RECORD_EVERY_DT,  # seconds
                  record_every_de=RECORD_EVERY_DE,  # Volts
                  i_range=I_RANGE,
-                 cut_beginning=CUT_BEGINNING,
-                 cut_end=CUT_END,
-                 time_out=TIME_OUT,
                  repeat_count=0,
-                 min_steps=None,
                  **kwargs):
-        super().__init__(3, time_out=time_out, cut_beginning=cut_beginning, cut_end=cut_end, **kwargs)
-        self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)
-        self.record_every_de = record_every_de
+        super().__init__(3, **kwargs)
+
         self.record_every_dt = record_every_dt
+        self.record_every_de = record_every_de
         self.i_range = i_range
-        self.n_cycles = n_cycles
         self.repeat_count = repeat_count
+        self.n_cycles = n_cycles
 
         self.params = self.parameterize()
 
@@ -350,6 +615,18 @@ class CpExperiment(PotentiostatExperiment):
                 ix = inx
         return extracted_data
 
+    def experiment_print(self, data_info, data_record):
+        print("-------------------VOLTAGE-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            # extract timestamp and one row
+            t_high, t_low, *row = data_record[ix:inx]
+            Ewe = self.k_api.ConvertNumericIntoSingle(row[0])
+            print(Ewe)
+            ix = inx
+
 
 class CvExperiment(PotentiostatExperiment):
     """
@@ -369,13 +646,10 @@ class CvExperiment(PotentiostatExperiment):
                  scan_number=SCAN_NUMBER,
                  record_every_de=RECORD_EVERY_DE,
                  average_over_de=AVERAGE_OVER_DE,
-                 cut_beginning=CUT_BEGINNING,
-                 cut_end=CUT_END,
-                 time_out=TIME_OUT,
                  min_steps=MIN_CV_STEPS,
                  rcomp_level=RCOMP_LEVEL,
                  **kwargs):
-        super().__init__(6, time_out=time_out, cut_beginning=cut_beginning, cut_end=cut_end, **kwargs)
+        super().__init__(6, **kwargs)
 
         # Set Parameters
         self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)
@@ -460,11 +734,27 @@ class CvExperiment(PotentiostatExperiment):
                 t = current_values.TimeBase * (t_high << 32) + t_low
                 # Ewe and current as floats
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-                i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                curr = self.k_api.ConvertNumericIntoSingle(i_raw)
+                # apply iR compensation  # TODO implement the rcomp %
+                Ewe = Ewe - curr * self.rcomp_level * 0.85
 
-                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': i, 'cycle': cycle})
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
                 ix = inx
         return extracted_data
+
+    def experiment_print(self, data_info, data_record):
+        print("-------------------VOLTAGE-------------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            inx = ix + data_info.NbCols
+            if self.is_VMP3:
+                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            else:
+                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+
+            print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
+            ix = inx
 
 
 def cp_ex():
@@ -478,29 +768,39 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-if __name__ == "__main__":
-    SCAN_RATE = 0.500  # V/s
-    collection_params = [{"voltage": 0., "scan_rate": SCAN_RATE},
-                         {"voltage": 0.8, "scan_rate": SCAN_RATE},
-                         {"voltage": -0.4, "scan_rate": SCAN_RATE},
-                         {"voltage": 0., "scan_rate": SCAN_RATE}]
+def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+    collection_params = [{"voltage": 0., "scan_rate": scan_rate},
+                         {"voltage": 0.8, "scan_rate": scan_rate},
+                         {"voltage": -0.3, "scan_rate": scan_rate},
+                         {"voltage": 0, "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    experiment = CvExperiment(ex_steps, potentiostat_address=POTENTIOSTAT_A_ADDRESS)
-    print(experiment.steps)
-    # experiment.parameterize()
-    experiment.run_experiment()
-    parsed_data = experiment.parsed_data
+    exp = CvExperiment(ex_steps, rcomp_level=r_comp,
+                       potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
+    exp.run_experiment()
 
+    parsed_data = exp.parsed_data
     potentials = [s["Ewe"] for s in parsed_data]
     current = [s["I"] for s in parsed_data]
-    import matplotlib.pyplot as plt
 
+    import matplotlib.pyplot as plt
     plt.scatter(potentials, current)
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
-    experiment.save_parsed_data("examples/parsed_example.json")
-    try:
-        experiment.to_txt("examples/cv_example.csv")
-    except:
-        experiment.to_txt("examples/cv_example_backup.csv")
+    exp.save_parsed_data("examples/cv_data_example.json")
+    exp.to_txt("examples/cv_example.csv")
+
+
+def ir_comp_ex():
+    data = []
+    for frequency in range(100, 5000, 100):
+        experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency)
+        experiment.run_experiment()
+        p_data = experiment.parsed_data
+        data.append(p_data[0])
+    with open(r'something', 'w') as fn:
+        json.dump(data, fn)
+
+
+if __name__ == "__main__":
+    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

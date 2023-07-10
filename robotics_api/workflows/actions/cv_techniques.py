@@ -190,6 +190,10 @@ class PotentiostatExperiment:
     def parsed_data(self):
         return []
 
+    def save_parsed_data(self, out_file):
+        with open(out_file, 'w') as fn:
+            json.dump(self.parsed_data, fn)
+
     def to_txt(self, outfile, header='', note=''):
         extracted_data = self.parsed_data
 

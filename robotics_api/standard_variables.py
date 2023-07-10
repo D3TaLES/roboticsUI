@@ -34,7 +34,7 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 POTENTIOSTAT_A_ADDRESS = "USB0"
-POTENTIOSTAT_B_ADDRESS = "USB0"
+POTENTIOSTAT_B_ADDRESS = "USB1"
 
 RCOMP_LEVEL = 85
 N_CYCLES = 0

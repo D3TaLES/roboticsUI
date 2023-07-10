@@ -141,8 +141,6 @@ class RinseElectrode(RoboticsBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
         # time = self.get("time")
         return FWAction(update_spec=self.updated_specs())
 
@@ -153,8 +151,6 @@ class CleanElectrode(RoboticsBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
-        # start_uuid = self.get("start_uuid")
-        # end_uuid = self.get("end_uuid")
         # time = self.get("time")
         return FWAction(update_spec=self.updated_specs())
 

@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 import copy
@@ -193,6 +194,10 @@ class PotentiostatExperiment:
     def parsed_data(self):
         return []
 
+    def save_parsed_data(self, out_file):
+        with open(out_file, 'w') as fn:
+            json.dump(self.parsed_data, fn)
+
     def to_txt(self, outfile, header='', note=''):
         extracted_data = self.parsed_data
 
@@ -254,9 +259,16 @@ class CpExperiment(PotentiostatExperiment):
                  cut_beginning=CUT_BEGINNING,
                  cut_end=CUT_END,
                  time_out=TIME_OUT,
+                 repeat_count=0,
                  min_steps=None,
                  **kwargs):
         super().__init__(3, time_out=time_out, cut_beginning=cut_beginning, cut_end=cut_end, **kwargs)
+        self.steps = self.normalize_steps(steps, voltage_step, min_steps=min_steps)
+        self.record_every_de = record_every_de
+        self.record_every_dt = record_every_dt
+        self.i_range = i_range
+        self.n_cycles = n_cycles
+        self.repeat_count = repeat_count
 
         self.params = self.parameterize()
 
@@ -470,9 +482,10 @@ if __name__ == "__main__":
     SCAN_RATE = 0.500  # V/s
     collection_params = [{"voltage": 0., "scan_rate": SCAN_RATE},
                          {"voltage": 0.8, "scan_rate": SCAN_RATE},
-                         {"voltage": -0.4, "scan_rate": SCAN_RATE}]
+                         {"voltage": -0.4, "scan_rate": SCAN_RATE},
+                         {"voltage": 0., "scan_rate": SCAN_RATE}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    experiment = CvExperiment(ex_steps)
+    experiment = CvExperiment(ex_steps, potentiostat_address=POTENTIOSTAT_A_ADDRESS)
     print(experiment.steps)
     # experiment.parameterize()
     experiment.run_experiment()
@@ -486,6 +499,7 @@ if __name__ == "__main__":
     plt.ylabel("Current")
     plt.xlabel("Voltage")
     plt.savefig("examples/cv_example.png")
+    experiment.save_parsed_data("examples/parsed_example.json")
     try:
         experiment.to_txt("examples/cv_example.csv")
     except:

@@ -2,7 +2,7 @@ import os
 import math
 from pathlib import Path
 
-RUN_CV = True
+RUN_CV = False
 CAPPED_DEFAULT = False
 CAPPED_ERROR = False
 
@@ -34,7 +34,7 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 POTENTIOSTAT_A_ADDRESS = "USB0"
-# POTENTIOSTAT_B_ADDRESS = "USB1"
+POTENTIOSTAT_B_ADDRESS = "USB0"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
@@ -70,13 +70,11 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 PEAK_WIDTH = 0.5
 
 # ---------  ARDUINO VARIABLES -------------
-ARDUINO_DEFAULT_ADDRESS = "COM4"
-ELEVATOR_A_01_ADDRESS = "COM4"
-STIR_PLATE_01_ADDRESS = "COM4"
+ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["potentiostat_A_01"]
+MEASUREMENT_STATIONS = ["potentiostat_A_02"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

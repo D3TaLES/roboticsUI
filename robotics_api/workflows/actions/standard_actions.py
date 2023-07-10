@@ -18,7 +18,8 @@ def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
     return os.path.join(SNAPSHOT_DIR, "temp_abv.json")
 
 
-def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT, release_vial=True):
+def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT,
+                   release_vial=True, raise_error=False):
     """
     Function that executes an action getting or placing
     Args:
@@ -28,6 +29,7 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
             placing/retrieving the vial
         raise_amount: float,
         release_vial: bool,
+        raise_error: bool,
     Returns: bool, success of action
     """
     snapshot_file_above = generate_abv_position(snapshot_file, raise_amount=raise_amount)
@@ -38,14 +40,30 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
     # If pre-position, go there
     if pre_position_file:
         success += snapshot_move(pre_position_file)
-    # Go to vial position
+        if not success and raise_error:
+            raise Exception(f"Failed to move robot arm pre-position snapshot {pre_position_file} before target.")
+
+    # Go to above target position before target
     success += snapshot_move(snapshot_file_above)
+    if not success and raise_error:
+        raise Exception(f"Failed to move robot arm to {raise_amount} above target before snapshot {snapshot_file}.")
+
+    # Go to target position
     target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
     success += snapshot_move(snapshot_file, target_position=target)
+    if not success and raise_error:
+        raise Exception(f"Failed to move robot arm to snapshot {snapshot_file}.")
+
+    # Go to above target position after target
     success += snapshot_move(snapshot_file_above)
+    if not success and raise_error:
+        raise Exception(f"Failed to move robot arm to {raise_amount} above target after snapshot {snapshot_file}.")
+
     # If pre-position, go there
     if pre_position_file:
         success += snapshot_move(pre_position_file)
+        if not success and raise_error:
+            raise Exception(f"Failed to move robot arm pre-position snapshot {pre_position_file} after target.")
 
     return success
 
@@ -85,19 +103,20 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
     return success
 
 
-def send_arduino_cmd(command, address=ARDUINO_DEFAULT_ADDRESS):
+def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
         warnings.warn("Warning! {} is not connected".format(address))
         return False
     time.sleep(1)  # give the connection a second to settle
-    arduino.write(bytes(str(command), encoding='utf-8'))
-    print("Command {} given to {} via Arduino.".format(command, address))
+    # arduino.write(bytes(f"{station}_{command}", encoding='utf-8')) TODO switch to new Aurdino command
+    arduino.write(bytes(f"{command}", encoding='utf-8'))
+    print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
     while True:
         print("trying to read...")
         data = arduino.readline()
-        print("waiting for arduino results...")
+        print("waiting for {} arduino results...".format(station))
         if data:
             result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
             print("Arduino Result: ", result_txt)
@@ -111,7 +130,7 @@ class VialMove(VialStatus):
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
 
-    def retrieve(self, raise_error=False):
+    def retrieve(self, raise_error=True):
         success = False
         if self.current_location == "robot_grip":
             if StationStatus("robot_grip").current_content == self.id:
@@ -122,7 +141,7 @@ class VialMove(VialStatus):
             print("Robot is available")
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             if self.current_location == "home":
-                success += get_place_vial(self.home_snapshot, action_type='get')
+                success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error)
             elif "potentiostat" in self.current_location:
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
@@ -130,7 +149,7 @@ class VialMove(VialStatus):
                 station = SolventStation(self.current_location)
                 success += station.retrieve_vial(self)
             else:
-                success += get_place_vial(self.current_location, action_type='get')
+                success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error)
             success += snapshot_move(SNAPSHOT_HOME)
             self.update_position("robot_grip")
         else:
@@ -141,22 +160,24 @@ class VialMove(VialStatus):
                             f"at {self.current_location}. ")
         return success
 
-    def go_to_snapshot(self, target_location: str, raise_error=False, raise_amount=RAISE_AMOUNT):
+    def go_to_snapshot(self, target_location: str, raise_error=True, raise_amount=RAISE_AMOUNT):
         if not self.current_location == "robot_grip":
             self.retrieve(raise_error=True)
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        success += get_place_vial(target_location, action_type='place', release_vial=False, raise_amount=raise_amount)
+        success += get_place_vial(target_location, action_type='place', release_vial=False,
+                                  raise_amount=raise_amount, raise_error=raise_error)
 
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
 
         return success
 
-    def place_snapshot(self, target_location: str, raise_error=False, raise_amount=RAISE_AMOUNT):
+    def place_snapshot(self, target_location: str, raise_error=True, raise_amount=RAISE_AMOUNT):
         if not self.current_location == "robot_grip":
             self.retrieve(raise_error=True)
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        success += get_place_vial(target_location, action_type='place', raise_amount=raise_amount)
+        success += get_place_vial(target_location, action_type='place',
+                                  raise_amount=raise_amount, raise_error=raise_error)
         success += snapshot_move(SNAPSHOT_HOME)
         self.update_position(target_location)
 
@@ -166,25 +187,22 @@ class VialMove(VialStatus):
         StationStatus("robot_grip").empty() if success else None
         return success
 
-    def go_to_station(self, station: StationStatus, raise_error=False):
+    def go_to_station(self, station: StationStatus, raise_error=True):
         vial_id = self if isinstance(self, str) else self.id
         if station.current_content == vial_id and self.current_location == station.id:
             return True
 
         success = False
-        if not self.current_location == "robot_grip":
-            success = self.retrieve(raise_error=True)
-
         if station.available:
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-            success += self.go_to_snapshot(station.location_snapshot, raise_amount=station.raise_amount)
-
+            success += self.go_to_snapshot(station.location_snapshot, raise_amount=station.raise_amount,
+                                           raise_error=raise_error)
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
 
         return success
 
-    def place_station(self, station: StationStatus, raise_error=False):
+    def place_station(self, station: StationStatus, raise_error=True):
         return station.place_vial(self, raise_error=raise_error)
 
     def place_home(self, **kwargs):
@@ -195,7 +213,7 @@ class VialMove(VialStatus):
         self.update_position("home")
         return success
 
-    def cap(self, raise_error=False):
+    def cap(self, raise_error=CAPPED_ERROR):
         if self.capped:
             return True
         else:
@@ -207,7 +225,7 @@ class VialMove(VialStatus):
             raise Exception(f"Vial {self.id} is not capped!")
         return success
 
-    def uncap(self, raise_error=False):
+    def uncap(self, raise_error=CAPPED_ERROR):
         if not self.capped:
             return True
         else:
@@ -222,8 +240,9 @@ class VialMove(VialStatus):
     def update_position(self, position):
         self.update_location(position)
         station = StationStatus(position)
-        station.update_content(self.id)
-        station.update_available(False)
+        if station.exists:
+            station.update_content(self.id)
+            station.update_available(False)
         print(f"Successfully updated vial {self} to position {position}")
 
     @staticmethod
@@ -253,7 +272,7 @@ class SolventStation(StationStatus):
         self.empty()
         return success
 
-    def place_vial(self, vial: VialMove, raise_error=False):
+    def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
     def dispense(self, volume):
@@ -272,9 +291,10 @@ class StirHeatStation(StationStatus):
         if self.type != "stir-heat":
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.pre_location_snapshot = None
-        self.plate_address = eval("STIR_PLATE_{:02d}_ADDRESS".format(int(self.id.split("_")[-1])))
+        self.arduino_name = "S_{:02d}".format(int(self.id.split("_")[-1]))
+        self.raise_amount = 0
 
-    def place_vial(self, vial: VialMove, raise_error=False):
+    def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
     def heat(self, temperature=None, temp_time=None, heat_cmd="off"):
@@ -290,7 +310,7 @@ class StirHeatStation(StationStatus):
         """
         if temperature and temp_time:
             success = True  # TODO implement heating
-            cmd = self.plate_address
+            success = self.arduino_name
             return success
         elif temperature:
             heat_cmd = 3 if heat_cmd == "off" or str(heat_cmd) == "3" else heat_cmd
@@ -313,9 +333,9 @@ class StirHeatStation(StationStatus):
             seconds = unit_conversion(stir_time, default_unit='s')
             success = False
             success += self.heat(temperature, heat_cmd="on")
-            success += send_arduino_cmd(4, self.plate_address)
+            success += send_arduino_cmd(self.arduino_name, 4)
             time.sleep(seconds)
-            success += send_arduino_cmd(3, self.plate_address)
+            success += send_arduino_cmd(self.arduino_name, 3)
             success += self.heat(temperature, heat_cmd="off")
             return success
 
@@ -324,13 +344,11 @@ class StirHeatStation(StationStatus):
         stir_cmd = 4 if stir_cmd == "on" or str(stir_cmd) == "4" else stir_cmd
         if stir_cmd not in [3, 4]:
             raise TypeError("Arg 'stir' must be 11 or 10, OR it must be 'up' or 'down'.")
-        return send_arduino_cmd(stir_cmd, self.plate_address)
+        return send_arduino_cmd(self.arduino_name, stir_cmd)
 
     def perform_stir_heat(self, vial: VialMove, stir_time=None, temperature=None, temp_time=None, **kwargs):
-        self.update_available(False)
-        print(self)
-        print(self.location_snapshot)
         success = vial.go_to_station(self, **kwargs)
+        self.update_available(False)
         if stir_time:
             success += self.stir(stir_time=stir_time, temperature=temperature)
         elif temp_time:
@@ -350,7 +368,7 @@ class PotentiostatStation(StationStatus):
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
-        self.elevator_address = eval(f"ELEVATOR_{self.potentiostat}_{self.p_channel:02d}_ADDRESS")
+        self.arduino_name = f"E_{self.potentiostat}_{self.p_channel:02d}"
         self.raise_amount = raise_amount
 
     def initiate_cv(self, vial: VialMove = None):
@@ -364,7 +382,6 @@ class PotentiostatStation(StationStatus):
             return True
         elif self.state == "down":
             if self.move_elevator(endpoint="up"):
-                self.update_state("up")
                 time.sleep(5)
                 return True
 
@@ -373,7 +390,6 @@ class PotentiostatStation(StationStatus):
             return True
         elif self.state == "up":
             if self.move_elevator(endpoint="down"):
-                self.update_state("down")
                 return True
 
     def retrieve_vial(self, vial: VialMove, **kwargs):
@@ -388,7 +404,7 @@ class PotentiostatStation(StationStatus):
         self.empty()
         return success
 
-    def place_vial(self, vial: VialMove, raise_error=False):
+    def place_vial(self, vial: VialMove, raise_error=True):
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content == vial_id and vial.current_location == self.id:
             return True
@@ -401,7 +417,7 @@ class PotentiostatStation(StationStatus):
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             success += get_place_vial(self.location_snapshot, action_type='place',
                                       pre_position_file=self.pre_location_snapshot,
-                                      raise_amount=self.raise_amount)
+                                      raise_amount=self.raise_amount, raise_error=raise_error)
             success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
 
@@ -422,7 +438,10 @@ class PotentiostatStation(StationStatus):
         if endpoint not in [0, 1]:
             raise TypeError("Arg 'endpoint' must be 1 or 0, OR it must be 'up' or 'down'.")
 
-        return send_arduino_cmd(endpoint, self.elevator_address)
+        success = send_arduino_cmd(self.arduino_name, endpoint)
+        if success:
+            self.update_state("up") if endpoint == 1 else self.update_state("down")
+        return success
 
 
 if __name__ == "__main__":
@@ -433,12 +452,12 @@ if __name__ == "__main__":
 
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
 
-    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
-    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
+    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"))
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_02.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)

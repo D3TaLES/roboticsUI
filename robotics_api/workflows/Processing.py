@@ -178,7 +178,7 @@ class CVProcessor(ProcessBase):
                 processed_data.append(data)
 
         # Plot all CVs
-        multi_path = os.path.join(self.data_path, "multi_cv_plot.png")
+        multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
         CVPlotter(connector={"scan_data": "data.scan_data",
                              "variable_prop": "data.conditions.scan_rate.value",
                              "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
@@ -194,9 +194,9 @@ class CVProcessor(ProcessBase):
                    validate_schema=False).insert(metadata_id)
 
         # Record all data
-        with open(self.data_path + "\\all_data.txt", 'w') as fn:
+        with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
             fn.write(json.dumps(processed_data))
-        with open(self.data_path + "\\summary.txt", 'w') as fn:
+        with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:
             fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
 
         self.processing_data.update({'processed_data': processed_data, "metadata_id": metadata_id,

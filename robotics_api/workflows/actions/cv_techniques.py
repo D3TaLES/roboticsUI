@@ -1,14 +1,12 @@
-import json
 import sys
 import time
 import copy
 import json
-
-import pandas as pd
 import pint
-import warnings
 import datetime
+import warnings
 import numpy as np
+import pandas as pd
 from dataclasses import dataclass
 from scipy.stats import linregress
 
@@ -616,7 +614,7 @@ class CpExperiment(PotentiostatExperiment):
         return extracted_data
 
     def experiment_print(self, data_info, data_record):
-        print("-------------------VOLTAGE-------------------------")
+        print("-------------------STEP-------------------")
         ix = 0
         for _ in range(data_info.NbRows):
             # progress through record
@@ -743,7 +741,7 @@ class CvExperiment(PotentiostatExperiment):
         return extracted_data
 
     def experiment_print(self, data_info, data_record):
-        print("-------------------VOLTAGE-------------------------")
+        print("-------------------STEP-------------------")
         ix = 0
         for _ in range(data_info.NbRows):
             inx = ix + data_info.NbCols

@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.665,
-            "y": 0.09,
-            "z": 0.196,
-            "thetaX": 87.46157836914062,
-            "thetaY": 2.005779504776001,
-            "thetaZ": 95.33666229248047
+            "x": 0.515,
+            "y": -0.272,
+            "z": 0.08,
+            "thetaX": 90.3653335571289,
+            "thetaY": 1.8023817539215088,
+            "thetaZ": 63.44614791870117
           },
           "constraint": {
             "speed": {
-              "translation": 0.30000001192092896,
+              "translation": 0,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VialHome_master"
+        "name": "Stir_plate"
       }
     ]
   }

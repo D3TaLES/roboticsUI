@@ -119,7 +119,8 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
         if data:
             result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
             print("Arduino Result: ", result_txt)
-            return True if "success" in result_txt else False
+            if "success" in result_txt:
+                return True
         time.sleep(1)
 
 
@@ -140,11 +141,14 @@ class VialMove(VialStatus):
             print("Robot is available")
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             if self.current_location == "home":
+                print("Retrieving vial from home...")
                 success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error)
             elif "potentiostat" in self.current_location:
+                print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
             elif "solvent" in self.current_location:
+                print(f"Retrieving vial from solvent station {self.current_location}...")
                 station = LiquidStation(self.current_location)
                 success += station.retrieve_vial(self)
             else:
@@ -427,7 +431,7 @@ class PotentiostatStation(StationStatus):
         StationStatus("robot_grip").empty() if success else None
         return success
 
-    def move_elevator(self, endpoint="down"):
+    def move_elevator(self, endpoint="down", raise_error=True):
         """
         Operate CV elevator
         :param endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be 'up' or 'down'.
@@ -441,6 +445,8 @@ class PotentiostatStation(StationStatus):
         success = send_arduino_cmd(self.arduino_name, endpoint)
         if success:
             self.update_state("up") if endpoint == 1 else self.update_state("down")
+        if not success:
+            raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
 
@@ -456,12 +462,14 @@ if __name__ == "__main__":
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
-    snapshot_move(SNAPSHOT_HOME)
+    # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
+    # get_place_vial(VialMove(_id="S_03").home_snapshot, action_type='get', raise_error=True)
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
     # snapshot_move(target_position=50)
 
-    # send_arduino_cmd("L_01", "500")
+    send_arduino_cmd("E_A02", "0")
+

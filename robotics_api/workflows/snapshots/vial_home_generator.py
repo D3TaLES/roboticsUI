@@ -4,8 +4,8 @@ import itertools
 from pathlib import Path
 
 key_ys = {
-    "S": 0.292,
-    "A": 0.190,
+    "S": 0.280,
+    "A": 0.178,
     # "B": -0.01,
     # "C": -0.105,
 }

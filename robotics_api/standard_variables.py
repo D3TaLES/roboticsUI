@@ -74,13 +74,13 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["potentiostat_A_02"]
+MEASUREMENT_STATIONS = ["potentiostat_A_02", "potentiostat_A_03"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
     "S_01", "S_02", "S_03", "S_04",
     "A_01", "A_02", "A_03", "A_04",
-    # "B_01", "B_02", "B_03", "B_04",
+    "B_01", "B_02", "B_03", "B_04",
     # "C_01", "C_02", "C_03", "C_04",
 ]
 SOLVENT_VIALS = {"solvent_01": "S_01"}

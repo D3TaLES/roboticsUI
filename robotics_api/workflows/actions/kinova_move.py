@@ -13,6 +13,7 @@ from robotics_api.standard_variables import *
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
+VERBOSE = 1
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
@@ -26,8 +27,9 @@ def check_for_end_or_abort(e):
     """
 
     def check(notification, e=e):
-        print("EVENT : " + \
-              Base_pb2.ActionEvent.Name(notification.action_event))
+        if VERBOSE > 3:
+            print("EVENT : " + \
+                  Base_pb2.ActionEvent.Name(notification.action_event))
         if notification.action_event == Base_pb2.ACTION_END \
                 or notification.action_event == Base_pb2.ACTION_ABORT:
             e.set()
@@ -43,25 +45,28 @@ def check_for_sequence_end_or_abort(e):
         (will be set when an END or ABORT occurs)
     """
 
-    def check(notification, e = e):
+    def check(notification, e=e):
         event_id = notification.event_identifier
         task_id = notification.task_index
         if event_id == Base_pb2.SEQUENCE_TASK_COMPLETED:
-            print("Sequence task {} completed".format(task_id))
+            if VERBOSE > 3:
+                print("Sequence task {} completed".format(task_id))
         elif event_id == Base_pb2.SEQUENCE_ABORTED:
-            print("Sequence aborted with error {}:{}"\
-                .format(\
-                    notification.abort_details,\
-                    Base_pb2.SubErrorCodes.Name(notification.abort_details)))
+            if VERBOSE > 3:
+                print("Sequence aborted with error {}:{}".format(
+                    notification.abort_details, Base_pb2.SubErrorCodes.Name(notification.abort_details)))
             e.set()
         elif event_id == Base_pb2.SEQUENCE_COMPLETED:
-            print("Sequence completed.")
+            if VERBOSE > 3:
+                print("Sequence completed.")
             e.set()
+
     return check
 
 
 def snapshot_move_angular(base, joint_angle_values):
-    print("Starting angular action movement ...")
+    if VERBOSE > 3:
+        print("Starting angular action movement ...")
     action = Base_pb2.Action()
     action.name = "Example angular action movement"
     action.application_data = ""
@@ -81,22 +86,27 @@ def snapshot_move_angular(base, joint_angle_values):
         Base_pb2.NotificationOptions()
     )
 
-    print("Executing action")
+    if VERBOSE > 3:
+        print("Executing action")
     base.ExecuteAction(action)
 
-    print("Waiting for movement to finish ...")
+    if VERBOSE > 3:
+        print("Waiting for movement to finish ...")
     finished = e.wait(TIMEOUT_DURATION)
     base.Unsubscribe(notification_handle)
 
     if finished:
-        print("Angular movement completed")
+        if VERBOSE > 3:
+            print("Angular movement completed")
     else:
-        print("Timeout on action notification wait")
+        if VERBOSE > 3:
+            print("Timeout on action notification wait")
     return finished
 
 
 def snapshot_move_cartesian(base, coordinate_values):
-    print("Starting Cartesian action movement ...")
+    if VERBOSE > 3:
+        print("Starting Cartesian action movement ...")
     action = Base_pb2.Action()
     action.name = "Example Cartesian action movement"
     action.application_data = ""
@@ -115,17 +125,21 @@ def snapshot_move_cartesian(base, coordinate_values):
         Base_pb2.NotificationOptions()
     )
 
-    print("Executing action")
+    if VERBOSE > 3:
+        print("Executing action")
     base.ExecuteAction(action)
 
-    print("Waiting for movement to finish ...")
+    if VERBOSE > 3:
+        print("Waiting for movement to finish ...")
     finished = e.wait(TIMEOUT_DURATION)
     base.Unsubscribe(notification_handle)
 
     if finished:
-        print("Cartesian movement completed")
+        if VERBOSE > 1:
+            print("Cartesian movement completed")
     else:
-        print("Timeout on action notification wait")
+        if VERBOSE > 1:
+            print("Timeout on action notification wait")
     return finished
 
 
@@ -147,15 +161,18 @@ def move_gripper(target_position=None):
             action = GripperMove(router, router_real_time, 2)
 
             if target_position == 'open':
-                print("Moving gripper open...")
+                if VERBOSE > 2:
+                    print("Moving gripper open...")
                 finished += action.gripper_move(OPEN_GRIP_TARGET)
                 action.cleanup()
             elif target_position == 'closed':
-                print("Moving gripper closed...")
+                if VERBOSE > 2:
+                    print("Moving gripper closed...")
                 finished += action.gripper_move(90)
                 action.cleanup()
             elif target_position:
-                print("Moving gripper to {}...".format(target_position))
+                if VERBOSE > 2:
+                    print("Moving gripper to {}...".format(target_position))
                 finished += action.gripper_move(target_position)
                 action.cleanup()
 
@@ -185,7 +202,6 @@ def snapshot_move(snapshot_file=None, target_position=None):
             snapshot_file = open(snapshot_file, 'r')
 
             # converts JSON to nested dictionary
-            print(snapshot_file)
             snapshot_file.dict = json.load(snapshot_file)
 
             if "jointAnglesGroup" in snapshot_file.dict:
@@ -209,7 +225,8 @@ def snapshot_move(snapshot_file=None, target_position=None):
                 finished += snapshot_move_cartesian(base, coordinate_values)
             else:
                 finished += True
-                print("... and nothing happened")
+                if VERBOSE > 3:
+                    print("... and nothing happened")
             snapshot_file.close()
 
     if target_position:
@@ -248,7 +265,8 @@ def sequence_move(sequence_file):
         handle_sequence = base.CreateSequence(sequence)
         base.PlaySequence(handle_sequence)
 
-        print("Waiting for movement to finish ...")
+        if VERBOSE > 3:
+            print("Waiting for movement to finish ...")
         finished = e.wait(TIMEOUT_DURATION)
         base.Unsubscribe(notification_handle)
 
@@ -256,35 +274,35 @@ def sequence_move(sequence_file):
         print("Timeout on action notification wait")
     return finished
 
-        # Iterate through tasks
-        # tasks = sequence_file.dict["sequences"]["sequence"][0]["tasks"]
-        # print(tasks)
-        # for task in tasks:
-        #     if "reachJointAngles" in task["action"]:
-        #         # grabs the list of joint angle values
-        #         joint_angle_values = task["action"]["reachJointAngles"]["jointAngles"]["jointAngles"]
-        #         # Move Robot
-        #         finished += snapshot_move_angular(base, joint_angle_values)
-        #     elif "reachPose" in task["action"]:
-        #         # grabs the dictionary of coordinate values
-        #         coordinate_values = task["action"]["reachPose"]["targetPose"]
-        #         # Move Robot
-        #         finished += snapshot_move_cartesian(base, coordinate_values)
-        #     elif "sendGripperCommand" in task["action"]:
-        #         # grabs the dictionary of coordinate values
-        #         gripper_value = task["action"]["sendGripperCommand"]["gripper"]["finger"]["value"]
-        #         # Move Robot
-        #         finished += move_gripper(gripper_value)
-        #     else:
-        #         print("invalid action type")
-        #
-        # sequence_file.close()
+    # Iterate through tasks
+    # tasks = sequence_file.dict["sequences"]["sequence"][0]["tasks"]
+    # print(tasks)
+    # for task in tasks:
+    #     if "reachJointAngles" in task["action"]:
+    #         # grabs the list of joint angle values
+    #         joint_angle_values = task["action"]["reachJointAngles"]["jointAngles"]["jointAngles"]
+    #         # Move Robot
+    #         finished += snapshot_move_angular(base, joint_angle_values)
+    #     elif "reachPose" in task["action"]:
+    #         # grabs the dictionary of coordinate values
+    #         coordinate_values = task["action"]["reachPose"]["targetPose"]
+    #         # Move Robot
+    #         finished += snapshot_move_cartesian(base, coordinate_values)
+    #     elif "sendGripperCommand" in task["action"]:
+    #         # grabs the dictionary of coordinate values
+    #         gripper_value = task["action"]["sendGripperCommand"]["gripper"]["finger"]["value"]
+    #         # Move Robot
+    #         finished += move_gripper(gripper_value)
+    #     else:
+    #         print("invalid action type")
+    #
+    # sequence_file.close()
     #
     # print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     # return finished
 
 
-def twist_hand(linear_x=0,  linear_y=0,  linear_z=0,
+def twist_hand(linear_x=0, linear_y=0, linear_z=0,
                angular_x=0, angular_y=0, angular_z=0):
     # Import the utilities' helper module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -313,17 +331,20 @@ def twist_hand(linear_x=0,  linear_y=0,  linear_z=0,
                 Base_pb2.NotificationOptions()
             )
 
-            print("Executing twist action")
+            if VERBOSE > 2:
+                print("Executing twist action")
             base.SendTwistCommand(command)
 
-            print("Waiting for twist to finish ...")
+            if VERBOSE > 2:
+                print("Waiting for twist to finish ...")
             finished = e.wait(TIMEOUT_DURATION)
             base.Unsubscribe(notification_handle)
 
         except Exception:
             finished = False
 
-        print("Stopping the robot...")
+        if VERBOSE > 2:
+            print("Stopping the robot...")
         base.Stop()
         time.sleep(1)
 

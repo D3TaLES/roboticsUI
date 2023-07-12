@@ -25,7 +25,7 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
     for i, expflow_exp in enumerate(reversed(expflow_wf.get("experiments", []))):
         idx = len(expflow_wf.get("experiments", [])) - i
         experiment = EF2Experiment(expflow_exp, "Robotics", fw_parents=f10, data_type=kwargs.get('data_type', 'cv'),
-                                   exp_name="exp{:02d}".format(idx), wflow_name=wflow_name,  priority=2)
+                                   exp_name="exp{:02d}".format(idx), wflow_name=wflow_name,  priority=i+2)
         fws.extend(experiment.fireworks)
         robot_experiments.append(experiment.end_exp)
         print("------- EXPERIMENT {:02d} ADDED -------".format(idx))

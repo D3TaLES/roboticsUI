@@ -18,7 +18,7 @@ def get_exps(exp_json):
 
 
 def vial_location_options():
-    return [v for v in VIALS if v not in SOLVENT_VIALS.values()]
+    return [v for v in VIALS if (v not in SOLVENT_VIALS.values() and not v.startswith("S"))]
 
 
 def reagent_location_options():
@@ -44,5 +44,5 @@ if __name__ == "__main__":
         Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs" / "robot_diffusion_2_workflow.json")
     raw_dict = {('Acetonitrile', 'CC#N'): "A_02", ('anthracene-9,10-dione', 'O=C1c2ccccc2C(=O)c3ccccc13'): "A_03"}
     expflow_exp = loadfn(json_file)
-    print(assign_locations(raw_dict, expflow_exp))
+    print(assign_locations(raw_dict, {}, expflow_exp))
     # print(location_options())

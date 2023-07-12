@@ -51,7 +51,7 @@ class DispenseLiquid(RoboticsBase):
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         if solvent.type != "solvent":
             solvent = ReagentStatus(_id=fw_spec.get("solv_id"))
-        solv_station = SolventStation(_id=solvent.location, wflow_name=self.wflow_name)
+        solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
 
         # Uncap vial if capped
         self.success += self.exp_vial.retrieve()
@@ -161,7 +161,7 @@ class SetupPotentiostat(RoboticsBase):
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         if start_reagent.type == "solvent":
-            solvent = SolventStation(start_reagent.location)
+            solvent = LiquidStation(start_reagent.location)
             collect_vial = VialMove(_id=solvent.blank_vial)
             self.metadata.update({"collect_tag": "solv_cv"})
             self.release_defused = False
@@ -169,6 +169,7 @@ class SetupPotentiostat(RoboticsBase):
             collect_vial = self.exp_vial
             cycle = self.metadata.get("cv_cycle", 0)
             self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1, "cv_idx": 1})
+            self.release_defused = True
 
         # Uncap vial if capped
         self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
@@ -205,6 +206,7 @@ class FinishPotentiostat(RoboticsBase):
             # self.success += collect_vial.cap(raise_error=CAPPED_ERROR)
             print("STARTING HOME PLACEMENT")
             self.success += collect_vial.place_home()
+            self.release_defused = True
             print("ENDING HOME PLACEMENT")
 
         return FWAction(update_spec=self.updated_specs())

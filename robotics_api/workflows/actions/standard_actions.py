@@ -107,11 +107,10 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
-        warnings.warn("Warning! {} is not connected".format(address))
-        return False
+        raise Exception("Warning! {} is not connected".format(address))
     time.sleep(1)  # give the connection a second to settle
-    # arduino.write(bytes(f"{station}_{command}", encoding='utf-8')) TODO switch to new Aurdino command
-    arduino.write(bytes(f"{command}", encoding='utf-8'))
+    arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
+    # arduino.write(bytes(f"{command}", encoding='utf-8'))
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
     while True:
         print("trying to read...")
@@ -146,7 +145,7 @@ class VialMove(VialStatus):
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
             elif "solvent" in self.current_location:
-                station = SolventStation(self.current_location)
+                station = LiquidStation(self.current_location)
                 success += station.retrieve_vial(self)
             else:
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error)
@@ -250,7 +249,7 @@ class VialMove(VialStatus):
         return StationStatus("robot_grip").available
 
 
-class SolventStation(StationStatus):
+class LiquidStation(StationStatus):
     def __init__(self, _id, raise_amount=-0.03, **kwargs):
         super().__init__(_id=_id, **kwargs)
         if not self.id:
@@ -260,6 +259,7 @@ class SolventStation(StationStatus):
         self.raise_amount = raise_amount
         self.blank_vial = SOLVENT_VIALS.get(self.id)
         self.pre_location_snapshot = None
+        self.arduino_name = "L_{:02d}".format(int(self.id.split("_")[-1]))
 
     def retrieve_vial(self, vial: VialMove, **kwargs):
         vial_id = vial if isinstance(vial, str) else vial.id
@@ -333,16 +333,16 @@ class StirHeatStation(StationStatus):
             seconds = unit_conversion(stir_time, default_unit='s')
             success = False
             success += self.heat(temperature, heat_cmd="on")
-            success += send_arduino_cmd(self.arduino_name, 4)
+            success += send_arduino_cmd(self.arduino_name, 1)
             time.sleep(seconds)
-            success += send_arduino_cmd(self.arduino_name, 3)
+            success += send_arduino_cmd(self.arduino_name, 0)
             success += self.heat(temperature, heat_cmd="off")
             return success
 
         # If stir_time not provided, default to implementing stir_cmd
-        stir_cmd = 3 if stir_cmd == "off" or str(stir_cmd) == "3" else stir_cmd
-        stir_cmd = 4 if stir_cmd == "on" or str(stir_cmd) == "4" else stir_cmd
-        if stir_cmd not in [3, 4]:
+        stir_cmd = 0 if stir_cmd == "off" or str(stir_cmd) == "0" else stir_cmd
+        stir_cmd = 1 if stir_cmd == "on" or str(stir_cmd) == "1" else stir_cmd
+        if stir_cmd not in [0, 1]:
             raise TypeError("Arg 'stir' must be 11 or 10, OR it must be 'up' or 'down'.")
         return send_arduino_cmd(self.arduino_name, stir_cmd)
 
@@ -368,7 +368,7 @@ class PotentiostatStation(StationStatus):
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
-        self.arduino_name = f"E_{self.potentiostat}_{self.p_channel:02d}"
+        self.arduino_name = f"E_{self.potentiostat}{self.p_channel:02d}"
         self.raise_amount = raise_amount
 
     def initiate_cv(self, vial: VialMove = None):
@@ -451,14 +451,17 @@ if __name__ == "__main__":
         print("{}: {} [{}]".format(port, desc, hwid))
 
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
+    # VialMove(_id="A_04").place_home()
 
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
-    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
-    # snapshot_move(SNAPSHOT_HOME)
+    snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_02.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
+    # snapshot_move(target_position=50)
+
+    # send_arduino_cmd("L_01", "500")

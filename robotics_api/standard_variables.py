@@ -34,7 +34,7 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 POTENTIOSTAT_A_ADDRESS = "USB0"
-POTENTIOSTAT_B_ADDRESS = "USB0"
+# POTENTIOSTAT_B_ADDRESS = "USB1"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
@@ -78,11 +78,12 @@ MEASUREMENT_STATIONS = ["potentiostat_A_02"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
+    "S_01", "S_02", "S_03", "S_04",
     "A_01", "A_02", "A_03", "A_04",
-    "B_01", "B_02", "B_03", "B_04",
-    "C_01", "C_02", "C_03", "C_04",
+    # "B_01", "B_02", "B_03", "B_04",
+    # "C_01", "C_02", "C_03", "C_04",
 ]
-SOLVENT_VIALS = {"solvent_01": "A_02"}
+SOLVENT_VIALS = {"solvent_01": "S_01"}
 
 
 # ---------  FIREWORKS VARIABLES -------------

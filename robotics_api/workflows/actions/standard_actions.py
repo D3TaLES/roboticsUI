@@ -281,8 +281,9 @@ class LiquidStation(StationStatus):
 
     def dispense(self, volume):
         self.update_available(False)
-        # TODO figure out solvent stuff
-        actual_volume = volume
+        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+        send_arduino_cmd(self.arduino_name, arduino_vol)
+        actual_volume = volume  # TODO get actual volume
         self.update_available(True)
         return actual_volume
 
@@ -434,8 +435,11 @@ class PotentiostatStation(StationStatus):
     def move_elevator(self, endpoint="down", raise_error=True):
         """
         Operate CV elevator
-        :param endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be 'up' or 'down'.
-        :return: bool, True if elevator action was a success
+        Args:
+            endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be 'up' or 'down'.
+            raise_error: bool, raise error if not successful and True
+
+        Returns: bool, True if elevator action was a success
         """
         endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
         endpoint = 1 if endpoint == "up" or str(endpoint) == "1" else endpoint
@@ -445,9 +449,20 @@ class PotentiostatStation(StationStatus):
         success = send_arduino_cmd(self.arduino_name, endpoint)
         if success:
             self.update_state("up") if endpoint == 1 else self.update_state("down")
-        if not success:
+        if not success and raise_error:
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
+
+
+def vial_col_test(col):
+    snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    get_place_vial(VialMove(_id=col+"_04").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col+"_03").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col+"_03").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col+"_02").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col+"_02").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col+"_01").home_snapshot, action_type='place', raise_error=True)
+    snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
 if __name__ == "__main__":
@@ -462,14 +477,20 @@ if __name__ == "__main__":
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
-    # snapshot_move(SNAPSHOT_HOME)
-    # snapshot_move(SNAPSHOT_END_HOME)
-    # get_place_vial(VialMove(_id="S_03").home_snapshot, action_type='get', raise_error=True)
+    # snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    # snapshot_move(snapshot_file=SNAPSHOT_END_HOME)
+    # get_place_vial(VialMove(_id="A_02").home_snapshot, action_type='get', raise_error=True)
+    # vial_col_test("C")
+    solv_station = LiquidStation(_id="solvent_01")
+    # VialMove(_id="A_02").place_station(solv_station)
+    actual_volume = solv_station.dispense(2)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, f"solvent_01.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
-    # snapshot_move(target_position=50)
+    # snapshot_move(target_position=70)
+    # snapshot_move(target_position=60)
 
-    send_arduino_cmd("E_A02", "0")
+    # send_arduino_cmd("E_A02", "0")
 

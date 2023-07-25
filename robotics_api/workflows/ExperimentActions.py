@@ -60,7 +60,7 @@ class DispenseLiquid(RoboticsBase):
         if solvent.location == "experiment_vial":
             self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
         else:
-            # self.success += self.exp_vial.place_station(solv_station) TODO setup liquid dispensing
+            self.success += self.exp_vial.place_station(solv_station)
             actual_volume = solv_station.dispense(volume)
             self.exp_vial.add_reagent(solvent, amount=actual_volume, default_unit=VOLUME_UNIT)
 

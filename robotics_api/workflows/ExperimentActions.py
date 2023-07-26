@@ -57,12 +57,9 @@ class DispenseLiquid(RoboticsBase):
         self.success += self.exp_vial.retrieve()
         self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
 
-        if solvent.location == "experiment_vial":
-            self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
-        else:
-            self.success += self.exp_vial.place_station(solv_station)
-            actual_volume = solv_station.dispense(volume)
-            self.exp_vial.add_reagent(solvent, amount=actual_volume, default_unit=VOLUME_UNIT)
+        if solvent.location != "experiment_vial":
+            volume = solv_station.dispense(self.exp_vial, volume)
+        self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -74,11 +71,11 @@ class DispenseSolid(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         mass = self.get("mass")
+
         reagent = ReagentStatus(_id=self.get("start_uuid"))
-        if reagent.location == "experiment_vial":
-            self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
-        else:
+        if reagent.location != "experiment_vial":
             pass  # TODO Dispense solid
+        self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
 
         self.metadata.update({"mass": mass})
         return FWAction(update_spec=self.updated_specs())

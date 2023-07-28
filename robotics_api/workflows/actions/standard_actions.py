@@ -4,6 +4,7 @@ import warnings
 from serial.tools.list_ports import comports
 from d3tales_api.Calculators.utils import unit_conversion
 from robotics_api.workflows.actions.kinova_move import *
+from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.status_db_manipulations import *
 
 
@@ -459,6 +460,48 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
+    def run_cv(self, data_path, collect_params=None, voltage_sequence=None, scan_rate=None, **kwargs):
+        """
+        Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
+        :param data_path:
+        :param collect_params:
+        :param voltage_sequence:
+        :param scan_rate:
+        :param kwargs:
+        :return:
+        """
+        if not RUN_CV:
+            return None
+        # Benchmark CV for voltage range
+        if not collect_params:
+            collect_params = self.generate_col_params(voltage_sequence, scan_rate)
+        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
+        expt = CvExperiment([voltage_step(**p) for p in collect_params],
+                            potentiostat_address=self.p_address, potentiostat_channel=self.p_channel, **kwargs)
+        # TODO iR compensation
+        expt.run_experiment()
+        time.sleep(TIME_AFTER_CV)
+        expt.to_txt(data_path)
+        return True
+
+    @staticmethod
+    def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V/s"):
+        ureg = pint.UnitRegistry()
+
+        # Get voltages with appropriate units
+        voltages = voltage_sequence.split(',')
+        voltage_units = ureg(voltages[-1]).units
+        for i, v in enumerate(voltages):
+            v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(
+                " ").isnumeric() else v
+            v_unit = ureg(v_unit)
+            voltages[i] = v_unit.to(volt_unit).magnitude
+
+        # Get scan rate with appropriate units
+        scan_rate = ureg(scan_rate).to(scan_unit).magnitude
+        collection_params = [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
+        return collection_params
+
 
 def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
@@ -502,13 +545,13 @@ if __name__ == "__main__":
     # send_arduino_cmd("E_A02", "0")
 
     vial = VialMove(_id="A_04")
-    solv_station = LiquidStation(_id="solvent_01")
+    solv_stat = LiquidStation(_id="solvent_01")
 
-    # vial.leave_station(solv_station)
-    # solv_station.dispense_only(10)
+    # vial.leave_station(solv_stat)
+    # solv_stat.dispense_only(10)
     # stir_station = StirHeatStation(_id="stir-heat_01")
     # vial.place_home()
-    # solv_station.dispense(vial, 5)
+    # solv_stat.dispense(vial, 5)
     # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
     # stir_station.stir(stir_time=60)
 

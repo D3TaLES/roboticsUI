@@ -36,23 +36,6 @@ class voltage_step:
     vs_init: bool = False
 
 
-def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V/s"):
-    ureg = pint.UnitRegistry()
-
-    # Get voltages with appropriate units
-    voltages = voltage_sequence.split(',')
-    voltage_units = ureg(voltages[-1]).units
-    for i, v in enumerate(voltages):
-        v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(" ").isnumeric() else v
-        v_unit = ureg(v_unit)
-        voltages[i] = v_unit.to(volt_unit).magnitude
-
-    # Get scan rate with appropriate units
-    scan_rate = ureg(scan_rate).to(scan_unit).magnitude
-    collection_params = [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
-    return collection_params
-
-
 class PotentiostatExperiment:
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
                  potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):

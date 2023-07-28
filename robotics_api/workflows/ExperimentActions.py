@@ -3,13 +3,22 @@ import abc
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
-from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.status_db_manipulations import *
 
 
 @add_metaclass(abc.ABCMeta)
 class RoboticsBase(FiretaskBase):
+    wflow_name: str
+    exp_name: str
+    full_name: str
+    release_defused: bool
+    success: bool
+    lpad: LaunchPad
+    metadata: dict
+    collection_data: list
+    processing_data: dict
+    exp_vial: VialMove
     _fw_name = "RoboticsBase"
 
     def setup_task(self, fw_spec):
@@ -32,8 +41,8 @@ class RoboticsBase(FiretaskBase):
     def updated_specs(self, **kwargs):
         # When updating specs, check for open potentiostat
         if self.release_defused and StationStatus().get_all_available("potentiostat"):
-            defused_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
-            [self.lpad.reignite_fw(fw) for fw in defused_fws]
+            defuse_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
+            [self.lpad.reignite_fw(fw) for fw in defuse_fws]
         # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
                  "processing_data": self.processing_data, "release_defused": self.release_defused}
@@ -77,7 +86,6 @@ class DispenseSolid(RoboticsBase):
             pass  # TODO Dispense solid
         self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
 
-        self.metadata.update({"mass": mass})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -217,7 +225,6 @@ class BenchmarkCV(RoboticsBase):
         # CV parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        collect_params = generate_col_params(voltage_sequence, scan_rate)
 
         # Prep output file info
         collect_vial_id = self.metadata.get("collect_vial_id")
@@ -226,26 +233,14 @@ class BenchmarkCV(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.csv"))
 
         # Run CV experiment
-        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_cv()
-        ir_comp = None
-        if RUN_CV:
-            # Benchmark CV for voltage range
-            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True,
-                                potentiostat_address=potent.p_address, potentiostat_channel=potent.p_channel)
-            expt.run_experiment()
-            time.sleep(TIME_AFTER_CV)
-            expt.to_txt(data_path)
-
-            # iR compensation
-            # TODO iR compensation
-            ir_comp = 0
+        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs(ir_comp=ir_comp))
+        return FWAction(update_spec=self.updated_specs())
 
 
 @explicit_serialize
@@ -259,9 +254,8 @@ class RunCV(RoboticsBase):
         # ir_comp = fw_spec.get("ir_comp") or self.get("ir_comp", "")
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        collect_params = generate_col_params(voltage_sequence, scan_rate)
 
-        # Prep output file info
+        # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
         collect_vial_id = self.metadata.get("collect_vial_id")
         cv_idx = self.metadata.get("cv_idx", 1)
@@ -270,15 +264,9 @@ class RunCV(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.csv"))
 
         # Run CV experiment
-        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_cv()
-        if RUN_CV:
-            expt = CvExperiment([voltage_step(**p) for p in collect_params], load_firm=True,
-                                potentiostat_address=potent.p_address, potentiostat_channel=potent.p_channel)
-            expt.run_experiment()
-            time.sleep(TIME_AFTER_CV)
-            expt.to_txt(data_path)
+        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,

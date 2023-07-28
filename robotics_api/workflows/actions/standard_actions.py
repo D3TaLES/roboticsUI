@@ -1,8 +1,5 @@
-import time
 import serial
-import warnings
 from serial.tools.list_ports import comports
-from d3tales_api.Calculators.utils import unit_conversion
 from robotics_api.workflows.actions.kinova_move import *
 from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.status_db_manipulations import *
@@ -463,12 +460,13 @@ class PotentiostatStation(StationStatus):
     def run_cv(self, data_path, collect_params=None, voltage_sequence=None, scan_rate=None, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
-        :param data_path:
-        :param collect_params:
-        :param voltage_sequence:
-        :param scan_rate:
-        :param kwargs:
-        :return:
+        Args:
+            data_path: str, output data file path
+            collect_params: list, list of steps with step parameters as dicts
+            voltage_sequence: str, comma-seperated list of voltage points
+            scan_rate: str, scan rate
+
+        Returns: bool, success
         """
         if not RUN_CV:
             return None
@@ -485,7 +483,7 @@ class PotentiostatStation(StationStatus):
         return True
 
     @staticmethod
-    def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V/s"):
+    def generate_col_params(voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
         ureg = pint.UnitRegistry()
 
         # Get voltages with appropriate units
@@ -517,8 +515,8 @@ def vial_col_test(col):
 if __name__ == "__main__":
 
     # list connection ports
-    for port, desc, hwid in sorted(comports()):
-        print("{}: {} [{}]".format(port, desc, hwid))
+    for port, desc, hw_id in sorted(comports()):
+        print("{}: {} [{}]".format(port, desc, hw_id))
 
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()

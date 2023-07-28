@@ -199,8 +199,6 @@ class FinishPotentiostat(RoboticsBase):
         if vial_id:
             # Get vial
             collect_vial = VialMove(_id=vial_id)
-            # self.success += collect_vial.retrieve()
-            # self.success += collect_vial.cap(raise_error=CAPPED_ERROR)
             print("STARTING HOME PLACEMENT")
             self.success += collect_vial.place_home()
             self.release_defused = True

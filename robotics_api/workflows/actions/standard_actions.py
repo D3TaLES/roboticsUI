@@ -1,3 +1,4 @@
+import time
 import serial
 import warnings
 from serial.tools.list_ports import comports
@@ -115,10 +116,11 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     time.sleep(1)  # give the connection a second to settle
     arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
+    start_time = time.time()
     while True:
         print("trying to read...")
         data = arduino.readline()
-        print("waiting for {} arduino results...".format(station))
+        print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time()-start_time))
         if data:
             result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
             print("Arduino Result: ", result_txt)
@@ -196,9 +198,10 @@ class VialMove(VialStatus):
 
         success = False
         if station.available:
-            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+            # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+            print("LOCATION: ", station.location_snapshot)
             success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
-                                      raise_error=raise_error, leave=False)
+                                      raise_error=raise_error, leave=False, raise_amount=station.raise_amount)
             station.update_available(False)
 
         if raise_error and not success:
@@ -212,7 +215,7 @@ class VialMove(VialStatus):
     @staticmethod
     def leave_station(station: StationStatus, raise_error=True):
         success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
-                                 raise_error=raise_error, go=False)
+                                 raise_error=raise_error, go=False, raise_amount=station.raise_amount)
         station.update_available(True)
         return success
 
@@ -279,9 +282,17 @@ class LiquidStation(StationStatus):
     def dispense(self, vial: VialMove, volume, raise_error=True):
         self.place_vial(vial, raise_error=raise_error)
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        send_arduino_cmd(self.arduino_name, arduino_vol)
+        if DISPENSE:
+            send_arduino_cmd(self.arduino_name, arduino_vol)
         actual_volume = volume  # TODO get actual volume
         vial.leave_station(self, raise_error=raise_error)
+        return actual_volume
+
+    def dispense_only(self, volume):
+        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+        if DISPENSE:
+            send_arduino_cmd(self.arduino_name, arduino_vol)
+        actual_volume = volume  # TODO get actual volume
         return actual_volume
 
 
@@ -473,19 +484,32 @@ if __name__ == "__main__":
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    snapshot_move(snapshot_file=SNAPSHOT_END_HOME)
-    # get_place_vial(VialMove(_id="A_02").home_snapshot, action_type='get', raise_error=True)
+    snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
+
+    # get_place_vial(VialMove(_id="S_01").home_snapshot, action_type='get', raise_error=True)
+    # snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    # pot = PotentiostatStation("potentiostat_A_02")
     # vial_col_test("C")
     # solv_station = LiquidStation(_id="solvent_01")
-    # VialMove(_id="A_02").place_station(solv_station)
-    # actual_volume = solv_station.dispense(2)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, f"solvent_01.json"))
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "solvent_01.json"))
 
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
-    # snapshot_move(target_position=70)
-    # snapshot_move(target_position=60)
+    # snapshot_move(target_position=10)
+    # snapshot_move(target_position=80)
 
     # send_arduino_cmd("E_A02", "0")
+
+    vial = VialMove(_id="A_04")
+    solv_station = LiquidStation(_id="solvent_01")
+
+    # vial.leave_station(solv_station)
+    # solv_station.dispense_only(10)
+    # stir_station = StirHeatStation(_id="stir-heat_01")
+    # vial.place_home()
+    # solv_station.dispense(vial, 5)
+    # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
+    # stir_station.stir(stir_time=60)
+
 

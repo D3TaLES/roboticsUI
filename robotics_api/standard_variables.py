@@ -2,14 +2,15 @@ import os
 import math
 from pathlib import Path
 
-RUN_CV = False
+RUN_CV = True
+DISPENSE = True
 CAPPED_DEFAULT = False
 CAPPED_ERROR = False
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 60
-OPEN_GRIP_TARGET = 30
+VIAL_GRIP_TARGET = 80
+OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 
 # ---------  DEFAULT CONDITIONS -------------

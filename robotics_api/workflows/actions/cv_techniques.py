@@ -240,10 +240,10 @@ class iRCompExperiment(PotentiostatExperiment):
     # TODO documentation
     def __init__(self,
                  amplitude_voltage=0.5,  # Set this manually
-                 final_frequency=FINAL_FREQUENCY,  # TODO this
-                 initial_frequency=INITIAL_FREQUENCY,  # TODO this
-                 average_n_times=5,  # TODO Find best N of times
-                 wait_for_steady=0,  # TODO what does this mean
+                 final_frequency=FINAL_FREQUENCY,
+                 initial_frequency=INITIAL_FREQUENCY,
+                 average_n_times=5,
+                 wait_for_steady=0,
                  sweep=True,
                  rcomp_level=RCOMP_LEVEL,
                  rcmp_mode=0,  # always software unless an SP-300 series and running loop function
@@ -406,7 +406,7 @@ class EisExperiment(PotentiostatExperiment):
         return 'peis.ecc' if self.is_VMP3 else 'peis4.ecc'
 
     def parameterize(self):
-        iR_params = {
+        eis_params = {
             'vs_initial': self.vs_initial,
             'vs_final': self.vs_final,
             'Initial_Voltage_step': self.Initial_Voltage_step,
@@ -427,22 +427,22 @@ class EisExperiment(PotentiostatExperiment):
 
         exp_params = list()
 
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_initial'], self.vs_initial))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['vs_final'], self.vs_final))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_Voltage_step'], self.Initial_Voltage_step))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_Voltage_step'], self.Final_Voltage_step))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Duration_step'], self.Duration_step))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Step_number'], self.Step_number))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dT'], self.Record_every_dT))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Record_every_dI'], self.Record_every_dI))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Final_frequency'], self.Final_frequency))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Initial_frequency'], self.Initial_frequency))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], self.sweep))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Amplitude_Voltage'], self.Amplitude_Voltage))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Frequency_number'], self.Frequency_number))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Average_N_times'], self.Average_N_times))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Correction'], self.Correction))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['Wait_for_steady'], self.Wait_for_steady))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['vs_initial'], self.vs_initial))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['vs_final'], self.vs_final))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Initial_Voltage_step'], self.Initial_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Final_Voltage_step'], self.Final_Voltage_step))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Duration_step'], self.Duration_step))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Step_number'], self.Step_number))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Record_every_dT'], self.Record_every_dT))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Record_every_dI'], self.Record_every_dI))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Final_frequency'], self.Final_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Initial_frequency'], self.Initial_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['sweep'], self.sweep))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Amplitude_Voltage'], self.Amplitude_Voltage))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Frequency_number'], self.Frequency_number))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Average_N_times'], self.Average_N_times))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Correction'], self.Correction))
+        exp_params.append(make_ecc_parm(self.k_api, eis_params['Wait_for_steady'], self.Wait_for_steady))
 
         # make the technique parameter array
         ecc_params = make_ecc_parms(self.k_api, *exp_params)
@@ -789,15 +789,15 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp.to_txt("examples/cv_example.csv")
 
 
-def ir_comp_ex():
-    data = []
-    for frequency in range(100, 5000, 100):
-        experiment = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency)
-        experiment.run_experiment()
-        p_data = experiment.parsed_data
-        data.append(p_data[0])
-    with open(r'something', 'w') as fn:
-        json.dump(data, fn)
+def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+    experiment1 = EisExperiment(vs_initial=1, vs_final=1)
+    p_data = experiment2.parsed_data
+
+    experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
+                                  potentiostat_address=potentiostat_address,
+                                  potentiostat_channel=potentiostat_channel)
+    experiment2.run_experiment()
+    p_data = experiment.parsed_data
 
 
 if __name__ == "__main__":

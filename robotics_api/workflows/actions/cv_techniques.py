@@ -148,7 +148,7 @@ class PotentiostatExperiment:
     def experiment_print(self, data_info, data_record):
         return None
 
-    def run_experiment(self):
+    def run_experiment(self, first=True, last=True):
         try:
             if not self.check_connection():
                 self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
@@ -156,9 +156,9 @@ class PotentiostatExperiment:
             # Clear Data
             self.data = []
 
-            # BL_LoadTechnique
+            # BL_LoadTechniques
             print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
@@ -185,9 +185,11 @@ class PotentiostatExperiment:
         except KeyboardInterrupt:
             print(".. interrupted")
 
-        # BL_Disconnect
-        self.k_api.Disconnect(self.id_)
-
+        # stop Experiment
+        if last:
+            self.k_api.Disconnect(self.id_)
+        else:
+            self.k_api.StopChannel(self.id_, self.potent_channel)
     @property
     def parsed_data(self):
         return []
@@ -810,6 +812,7 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     #                               potentiostat_channel=potentiostat_channel)
     # experiment2.run_experiment()
     # p_data = experiment.parsed_data
+
 
 
 if __name__ == "__main__":

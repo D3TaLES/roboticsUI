@@ -149,6 +149,7 @@ class PotentiostatExperiment:
         return None
 
     def run_experiment(self, first=True, last=True):
+        interrupt = False
         try:
             if not self.check_connection():
                 self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
@@ -184,9 +185,10 @@ class PotentiostatExperiment:
             print("> experiment done")
         except KeyboardInterrupt:
             print(".. interrupted")
+            interrupt = True
 
         # stop Experiment
-        if last:
+        if last or interrupt:
             self.k_api.Disconnect(self.id_)
         else:
             self.k_api.StopChannel(self.id_, self.potent_channel)
@@ -801,6 +803,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
     experiment1 = EisExperiment(vs_initial=1, vs_final=1)
+    experiment1.run_experiment()
     p_data = experiment1.parsed_data
     real_res = [s['real_res'] for s in p_data]
     im_res = [s['im_res'] for s in p_data]

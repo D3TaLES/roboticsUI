@@ -1,3 +1,4 @@
+import math
 import sys
 import time
 import copy
@@ -480,10 +481,13 @@ class EisExperiment(PotentiostatExperiment):
                 phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
-
+                abs_res = abs_Ewe/abs_I
+                real_ = abs_res*math.cos(phase_Zwe)
+                imaginary_ = abs_res*math.sin(phase_Zwe)
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
-                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real_res': real_,
+                                       'im_res': imaginary_})
                 ix = inx
 
         return extracted_data
@@ -494,7 +498,7 @@ class EisExperiment(PotentiostatExperiment):
         df.to_csv(outfile)
 
     def experiment_print(self, data_info, data_record):
-        print("-------------------time / frequency / current-------------------------")
+        print("-------------------time / frequency / real_res-------------------------")
         ix = 0
         for _ in range(data_info.NbRows):
             # progress through record
@@ -504,7 +508,11 @@ class EisExperiment(PotentiostatExperiment):
             t = self.k_api.ConvertNumericIntoSingle(row[-2])
             freq = self.k_api.ConvertNumericIntoSingle(row[0])
             i = self.k_api.ConvertNumericIntoSingle(row[5])
-            print('-------------------{} / {} / {}-------------------------'.format(t, freq, i))
+            ewe = self.k_api.ConvertNumericIntoSingle(row[4])
+            phase_w = self.k_api.ConvertNumericIntoSingle(row[3])
+            absres = i/ewe
+            real = absres*math.cos(phase_w)
+            print('-------------------{} / {} / {}-------------------------'.format(t, freq, real))
             ix = inx
 
 
@@ -792,12 +800,16 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
     experiment1 = EisExperiment(vs_initial=1, vs_final=1)
     p_data = experiment2.parsed_data
-
-    experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
-                                  potentiostat_address=potentiostat_address,
-                                  potentiostat_channel=potentiostat_channel)
-    experiment2.run_experiment()
-    p_data = experiment.parsed_data
+    real_res = [s['real_res'] for s in p_data]
+    im_res = [s['im_res'] for s in p_data]
+    freq = [s['freq'] for s in p_data]
+    df=pd.DataFrame(data=[real_res, im_res, freq])
+    df.to_csv('path')
+    # experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
+    #                               potentiostat_address=potentiostat_address,
+    #                               potentiostat_channel=potentiostat_channel)
+    # experiment2.run_experiment()
+    # p_data = experiment.parsed_data
 
 
 if __name__ == "__main__":

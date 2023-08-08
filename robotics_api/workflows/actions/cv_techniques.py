@@ -799,12 +799,12 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
     experiment1 = EisExperiment(vs_initial=1, vs_final=1)
-    p_data = experiment2.parsed_data
+    p_data = experiment1.parsed_data
     real_res = [s['real_res'] for s in p_data]
     im_res = [s['im_res'] for s in p_data]
     freq = [s['freq'] for s in p_data]
-    df=pd.DataFrame(data=[real_res, im_res, freq])
-    df.to_csv('path')
+    df = pd.DataFrame(data=[real_res, im_res, freq])
+    df.to_excel('path')
     # experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
     #                               potentiostat_address=potentiostat_address,
     #                               potentiostat_channel=potentiostat_channel)

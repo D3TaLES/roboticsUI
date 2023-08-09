@@ -145,7 +145,7 @@ class PotentiostatExperiment:
     def tech_file(self):
         return ''
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
         return None
 
     def run_experiment(self, first=True, last=True):
@@ -173,8 +173,10 @@ class PotentiostatExperiment:
                 current_values, data_info, data_record = exp_data
 
                 if VERBOSITY:
-                    self.experiment_print(data_info, data_record)
-
+                    if self.tech_file[0:2] != 'ca':
+                        self.experiment_print(exp_data)
+                    else:
+                        self.experiment_print(exp_data)
                 status = KBIO.PROG_STATE(current_values.State).name
 
                 print("> new messages :")
@@ -346,8 +348,9 @@ class iRCompExperiment(PotentiostatExperiment):
         df = pd.DataFrame(extracted_data)
         df.to_csv(outfile)
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
         # TODO CHANGE
+        current_values, data_info, data_record = data_step
         print("-------------------time / frequency-------------------------")
         ix = 0
         for _ in range(data_info.NbRows):
@@ -501,7 +504,8 @@ class EisExperiment(PotentiostatExperiment):
         df = pd.DataFrame(extracted_data)
         df.to_csv(outfile)
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
+        current_values, data_info, data_record = data_step
         print("-------------------time / frequency / real_res-------------------------")
         ix = 0
         for _ in range(data_info.NbRows):
@@ -625,7 +629,8 @@ class CpExperiment(PotentiostatExperiment):
                 ix = inx
         return extracted_data
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
+        current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
         for _ in range(data_info.NbRows):
@@ -752,7 +757,8 @@ class CvExperiment(PotentiostatExperiment):
                 ix = inx
         return extracted_data
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
+        current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
         for _ in range(data_info.NbRows):
@@ -766,6 +772,120 @@ class CvExperiment(PotentiostatExperiment):
                                                              self.k_api.ConvertNumericIntoSingle(i_raw)))
             ix = inx
 
+
+class CaExperiment(PotentiostatExperiment):
+    # TODO Documentation
+
+    def __init__(self,
+                 steps=[-0.25, 0.25]*50,
+                 vs_initial=[True, False]*50,
+                 duration_step=[0.0001]*100,
+                 step_number=98,
+                 record_every_dt=0.000024,
+                 record_every_di=0.00001,
+                 n_cycles=2,
+                 **kwargs):
+        super().__init__(5, **kwargs)
+
+        # Set Parameters
+        self.steps = steps
+        self.vs_initial = vs_initial
+        self.duration = duration_step
+        self.step_number = step_number
+        self.record_every_dt = record_every_dt
+        self.record_every_di = record_every_di
+        self.n_cycles = n_cycles
+
+        self.params = self.parameterize()
+        self.data = []
+
+        # Set Parameters
+
+    @property
+    def tech_file(self):
+        # pick the correct ecc file based on the instrument family
+        return 'ca.ecc' if self.is_VMP3 else 'ca4.ecc'
+
+    def parameterize(self):
+        Ca_params = {
+            'voltage_step': ECC_parm("Voltage_step", float),
+            'vs_initial': ECC_parm("vs_initial", bool),
+            'duration_step': ECC_parm("Duration_step", float),
+            'step_number': ECC_parm("Step_number", int),
+            'record_every_dT': ECC_parm("Record_every_dT", float),
+            'record_every_dI': ECC_parm("Record_every_dI", float),
+            'n_cycles': ECC_parm("N_Cycles", int),
+        }
+
+        exp_params = list()
+        scan_rates = []
+        for _idx, step in enumerate(self.steps):
+            parm = make_ecc_parm(self.k_api, Ca_params['voltage_step'], step.voltage, _idx)
+            exp_params.append(parm)
+            scan_rates.append(step.scan_rate)
+            parm = make_ecc_parm(self.k_api, Ca_params['vs_initial'], step.scan_rate, _idx)
+            exp_params.append(parm)
+            parm = make_ecc_parm(self.k_api, Ca_params['duration_step'], step.vs_init, _idx)
+            exp_params.append(parm)
+
+        # repeating factor
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['n_cycles'], self.n_cycles))
+        # exp_params.append(make_ecc_parm(self.k_api, CV_params['scan_number'], self.scan_number))
+
+        # record parameters:
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dT'], self.record_every_de))
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dI'], self.record_every_de))
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['step_number'], self.step_number))
+        # exp_params.append(make_ecc_parm(self.k_api, CV_params['Begin_measuring_I'], 0.8))
+        # exp_params.append(make_ecc_parm(self.k_api, CV_params['End_measuring_I'], 0.8))
+
+        # make the technique parameter array
+        ecc_params = make_ecc_parms(self.k_api, *exp_params)
+        return ecc_params
+
+    @property
+    def parsed_data(self):
+        extracted_data = []
+        for data_step in self.data:
+            current_values, data_info, data_record = data_step
+            tech_name = TECH_ID(data_info.TechniqueID).name
+            if data_info.NbCols != self.nb_words:
+                raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+
+            ix = 0
+            for _ in range(data_info.NbRows):
+                # progress through record
+                inx = ix + data_info.NbCols
+                row = data_record[ix:inx]
+                if self.is_VMP3:
+                    t_high, t_low, ewe_raw, i_raw, cycle = row
+                else:
+                    t_high, t_low, i_raw, ewe_raw, cycle = row
+
+                # compute timestamp in seconds
+                t = current_values.TimeBase * ((t_high << 32) + t_low)
+                # Ewe and current as floats
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                curr = self.k_api.ConvertNumericIntoSingle(i_raw)
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'I': curr, 'cycle': cycle})
+                ix = inx
+        return extracted_data
+
+    def experiment_print(self, data_step):
+        current_values, data_info, data_record = data_step
+        print("-------------------STEP-------------------")
+        ix = 0
+        for _ in range(data_info.NbRows):
+            inx = ix + data_info.NbCols
+            if self.is_VMP3:
+                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            else:
+                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+
+            print("Time:  {} \t Volt:  {:02f} \t Current:  {:.2E}".format(current_values.TimeBase * ((t_high << 32) + t_low),
+                                                                             self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
+            ix = inx
 
 def cp_ex():
     cp_steps = [
@@ -801,8 +921,8 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp.to_txt("examples/cv_example.csv")
 
 
-def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
-    experiment1 = EisExperiment(vs_initial=1, vs_final=1)
+def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, vs_initial_eis=None, vs_final_eis=None):
+    experiment1 = EisExperiment(vs_initial=vs_initial_eis, vs_final=vs_final_eis)
     experiment1.run_experiment()
     p_data = experiment1.parsed_data
     real_res = [s['real_res'] for s in p_data]
@@ -819,4 +939,4 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
 
 
 if __name__ == "__main__":
-    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
+    ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=1, vs_final_eis=1)

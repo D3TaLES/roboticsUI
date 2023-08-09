@@ -159,7 +159,7 @@ class PotentiostatExperiment:
 
             # BL_LoadTechniques
             print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
@@ -369,20 +369,20 @@ class EisExperiment(PotentiostatExperiment):
     def __init__(self,
                  vs_initial=0,  # depends on the molecule
                  vs_final=0,  # depends on the molecule
-                 Initial_Voltage_step=0,
-                 Final_Voltage_step=0,
+                 Initial_Voltage_step=0.1,
+                 Final_Voltage_step=0.1,
                  Duration_step=0.5,
                  Step_number=41,
                  Record_every_dT=0.25,
                  Record_every_dI=0.1,
                  Final_frequency=0,
                  Initial_frequency=0,
-                 sweep=True,
-                 Amplitude_Voltage=0.5,
-                 Frequency_number=15,
+                 sweep=False,
+                 Amplitude_Voltage=0.01,
+                 Frequency_number=5,
                  Average_N_times=5,
                  Correction=False,
-                 Wait_for_steady=0,
+                 Wait_for_steady=0.1,
                  **kwargs):
         super().__init__(15, **kwargs)
 
@@ -415,22 +415,22 @@ class EisExperiment(PotentiostatExperiment):
 
     def parameterize(self):
         eis_params = {
-            'vs_initial': self.vs_initial,
-            'vs_final': self.vs_final,
-            'Initial_Voltage_step': self.Initial_Voltage_step,
-            'Final_Voltage_step': self.Final_Voltage_step,
-            'Duration_step': self.Duration_step,
-            'Step_number': self.Step_number,
-            'Record_every_dT': self.Record_every_dT,
-            'Record_every_dI': self.Record_every_dI,
-            'Final_frequency': self.Final_frequency,
-            'Initial_frequency': self.Initial_frequency,
-            'sweep': self.sweep,
-            'Amplitude_Voltage': self.Amplitude_Voltage,
-            'Frequency_number': self.Frequency_number,
-            'Average_N_times': self.Average_N_times,
-            'Correction': self.Correction,
-            'Wait_for_steady': self.Wait_for_steady
+            'vs_initial': ECC_parm('vs_initial', bool),
+            'vs_final': ECC_parm('vs_final', bool),
+            'Initial_Voltage_step': ECC_parm('Initial_Voltage_step', float),
+            'Final_Voltage_step': ECC_parm('Final_Voltage_step', float),
+            'Duration_step': ECC_parm('Duration_step', float),
+            'Step_number': ECC_parm('Step_number', int),
+            'Record_every_dT': ECC_parm('Record_every_dT', float),
+            'Record_every_dI': ECC_parm('Record_every_dI', float),
+            'Final_frequency': ECC_parm('Final_frequency', float),
+            'Initial_frequency': ECC_parm('Initial_frequency', float),
+            'sweep': ECC_parm('sweep', bool),
+            'Amplitude_Voltage': ECC_parm('Amplitude_voltage', float),
+            'Frequency_number': ECC_parm('Frequency_number', int),
+            'Average_N_times': ECC_parm('Average_N_times', int),
+            'Correction': ECC_parm('Correction', bool),
+            'Wait_for_steady': ECC_parm('Wait_for_steady', float)
         }
 
         exp_params = list()
@@ -898,9 +898,9 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
-                         {"voltage": 0.8, "scan_rate": scan_rate},
+                         {"voltage": 0.7, "scan_rate": scan_rate},
                          {"voltage": -0.3, "scan_rate": scan_rate},
                          {"voltage": 0, "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
@@ -925,14 +925,13 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
                                 potentiostat_channel=potentiostat_channel,
                                 vs_initial=vs_initial_eis,
-                                vs_final=vs_final_eis)
+                                vs_final=vs_final_eis,
+                                Initial_frequency=200000,
+                                Final_frequency=10000000)
     experiment1.run_experiment()
     p_data = experiment1.parsed_data
-    real_res = [s['real_res'] for s in p_data]
-    im_res = [s['im_res'] for s in p_data]
-    freq = [s['freq'] for s in p_data]
-    df = pd.DataFrame(data=[real_res, im_res, freq])
-    df.to_excel('path')
+    df = pd.DataFrame(p_data)
+    df.to_csv('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\iR_testing\\eis_test1.csv')
     # experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
     #                               potentiostat_address=potentiostat_address,
     #                               potentiostat_channel=potentiostat_channel)
@@ -940,12 +939,14 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     # p_data = experiment.parsed_data
 
 
-
-if __name__ == "__main__":
-    # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=1, vs_final_eis=1)
-    experiment = CaExperiment(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
+def ca_exp(pot_address=POTENTIOSTAT_A_ADDRESS, pot_chan=2):
+    experiment = CaExperiment(potentiostat_address=pot_address, potentiostat_channel=pot_chan)
     experiment.run_experiment()
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
-    df.to_excel('path')
+    df.to_csv(r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test1.csv')
 
+
+if __name__ == "__main__":
+    ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
+    # cv_ex(scan_rate=0.300)

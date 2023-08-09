@@ -159,7 +159,7 @@ class PotentiostatExperiment:
 
             # BL_LoadTechniques
             print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
@@ -173,9 +173,6 @@ class PotentiostatExperiment:
                 current_values, data_info, data_record = exp_data
 
                 if VERBOSITY:
-                    if self.tech_file[0:2] != 'ca':
-                        self.experiment_print(exp_data)
-                    else:
                         self.experiment_print(exp_data)
                 status = KBIO.PROG_STATE(current_values.State).name
 
@@ -335,10 +332,13 @@ class iRCompExperiment(PotentiostatExperiment):
                 phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+                abs_res = abs_Ewe / abs_I
+                real_ = abs_res * math.cos(phase_Zwe)
+                imaginary_ = abs(abs_res * math.sin(phase_Zwe))
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
-                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce})
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real': real_, 'imag': imaginary_})
                 ix = inx
 
         return extracted_data
@@ -379,7 +379,7 @@ class EisExperiment(PotentiostatExperiment):
                  Initial_frequency=0,
                  sweep=False,
                  Amplitude_Voltage=0.01,
-                 Frequency_number=5,
+                 Frequency_number=10,
                  Average_N_times=5,
                  Correction=False,
                  Wait_for_steady=0.1,
@@ -426,7 +426,7 @@ class EisExperiment(PotentiostatExperiment):
             'Final_frequency': ECC_parm('Final_frequency', float),
             'Initial_frequency': ECC_parm('Initial_frequency', float),
             'sweep': ECC_parm('sweep', bool),
-            'Amplitude_Voltage': ECC_parm('Amplitude_voltage', float),
+            'Amplitude_Voltage': ECC_parm('Amplitude_Voltage', float),
             'Frequency_number': ECC_parm('Frequency_number', int),
             'Average_N_times': ECC_parm('Average_N_times', int),
             'Correction': ECC_parm('Correction', bool),
@@ -490,7 +490,7 @@ class EisExperiment(PotentiostatExperiment):
                 Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
                 abs_res = abs_Ewe/abs_I
                 real_ = abs_res*math.cos(phase_Zwe)
-                imaginary_ = abs_res*math.sin(phase_Zwe)
+                imaginary_ = abs(abs_res*math.sin(phase_Zwe))
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
                                        'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real_res': real_,
@@ -511,16 +511,19 @@ class EisExperiment(PotentiostatExperiment):
         for _ in range(data_info.NbRows):
             # progress through record
             inx = ix + data_info.NbCols
-            # extract timestamp and one row
-            row = data_record[ix:inx]
-            t = self.k_api.ConvertNumericIntoSingle(row[-2])
-            freq = self.k_api.ConvertNumericIntoSingle(row[0])
-            i = self.k_api.ConvertNumericIntoSingle(row[5])
-            ewe = self.k_api.ConvertNumericIntoSingle(row[4])
-            phase_w = self.k_api.ConvertNumericIntoSingle(row[3])
-            absres = i/ewe
-            real = absres*math.cos(phase_w)
-            print('-------------------{} / {} / {}-------------------------'.format(t, freq, real))
+            if data_info.ProcessIndex == 0:
+                pass
+            else:
+                # extract timestamp and one row
+                row = data_record[ix:inx]
+                t = self.k_api.ConvertNumericIntoSingle(row[-2])
+                freq = self.k_api.ConvertNumericIntoSingle(row[0])
+                i = self.k_api.ConvertNumericIntoSingle(row[5])
+                ewe = self.k_api.ConvertNumericIntoSingle(row[4])
+                phase_w = self.k_api.ConvertNumericIntoSingle(row[3])
+                absres = i/ewe
+                real = absres*math.cos(phase_w)
+                print('-------------------{} / {} / {}-------------------------'.format(t, freq, real))
             ix = inx
 
 
@@ -750,8 +753,6 @@ class CvExperiment(PotentiostatExperiment):
                 # Ewe and current as floats
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 curr = self.k_api.ConvertNumericIntoSingle(i_raw)
-                # apply iR compensation  # TODO implement the rcomp %
-                Ewe = Ewe - curr * self.rcomp_level * 0.85
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
                 ix = inx
@@ -761,15 +762,19 @@ class CvExperiment(PotentiostatExperiment):
         current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
-        for _ in range(data_info.NbRows):
+        for _ in range(1, data_info.NbRows):
             inx = ix + data_info.NbCols
-            if self.is_VMP3:
-                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
-            else:
-                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            try:
+                if self.is_VMP3:
+                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
+                else:
+                    t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
 
-            print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
-                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
+                print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                                                                 self.k_api.ConvertNumericIntoSingle(i_raw)))
+            except:
+                pass
+
             ix = inx
 
 
@@ -921,27 +926,48 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp.to_txt("examples/cv_example.csv")
 
 
-def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, vs_initial_eis=None, vs_final_eis=None):
-    experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
-                                potentiostat_channel=potentiostat_channel,
-                                vs_initial=vs_initial_eis,
-                                vs_final=vs_final_eis,
-                                Initial_frequency=200000,
-                                Final_frequency=10000000)
-    experiment1.run_experiment()
-    p_data = experiment1.parsed_data
-    df = pd.DataFrame(p_data)
-    df.to_csv('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\iR_testing\\eis_test1.csv')
-    # experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=frequency,
-    #                               potentiostat_address=potentiostat_address,
-    #                               potentiostat_channel=potentiostat_channel)
-    # experiment2.run_experiment()
-    # p_data = experiment.parsed_data
+def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None, vs_final_eis=None):
+    # experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
+    #                             potentiostat_channel=potentiostat_channel,
+    #                             vs_initial=vs_initial_eis,
+    #                             vs_final=vs_final_eis,
+    #                             Initial_frequency=100000,
+    #                             Final_frequency=100)
+    # experiment1.run_experiment(first=True, last=False)
+    # p_data = experiment1.parsed_data
+    # df = pd.DataFrame(p_data)
+    # df.to_csv('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\iR_testing\\eis_test4.csv')
+    experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=5000, final_frequency=5000,
+                                   potentiostat_address=potentiostat_address,
+                                   potentiostat_channel=potentiostat_channel)
+    experiment2.run_experiment(first=True, last=False)
+    scan_rate = 0.300
+    collection_params = [{"voltage": 0., "scan_rate": scan_rate},
+                         {"voltage": 0.7, "scan_rate": scan_rate},
+                         {"voltage": -0.3, "scan_rate": scan_rate},
+                         {"voltage": 0, "scan_rate": scan_rate}]
+    ex_steps = [voltage_step(**p) for p in collection_params]
+
+    exp = CvExperiment(ex_steps, potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
+    exp.run_experiment(first=False, last=True)
+
+    parsed_data = exp.parsed_data
+    print(parsed_data)
+    # potentials = [s["Ewe"] for s in parsed_data]
+    # current = [s["I"] for s in parsed_data]
+    #
+    # import matplotlib.pyplot as plt
+    # plt.scatter(potentials, current)
+    # plt.ylabel("Current")
+    # plt.xlabel("Voltage")
+    # plt.savefig("examples/iR_testing/cv_example.png")
+    # exp.save_parsed_data("examples/iR_testing/cv_data_example.json")
+    # exp.to_txt("examples/iR_testing/cv_example.csv")
 
 
 def ca_exp(pot_address=POTENTIOSTAT_A_ADDRESS, pot_chan=2):
     experiment = CaExperiment(potentiostat_address=pot_address, potentiostat_channel=pot_chan)
-    experiment.run_experiment()
+    experiment.run_experiment(first=True, last=True)
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
     df.to_csv(r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test1.csv')

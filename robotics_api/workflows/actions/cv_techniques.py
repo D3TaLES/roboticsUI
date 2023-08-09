@@ -922,7 +922,10 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
 
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, vs_initial_eis=None, vs_final_eis=None):
-    experiment1 = EisExperiment(vs_initial=vs_initial_eis, vs_final=vs_final_eis)
+    experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
+                                potentiostat_channel=potentiostat_channel,
+                                vs_initial=vs_initial_eis,
+                                vs_final=vs_final_eis)
     experiment1.run_experiment()
     p_data = experiment1.parsed_data
     real_res = [s['real_res'] for s in p_data]
@@ -939,4 +942,10 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
 
 
 if __name__ == "__main__":
-    ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=1, vs_final_eis=1)
+    # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=1, vs_final_eis=1)
+    experiment = CaExperiment(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
+    experiment.run_experiment()
+    p_data = experiment.parsed_data
+    df = pd.DataFrame(p_data)
+    df.to_excel('path')
+

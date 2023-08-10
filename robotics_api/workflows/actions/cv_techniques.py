@@ -151,46 +151,49 @@ class PotentiostatExperiment:
     def run_experiment(self, first=True, last=True):
         interrupt = False
         try:
-            if not self.check_connection():
+            if first or not self.check_connection():
                 self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
 
-            # Clear Data
-            self.data = []
+                # Clear Data
+                self.data = []
 
             # BL_LoadTechniques
             print(self.id_)
             self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
                                      display=(VERBOSITY > 1))
-            # BL_StartChannel
-            self.k_api.StartChannel(self.id_, self.potent_channel)
+            if last:
+                # BL_StartChannel
+                self.k_api.StartChannel(self.id_, self.potent_channel)
 
-            # experiment loop
-            print("Start {} cycle...".format(self.tech_file[:-4]))
-            while True:
-                # BL_GetData
-                exp_data = self.k_api.GetData(self.id_, self.potent_channel)
-                self.data.append(exp_data)
-                current_values, data_info, data_record = exp_data
+                # experiment loop
+                print("Start {} cycle...".format(self.tech_file[:-4]))
+                x = 0
+                while x < 3:
+                    # BL_GetData
+                    exp_data = self.k_api.GetData(self.id_, self.potent_channel)
+                    self.data.append(exp_data)
+                    current_values, data_info, data_record = exp_data
 
-                if VERBOSITY:
+                    if VERBOSITY:
                         self.experiment_print(exp_data)
-                status = KBIO.PROG_STATE(current_values.State).name
+                    status = KBIO.PROG_STATE(current_values.State).name
 
-                print("> new messages :")
-                self.print_messages()
-                if status == 'STOP':
-                    break
-                time.sleep(1)
-            print("> experiment done")
+                    print("> new messages :")
+                    self.print_messages()
+                    print(status)
+                    if status == 'STOP':
+                        x += 1
+                    time.sleep(1)
+                print("> experiment done")
         except KeyboardInterrupt:
             print(".. interrupted")
             interrupt = True
-
         # stop Experiment
         if last or interrupt:
             self.k_api.Disconnect(self.id_)
         else:
-            self.k_api.StopChannel(self.id_, self.potent_channel)
+            pass
+            # self.k_api.StopChannel(self.id_, self.potent_channel)
     @property
     def parsed_data(self):
         return []
@@ -782,12 +785,12 @@ class CaExperiment(PotentiostatExperiment):
     # TODO Documentation
 
     def __init__(self,
-                 steps=[-0.25, 0.25]*50,
+                 steps=[0.025, -0.025]*50,
                  vs_initial=[True, False]*50,
-                 duration_step=[0.0001]*100,
+                 duration_step=[0.000024]*100,
                  step_number=98,
                  record_every_dt=0.000024,
-                 record_every_di=0.00001,
+                 record_every_di=0.1,
                  n_cycles=2,
                  **kwargs):
         super().__init__(5, **kwargs)
@@ -825,12 +828,13 @@ class CaExperiment(PotentiostatExperiment):
         exp_params = list()
         scan_rates = []
         for _idx, step in enumerate(self.steps):
-            parm = make_ecc_parm(self.k_api, Ca_params['voltage_step'], step.voltage, _idx)
+            parm = make_ecc_parm(self.k_api, Ca_params['voltage_step'], step, _idx)
             exp_params.append(parm)
-            scan_rates.append(step.scan_rate)
-            parm = make_ecc_parm(self.k_api, Ca_params['vs_initial'], step.scan_rate, _idx)
+        for _idx, voltage in enumerate(self.vs_initial):
+            parm = make_ecc_parm(self.k_api, Ca_params['vs_initial'], voltage, _idx)
             exp_params.append(parm)
-            parm = make_ecc_parm(self.k_api, Ca_params['duration_step'], step.vs_init, _idx)
+        for _idx, duration in enumerate(self.duration):
+            parm = make_ecc_parm(self.k_api, Ca_params['duration_step'], duration, _idx)
             exp_params.append(parm)
 
         # repeating factor
@@ -838,8 +842,8 @@ class CaExperiment(PotentiostatExperiment):
         # exp_params.append(make_ecc_parm(self.k_api, CV_params['scan_number'], self.scan_number))
 
         # record parameters:
-        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dT'], self.record_every_de))
-        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dI'], self.record_every_de))
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dT'], self.record_every_dt))
+        exp_params.append(make_ecc_parm(self.k_api, Ca_params['record_every_dI'], self.record_every_di))
         exp_params.append(make_ecc_parm(self.k_api, Ca_params['step_number'], self.step_number))
         # exp_params.append(make_ecc_parm(self.k_api, CV_params['Begin_measuring_I'], 0.8))
         # exp_params.append(make_ecc_parm(self.k_api, CV_params['End_measuring_I'], 0.8))
@@ -937,7 +941,7 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     # p_data = experiment1.parsed_data
     # df = pd.DataFrame(p_data)
     # df.to_csv('C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\iR_testing\\eis_test4.csv')
-    experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=5000, final_frequency=5000,
+    experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=500, final_frequency=5000,
                                    potentiostat_address=potentiostat_address,
                                    potentiostat_channel=potentiostat_channel)
     experiment2.run_experiment(first=True, last=False)
@@ -951,8 +955,20 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     exp = CvExperiment(ex_steps, potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment(first=False, last=True)
 
-    parsed_data = exp.parsed_data
-    print(parsed_data)
+    parsed_data = exp.data
+    with open('examples/iR_testing/link_data.txt', 'a') as f:
+        for data_step in parsed_data:
+            current_values, data_info, data_record = data_step
+            data_record_converted = []
+            for i in data_record:
+                try:
+                    record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
+                except:
+                    record = i
+                data_record_converted.append(record)
+            f.write(str(data_record_converted))
+        f.write(" \n \n")
+        f.close()
     # potentials = [s["Ewe"] for s in parsed_data]
     # current = [s["I"] for s in parsed_data]
     #
@@ -965,14 +981,15 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     # exp.to_txt("examples/iR_testing/cv_example.csv")
 
 
-def ca_exp(pot_address=POTENTIOSTAT_A_ADDRESS, pot_chan=2):
-    experiment = CaExperiment(potentiostat_address=pot_address, potentiostat_channel=pot_chan)
+def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
+    experiment = CaExperiment(potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     experiment.run_experiment(first=True, last=True)
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
-    df.to_csv(r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test1.csv')
+    df.to_csv(r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test6.csv')
 
 
 if __name__ == "__main__":
     ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
     # cv_ex(scan_rate=0.300)
+    # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

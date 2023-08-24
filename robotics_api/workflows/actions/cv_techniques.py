@@ -162,8 +162,10 @@ class PotentiostatExperiment:
             self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
                                      display=(VERBOSITY > 1))
             if last:
-                print(self.k_api.GetChannelInfo(self.id_, self.potent_channel, 9))
-                print(self.k_api.GetChannelInfo(self.id_, self.potent_channel, 18))
+                info = [None]*19
+                for i in range(len(info)):
+                    info[i] = self.k_api.GetChannelInfo(self.id_, self.potent_channel, i)
+                print(info)
 
                 # BL_StartChannel
                 self.k_api.StartChannel(self.id_, self.potent_channel)

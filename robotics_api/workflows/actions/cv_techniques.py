@@ -162,6 +162,9 @@ class PotentiostatExperiment:
             self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
                                      display=(VERBOSITY > 1))
             if last:
+                print(self.k_api.GetChannelInfo(self.id_, self.potent_channel, 9))
+                print(self.k_api.GetChannelInfo(self.id_, self.potent_channel, 18))
+
                 # BL_StartChannel
                 self.k_api.StartChannel(self.id_, self.potent_channel)
 
@@ -192,8 +195,10 @@ class PotentiostatExperiment:
         if last or interrupt:
             self.k_api.Disconnect(self.id_)
         else:
-            pass
-            # self.k_api.StopChannel(self.id_, self.potent_channel)
+            if last:
+                self.k_api.StopChannel(self.id_, self.potent_channel)
+            else:
+                pass
     @property
     def parsed_data(self):
         return []

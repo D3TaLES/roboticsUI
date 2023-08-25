@@ -165,7 +165,9 @@ class PotentiostatExperiment:
                 info = [None]*19
                 for i in range(len(info)):
                     info[i] = self.k_api.GetChannelInfo(self.id_, self.potent_channel, i)
-                print(info)
+                with open('FILE NAME HERE', 'a') as f:
+                    f.write(str(info))
+                    f.close()
 
                 # BL_StartChannel
                 self.k_api.StartChannel(self.id_, self.potent_channel)

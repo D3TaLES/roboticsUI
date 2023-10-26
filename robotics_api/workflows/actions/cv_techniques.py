@@ -98,6 +98,43 @@ class PotentiostatExperiment:
             [print(s) for s in norm_steps]
         return norm_steps
 
+    def iR_comp(self,
+                amplitude_voltage=0.5,  # Set this manually
+                final_frequency=5000,
+                initial_frequency=500,
+                average_n_times=5,
+                wait_for_steady=0,
+                sweep=True,
+                rcomp_level=RCOMP_LEVEL,
+                rcmp_mode=0,  # always software unless an SP-300 series and running loop function
+                ):
+        iR_params = {
+            'final_frequency': ECC_parm("Final_frequency", float),
+            'initial_frequency': ECC_parm("Initial_frequency", float),
+            'amplitude_voltage': ECC_parm("Amplitude_Voltage", float),
+            'average_n_times': ECC_parm("Average_N_times", int),
+            'wait_for_steady': ECC_parm("Wait_for_steady", float),
+            'sweep': ECC_parm("sweep", bool),
+            'rcomp_level': ECC_parm("Rcomp_Level", float),
+            # 'rcmp_mode': ECC_parm("Rcmp_Mode", int),
+        }
+
+        exp_params = list()
+
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['final_frequency'], final_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['initial_frequency'], initial_frequency))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['amplitude_voltage'], amplitude_voltage))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['average_n_times'], average_n_times))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['wait_for_steady'], wait_for_steady))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], sweep))
+        exp_params.append(make_ecc_parm(self.k_api, iR_params['rcomp_level'], rcomp_level))
+        # exp_params.append(make_ecc_parm(self.k_api, iR_params['rcmp_mode'], rcmp_mode))
+
+        # make the technique parameter array
+        ecc_params = make_ecc_parms(self.k_api, *exp_params)
+        tech_file = 'pzir.ecc' if self.is_VMP3 else 'pzir4.ecc'
+        return ecc_params, tech_file
+
     def check_connection(self):
         conn = self.k_api.TestConnection(self.id_)
         if not conn:
@@ -155,10 +192,13 @@ class PotentiostatExperiment:
 
             # Clear Data
             self.data = []
-
+            ir_comp_params, ir_tech = self.iR_comp()
             # BL_LoadTechnique
             print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
+
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, ir_tech, ir_comp_params, first=True, last=False,
+                                     display=(VERBOSITY > 1))
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=False, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
@@ -241,8 +281,8 @@ class iRCompExperiment(PotentiostatExperiment):
     # TODO documentation
     def __init__(self,
                  amplitude_voltage=0.5,  # Set this manually
-                 final_frequency=FINAL_FREQUENCY,
-                 initial_frequency=INITIAL_FREQUENCY,
+                 final_frequency=5000,
+                 initial_frequency=500,
                  average_n_times=5,
                  wait_for_steady=0,
                  sweep=True,
@@ -335,7 +375,8 @@ class iRCompExperiment(PotentiostatExperiment):
 
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
-                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real': real_, 'imag': imaginary_})
+                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real': real_,
+                                       'imag': imaginary_})
                 ix = inx
 
         return extracted_data
@@ -485,9 +526,9 @@ class EisExperiment(PotentiostatExperiment):
                 phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
                 Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
                 Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
-                abs_res = abs_Ewe/abs_I
-                real_ = abs_res*math.cos(phase_Zwe)
-                imaginary_ = abs(abs_res*math.sin(phase_Zwe))
+                abs_res = abs_Ewe / abs_I
+                real_ = abs_res * math.cos(phase_Zwe)
+                imaginary_ = abs(abs_res * math.sin(phase_Zwe))
                 extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
                                        'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
                                        'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real_res': real_,
@@ -518,8 +559,8 @@ class EisExperiment(PotentiostatExperiment):
                 i = self.k_api.ConvertNumericIntoSingle(row[5])
                 ewe = self.k_api.ConvertNumericIntoSingle(row[4])
                 phase_w = self.k_api.ConvertNumericIntoSingle(row[3])
-                absres = i/ewe
-                real = absres*math.cos(phase_w)
+                absres = i / ewe
+                real = absres * math.cos(phase_w)
                 print('-------------------{} / {} / {}-------------------------'.format(t, freq, real))
             ix = inx
 
@@ -779,9 +820,9 @@ class CaExperiment(PotentiostatExperiment):
     # TODO Documentation
 
     def __init__(self,
-                 steps=[0.025, -0.025]*50,
-                 vs_initial=[True, False]*50,
-                 duration_step=[0.000024]*100,
+                 steps=[0.025, -0.025] * 50,
+                 vs_initial=[True, False] * 50,
+                 duration_step=[0.000024] * 100,
                  step_number=98,
                  record_every_dt=0.000024,
                  record_every_di=0.1,
@@ -885,10 +926,12 @@ class CaExperiment(PotentiostatExperiment):
             else:
                 t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
 
-            print("Time:  {} \t Volt:  {:02f} \t Current:  {:.2E}".format(current_values.TimeBase * ((t_high << 32) + t_low),
-                                                                             self.k_api.ConvertNumericIntoSingle(ewe_raw),
-                                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
+            print("Time:  {} \t Volt:  {:02f} \t Current:  {:.2E}".format(
+                current_values.TimeBase * ((t_high << 32) + t_low),
+                self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                self.k_api.ConvertNumericIntoSingle(i_raw)))
             ix = inx
+
 
 def cp_ex():
     cp_steps = [
@@ -910,21 +953,35 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp = CvExperiment(ex_steps, rcomp_level=r_comp,
                        potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
+    data = exp.data
+    with open('examples/iR_testing/link_data.txt', 'a') as f:
+        for data_step in data:
+            current_values, data_info, data_record = data_step
+            data_record_converted = []
+            for i in data_record:
+                try:
+                    record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
+                except:
+                    record = i
+                data_record_converted.append(record)
+            f.write(str(data_record_converted))
+        f.write(" \n \n")
+        f.close()
+    # parsed_data = exp.parsed_data
+    # potentials = [s["Ewe"] for s in parsed_data]
+    # current = [s["I"] for s in parsed_data]
+    #
+    # import matplotlib.pyplot as plt
+    # plt.scatter(potentials, current)
+    # plt.ylabel("Current")
+    # plt.xlabel("Voltage")
+    # plt.savefig("examples/cv_example.png")
+    # exp.save_parsed_data("examples/cv_data_example.json")
+    # exp.to_txt("examples/cv_example.csv")
 
-    parsed_data = exp.parsed_data
-    potentials = [s["Ewe"] for s in parsed_data]
-    current = [s["I"] for s in parsed_data]
 
-    import matplotlib.pyplot as plt
-    plt.scatter(potentials, current)
-    plt.ylabel("Current")
-    plt.xlabel("Voltage")
-    plt.savefig("examples/cv_example.png")
-    exp.save_parsed_data("examples/cv_data_example.json")
-    exp.to_txt("examples/cv_example.csv")
-
-
-def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None, vs_final_eis=None):
+def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,
+               vs_final_eis=None):
     # experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
     #                             potentiostat_channel=potentiostat_channel,
     #                             vs_initial=vs_initial_eis,
@@ -949,9 +1006,9 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     exp = CvExperiment(ex_steps, potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment(first=False, last=True)
 
-    parsed_data = exp.data
+    data = exp.data
     with open('examples/iR_testing/link_data.txt', 'a') as f:
-        for data_step in parsed_data:
+        for data_step in data:
             current_values, data_info, data_record = data_step
             data_record_converted = []
             for i in data_record:
@@ -980,10 +1037,11 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     experiment.run_experiment(first=True, last=True)
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
-    df.to_csv(r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test6.csv')
+    df.to_csv(
+        r'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\examples\\ca_testing\\ca_test6.csv')
 
 
 if __name__ == "__main__":
-    ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
-    # cv_ex(scan_rate=0.300)
+    # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
+    cv_ex(scan_rate=0.300)
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

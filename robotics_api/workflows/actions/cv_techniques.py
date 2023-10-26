@@ -145,64 +145,49 @@ class PotentiostatExperiment:
     def tech_file(self):
         return ''
 
-    def experiment_print(self, data_step):
+    def experiment_print(self, data_info, data_record):
         return None
 
-    def run_experiment(self, first=True, last=True):
-        interrupt = False
+    def run_experiment(self):
         try:
-            if first or not self.check_connection():
+            if not self.check_connection():
                 self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
 
-                # Clear Data
-                self.data = []
+            # Clear Data
+            self.data = []
 
-            # BL_LoadTechniques
+            # BL_LoadTechnique
             print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=last,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
                                      display=(VERBOSITY > 1))
-            if last:
-                info = [None]*19
-                for i in range(len(info)):
-                    info[i] = self.k_api.GetChannelInfo(self.id_, self.potent_channel, i)
-                with open('FILE NAME HERE', 'a') as f:
-                    f.write(str(info))
-                    f.close()
+            # BL_StartChannel
+            self.k_api.StartChannel(self.id_, self.potent_channel)
 
-                # BL_StartChannel
-                self.k_api.StartChannel(self.id_, self.potent_channel)
+            # experiment loop
+            print("Start {} cycle...".format(self.tech_file[:-4]))
+            while True:
+                # BL_GetData
+                exp_data = self.k_api.GetData(self.id_, self.potent_channel)
+                self.data.append(exp_data)
+                current_values, data_info, data_record = exp_data
 
-                # experiment loop
-                print("Start {} cycle...".format(self.tech_file[:-4]))
-                x = 0
-                while x < 3:
-                    # BL_GetData
-                    exp_data = self.k_api.GetData(self.id_, self.potent_channel)
-                    self.data.append(exp_data)
-                    current_values, data_info, data_record = exp_data
+                if VERBOSITY:
+                    self.experiment_print(data_info, data_record)
 
-                    if VERBOSITY:
-                        self.experiment_print(exp_data)
-                    status = KBIO.PROG_STATE(current_values.State).name
+                status = KBIO.PROG_STATE(current_values.State).name
 
-                    print("> new messages :")
-                    self.print_messages()
-                    print(status)
-                    if status == 'STOP':
-                        x += 1
-                    time.sleep(1)
-                print("> experiment done")
+                print("> new messages :")
+                self.print_messages()
+                if status == 'STOP':
+                    break
+                time.sleep(1)
+            print("> experiment done")
         except KeyboardInterrupt:
             print(".. interrupted")
-            interrupt = True
-        # stop Experiment
-        if last or interrupt:
-            self.k_api.Disconnect(self.id_)
-        else:
-            if last:
-                self.k_api.StopChannel(self.id_, self.potent_channel)
-            else:
-                pass
+
+        # BL_Disconnect
+        self.k_api.Disconnect(self.id_)
+
     @property
     def parsed_data(self):
         return []

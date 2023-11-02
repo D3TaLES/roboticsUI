@@ -212,7 +212,7 @@ class PotentiostatExperiment:
                 current_values, data_info, data_record = exp_data
 
                 if VERBOSITY:
-                    self.experiment_print(data_info, data_record)
+                    self.experiment_print(exp_data)
 
                 status = KBIO.PROG_STATE(current_values.State).name
 
@@ -954,7 +954,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
                        potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
     data = exp.data
-    with open('examples/iR_testing/link_data_nov_2.txt', 'a') as f:
+    with open('examples/iR_testing/link_data_nov_2_test_2.txt', 'a') as f:
         for data_step in data:
             current_values, data_info, data_record = data_step
             data_record_converted = []
@@ -1004,7 +1004,7 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     ex_steps = [voltage_step(**p) for p in collection_params]
 
     exp = CvExperiment(ex_steps, potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
-    exp.run_experiment(first=False, last=True)
+    exp.run_experiment()
 
     data = exp.data
     with open('examples/iR_testing/link_data.txt', 'a') as f:
@@ -1044,4 +1044,5 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 if __name__ == "__main__":
     # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
     cv_ex(scan_rate=0.300)
+
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

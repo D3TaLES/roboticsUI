@@ -54,7 +54,7 @@ MAX_WAIT_TIME = 300  # seconds
 AUTO_VOLT_BUFFER = 0.25  # Volts
 
 # iR Compensation Variables
-RCOMP_LEVEL = 85
+RCOMP_LEVEL = 0.85
 INITIAL_FREQUENCY = 5
 FINAL_FREQUENCY = 60
 

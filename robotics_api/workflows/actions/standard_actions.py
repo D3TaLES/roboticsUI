@@ -377,7 +377,8 @@ class PotentiostatStation(StationStatus):
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
-        self.arduino_name = f"E_{self.potentiostat}{self.p_channel:02d}"
+        elevator = self.p_channel-1
+        self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
 
     def initiate_cv(self, vial: VialMove = None):
@@ -516,16 +517,16 @@ if __name__ == "__main__":
 
     # list connection ports
     for port, desc, hw_id in sorted(comports()):
-        print("{}: {} [{}]".format(port, desc, hw_id))
+       print("{}: {} [{}]".format(port, desc, hw_id))
 
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()
-
-    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
+    #
+    #PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
     # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
-    snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
+    # snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
 
     # get_place_vial(VialMove(_id="S_01").home_snapshot, action_type='get', raise_error=True)
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
@@ -540,10 +541,10 @@ if __name__ == "__main__":
     # snapshot_move(target_position=10)
     # snapshot_move(target_position=80)
 
-    # send_arduino_cmd("E_A02", "0")
+    send_arduino_cmd("E_1", "0")
 
-    vial = VialMove(_id="A_04")
-    solv_stat = LiquidStation(_id="solvent_01")
+    # vial = VialMove(_id="A_04")
+    # solv_stat = LiquidStation(_id="solvent_01")
 
     # vial.leave_station(solv_stat)
     # solv_stat.dispense_only(10)

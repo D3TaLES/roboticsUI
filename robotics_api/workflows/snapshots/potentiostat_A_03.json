@@ -6,7 +6,7 @@
           "targetPose":{
             "x":0.3499999940395355,
             "y":0.46000000834465027,
-            "z":0.05999999865889549,
+            "z":0.050,
             "thetaX":90.0114974975586,
             "thetaY":-0.004906623624265194,
             "thetaZ":160.0005645751953},
@@ -21,7 +21,7 @@
           "identifier":10006,
           "permission":7,
           "actionType":6},
-        "name":"pot_2"
+        "name":"Potentiostat Elevator 2"
       }
     ]
   }

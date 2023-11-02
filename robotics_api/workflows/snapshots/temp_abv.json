@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.327,
-            "y": -0.312,
-            "z": 0.08,
-            "thetaX": 90,
-            "thetaY": 0.1,
-            "thetaZ": 44.4
+            "x": 0.515,
+            "y": 0.354,
+            "z": 0.057,
+            "thetaX": 90.58942413330078,
+            "thetaY": 3.413317918777466,
+            "thetaZ": 129.7052764892578
           },
           "constraint": {
             "speed": {
@@ -20,11 +20,11 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10039,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "Solv_01"
+        "name": "Potentiostat Elevator 1"
       }
     ]
   }

@@ -1,9 +1,9 @@
 {
     "spec": {
-        "_category": "instrument",
-        "_priority": 2,
+        "_category": "robotics",
+        "_priority": 0,
         "wflow_name": "8CVCollect_TEST2Concen__1mol_",
-        "name": "exp01_06TNKR_collect_cv_data",
+        "name": "exp01_06TNKR_robot",
         "full_name": "exp01_06TNKR",
         "exp_name": "exp01",
         "mol_id": "06TNKR",
@@ -12,7 +12,10 @@
         "metadata": {
             "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
             "molecule_id": "06TNKR",
-            "working_electrode_surface_area": 0.031415926535897934,
+            "working_electrode_surface_area": {
+                "value": 0.0,
+                "unit": "cm^2"
+            },
             "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
             "electrode_counter": "screen-printed micro-electrode (counter)",
             "electrode_reference": "Ag/Ag+ wire electrode",
@@ -22,109 +25,49 @@
                     "name": "Acetonitrile",
                     "purity": ""
                 }
-            ],
-            "mass": "18.6mg",
-            "temperature": "293K",
-            "collect_tag": "cycle01_cv",
-            "cv_cycle": 1,
-            "cv_idx": 1,
-            "potentiostat": "potentiostat_A_02",
-            "collect_vial_id": "A_04"
+            ]
         },
         "_tasks": [
             {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.500V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+                "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                "size": "0.0cm^2",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RecordWorkingElectrodeArea}}"
+            },
+            {
+                "start_uuid": "330391e4-855b-4a1d-851e-59445c65fad0",
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "mass": "18.6mg",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseSolid}}"
+            },
+            {
+                "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "volume": "10.0mL",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseLiquid}}"
             },
             {
                 "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.400V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.300V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.200V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.100V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.075V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.050V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
-            },
-            {
-                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
-                "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                "voltage_sequence": "0, 0.5, -0.2V",
-                "scan_rate": "0.025V/s",
-                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RunCV}}"
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "temperature": "293K",
+                "time": "20.0s",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.HeatStir}}"
             }
         ],
-        "collection_data": [
-            {
-                "collect_tag": "benchmark_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "330391e4-855b-4a1d-851e-59445c65fad0",
-                        "name": "TEMPO",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "5.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_TEST2Concen__1mol_\\20230727\\exp01_06TNKR\\benchmark_15_10_49.csv"
-            }
-        ],
-        "processing_data": {}
+        "success": true
     },
-    "fw_id": 2006,
-    "created_on": "2023-07-27T19:05:47.535206",
-    "updated_on": "2023-07-27T19:11:08.158516",
+    "fw_id": 2023,
+    "created_on": "2023-07-27T19:25:38.837775",
+    "updated_on": "2023-08-25T16:07:25.780093",
     "launches": [
         {
             "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing",
-                    "instrument"
-                ],
+                "name": "Automatically generated Worker",
+                "category": "",
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 2006,
+            "fw_id": 2023,
             "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
             "ip": "192.168.1.11",
@@ -134,13 +77,208 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-07-27T19:11:08.157520",
-                    "updated_on": "2023-07-27T19:11:08.157520"
+                    "created_on": "2023-08-25T16:07:25.779098",
+                    "updated_on": "2023-08-25T16:07:25.779098"
                 }
             ],
-            "launch_id": 1200
+            "launch_id": 1227
+        }
+    ],
+    "archived_launches": [
+        {
+            "fworker": {
+                "name": "robotics_pc_robotics",
+                "category": [
+                    "robotics"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 2023,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir\\launcher_2023-07-27-19-28-35-449550",
+            "host": "CAER-FVJJLM3",
+            "ip": "192.168.1.11",
+            "trackers": [],
+            "action": {
+                "stored_data": {
+                    "_message": "runtime error during task",
+                    "_task": {
+                        "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                        "volume": "10.0mL",
+                        "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseLiquid}}"
+                    },
+                    "_exception": {
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\ExperimentActions.py\", line 61, in run_task\n    volume = solv_station.dispense(self.exp_vial, volume)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\standard_actions.py\", line 284, in dispense\n    send_arduino_cmd(self.arduino_name, arduino_vol)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\standard_actions.py\", line 127, in send_arduino_cmd\n    time.sleep(1)\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\scripts\\rlaunch_run.py\", line 35, in handle_interrupt\n    sys.exit(1)\nSystemExit: 1\n",
+                        "_details": null
+                    }
+                },
+                "exit": true,
+                "update_spec": {},
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "FIZZLED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-07-27T19:28:35.453540",
+                    "updated_on": "2023-07-27T19:30:54.350380",
+                    "checkpoint": {
+                        "_task_n": 2,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "FIZZLED",
+                    "created_on": "2023-07-27T19:30:54.352375",
+                    "checkpoint": {
+                        "_task_n": 2,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": true,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                }
+            ],
+            "launch_id": 1209
+        },
+        {
+            "fworker": {
+                "name": "robotics_pc_robotics",
+                "category": [
+                    "robotics"
+                ],
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 2023,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir\\launcher_2023-07-28-19-55-52-457581",
+            "host": "CAER-FVJJLM3",
+            "ip": "192.168.1.11",
+            "trackers": [],
+            "action": {
+                "stored_data": {},
+                "exit": false,
+                "update_spec": {
+                    "success": 15,
+                    "metadata": {
+                        "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                        "molecule_id": "06TNKR",
+                        "working_electrode_surface_area": 0.031415926535897934,
+                        "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                        "electrode_counter": "screen-printed micro-electrode (counter)",
+                        "electrode_reference": "Ag/Ag+ wire electrode",
+                        "electrode_working": "screen-printed micro-electrode (working)",
+                        "solvent": [
+                            {
+                                "name": "Acetonitrile",
+                                "purity": ""
+                            }
+                        ],
+                        "mass": "18.6mg",
+                        "temperature": "293K"
+                    },
+                    "collection_data": [],
+                    "processing_data": {},
+                    "release_defused": true
+                },
+                "mod_spec": [],
+                "additions": [],
+                "detours": [],
+                "defuse_children": false,
+                "defuse_workflow": false,
+                "propagate": false
+            },
+            "state": "COMPLETED",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2023-07-28T19:55:52.462568",
+                    "updated_on": "2023-07-28T19:58:05.694908",
+                    "checkpoint": {
+                        "_task_n": 3,
+                        "_all_stored_data": {},
+                        "_all_update_spec": {
+                            "success": 17,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
+                        "_all_mod_spec": []
+                    }
+                },
+                {
+                    "state": "COMPLETED",
+                    "created_on": "2023-07-28T19:58:05.696904"
+                }
+            ],
+            "launch_id": 1213
         }
     ],
     "state": "RUNNING",
-    "name": "exp01_06TNKR_collect_cv_data"
+    "name": "exp01_06TNKR_robot"
 }

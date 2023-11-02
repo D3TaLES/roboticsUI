@@ -471,5 +471,5 @@ if __name__ == "__main__":
 
     # snapshot_move(target_position=50)
 
-    send_arduino_cmd("E_A02", "0")
+    send_arduino_cmd("E_A03", "0")
 

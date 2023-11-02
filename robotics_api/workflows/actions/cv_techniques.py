@@ -954,7 +954,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
                        potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
     data = exp.data
-    with open('examples/iR_testing/link_data.txt', 'a') as f:
+    with open('examples/iR_testing/link_data_nov_2.txt', 'a') as f:
         for data_step in data:
             current_values, data_info, data_record = data_step
             data_record_converted = []
@@ -967,7 +967,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
             f.write(str(data_record_converted))
         f.write(" \n \n")
         f.close()
-    # parsed_data = exp.parsed_data
+    parsed_data = exp.parsed_data
     # potentials = [s["Ewe"] for s in parsed_data]
     # current = [s["I"] for s in parsed_data]
     #

@@ -768,7 +768,7 @@ class CvExperiment(PotentiostatExperiment):
     @property
     def parsed_data(self):
         extracted_data = []
-        for data_step in self.data:
+        for data_step in self.data[3]:
             current_values, data_info, data_record = data_step
             tech_name = TECH_ID(data_info.TechniqueID).name
             if data_info.NbCols != self.nb_words:
@@ -1006,35 +1006,36 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     exp = CvExperiment(ex_steps, potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
 
-    data = exp.data
-    with open('examples/iR_testing/link_data.txt', 'a') as f:
-        for data_step in data:
-            current_values, data_info, data_record = data_step
-            data_record_converted = []
-            for i in data_record:
-                try:
-                    record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
-                except:
-                    record = i
-                data_record_converted.append(record)
-            f.write(str(data_record_converted))
-        f.write(" \n \n")
-        f.close()
-    # potentials = [s["Ewe"] for s in parsed_data]
-    # current = [s["I"] for s in parsed_data]
-    #
-    # import matplotlib.pyplot as plt
-    # plt.scatter(potentials, current)
-    # plt.ylabel("Current")
-    # plt.xlabel("Voltage")
-    # plt.savefig("examples/iR_testing/cv_example.png")
-    # exp.save_parsed_data("examples/iR_testing/cv_data_example.json")
-    # exp.to_txt("examples/iR_testing/cv_example.csv")
+    # data = exp.data
+    parsed_data = exp.parsed_data()
+    # with open('examples/iR_testing/link_data.txt', 'a') as f:
+    #     for data_step in data:
+    #         current_values, data_info, data_record = data_step
+    #         data_record_converted = []
+    #         for i in data_record:
+    #             try:
+    #                 record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
+    #             except:
+    #                 record = i
+    #             data_record_converted.append(record)
+    #         f.write(str(data_record_converted))
+    #     f.write(" \n \n")
+    #     f.close()
+    potentials = [s["Ewe"] for s in parsed_data]
+    current = [s["I"] for s in parsed_data]
+
+    import matplotlib.pyplot as plt
+    plt.scatter(potentials, current)
+    plt.ylabel("Current")
+    plt.xlabel("Voltage")
+    plt.savefig("examples/iR_testing/cv_example.png")
+    exp.save_parsed_data("examples/iR_testing/cv_data_example.json")
+    exp.to_txt("examples/iR_testing/cv_example.csv")
 
 
 def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     experiment = CaExperiment(potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
-    experiment.run_experiment(first=True, last=True)
+    experiment.run_experiment()
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
     df.to_csv(

@@ -749,7 +749,7 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+def cv_ex(scan_rate=0.100, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
                          {"voltage": 0.7, "scan_rate": scan_rate},
                          {"voltage": -0.3, "scan_rate": scan_rate},
@@ -767,9 +767,9 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.scatter(potentials, current)
     plt.ylabel("Current")
     plt.xlabel("Voltage")
-    plt.savefig("examples/iR_testing/cv_example.png")
-    exp.save_parsed_data("examples/iR_testing/cv_data_example.json")
-    exp.to_txt("examples/iR_testing/cv_example.csv")
+    plt.savefig("examples/iR_testing/cv_example_slow.png")
+    exp.save_parsed_data("examples/iR_testing/cv_data_example_slow.json")
+    exp.to_txt("examples/iR_testing/cv_example_slow.csv")
 
 
 def ir_comp_ex():

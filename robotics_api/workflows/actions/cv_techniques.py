@@ -108,6 +108,7 @@ class PotentiostatExperiment:
                 rcomp_level=RCOMP_LEVEL,
                 rcmp_mode=0,  # always software unless an SP-300 series and running loop function
                 ):
+        # the iR compensation is integrated into the base class, such that if we do a CV experiment, the iR will be automatically done
         iR_params = {
             'final_frequency': ECC_parm("Final_frequency", float),
             'initial_frequency': ECC_parm("Initial_frequency", float),
@@ -182,7 +183,7 @@ class PotentiostatExperiment:
     def tech_file(self):
         return ''
 
-    def experiment_print(self, data_info, data_record):
+    def experiment_print(self, data_step):
         return None
 
     def run_experiment(self):
@@ -768,32 +769,32 @@ class CvExperiment(PotentiostatExperiment):
     @property
     def parsed_data(self):
         extracted_data = []
-        for data_step in self.data[3]:
-            current_values, data_info, data_record = data_step
-            tech_name = TECH_ID(data_info.TechniqueID).name
-            if data_info.NbCols != self.nb_words:
-                raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+        data_step = self.data[3]
+        current_values, data_info, data_record = data_step
+        tech_name = TECH_ID(data_info.TechniqueID).name
+        if data_info.NbCols != self.nb_words:
+            raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
 
-            ix = 0
-            for _ in range(data_info.NbRows):
-                # progress through record
-                inx = ix + data_info.NbCols
-                row = data_record[ix:inx]
-                if self.is_VMP3:
-                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
-                    Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
-                else:
-                    t_high, t_low, i_raw, ewe_raw, cycle = row
-                    Ec = None
+        ix = 0
+        for _ in range(data_info.NbRows):
+            # progress through record
+            inx = ix + data_info.NbCols
+            row = data_record[ix:inx]
+            if self.is_VMP3:
+                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
+            else:
+                t_high, t_low, i_raw, ewe_raw, cycle = row
+                Ec = None
 
-                # compute timestamp in seconds
-                t = current_values.TimeBase * (t_high << 32) + t_low
-                # Ewe and current as floats
-                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-                curr = self.k_api.ConvertNumericIntoSingle(i_raw)
+            # compute timestamp in seconds
+            t = current_values.TimeBase * (t_high << 32) + t_low
+            # Ewe and current as floats
+            Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+            curr = self.k_api.ConvertNumericIntoSingle(i_raw)
 
-                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
-                ix = inx
+            extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
+            ix = inx
         return extracted_data
 
     def experiment_print(self, data_step):
@@ -820,9 +821,9 @@ class CaExperiment(PotentiostatExperiment):
     # TODO Documentation
 
     def __init__(self,
-                 steps=[0.025, -0.025] * 50,
-                 vs_initial=[True, False] * 50,
-                 duration_step=[0.000024] * 100,
+                 steps=[0.025, -0.025]*50,
+                 vs_initial=[True, False]*50,
+                 duration_step=[0.000024]*100,
                  step_number=98,
                  record_every_dt=0.000024,
                  record_every_di=0.1,
@@ -954,7 +955,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
                        potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
     data = exp.data
-    with open('examples/iR_testing/link_data_nov_2_test_2.txt', 'a') as f:
+    with open('examples/iR_testing/link_data_nov_13.txt', 'a') as f:
         for data_step in data:
             current_values, data_info, data_record = data_step
             data_record_converted = []
@@ -968,16 +969,16 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
         f.write(" \n \n")
         f.close()
     parsed_data = exp.parsed_data
-    # potentials = [s["Ewe"] for s in parsed_data]
-    # current = [s["I"] for s in parsed_data]
-    #
-    # import matplotlib.pyplot as plt
-    # plt.scatter(potentials, current)
-    # plt.ylabel("Current")
-    # plt.xlabel("Voltage")
-    # plt.savefig("examples/cv_example.png")
-    # exp.save_parsed_data("examples/cv_data_example.json")
-    # exp.to_txt("examples/cv_example.csv")
+    potentials = [s["Ewe"] for s in parsed_data]
+    current = [s["I"] for s in parsed_data]
+
+    import matplotlib.pyplot as plt
+    plt.scatter(potentials, current)
+    plt.ylabel("Current")
+    plt.xlabel("Voltage")
+    plt.savefig("examples/cv_example.png")
+    exp.save_parsed_data("examples/cv_data_example.json")
+    exp.to_txt("examples/cv_example.csv")
 
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,

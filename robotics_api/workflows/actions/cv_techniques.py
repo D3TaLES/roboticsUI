@@ -769,32 +769,33 @@ class CvExperiment(PotentiostatExperiment):
     @property
     def parsed_data(self):
         extracted_data = []
-        data_step = self.data[3]
-        current_values, data_info, data_record = data_step
-        tech_name = TECH_ID(data_info.TechniqueID).name
-        if data_info.NbCols != self.nb_words:
-            raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
+        data = self.data[3:]
+        for data_step in data:
+            current_values, data_info, data_record = data_step
+            tech_name = TECH_ID(data_info.TechniqueID).name
+            if data_info.NbCols != self.nb_words:
+                raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
 
-        ix = 0
-        for _ in range(data_info.NbRows):
-            # progress through record
-            inx = ix + data_info.NbCols
-            row = data_record[ix:inx]
-            if self.is_VMP3:
-                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
-                Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
-            else:
-                t_high, t_low, i_raw, ewe_raw, cycle = row
-                Ec = None
+            ix = 0
+            for _ in range(data_info.NbRows):
+                # progress through record
+                inx = ix + data_info.NbCols
+                row = data_record[ix:inx]
+                if self.is_VMP3:
+                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = row
+                    Ec = self.k_api.ConvertNumericIntoSingle(ec_raw)
+                else:
+                    t_high, t_low, i_raw, ewe_raw, cycle = row
+                    Ec = None
 
-            # compute timestamp in seconds
-            t = current_values.TimeBase * (t_high << 32) + t_low
-            # Ewe and current as floats
-            Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-            curr = self.k_api.ConvertNumericIntoSingle(i_raw)
+                # compute timestamp in seconds
+                t = current_values.TimeBase * (t_high << 32) + t_low
+                # Ewe and current as floats
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                curr = self.k_api.ConvertNumericIntoSingle(i_raw)
 
-            extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
-            ix = inx
+                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ec': Ec, 'I': curr, 'cycle': cycle})
+                ix = inx
         return extracted_data
 
     def experiment_print(self, data_step):
@@ -976,9 +977,9 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.scatter(potentials, current)
     plt.ylabel("Current")
     plt.xlabel("Voltage")
-    plt.savefig("examples/iR_testing/cv_example_iR.png")
-    exp.save_parsed_data("examples/iR_testing/cv_data_example_iR.json")
-    exp.to_txt("examples/iR_testing/cv_example_iR.csv")
+    plt.savefig("examples/iR_testing/cv_example_iR_slow.png")
+    exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
+    exp.to_txt("examples/iR_testing/iR_testing/cv_data_example_iR_slow.csv")
 
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,
@@ -1045,6 +1046,6 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 
 if __name__ == "__main__":
     # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
-    cv_ex(scan_rate=0.300)
+    cv_ex(scan_rate=0.100)
 
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

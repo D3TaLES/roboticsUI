@@ -917,6 +917,46 @@ class CaExperiment(PotentiostatExperiment):
                 ix = inx
         return extracted_data
 
+    def run_experiment(self):
+        try:
+            if not self.check_connection():
+                self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
+
+            # Clear Data
+            self.data = []
+
+            # BL_LoadTechnique
+            print(self.id_)
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
+                                     display=(VERBOSITY > 1))
+            # BL_StartChannel
+            self.k_api.StartChannel(self.id_, self.potent_channel)
+
+            # experiment loop
+            print("Start {} cycle...".format(self.tech_file[:-4]))
+            while True:
+                # BL_GetData
+                exp_data = self.k_api.GetData(self.id_, self.potent_channel)
+                self.data.append(exp_data)
+                current_values, data_info, data_record = exp_data
+
+                if VERBOSITY:
+                    self.experiment_print(data_info, data_record)
+
+                status = KBIO.PROG_STATE(current_values.State).name
+
+                print("> new messages :")
+                self.print_messages()
+                if status == 'STOP':
+                    break
+                time.sleep(1)
+            print("> experiment done")
+        except KeyboardInterrupt:
+            print(".. interrupted")
+
+        # BL_Disconnect
+        self.k_api.Disconnect(self.id_)
+
     def experiment_print(self, data_step):
         current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")

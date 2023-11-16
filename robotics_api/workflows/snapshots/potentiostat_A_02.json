@@ -1,29 +1,27 @@
 {
-  "poses": {
-    "pose": [
+  "poses":{
+    "pose":[
       {
-        "reachPose": {
+        "reachPose":{
           "targetPose":{
-            "x":0.515,
-            "y":0.354,
-            "z":0.033,
-            "thetaX":90.58942413330078,
-            "thetaY":3.413317918777466,
-            "thetaZ":129.7052764892578},
-          "constraint": {
-            "speed": {
-              "translation": 0,
-              "orientation": 0
-            }
+            "x":0.3499999940395355,
+            "y":0.46000000834465027,
+            "z":0.050,
+            "thetaX":90.0114974975586,
+            "thetaY":-0.004906623624265194,
+            "thetaZ":160.0005645751953},
+          "constraint":{
+            "speed":{
+              "translation":0,
+              "orientation":0}
           }
         },
-        "applicationData": "{\"kinova\":{\"color\":0}}",
-        "handle": {
-          "identifier": 10003,
-          "permission": 7,
-          "actionType": 6
-        },
-        "name": "Potentiostat"
+        "applicationData":"{\"kinova\":{\"color\":0}}",
+        "handle":{
+          "identifier":10006,
+          "permission":7,
+          "actionType":6},
+        "name":"Potentiostat Elevator 2"
       }
     ]
   }

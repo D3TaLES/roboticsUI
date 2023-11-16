@@ -2,15 +2,16 @@ import os
 import math
 from pathlib import Path
 
-RUN_CV = False
+RUN_CV = True
+DISPENSE = True
 CAPPED_DEFAULT = False
 CAPPED_ERROR = False
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 60
-OPEN_GRIP_TARGET = 30
-RAISE_AMOUNT = 0.05
+VIAL_GRIP_TARGET = 65
+OPEN_GRIP_TARGET = 40
+RAISE_AMOUNT = 0.07
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -81,7 +82,7 @@ VIALS = [
     "S_01", "S_02", "S_03", "S_04",
     "A_01", "A_02", "A_03", "A_04",
     "B_01", "B_02", "B_03", "B_04",
-    # "C_01", "C_02", "C_03", "C_04",
+    "C_01", "C_02", "C_03", "C_04",
 ]
 SOLVENT_VIALS = {"solvent_01": "S_01"}
 

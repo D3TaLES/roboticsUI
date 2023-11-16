@@ -37,23 +37,6 @@ class voltage_step:
     vs_init: bool = False
 
 
-def generate_col_params(voltage_sequence, scan_rate, volt_unit="V", scan_unit="V/s"):
-    ureg = pint.UnitRegistry()
-
-    # Get voltages with appropriate units
-    voltages = voltage_sequence.split(',')
-    voltage_units = ureg(voltages[-1]).units
-    for i, v in enumerate(voltages):
-        v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(" ").isnumeric() else v
-        v_unit = ureg(v_unit)
-        voltages[i] = v_unit.to(volt_unit).magnitude
-
-    # Get scan rate with appropriate units
-    scan_rate = ureg(scan_rate).to(scan_unit).magnitude
-    collection_params = [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
-    return collection_params
-
-
 class PotentiostatExperiment:
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
                  potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
@@ -986,7 +969,7 @@ def cp_ex():
     cp_exp.to_txt("cp_example.txt")
 
 
-def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
+def cv_ex(scan_rate=0.100, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
                          {"voltage": 0.7, "scan_rate": scan_rate},
                          {"voltage": -0.3, "scan_rate": scan_rate},
@@ -1020,7 +1003,6 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.savefig("examples/iR_testing/cv_example_iR_slow.png")
     exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
     exp.to_txt("examples/iR_testing/cv_data_example_iR_slow.csv")
-
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,
                vs_final_eis=None):

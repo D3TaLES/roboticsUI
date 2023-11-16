@@ -84,7 +84,7 @@ class ProcessBase(FiretaskBase):
             "source": "d3tales_robot",
             "author": "d3tales_robot",
             "author_email": 'd3tales@gmail.com',
-            "upload_time": datetime.now().isoformat(),
+            "upload_time": datetime.datetime.now().isoformat(),
             "file_type": file_type,
             "data_category": "experimentation",
             "data_type": "cv",

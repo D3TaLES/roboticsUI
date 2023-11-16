@@ -1,20 +1,22 @@
 {
     "spec": {
-<<<<<<< HEAD
-        "_category": "processing",
-        "_priority": 1,
-        "full_name": "exp01_11DELT",
-        "wflow_name": "8CVCollect_BenchmarkCV_test1_single_TEST",
+        "_category": "robotics",
+        "_priority": 0,
+        "wflow_name": "8CVCollect_TEST2Concen__1mol_",
+        "name": "exp01_06TNKR_robot",
+        "full_name": "exp01_06TNKR",
         "exp_name": "exp01",
-        "mol_id": "11DELT",
-        "rom_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
+        "mol_id": "06TNKR",
+        "rom_id": "330391e4-855b-4a1d-851e-59445c65fad0",
         "solv_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
         "metadata": {
-            "experiment_run_id": "6ff055ec-e7f3-42f5-933f-eff7fecb155d",
-            "molecule_id": "11DELT",
-            "working_electrode_surface_area": 0.031415926535897934,
-            "temperature": "293K",
-            "instrument": "robotics_potentiostat_A_01",
+            "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+            "molecule_id": "06TNKR",
+            "working_electrode_surface_area": {
+                "value": 0.0,
+                "unit": "cm^2"
+            },
+            "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
             "electrode_counter": "screen-printed micro-electrode (counter)",
             "electrode_reference": "Ag/Ag+ wire electrode",
             "electrode_working": "screen-printed micro-electrode (working)",
@@ -23,205 +25,49 @@
                     "name": "Acetonitrile",
                     "purity": ""
                 }
-            ],
-            "redox_mol_concentration": "0.009999291027687096M",
-            "collect_tag": "Cycle01_cv",
-            "potentiostat": "potentiostat_A_01",
-            "collect_vial_id": "A_04",
-            "cv_idx": 9,
-            "mass": "18.6mg",
-            "cv_cycle": 1
+            ]
         },
-=======
-        "_category": "robotics",
->>>>>>> jmch
         "_tasks": [
             {
-                "_fw_name": "{{robotics_api.workflows.Processing.EndWorkflow}}"
-            }
-<<<<<<< HEAD
-        ],
-        "success": 14,
-        "collection_data": [
-            {
-                "collect_tag": "solv_cv",
-                "vial_contents": [],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\solv_cv_17_26_18.csv"
+                "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                "end_uuid": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                "size": "0.0cm^2",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.RecordWorkingElectrodeArea}}"
             },
             {
-                "collect_tag": "benchmark_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\benchmark_17_45_14.csv"
+                "start_uuid": "330391e4-855b-4a1d-851e-59445c65fad0",
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "mass": "18.6mg",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseSolid}}"
             },
             {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp01_17_45_47.csv"
+                "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "volume": "10.0mL",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseLiquid}}"
             },
             {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp02_17_45_57.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp03_17_46_06.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp04_17_46_17.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp05_17_46_29.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp06_17_46_48.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp07_17_47_12.csv"
-            },
-            {
-                "collect_tag": "Cycle01_cv",
-                "vial_contents": [
-                    {
-                        "reagent_uuid": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-                        "name": "cyclopenta-1,3-diene;iron(2+)",
-                        "amount": "18.6mg"
-                    },
-                    {
-                        "reagent_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
-                        "name": "Acetonitrile",
-                        "amount": "10.0mL"
-                    }
-                ],
-                "data_location": "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_single_TEST\\20230705\\exp01_11DELT\\exp08_17_47_44.csv"
+                "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                "temperature": "293K",
+                "time": "20.0s",
+                "_fw_name": "{{robotics_api.workflows.ExperimentActions.HeatStir}}"
             }
         ],
-        "processing_data": []
+        "success": true
     },
-    "fw_id": 1365,
-    "created_on": "2023-07-05T21:25:01.841888",
-    "updated_on": "2023-07-05T21:54:16.677682",
-=======
-        ]
-    },
-    "fw_id": 1,
-    "created_on": "2022-12-12T16:58:33.010707",
-    "updated_on": "2023-06-12T18:36:13.164560",
->>>>>>> jmch
+    "fw_id": 2023,
+    "created_on": "2023-07-27T19:25:38.837775",
+    "updated_on": "2023-08-25T16:07:25.780093",
     "launches": [
         {
             "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing",
-                    "instrument"
-                ],
+                "name": "Automatically generated Worker",
+                "category": "",
                 "query": "{}",
                 "env": {}
             },
-<<<<<<< HEAD
-            "fw_id": 1365,
-=======
-            "fw_id": 1,
->>>>>>> jmch
+            "fw_id": 2023,
             "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
             "host": "CAER-FVJJLM3",
             "ip": "192.168.1.11",
@@ -231,40 +77,25 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-<<<<<<< HEAD
-                    "created_on": "2023-07-05T21:54:16.676682",
-                    "updated_on": "2023-07-05T21:54:16.676682"
+                    "created_on": "2023-08-25T16:07:25.779098",
+                    "updated_on": "2023-08-25T16:07:25.779098"
                 }
             ],
-            "launch_id": 1000
-=======
-                    "created_on": "2023-06-12T18:36:13.163591",
-                    "updated_on": "2023-06-12T18:36:13.163591"
-                }
-            ],
-            "launch_id": 746
->>>>>>> jmch
+            "launch_id": 1227
         }
     ],
     "archived_launches": [
         {
             "fworker": {
-                "name": "robotics_pc",
+                "name": "robotics_pc_robotics",
                 "category": [
-                    "robotics",
-<<<<<<< HEAD
-                    "processing",
-                    "instrument"
-=======
-                    "processing"
->>>>>>> jmch
+                    "robotics"
                 ],
                 "query": "{}",
                 "env": {}
             },
-<<<<<<< HEAD
-            "fw_id": 1365,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
+            "fw_id": 2023,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir\\launcher_2023-07-27-19-28-35-449550",
             "host": "CAER-FVJJLM3",
             "ip": "192.168.1.11",
             "trackers": [],
@@ -272,12 +103,13 @@
                 "stored_data": {
                     "_message": "runtime error during task",
                     "_task": {
-                        "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                        "_fw_name": "{{robotics_api.workflows.Processing.CVProcessor}}"
+                        "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                        "volume": "10.0mL",
+                        "_fw_name": "{{robotics_api.workflows.ExperimentActions.DispenseLiquid}}"
                     },
                     "_exception": {
-                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 202, in run_task\n    self.processing_data.update({'processed_data': processed_data, \"metadata_id\": metadata_id,\nAttributeError: 'list' object has no attribute 'update'\n",
+                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\ExperimentActions.py\", line 61, in run_task\n    volume = solv_station.dispense(self.exp_vial, volume)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\standard_actions.py\", line 284, in dispense\n    send_arduino_cmd(self.arduino_name, arduino_vol)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\actions\\standard_actions.py\", line 127, in send_arduino_cmd\n    time.sleep(1)\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\scripts\\rlaunch_run.py\", line 35, in handle_interrupt\n    sys.exit(1)\nSystemExit: 1\n",
                         "_details": null
                     }
                 },
@@ -294,547 +126,69 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-07-05T21:49:48.272861",
-                    "updated_on": "2023-07-05T21:50:55.805405",
+                    "created_on": "2023-07-27T19:28:35.453540",
+                    "updated_on": "2023-07-27T19:30:54.350380",
                     "checkpoint": {
-                        "_task_n": 0,
+                        "_task_n": 2,
                         "_all_stored_data": {},
-                        "_all_update_spec": {},
+                        "_all_update_spec": {
+                            "success": true,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
                         "_all_mod_spec": []
                     }
                 },
                 {
                     "state": "FIZZLED",
-                    "created_on": "2023-07-05T21:50:55.806716",
+                    "created_on": "2023-07-27T19:30:54.352375",
                     "checkpoint": {
-                        "_task_n": 0,
+                        "_task_n": 2,
                         "_all_stored_data": {},
-                        "_all_update_spec": {},
+                        "_all_update_spec": {
+                            "success": true,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
                         "_all_mod_spec": []
                     }
                 }
             ],
-            "launch_id": 997
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing",
-                    "instrument"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1365,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI",
-=======
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
->>>>>>> jmch
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-<<<<<<< HEAD
-                "stored_data": {
-                    "_message": "runtime error during task",
-                    "_task": {
-                        "start_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                        "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
-                        "_fw_name": "{{robotics_api.workflows.Processing.CVProcessor}}"
-                    },
-                    "_exception": {
-                        "_stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\Lab\\miniconda3\\envs\\d3tales_robotics\\lib\\site-packages\\fireworks\\core\\rocket.py\", line 261, in run\n    m_action = t.run_task(my_spec)\n  File \"C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\Processing.py\", line 203, in run_task\n    self.processing_data.update({'processed_data': processed_data, \"metadata_id\": metadata_id,\nAttributeError: 'list' object has no attribute 'update'\n",
-                        "_details": null
-                    }
-=======
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
->>>>>>> jmch
-                },
-                "exit": true,
-                "update_spec": {},
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "FIZZLED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-<<<<<<< HEAD
-                    "created_on": "2023-07-05T21:52:24.228543",
-                    "updated_on": "2023-07-05T21:52:53.354329",
-=======
-                    "created_on": "2022-12-12T16:58:59.514066",
-                    "updated_on": "2022-12-12T16:59:04.631475",
->>>>>>> jmch
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-<<<<<<< HEAD
-                    "state": "FIZZLED",
-                    "created_on": "2023-07-05T21:52:53.355316",
-=======
-                    "state": "COMPLETED",
-                    "created_on": "2022-12-12T16:59:04.638456"
-                }
-            ],
-            "launch_id": 1
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2022-12-12T17:06:12.699543",
-                    "updated_on": "2022-12-12T17:06:17.640080",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2022-12-12T17:06:17.648056"
-                }
-            ],
-            "launch_id": 6
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2022-12-12T22:31:48.783927",
-                    "updated_on": "2022-12-12T22:31:53.694183",
->>>>>>> jmch
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-<<<<<<< HEAD
-                }
-            ],
-            "launch_id": 998
-        }
-    ],
-    "state": "RUNNING",
-    "name": "exp01_11DELT_process_cv_data"
-=======
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2022-12-12T22:31:53.695180"
-                }
-            ],
-            "launch_id": 22
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2022-12-13T16:32:08.770794",
-                    "updated_on": "2022-12-13T16:32:14.083659",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2022-12-13T16:32:14.090642"
-                }
-            ],
-            "launch_id": 55
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-02-09T23:31:25.626960",
-                    "updated_on": "2023-02-09T23:31:26.566083",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-02-09T23:31:26.570583"
-                }
-            ],
-            "launch_id": 60
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 1
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-02-13T22:00:55.648318",
-                    "updated_on": "2023-02-13T22:01:16.617469",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-02-13T22:01:16.621460"
-                }
-            ],
-            "launch_id": 69
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-02-13T22:02:26.320226",
-                    "updated_on": "2023-02-13T22:02:31.398071",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-02-13T22:02:31.401046"
-                }
-            ],
-            "launch_id": 70
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-02-20T19:31:21.378289",
-                    "updated_on": "2023-02-20T19:31:26.473128",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-02-20T19:31:26.479124"
-                }
-            ],
-            "launch_id": 75
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-05-10T15:18:02.510553",
-                    "updated_on": "2023-05-10T15:18:03.933414",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-05-10T15:18:03.934758"
-                }
-            ],
-            "launch_id": 158
-        },
-        {
-            "fworker": {
-                "name": "robotics_pc",
-                "category": [
-                    "robotics",
-                    "processing"
-                ],
-                "query": "{}",
-                "env": {}
-            },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management",
-            "host": "CAER-FVJJLM3",
-            "ip": "192.168.1.11",
-            "trackers": [],
-            "action": {
-                "stored_data": {},
-                "exit": false,
-                "update_spec": {
-                    "success": 2
-                },
-                "mod_spec": [],
-                "additions": [],
-                "detours": [],
-                "defuse_children": false,
-                "defuse_workflow": false,
-                "propagate": false
-            },
-            "state": "COMPLETED",
-            "state_history": [
-                {
-                    "state": "RUNNING",
-                    "created_on": "2023-05-10T15:18:27.487460",
-                    "updated_on": "2023-05-10T15:18:28.588274",
-                    "checkpoint": {
-                        "_task_n": 0,
-                        "_all_stored_data": {},
-                        "_all_update_spec": {},
-                        "_all_mod_spec": []
-                    }
-                },
-                {
-                    "state": "COMPLETED",
-                    "created_on": "2023-05-10T15:18:28.591269"
-                }
-            ],
-            "launch_id": 159
+            "launch_id": 1209
         },
         {
             "fworker": {
@@ -845,8 +199,8 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 1,
-            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir\\launcher_2023-05-25-17-16-05-914559",
+            "fw_id": 2023,
+            "launch_dir": "C:\\Users\\Lab\\D3talesRobotics\\launch_dir\\launcher_2023-07-28-19-55-52-457581",
             "host": "CAER-FVJJLM3",
             "ip": "192.168.1.11",
             "trackers": [],
@@ -854,7 +208,27 @@
                 "stored_data": {},
                 "exit": false,
                 "update_spec": {
-                    "success": 2
+                    "success": 15,
+                    "metadata": {
+                        "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                        "molecule_id": "06TNKR",
+                        "working_electrode_surface_area": 0.031415926535897934,
+                        "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                        "electrode_counter": "screen-printed micro-electrode (counter)",
+                        "electrode_reference": "Ag/Ag+ wire electrode",
+                        "electrode_working": "screen-printed micro-electrode (working)",
+                        "solvent": [
+                            {
+                                "name": "Acetonitrile",
+                                "purity": ""
+                            }
+                        ],
+                        "mass": "18.6mg",
+                        "temperature": "293K"
+                    },
+                    "collection_data": [],
+                    "processing_data": {},
+                    "release_defused": true
                 },
                 "mod_spec": [],
                 "additions": [],
@@ -867,24 +241,44 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2023-05-25T17:16:05.923566",
-                    "updated_on": "2023-05-25T17:16:10.903263",
+                    "created_on": "2023-07-28T19:55:52.462568",
+                    "updated_on": "2023-07-28T19:58:05.694908",
                     "checkpoint": {
-                        "_task_n": 0,
+                        "_task_n": 3,
                         "_all_stored_data": {},
-                        "_all_update_spec": {},
+                        "_all_update_spec": {
+                            "success": 17,
+                            "metadata": {
+                                "experiment_run_id": "7bddbead-b98d-4965-8e69-564847928c70",
+                                "molecule_id": "06TNKR",
+                                "working_electrode_surface_area": 0.031415926535897934,
+                                "instrument": "potentiostat__UK Robotics Potentiostat (SP-50e)",
+                                "electrode_counter": "screen-printed micro-electrode (counter)",
+                                "electrode_reference": "Ag/Ag+ wire electrode",
+                                "electrode_working": "screen-printed micro-electrode (working)",
+                                "solvent": [
+                                    {
+                                        "name": "Acetonitrile",
+                                        "purity": ""
+                                    }
+                                ],
+                                "mass": "18.6mg"
+                            },
+                            "collection_data": [],
+                            "processing_data": {},
+                            "release_defused": true
+                        },
                         "_all_mod_spec": []
                     }
                 },
                 {
                     "state": "COMPLETED",
-                    "created_on": "2023-05-25T17:16:10.904261"
+                    "created_on": "2023-07-28T19:58:05.696904"
                 }
             ],
-            "launch_id": 362
+            "launch_id": 1213
         }
     ],
     "state": "RUNNING",
-    "name": "end_workflow"
->>>>>>> jmch
+    "name": "exp01_06TNKR_robot"
 }

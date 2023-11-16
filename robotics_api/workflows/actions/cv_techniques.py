@@ -979,7 +979,7 @@ def cv_ex(scan_rate=0.500, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     plt.xlabel("Voltage")
     plt.savefig("examples/iR_testing/cv_example_iR_slow.png")
     exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
-    exp.to_txt("examples/iR_testing/iR_testing/cv_data_example_iR_slow.csv")
+    exp.to_txt("examples/iR_testing/cv_data_example_iR_slow.csv")
 
 
 def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,

@@ -541,7 +541,7 @@ if __name__ == "__main__":
     # snapshot_move(target_position=10)
     # snapshot_move(target_position=80)
 
-    send_arduino_cmd("E_1", "0")
+    send_arduino_cmd("E_1", "0") #TODO get to change back to the where we have a "which potentiostat" portion of the name
 
     # vial = VialMove(_id="A_04")
     # solv_stat = LiquidStation(_id="solvent_01")

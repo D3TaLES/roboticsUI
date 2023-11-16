@@ -38,6 +38,7 @@ class voltage_step:
 
 
 class PotentiostatExperiment:
+    #TODO iR COMP ON OFF SWITCH
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
                  potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
@@ -81,16 +82,16 @@ class PotentiostatExperiment:
             [print(s) for s in norm_steps]
         return norm_steps
 
-    def iR_comp(self,
-                amplitude_voltage=0.5,  # Set this manually
-                final_frequency=5000,
-                initial_frequency=500,
-                average_n_times=5,
-                wait_for_steady=0,
-                sweep=True,
-                rcomp_level=RCOMP_LEVEL,
-                rcmp_mode=0,  # always software unless an SP-300 series and running loop function
-                ):
+    def run_iR_comp(self,
+                    amplitude_voltage=0.5,  # Set this manually
+                    final_frequency=5000,
+                    initial_frequency=500,
+                    average_n_times=5,
+                    wait_for_steady=0,
+                    sweep=True,
+                    rcomp_level=RCOMP_LEVEL,
+                    rcmp_mode=0,  # always software unless an SP-300 series and running loop function
+                    ):
         # the iR compensation is integrated into the base class, such that if we do a CV experiment, the iR will be automatically done
         iR_params = {
             'final_frequency': ECC_parm("Final_frequency", float),
@@ -176,7 +177,7 @@ class PotentiostatExperiment:
 
             # Clear Data
             self.data = []
-            ir_comp_params, ir_tech = self.iR_comp()
+            ir_comp_params, ir_tech = self.run_iR_comp()
             # BL_LoadTechnique
             print(self.id_)
 
@@ -213,7 +214,7 @@ class PotentiostatExperiment:
         self.k_api.Disconnect(self.id_)
 
     @property
-    def parsed_data(self):
+    def parsed_data(self): #TODO add property for iR compensation
         return []
 
     def save_parsed_data(self, out_file):
@@ -752,7 +753,7 @@ class CvExperiment(PotentiostatExperiment):
     @property
     def parsed_data(self):
         extracted_data = []
-        data = self.data[3:]
+        data = self.data[3:] #TODO make on/off affect this as well
         for data_step in data:
             current_values, data_info, data_record = data_step
             tech_name = TECH_ID(data_info.TechniqueID).name

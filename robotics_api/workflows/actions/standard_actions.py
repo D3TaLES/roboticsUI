@@ -377,7 +377,7 @@ class PotentiostatStation(StationStatus):
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
-        elevator = self.p_channel-1
+        elevator = self.p_channel
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
 
@@ -541,7 +541,7 @@ if __name__ == "__main__":
     # snapshot_move(target_position=10)
     # snapshot_move(target_position=80)
 
-    send_arduino_cmd("E_1", "0")
+    send_arduino_cmd("E_2", "0")
 
     # vial = VialMove(_id="A_04")
     # solv_stat = LiquidStation(_id="solvent_01")

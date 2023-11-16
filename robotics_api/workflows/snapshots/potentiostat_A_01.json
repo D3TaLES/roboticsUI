@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose":{
-            "x":0.3199999928474426,
-            "y":0.32100000977516174,
-            "z":0.09000000357627869,
-            "thetaX":90,
-            "thetaY":0,
-            "thetaZ":160},
+            "x":0.515,
+            "y":0.354,
+            "z":0.029,
+            "thetaX":90.58942413330078,
+            "thetaY":3.413317918777466,
+            "thetaZ":129.7052764892578},
           "constraint": {
             "speed": {
               "translation": 0,
@@ -17,13 +17,13 @@
             }
           }
         },
-        "applicationData":"{\"kinova\":{\"color\":0}}",
+        "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10004,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name":"Pre-Potentiostat Elevator 2"
+        "name": "Potentiostat Elevator 1"
       }
     ]
   }

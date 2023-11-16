@@ -39,7 +39,7 @@ class voltage_step:
 
 class PotentiostatExperiment:
     #TODO iR COMP ON OFF SWITCH
-    def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0,
+    def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0, run_iR=True,
                  potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
@@ -58,6 +58,7 @@ class PotentiostatExperiment:
         self.record_every_de = None
         self.load_firm = load_firm
         self.scan_rate = None
+        self.run_iR = run_iR
 
     @staticmethod
     def normalize_steps(steps: list, data_class, min_steps=None):
@@ -177,13 +178,18 @@ class PotentiostatExperiment:
 
             # Clear Data
             self.data = []
-            ir_comp_params, ir_tech = self.run_iR_comp()
+            if self.run_iR:
+                ir_comp_params, ir_tech = self.run_iR_comp()
+                last = False
+                first = False
+                self.k_api.LoadTechnique(self.id_, self.potent_channel, ir_tech, ir_comp_params, first=True, last=last,
+                                         display=(VERBOSITY > 1))
+            else:
+                first = True
             # BL_LoadTechnique
             print(self.id_)
 
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, ir_tech, ir_comp_params, first=True, last=False,
-                                     display=(VERBOSITY > 1))
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=False, last=True,
+            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
             self.k_api.StartChannel(self.id_, self.potent_channel)
@@ -214,8 +220,31 @@ class PotentiostatExperiment:
         self.k_api.Disconnect(self.id_)
 
     @property
-    def parsed_data(self): #TODO add property for iR compensation
+    def parsed_data(self):
         return []
+
+    @property
+    def iR_comp_data(self):
+        if self.run_iR:
+            f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
+                abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = self.data[2]
+                Freq = self.k_api.ConvertNumericIntoSingle(f)
+                abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+                abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
+                abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+                abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
+                i = self.k_api.ConvertNumericIntoSingle(i_raw)
+                i_range = self.k_api.ConvertNumericIntoSingle(i_range)
+                phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+                phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
+                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+                Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+                abs_res = abs_Ewe / abs_I
+                real_ = abs_res * math.cos(phase_Zwe)
+                imaginary_ = abs(abs_res * math.sin(phase_Zwe))
+                return real_
+        raise ValueError("iR compensation was not run, no value to return")
+
 
     def save_parsed_data(self, out_file):
         with open(out_file, 'w') as f:
@@ -388,7 +417,6 @@ class iRCompExperiment(PotentiostatExperiment):
 
 
 class EisExperiment(PotentiostatExperiment):
-    # TODO documentation
     def __init__(self,
                  vs_initial=0,  # depends on the molecule
                  vs_final=0,  # depends on the molecule
@@ -688,7 +716,6 @@ class CvExperiment(PotentiostatExperiment):
                  record_every_de=RECORD_EVERY_DE,
                  average_over_de=AVERAGE_OVER_DE,
                  min_steps=MIN_CV_STEPS,
-                 rcomp_level=RCOMP_LEVEL,
                  **kwargs):
         super().__init__(6, **kwargs)
 
@@ -699,7 +726,6 @@ class CvExperiment(PotentiostatExperiment):
         self.record_every_de = record_every_de
         self.average_over_de = average_over_de
         self.n_cycles = n_cycles
-        self.rcomp_level = rcomp_level  # TODO figure out iR comp
 
         self.params = self.parameterize()
         self.data = []
@@ -753,7 +779,7 @@ class CvExperiment(PotentiostatExperiment):
     @property
     def parsed_data(self):
         extracted_data = []
-        data = self.data[3:] #TODO make on/off affect this as well
+        data = self.data[3:] if self.run_iR else self.data
         for data_step in data:
             current_values, data_info, data_record = data_step
             tech_name = TECH_ID(data_info.TechniqueID).name
@@ -1020,7 +1046,7 @@ def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel
     experiment2 = iRCompExperiment(amplitude_voltage=0.5, initial_frequency=500, final_frequency=5000,
                                    potentiostat_address=potentiostat_address,
                                    potentiostat_channel=potentiostat_channel)
-    experiment2.run_experiment(first=True, last=False)
+    experiment2.run_experiment()
     scan_rate = 0.300
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
                          {"voltage": 0.7, "scan_rate": scan_rate},

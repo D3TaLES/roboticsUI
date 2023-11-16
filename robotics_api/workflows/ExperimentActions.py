@@ -66,8 +66,9 @@ class DispenseLiquid(RoboticsBase):
         self.success += self.exp_vial.retrieve()
         self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
 
-        if solvent.location != "experiment_vial":
-            volume = solv_station.dispense(self.exp_vial, volume)
+        # TODO undo
+        # if solvent.location != "experiment_vial":
+        #     volume = solv_station.dispense(self.exp_vial, volume)
         self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
         return FWAction(update_spec=self.updated_specs())
@@ -126,8 +127,9 @@ class HeatStir(RoboticsBase):
         self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
 
         # TODO fix stirring
-        stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
-        self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
+        # TODO undo
+        # stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
+        # self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec=self.updated_specs())

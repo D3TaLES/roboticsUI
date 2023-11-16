@@ -784,4 +784,4 @@ def ir_comp_ex():
 
 
 if __name__ == "__main__":
-    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
+    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1)

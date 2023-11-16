@@ -12,9 +12,9 @@ def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
     # Generate VialHomeAbv files
     new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] + raise_amount
     master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = new_height
-    with open(os.path.join(SNAPSHOT_DIR, "temp_abv.json"), "w+") as fn:
+    with open(os.path.join(SNAPSHOT_DIR, "_temp_abv.json"), "w+") as fn:
         json.dump(master_data, fn, indent=2)
-    return os.path.join(SNAPSHOT_DIR, "temp_abv.json")
+    return os.path.join(SNAPSHOT_DIR, "_temp_abv.json")
 
 
 def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT,
@@ -430,6 +430,8 @@ class PotentiostatStation(StationStatus):
                                       raise_amount=self.raise_amount, raise_error=raise_error, **move_kwargs)
             success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
+        else:
+            print(f"Station {self} not available.")
 
         if raise_error and not success:
             raise Exception(f"Vial {vial} was not successfully moved to {self}.")
@@ -470,7 +472,7 @@ class PotentiostatStation(StationStatus):
         Returns: bool, success
         """
         if not RUN_CV:
-            return None
+            return True
         # Benchmark CV for voltage range
         if not collect_params:
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
@@ -522,15 +524,17 @@ if __name__ == "__main__":
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()
     #
-    #PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
-    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
     #
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
     # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
 
     # get_place_vial(VialMove(_id="S_01").home_snapshot, action_type='get', raise_error=True)
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    # pot = PotentiostatStation("potentiostat_A_02")
+    # pot = PotentiostatStation("potentiostat_A_01")
     # vial_col_test("C")
     # solv_station = LiquidStation(_id="solvent_01")
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "solvent_01.json"))
@@ -538,10 +542,10 @@ if __name__ == "__main__":
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
-    # snapshot_move(target_position=10)
-    # snapshot_move(target_position=80)
+    # snapshot_move(target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(target_position=OPEN_GRIP_TARGET)
 
-    send_arduino_cmd("E_2", "0")
+    # send_arduino_cmd("E_1", "1")
 
     # vial = VialMove(_id="A_04")
     # solv_stat = LiquidStation(_id="solvent_01")

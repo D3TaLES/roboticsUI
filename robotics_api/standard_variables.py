@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 
 RUN_CV = True
-DISPENSE = True
+DISPENSE = False
 CAPPED_DEFAULT = False
 CAPPED_ERROR = False
 
@@ -75,7 +75,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["potentiostat_A_02", "potentiostat_A_03"]
+MEASUREMENT_STATIONS = ["potentiostat_A_01"]  # , "potentiostat_A_02"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

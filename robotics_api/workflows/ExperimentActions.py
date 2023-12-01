@@ -10,6 +10,7 @@ from robotics_api.workflows.actions.status_db_manipulations import *
 @add_metaclass(abc.ABCMeta)
 class RoboticsBase(FiretaskBase):
     wflow_name: str
+    fw_id: int
     exp_name: str
     full_name: str
     release_defused: bool
@@ -19,13 +20,16 @@ class RoboticsBase(FiretaskBase):
     collection_data: list
     processing_data: dict
     exp_vial: VialMove
+    end_experiment: bool
     _fw_name = "RoboticsBase"
 
     def setup_task(self, fw_spec):
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
+        self.fw_id = fw_spec.get("fw_id", self.get("fw_id"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
-        self.release_defused = fw_spec.get("release_defused", self.get("release_defused", True))
+        self.release_defused = fw_spec.get("release_defused", self.get("release_defused", False))
+        self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
 
@@ -43,11 +47,25 @@ class RoboticsBase(FiretaskBase):
         if self.release_defused and StationStatus().get_all_available("potentiostat"):
             defuse_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
             [self.lpad.reignite_fw(fw) for fw in defuse_fws]
+            print(f"Fireworks {str(defuse_fws)} released from defused state.")
+        if RERUN_FIZZLED_ROBOT:
+            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
+                {"name": {"$regex": "_setup_"}},
+                {"name": {"$regex": "robot"}}
+            ]}).distinct("fw_id")
+            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
+            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
+
         # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
                  "processing_data": self.processing_data, "release_defused": self.release_defused}
         specs.update(dict(**kwargs))
         return specs
+
+    def self_defuse(self):
+        self.updated_specs()
+        self.lpad.defuse_fw(self.fw_id)
+        print(f"Self defusing firework {self.fw_id}")
 
 
 @explicit_serialize
@@ -66,9 +84,8 @@ class DispenseLiquid(RoboticsBase):
         self.success += self.exp_vial.retrieve()
         self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
 
-        # TODO undo
-        # if solvent.location != "experiment_vial":
-        #     volume = solv_station.dispense(self.exp_vial, volume)
+        if solvent.location != "experiment_vial":
+            volume = solv_station.dispense(self.exp_vial, volume)
         self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
         return FWAction(update_spec=self.updated_specs())
@@ -127,9 +144,8 @@ class HeatStir(RoboticsBase):
         self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
 
         # TODO fix stirring
-        # TODO undo
-        # stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
-        # self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
+        stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
+        self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec=self.updated_specs())
@@ -184,13 +200,20 @@ class SetupPotentiostat(RoboticsBase):
         # Move vial to potentiostat elevator
         if collect_vial.current_station.type == "potentiostat":
             potentiostat = collect_vial.current_station.id
+            if self.exp_name != PotentiostatStation(potentiostat).current_experiment:
+                return self.self_defuse()
         else:
             # Use the same potentiostat as previous actions in this experiment if applicable
             if self.metadata.get("potentiostat"):
                 potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
-                self.success += potentiostat.wait_till_available(max_time=MAX_WAIT_TIME)
+                self.success += potentiostat.wait_till_available()
             else:
-                potentiostat = PotentiostatStation(StationStatus().get_first_available("potentiostat"))
+                potentiostat = PotentiostatStation(StationStatus().get_first_available("potentiostat",
+                                                                                       check_experiment=True))
+            # Defuse if potentiostat not available
+            if not self.success and potentiostat:
+                return self.self_defuse()
+            potentiostat.update_experiment(self.exp_name)
             self.success += collect_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
 
@@ -213,6 +236,9 @@ class FinishPotentiostat(RoboticsBase):
             self.success += collect_vial.place_home()
             self.release_defused = True
             print("ENDING HOME PLACEMENT")
+
+        if self.end_experiment:
+            potentiostat.update_experiment(None)
 
         return FWAction(update_spec=self.updated_specs())
 

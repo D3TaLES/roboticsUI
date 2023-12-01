@@ -1,3 +1,5 @@
+import time
+
 import serial
 from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.kinova_move import *
@@ -194,13 +196,15 @@ class VialMove(VialStatus):
     def go_to_station(self, station: StationStatus, raise_error=True):
         self.retrieve(raise_error=True)
 
-        success = False
+        print("TEST ", self.current_location, station)
+        success = True if station.current_content == self.id else False
         if station.available:
             # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             print("LOCATION: ", station.location_snapshot)
             success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                       raise_error=raise_error, leave=False, raise_amount=station.raise_amount)
             station.update_available(False)
+            station.update_content(self.id)
 
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
@@ -215,6 +219,7 @@ class VialMove(VialStatus):
         success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                  raise_error=raise_error, go=False, raise_amount=station.raise_amount)
         station.update_available(True)
+        station.empty()
         return success
 
     def place_home(self, **kwargs):
@@ -341,10 +346,11 @@ class StirHeatStation(StationStatus):
         Returns: bool, True if stir action was a success
         """
         if stir_time:
-            seconds = unit_conversion(stir_time, default_unit='s')
+            seconds = 5  # TODO undo unit_conversion(stir_time, default_unit='s')
             success = False
             success += self.heat(temperature, heat_cmd="on")
             success += send_arduino_cmd(self.arduino_name, 1)
+            print(f"Stirring for {seconds} seconds...")
             time.sleep(seconds)
             success += send_arduino_cmd(self.arduino_name, 0)
             success += self.heat(temperature, heat_cmd="off")
@@ -380,6 +386,15 @@ class PotentiostatStation(StationStatus):
         elevator = self.p_channel
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
+        self.current_experiment = self.get_prop("current_experiment") or None
+
+    def update_experiment(self, experiment: str or None):
+        """
+        Get current experiment for instance with _id
+        :param experiment: str or None, current experiment
+        :return: experiment name
+        """
+        return self.coll.update_one({"_id": self.id}, {"$set": {"current_experiment": experiment}})
 
     def initiate_cv(self, vial: VialMove = None):
         if vial:
@@ -472,6 +487,8 @@ class PotentiostatStation(StationStatus):
         Returns: bool, success
         """
         if not RUN_CV:
+            print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
+            time.sleep(CV_DELAY)
             return True
         # Benchmark CV for voltage range
         if not collect_params:
@@ -515,6 +532,12 @@ def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
+def reset():
+    snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+
+
 if __name__ == "__main__":
 
     # list connection ports
@@ -524,8 +547,9 @@ if __name__ == "__main__":
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()
     #
-    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
-    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     #
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
     # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
@@ -557,5 +581,6 @@ if __name__ == "__main__":
     # solv_stat.dispense(vial, 5)
     # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
     # stir_station.stir(stir_time=60)
+    reset()
 
 

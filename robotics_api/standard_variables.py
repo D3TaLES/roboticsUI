@@ -3,10 +3,13 @@ import math
 from pathlib import Path
 
 
-# ---------  OPERATION VARIABLES -------------
+# ---------  TESTING OPERATION VARIABLES -------------
 RUN_CV = False
 CV_DELAY = 10  # seconds
+STIR = False
 DISPENSE = False
+
+# ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
 CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
@@ -14,7 +17,7 @@ FIZZLE_DIRTY_ELECTRODE = False  # TODO
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 75
+VIAL_GRIP_TARGET = 65
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 

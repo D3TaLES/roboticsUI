@@ -112,7 +112,11 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
-        raise Exception("Warning! {} is not connected".format(address))
+        try:
+            time.sleep(20)
+            arduino = serial.Serial(address, 115200, timeout=.1)
+        except:
+            raise Exception("Warning! {} is not connected".format(address))
     time.sleep(1)  # give the connection a second to settle
     arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
@@ -346,7 +350,7 @@ class StirHeatStation(StationStatus):
         Returns: bool, True if stir action was a success
         """
         if stir_time:
-            seconds = 5  # TODO undo unit_conversion(stir_time, default_unit='s')
+            seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
             success = False
             success += self.heat(temperature, heat_cmd="on")
             success += send_arduino_cmd(self.arduino_name, 1)
@@ -532,10 +536,13 @@ def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
-def reset():
+def reset(end_home=False):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
     PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    if end_home:
+        snapshot_move(target_position=10)
+        snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
 
 
 if __name__ == "__main__":
@@ -581,6 +588,6 @@ if __name__ == "__main__":
     # solv_stat.dispense(vial, 5)
     # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
     # stir_station.stir(stir_time=60)
-    reset()
+    reset(end_home=False)
 
 

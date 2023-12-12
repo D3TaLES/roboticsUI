@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 # ---------  TESTING OPERATION VARIABLES -------------
-RUN_CV = False
+RUN_CV = True
 CV_DELAY = 10  # seconds
 STIR = False
 DISPENSE = False
@@ -17,7 +17,7 @@ FIZZLE_DIRTY_ELECTRODE = False  # TODO
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 65
+VIAL_GRIP_TARGET = 75
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 

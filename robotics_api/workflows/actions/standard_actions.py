@@ -1,3 +1,5 @@
+import time
+
 import serial
 from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.kinova_move import *
@@ -12,9 +14,9 @@ def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
     # Generate VialHomeAbv files
     new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] + raise_amount
     master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = new_height
-    with open(os.path.join(SNAPSHOT_DIR, "temp_abv.json"), "w+") as fn:
+    with open(os.path.join(SNAPSHOT_DIR, "_temp_abv.json"), "w+") as fn:
         json.dump(master_data, fn, indent=2)
-    return os.path.join(SNAPSHOT_DIR, "temp_abv.json")
+    return os.path.join(SNAPSHOT_DIR, "_temp_abv.json")
 
 
 def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT,
@@ -110,7 +112,11 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
-        raise Exception("Warning! {} is not connected".format(address))
+        try:
+            time.sleep(20)
+            arduino = serial.Serial(address, 115200, timeout=.1)
+        except:
+            raise Exception("Warning! {} is not connected".format(address))
     time.sleep(1)  # give the connection a second to settle
     arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
@@ -194,13 +200,15 @@ class VialMove(VialStatus):
     def go_to_station(self, station: StationStatus, raise_error=True):
         self.retrieve(raise_error=True)
 
-        success = False
+        print("TEST ", self.current_location, station)
+        success = True if station.current_content == self.id else False
         if station.available:
             # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             print("LOCATION: ", station.location_snapshot)
             success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                       raise_error=raise_error, leave=False, raise_amount=station.raise_amount)
             station.update_available(False)
+            station.update_content(self.id)
 
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
@@ -215,6 +223,7 @@ class VialMove(VialStatus):
         success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                  raise_error=raise_error, go=False, raise_amount=station.raise_amount)
         station.update_available(True)
+        station.empty()
         return success
 
     def place_home(self, **kwargs):
@@ -341,10 +350,11 @@ class StirHeatStation(StationStatus):
         Returns: bool, True if stir action was a success
         """
         if stir_time:
-            seconds = unit_conversion(stir_time, default_unit='s')
+            seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
             success = False
             success += self.heat(temperature, heat_cmd="on")
             success += send_arduino_cmd(self.arduino_name, 1)
+            print(f"Stirring for {seconds} seconds...")
             time.sleep(seconds)
             success += send_arduino_cmd(self.arduino_name, 0)
             success += self.heat(temperature, heat_cmd="off")
@@ -380,6 +390,15 @@ class PotentiostatStation(StationStatus):
         elevator = self.p_channel
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
+        self.current_experiment = self.get_prop("current_experiment") or None
+
+    def update_experiment(self, experiment: str or None):
+        """
+        Get current experiment for instance with _id
+        :param experiment: str or None, current experiment
+        :return: experiment name
+        """
+        return self.coll.update_one({"_id": self.id}, {"$set": {"current_experiment": experiment}})
 
     def initiate_cv(self, vial: VialMove = None):
         if vial:
@@ -430,6 +449,8 @@ class PotentiostatStation(StationStatus):
                                       raise_amount=self.raise_amount, raise_error=raise_error, **move_kwargs)
             success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
+        else:
+            print(f"Station {self} not available.")
 
         if raise_error and not success:
             raise Exception(f"Vial {vial} was not successfully moved to {self}.")
@@ -470,7 +491,9 @@ class PotentiostatStation(StationStatus):
         Returns: bool, success
         """
         if not RUN_CV:
-            return None
+            print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
+            time.sleep(CV_DELAY)
+            return True
         # Benchmark CV for voltage range
         if not collect_params:
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
@@ -513,6 +536,15 @@ def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
+def reset(end_home=False):
+    snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    if end_home:
+        snapshot_move(target_position=10)
+        snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
+
+
 if __name__ == "__main__":
 
     # list connection ports
@@ -522,15 +554,18 @@ if __name__ == "__main__":
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()
     #
-    #PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
-    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     #
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
     # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(os.path.join(SNAPSHOT_DIR, "potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
 
     # get_place_vial(VialMove(_id="S_01").home_snapshot, action_type='get', raise_error=True)
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    # pot = PotentiostatStation("potentiostat_A_02")
+    # pot = PotentiostatStation("potentiostat_A_01")
     # vial_col_test("C")
     # solv_station = LiquidStation(_id="solvent_01")
     # snapshot_move(os.path.join(SNAPSHOT_DIR, "solvent_01.json"))
@@ -538,10 +573,10 @@ if __name__ == "__main__":
     # r = ReagentStatus(r_name="Acetonitrile")
     # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
 
-    # snapshot_move(target_position=10)
-    # snapshot_move(target_position=80)
+    # snapshot_move(target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(target_position=OPEN_GRIP_TARGET)
 
-    send_arduino_cmd("E_2", "0")
+    # send_arduino_cmd("E_1", "1")
 
 
     # vial = VialMove(_id="A_04")
@@ -554,5 +589,6 @@ if __name__ == "__main__":
     # solv_stat.dispense(vial, 5)
     # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
     # stir_station.stir(stir_time=60)
+    reset(end_home=False)
 
 

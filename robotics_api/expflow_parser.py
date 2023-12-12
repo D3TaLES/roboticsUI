@@ -113,6 +113,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 parent = fw
                 self.end_exp = fw
             fireworks.append(fw)
+        self.end_exp.spec.update({"end_experiment": True})
         return fireworks
 
     def get_firetask(self, task):

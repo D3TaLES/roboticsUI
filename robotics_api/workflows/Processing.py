@@ -3,6 +3,7 @@
 
 import traceback
 from six import add_metaclass
+from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
 from d3tales_api.D3database.d3database import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
@@ -64,6 +65,7 @@ class ProcessBase(FiretaskBase):
         self.coll_dict = collection_dict(self.collection_data)
         self.cv_cycle = self.metadata.get("cv_cycle", 1)
         self.collect_tag = self.metadata.get("collect_tag", f"Cycle{self.cv_cycle:02d}_cv")
+        self.lpad = LaunchPad().from_file(LAUNCHPAD)
 
         if not self.collection_data and data_len_error:
             warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
@@ -73,6 +75,13 @@ class ProcessBase(FiretaskBase):
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
 
     def updated_specs(self, **kwargs):
+        if RERUN_FIZZLED_ROBOT:
+            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
+                {"name": {"$regex": "_setup_"}},
+                {"name": {"$regex": "robot"}}
+            ]}).distinct("fw_id")
+            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
+            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
         specs = {"metadata": self.metadata, "collection_data": self.collection_data,
                  "processing_data": self.processing_data}
         specs.update(dict(**kwargs))

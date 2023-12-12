@@ -153,31 +153,38 @@ class StationStatus(RobotStatusDB):
     def retrieve_vial(self, vial, **kwargs):
         return
 
-    def get_all_available(self, name_str):
+    def get_all_available(self, name_str, check_experiment=False):
         """
         Get all available stations with name_str in name
         :param name_str: str, name string
+        :param check_experiment: bool, check that station has not assigned experiment if True
         :return: prop
         """
-        return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
+        if check_experiment:
+            return self.coll.find({"_id": {"$regex": name_str}, "available": True,
+                                   "current_experiment": None}).distinct("_id")
+        else:
+            return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
 
-    def get_first_available(self, name_str, wait=True):
+    def get_first_available(self, name_str, wait=True, max_time=MAX_WAIT_TIME, **kwargs):
         """
         Get first available stations with name_str in name
         :param name_str: str, name string
         :param wait: bool, wait for available station if True
+        :param max_time: int, maximum time to wait in seconds
         :return: prop
         """
-        available_stations = self.get_all_available(name_str)
+        available_stations = self.get_all_available(name_str, **kwargs)
         if not wait:
             return available_stations[0] if available_stations else None
+        total_time = 0
         while not available_stations:
             available_stations = self.get_all_available(name_str)
             print(f"Waiting for available {name_str} station...")
-            time.sleep(10)
+            self.wait_interval(total_time, 10, max_time=max_time)
         return available_stations[0]
 
-    def wait_till_available(self, max_time=None):
+    def wait_till_available(self, max_time=MAX_WAIT_TIME):
         """
         Wait until station is available
         :param max_time: int, maximum time to wait in seconds
@@ -185,11 +192,15 @@ class StationStatus(RobotStatusDB):
         total_time = 0
         while not self.available:
             print(f"Waiting for station {self} to become available...")
-            time.sleep(10)
-            total_time += 10
-            if max_time and total_time >= max_time:
-                raise Exception(f"Waited for {total_time} seconds and station {self} is still not available.")
+            self.wait_interval(total_time, 10, max_time=max_time)
         return True
+
+    def wait_interval(self, total_time, wait_time, max_time=MAX_WAIT_TIME):
+        time.sleep(wait_time)
+        total_time += wait_time
+        if max_time and total_time >= max_time:
+            print(f"Waited for {total_time} seconds and station {self} is still not available.")
+            return False
 
     def update_available(self, value: bool):
         """

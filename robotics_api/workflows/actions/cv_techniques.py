@@ -1069,6 +1069,6 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 
 if __name__ == "__main__":
     # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
-    cv_ex(scan_rate=0.100)
+    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, scan_rate=0.100)
 
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

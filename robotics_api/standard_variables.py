@@ -2,10 +2,18 @@ import os
 import math
 from pathlib import Path
 
-RUN_CV = True
-DISPENSE = True
-CAPPED_DEFAULT = False
+
+# ---------  TESTING OPERATION VARIABLES -------------
+RUN_CV = False
+CV_DELAY = 10  # seconds
+STIR = False
+DISPENSE = False
+
+# ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
+CAPPED_DEFAULT = False
+RERUN_FIZZLED_ROBOT = True
+FIZZLE_DIRTY_ELECTRODE = False  # TODO
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
@@ -50,7 +58,7 @@ I_RANGE = 'I_RANGE_10mA'
 VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
-MAX_WAIT_TIME = 300  # seconds
+MAX_WAIT_TIME = 30  # seconds
 
 AUTO_VOLT_BUFFER = 0.25  # Volts
 
@@ -75,7 +83,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["potentiostat_A_02", "potentiostat_A_03"]
+MEASUREMENT_STATIONS = ["potentiostat_A_01", "potentiostat_A_02"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

@@ -554,9 +554,8 @@ if __name__ == "__main__":
     # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
     # VialMove(_id="A_04").place_home()
     #
+    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
-    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
-    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     #
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
     # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
@@ -589,6 +588,6 @@ if __name__ == "__main__":
     # solv_stat.dispense(vial, 5)
     # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
     # stir_station.stir(stir_time=60)
-    reset(end_home=False)
+    # reset(end_home=False)
 
 

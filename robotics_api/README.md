@@ -3,11 +3,11 @@
 For robotics PC, set environment variables: 
 ```bash
 conda activate d3tales_robotics
-set PYTHONPATH=C:\Users\Lab\D3talesRobotics\roboticsUI\
-set FW_CONFIG_FILE=C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\config\FW_config.yaml
-set DB_INFO_FILE=C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\db_infos.json
+$env:PYTHONPATH='C:\Users\Lab\D3talesRobotics\roboticsUI'
+$env:FW_CONFIG_FILE='C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\FW_config.yaml'
+$env:DB_INFO_FILE='C:\Users\Lab\D3talesRobotics\roboticsUI\db_infos.json'
 cd C:\Users\Lab\D3talesRobotics\launch_dir
-```
+
 
 To view jobs: 
 ```bash

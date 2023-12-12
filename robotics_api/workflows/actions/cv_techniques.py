@@ -1,9 +1,7 @@
-import math
 import sys
 import time
 import copy
 import json
-import pint
 import datetime
 import warnings
 import numpy as np
@@ -38,9 +36,8 @@ class voltage_step:
 
 
 class PotentiostatExperiment:
-    #TODO iR COMP ON OFF SWITCH
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=0, cut_end=0, run_iR=True,
-                 potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+                 potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, **iR_kwargs):
         self.nb_words = nb_words  # number of rows for parsing
         self.k_api = KBIO_api(ECLIB_DLL_PATH)
         self.id_, self.d_info = self.k_api.Connect(potentiostat_address, time_out)
@@ -59,6 +56,7 @@ class PotentiostatExperiment:
         self.load_firm = load_firm
         self.scan_rate = None
         self.run_iR = run_iR
+        self.ir_kwargs = iR_kwargs
 
     @staticmethod
     def normalize_steps(steps: list, data_class, min_steps=None):
@@ -91,9 +89,10 @@ class PotentiostatExperiment:
                     wait_for_steady=0,
                     sweep=True,
                     rcomp_level=RCOMP_LEVEL,
-                    rcmp_mode=0,  # always software unless an SP-300 series and running loop function
+                    # rcmp_mode=0,  # always software unless an SP-300 series and running loop function
                     ):
-        # the iR compensation is integrated into the base class, such that if we do a CV experiment, the iR will be automatically done
+        # the iR compensation is integrated into the base class, such that if we do a CV experiment,
+        # the iR will be automatically performed
         iR_params = {
             'final_frequency': ECC_parm("Final_frequency", float),
             'initial_frequency': ECC_parm("Initial_frequency", float),
@@ -178,17 +177,17 @@ class PotentiostatExperiment:
 
             # Clear Data
             self.data = []
+
+            # Perform iR compensation
+            first = True
             if self.run_iR:
-                ir_comp_params, ir_tech = self.run_iR_comp()
-                last = False
-                first = False
-                self.k_api.LoadTechnique(self.id_, self.potent_channel, ir_tech, ir_comp_params, first=True, last=last,
+                ir_comp_params, ir_tech = self.run_iR_comp(**self.ir_kwargs)
+                self.k_api.LoadTechnique(self.id_, self.potent_channel, ir_tech, ir_comp_params, first=first, last=False,
                                          display=(VERBOSITY > 1))
-            else:
-                first = True
+                first = False
+
             # BL_LoadTechnique
             print(self.id_)
-
             self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=first, last=True,
                                      display=(VERBOSITY > 1))
             # BL_StartChannel
@@ -214,7 +213,7 @@ class PotentiostatExperiment:
                 time.sleep(1)
             print("> experiment done")
         except KeyboardInterrupt:
-            print(".. interrupted")
+            print(".. experiment interrupted")
 
         # BL_Disconnect
         self.k_api.Disconnect(self.id_)
@@ -226,25 +225,24 @@ class PotentiostatExperiment:
     @property
     def iR_comp_data(self):
         if self.run_iR:
-            f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
-                abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = self.data[2]
-                Freq = self.k_api.ConvertNumericIntoSingle(f)
-                abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
-                abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
-                abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
-                abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
-                i = self.k_api.ConvertNumericIntoSingle(i_raw)
-                i_range = self.k_api.ConvertNumericIntoSingle(i_range)
-                phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
-                phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
-                Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
-                Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
-                abs_res = abs_Ewe / abs_I
-                real_ = abs_res * math.cos(phase_Zwe)
-                imaginary_ = abs(abs_res * math.sin(phase_Zwe))
-                return real_
+            f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = \
+                self.data[2]
+            # Freq = self.k_api.ConvertNumericIntoSingle(f)
+            abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+            # abs_Ece = self.k_api.ConvertNumericIntoSingle(abs_Ece)
+            abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+            # abs_Ice = self.k_api.ConvertNumericIntoSingle(abs_Ice)
+            # i = self.k_api.ConvertNumericIntoSingle(i_raw)
+            # i_range = self.k_api.ConvertNumericIntoSingle(i_range)
+            phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+            # phase_Zce = self.k_api.ConvertNumericIntoSingle(phase_Zce)
+            # Ewe = self.k_api.ConvertNumericIntoSingle(ewe_raw)
+            # Ece = self.k_api.ConvertNumericIntoSingle(ece_raw)
+            abs_res = abs_Ewe / abs_I
+            real_ = abs_res * math.cos(phase_Zwe)
+            # imaginary_ = abs(abs_res * math.sin(phase_Zwe))
+            return real_
         raise ValueError("iR compensation was not run, no value to return")
-
 
     def save_parsed_data(self, out_file):
         with open(out_file, 'w') as f:
@@ -292,7 +290,6 @@ class PotentiostatExperiment:
 
 
 class iRCompExperiment(PotentiostatExperiment):
-    # TODO documentation
     def __init__(self,
                  amplitude_voltage=0.5,  # Set this manually
                  final_frequency=5000,
@@ -367,7 +364,7 @@ class iRCompExperiment(PotentiostatExperiment):
                 inx = ix + data_info.NbCols
                 row = data_record[ix:inx]
                 f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
-                    abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
+                abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
 
                 # compute timestamp in seconds
                 t = self.k_api.ConvertNumericIntoSingle(t)
@@ -523,7 +520,7 @@ class EisExperiment(PotentiostatExperiment):
                 inx = ix + data_info.NbCols
                 row = data_record[ix:inx]
                 f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
-                    abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
+                abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
 
                 # compute timestamp in seconds
                 t = self.k_api.ConvertNumericIntoSingle(t)
@@ -572,8 +569,8 @@ class EisExperiment(PotentiostatExperiment):
                 i = self.k_api.ConvertNumericIntoSingle(row[5])
                 ewe = self.k_api.ConvertNumericIntoSingle(row[4])
                 phase_w = self.k_api.ConvertNumericIntoSingle(row[3])
-                absres = i / ewe
-                real = absres * math.cos(phase_w)
+                abs_res = i / ewe
+                real = abs_res * math.cos(phase_w)
                 print('-------------------{} / {} / {}-------------------------'.format(t, freq, real))
             ix = inx
 
@@ -814,16 +811,13 @@ class CvExperiment(PotentiostatExperiment):
         ix = 0
         for _ in range(1, data_info.NbRows):
             inx = ix + data_info.NbCols
-            try:
-                if self.is_VMP3:
-                    t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
-                else:
-                    t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            if self.is_VMP3:
+                t_high, t_low, ec_raw, i_raw, ewe_raw, cycle = data_record[ix:inx]
+            else:
+                t_high, t_low, i_raw, ewe_raw, cycle = data_record[ix:inx]
 
-                print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
-                                                                 self.k_api.ConvertNumericIntoSingle(i_raw)))
-            except:
-                pass
+            print("Volt:  {:02f} \t Current:  {:.2E}".format(self.k_api.ConvertNumericIntoSingle(ewe_raw),
+                                                             self.k_api.ConvertNumericIntoSingle(i_raw)))
 
             ix = inx
 
@@ -832,9 +826,9 @@ class CaExperiment(PotentiostatExperiment):
     # TODO Documentation
 
     def __init__(self,
-                 steps=[0.025, -0.025]*50,
-                 vs_initial=[True, False]*50,
-                 duration_step=[0.000024]*100,
+                 steps=[0.025, -0.025] * 50,
+                 vs_initial=[True, False] * 50,
+                 duration_step=[0.000024] * 100,
                  step_number=98,
                  record_every_dt=0.000024,
                  record_every_di=0.1,
@@ -927,45 +921,45 @@ class CaExperiment(PotentiostatExperiment):
                 ix = inx
         return extracted_data
 
-    def run_experiment(self):
-        try:
-            if not self.check_connection():
-                self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
-
-            # Clear Data
-            self.data = []
-
-            # BL_LoadTechnique
-            print(self.id_)
-            self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
-                                     display=(VERBOSITY > 1))
-            # BL_StartChannel
-            self.k_api.StartChannel(self.id_, self.potent_channel)
-
-            # experiment loop
-            print("Start {} cycle...".format(self.tech_file[:-4]))
-            while True:
-                # BL_GetData
-                exp_data = self.k_api.GetData(self.id_, self.potent_channel)
-                self.data.append(exp_data)
-                current_values, data_info, data_record = exp_data
-
-                if VERBOSITY:
-                    self.experiment_print(data_info, data_record)
-
-                status = KBIO.PROG_STATE(current_values.State).name
-
-                print("> new messages :")
-                self.print_messages()
-                if status == 'STOP':
-                    break
-                time.sleep(1)
-            print("> experiment done")
-        except KeyboardInterrupt:
-            print(".. interrupted")
-
-        # BL_Disconnect
-        self.k_api.Disconnect(self.id_)
+    # def run_experiment(self):
+    #     try:
+    #         if not self.check_connection():
+    #             self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
+    #
+    #         # Clear Data
+    #         self.data = []
+    #
+    #         # BL_LoadTechnique
+    #         print(self.id_)
+    #         self.k_api.LoadTechnique(self.id_, self.potent_channel, self.tech_file, self.params, first=True, last=True,
+    #                                  display=(VERBOSITY > 1))
+    #         # BL_StartChannel
+    #         self.k_api.StartChannel(self.id_, self.potent_channel)
+    #
+    #         # experiment loop
+    #         print("Start {} cycle...".format(self.tech_file[:-4]))
+    #         while True:
+    #             # BL_GetData
+    #             exp_data = self.k_api.GetData(self.id_, self.potent_channel)
+    #             self.data.append(exp_data)
+    #             current_values, data_info, data_record = exp_data
+    #
+    #             if VERBOSITY:
+    #                 self.experiment_print(data_info)
+    #
+    #             status = KBIO.PROG_STATE(current_values.State).name
+    #
+    #             print("> new messages :")
+    #             self.print_messages()
+    #             if status == 'STOP':
+    #                 break
+    #             time.sleep(1)
+    #         print("> experiment done")
+    #     except KeyboardInterrupt:
+    #         print(".. experiment interrupted")
+    #
+    #     # BL_Disconnect
+    #     self.k_api.Disconnect(self.id_)
 
     def experiment_print(self, data_step):
         current_values, data_info, data_record = data_step
@@ -1005,20 +999,20 @@ def cv_ex(scan_rate=0.100, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp = CvExperiment(ex_steps, rcomp_level=r_comp,
                        potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
     exp.run_experiment()
-    data = exp.data
-    with open('examples/iR_testing/link_data_nov_13.txt', 'a') as f:
-        for data_step in data:
-            current_values, data_info, data_record = data_step
-            data_record_converted = []
-            for i in data_record:
-                try:
-                    record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
-                except:
-                    record = i
-                data_record_converted.append(record)
-            f.write(str(data_record_converted))
-        f.write(" \n \n")
-        f.close()
+    # data = exp.data
+    # with open('examples/iR_testing/link_data_nov_13.txt', 'a') as f:
+    #     for data_step in data:
+    #         current_values, data_info, data_record = data_step
+    #         data_record_converted = []
+    #         for i in data_record:
+    #             try:
+    #                 record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
+    #             except:
+    #                 record = i
+    #             data_record_converted.append(record)
+    #         f.write(str(data_record_converted))
+    #     f.write(" \n \n")
+    #     f.close()
     parsed_data = exp.parsed_data
     potentials = [s["Ewe"] for s in parsed_data]
     current = [s["I"] for s in parsed_data]
@@ -1031,8 +1025,9 @@ def cv_ex(scan_rate=0.100, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT
     exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
     exp.to_txt("examples/iR_testing/cv_data_example_iR_slow.csv")
 
-def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=None,
-               vs_final_eis=None):
+
+def ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
+    # vs_initial_eis=None, vs_final_eis=None):
     # experiment1 = EisExperiment(potentiostat_address=potentiostat_address,
     #                             potentiostat_channel=potentiostat_channel,
     #                             vs_initial=vs_initial_eis,
@@ -1094,7 +1089,7 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 
 
 if __name__ == "__main__":
-    # ir_comp_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
-    cv_ex(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, scan_rate=0.100)
+    # ir_comp_ex(potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
+    cv_ex(potentiostat_channel=1, scan_rate=0.100)
 
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)

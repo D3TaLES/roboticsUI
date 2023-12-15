@@ -354,6 +354,19 @@ class iRCompExperiment(PotentiostatExperiment):
                  rcomp_level=RCOMP_LEVEL,
                  rcmp_mode=0,  # always software unless an SP-300 series and running loop function
                  **kwargs):
+        """
+        Class to run iR compensation alone.
+
+        :param amplitude_voltage:
+        :param final_frequency:
+        :param initial_frequency:
+        :param average_n_times:
+        :param wait_for_steady:
+        :param sweep:
+        :param rcomp_level:
+        :param rcmp_mode:
+        :param kwargs:
+        """
         super().__init__(15, **kwargs)
 
         # Initialize Parameters
@@ -594,14 +607,6 @@ class EisExperiment(PotentiostatExperiment):
 
 
 class CpExperiment(PotentiostatExperiment):
-    """
-    Class to run Chrono-Potentiometry technique experiments
-        :param n_cycles : Number of cycle, integer ≥ 0
-        :param record_every_dt : recording on dt (s), float ≥ 0
-        :param record_every_de : recording on dE (V), float ≥ 0
-        :param i_range : kbio I_RANGE keyword, str
-        :param time_out : time to wait, float
-    """
 
     def __init__(self,
                  n_cycles=N_CYCLES,
@@ -610,6 +615,14 @@ class CpExperiment(PotentiostatExperiment):
                  i_range=I_RANGE,
                  repeat_count=0,
                  **kwargs):
+        """
+        Class to run Chrono-Potentiometry technique experiments
+            :param n_cycles : Number of cycle, integer ≥ 0
+            :param record_every_dt : recording on dt (s), float ≥ 0
+            :param record_every_de : recording on dE (V), float ≥ 0
+            :param i_range : kbio I_RANGE keyword, str
+            :param repeat_count :
+        """
         super().__init__(3, **kwargs)
 
         self.record_every_dt = record_every_dt
@@ -713,25 +726,26 @@ class CpExperiment(PotentiostatExperiment):
 
 
 class CvExperiment(PotentiostatExperiment):
-    """
-    Class to run cyclic voltammetry experiments
-        :param steps : list of lists OR current_step objects: voltage (V), scan_rate (mV/s))
-        :param scan_number : Scan number, integer = 2
-        :param vs_initial : Current step vs initial one, bool
-        :param record_every_de : recording on dE (V), float ≥ 0
-        :param n_cycles : Number of cycle, integer ≥ 0
-        :param time_out : time to wait, float
-    """
 
     def __init__(self,
                  steps: list,
-                 vs_initial=VS_INITIAL,
-                 n_cycles=N_CYCLES,
-                 scan_number=SCAN_NUMBER,
-                 record_every_de=RECORD_EVERY_DE,
-                 average_over_de=AVERAGE_OVER_DE,
-                 min_steps=MIN_CV_STEPS,
+                 vs_initial: bool = VS_INITIAL,
+                 n_cycles: int = N_CYCLES,
+                 scan_number: int = SCAN_NUMBER,
+                 record_every_de: float = RECORD_EVERY_DE,
+                 average_over_de: bool = AVERAGE_OVER_DE,
+                 min_steps: int = MIN_CV_STEPS,
                  **kwargs):
+        """
+        Class to run cyclic voltammetry experiments
+            :param steps: list of lists OR current_step objects: voltage (V), scan_rate (mV/s))
+            :param vs_initial: Current step vs initial one, bool
+            :param n_cycles: Number of cycle, integer ≥ 0
+            :param scan_number: Scan number, integer = 2
+            :param record_every_de: recording on dE (V), float ≥ 0
+            :param average_over_de:
+            :param min_steps: recording on dE (V), float ≥ 0
+        """
         super().__init__(6, **kwargs)
 
         # Set Parameters
@@ -861,6 +875,17 @@ class CaExperiment(PotentiostatExperiment):
                  record_every_di=0.1,
                  n_cycles=2,
                  **kwargs):
+        """
+
+        :param steps:
+        :param vs_initial:
+        :param duration_step:
+        :param step_number:
+        :param record_every_dt:
+        :param record_every_di:
+        :param n_cycles:
+        :param kwargs:
+        """
         super().__init__(5, run_iR=False, **kwargs)
 
         # Set Parameters
@@ -984,22 +1009,20 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     df.to_csv(os.path.join(D3TALES_DIR, "workflows", "actions\\examples\\ca_testing\\ca_test6.csv"))
 
 
-def cv_ex(scan_rate=0.100, r_comp=RCOMP_LEVEL, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1):
+def cv_ex(scan_rate=0.100, **kwargs):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
                          {"voltage": 0.7, "scan_rate": scan_rate},
                          {"voltage": -0.3, "scan_rate": scan_rate},
                          {"voltage": 0, "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    exp = CvExperiment(ex_steps, rcomp_level=r_comp, run_iR=True,
-                       potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
+    exp = CvExperiment(ex_steps, **kwargs)
     exp.run_experiment()
     exp.to_txt("examples/iR_testing/R_cv_iR_test.csv")
+    exp.plot("examples/iR_testing/R_cv_iR_test.png")
     # exp.save_data_records('examples/iR_testing/link_data_nov_13.txt')
     # exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
-    exp.plot("examples/iR_testing/R_cv_iR_test.png")
 
 
 if __name__ == "__main__":
-    # ir_comp_ex(potentiostat_channel=2, vs_initial_eis=-1., vs_final_eis=1.)
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
-    cv_ex(potentiostat_channel=1, scan_rate=0.100)
+    cv_ex(potentiostat_channel=1, scan_rate=0.100, run_iR=True)

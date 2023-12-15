@@ -128,6 +128,13 @@ class ProcessBase(FiretaskBase):
                        instance=p_data, validate_schema=False).insert(_id)
         return p_data
 
+    def process_solv_data(self):
+        # Process solvent CV data
+        solv_data = self.coll_dict.get("solv_cv", [])
+        for d in solv_data:
+            self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            print(f"Solvent {d} processed.")
+
 
 @explicit_serialize
 class ProcessCVBenchmarking(ProcessBase):
@@ -135,10 +142,10 @@ class ProcessCVBenchmarking(ProcessBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
-
-        cv_data = self.coll_dict.get("benchmark_cv")
+        self.process_solv_data()
 
         # Check Benchmarking data file
+        cv_data = self.coll_dict.get("benchmark_cv")
         if not cv_data:
             warnings.warn("WARNING! No CV locations found for CV benchmarking; DEFAULT VOLTAGE RANGES WILL BE USED.")
             return FWAction(update_spec=self.updated_specs())
@@ -169,13 +176,9 @@ class CVProcessor(ProcessBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
+        self.process_solv_data()
 
-        solv_data = self.coll_dict.get("solv", [])
         cv_data = self.coll_dict.get(self.collect_tag, [])
-
-        # Process solvent CV data
-        for d in solv_data:
-            self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
 
         # Process CV data for cycle
         processed_data = []

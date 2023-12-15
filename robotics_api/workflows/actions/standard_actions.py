@@ -555,7 +555,8 @@ if __name__ == "__main__":
     # VialMove(_id="A_04").place_home()
     #
     # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
-    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="up")
+    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
+    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
     #
     # snapshot_move(snapshot_file=SNAPSHOT_HOME)
     # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)

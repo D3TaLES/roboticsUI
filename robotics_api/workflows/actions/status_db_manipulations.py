@@ -327,42 +327,59 @@ def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_
         })
 
 
-if __name__ == "__main__":
-    wf_name = "8CVCollect_BenchmarkCV_test1_single_test"
-    # reset_vial_db({'ae70a9cb-90f6-49ff-8b77-a192be06b703': 'A_02', 'cca7e96e-44e5-423f-9946-7fe951ab5170': 'A_03',
-    #                'f3f68664-1c70-45b4-bf77-02a1364bfe89': 'A_04'})
-    # VialStatus("A_02").update_location("potentiostat_01")
-    # VialStatus("ae70a9cb-90f6-49ff-8b77-a192be06b703").update_capped(True)
-    # StationStatus("potentiostat_01").update_available(True)
-    # print(VialStatus("A_02", wflow_name=wflow_name).capped)
-    # print(VialStatus(r_uuid="550c6dd3-af09-4351-ae1d-deea22ebc41f", wflow_name=wflow_name).capped)
-    experiments = {
-        "exp01": "A_04"
-    }
+def reset_test_db():
+    wflow_name = "test_workflow"
     reagents = [
         {
-            "_id": "550c6dd3-af09-4351-ae1d-deea22ebc41f",
-            "description": "redox active molecule(s) (a.k.a. redox core)",
-            "location": "experiment_vial",
-            "name": "cyclopenta-1,3-diene;iron(2+)",
-            "notes": "",
-            "purity": "",
-            "smiles": "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]",
-            "source": "sigma_aldrich",
-            "type": "redox_molecule"
+            '_id': '3d5f63fd-a6b0-4cc0-922c-befbeeb3577a',
+            'name': '10-[2-(2-methoxyethoxy)ethyl]phenothiazine',
+            'smiles': 'COCCOCCN1C2=C(C=CC=C2)SC3=C1C=CC=C3',
+            'source': 'sigma_aldrich', 'type': 'redox_molecule',
+            'description': 'redox active molecule(s) (a.k.a. redox core)',
+            'notes': '', 'purity': '', 'location': 'experiment_vial'},
+        {
+            '_id': '29690ed4-bf85-4945-9c2d-907eb942515d',
+            'name': 'Acetonitrile',
+            'smiles': 'CC#N',
+            'source': 'sigma_aldrich',
+            'type': 'solvent',
+            'description': 'solvent',
+            'notes': 'with 0.25M TEABF4 supporting electrolyte',
+            'purity': '',
+            'location': 'solvent_01'
         },
         {
-            "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
-            "description": "solvent",
-            "location": "solvent_01",
-            "name": "Acetonitrile",
-            "notes": "with 0.25M TEABF4 supporting electrolyte",
-            "purity": "",
-            "smiles": "CC#N",
-            "source": "sigma_aldrich",
-            "type": "solvent"
+            '_id': 'c1727c49-8cb3-4b83-a672-7b218a51d845',
+            'name': '1,4-ditert-butyl-2,5-bis(2-methoxyethoxy)benzene',
+            'smiles': 'CC(C)(C)C1=C(OCCOC)C=C(C(C)(C)C)C(OCCOC)=C1',
+            'source': 'sigma_aldrich',
+            'type': 'redox_molecule',
+            'description': 'redox active molecule(s) (a.k.a. redox core)',
+            'notes': '',
+            'purity': '',
+            'location': 'experiment_vial'
+        },
+        {
+            '_id': '29690ed4-bf85-4945-9c2d-907eb942515d',
+            'name': 'Acetonitrile',
+            'smiles': 'CC#N',
+            'source': 'sigma_aldrich',
+            'type': 'solvent',
+            'description': 'solvent',
+            'notes': 'with 0.25M TEABF4 supporting electrolyte',
+            'purity': '',
+            'location': 'solvent_01'
         }
     ]
-    # reset_reagent_db(reagents, current_wflow_name=wf_name)
-    # reset_vial_db(experiments, current_wflow_name=wf_name)
-    # reset_station_db(current_wflow_name=wf_name)
+
+    experiments = {
+        'exp01': 'A_01',
+        'exp02': 'A_02'
+    }
+    reset_reagent_db(reagents, current_wflow_name=wflow_name)
+    reset_vial_db(experiments, current_wflow_name=wflow_name)
+    reset_station_db(current_wflow_name=wflow_name)
+
+
+if __name__ == "__main__":
+    reset_test_db()

@@ -283,9 +283,10 @@ class PotentiostatExperiment:
     @property
     def iR_comp_data(self):
         if self.run_iR:
-            t, Freq, abs_Ewe, abs_Ece, abs_I, abs_Ice, i, i_range, phase_Zwe, phase_Zce, \
-                Ewe, Ece, abs_res, real_, imaginary_ = self.cv_row_parser(self.data[2])
-            return real_
+            return self.data[2]
+            # t, Freq, abs_Ewe, abs_Ece, abs_I, abs_Ice, i, i_range, phase_Zwe, phase_Zce, \
+            #     Ewe, Ece, abs_res, real_, imaginary_ = self.cv_row_parser(self.data[2])
+            # return real_
         raise ValueError("iR compensation was not run, no value to return")
 
     def save_parsed_data(self, out_file):
@@ -1009,20 +1010,20 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     df.to_csv(os.path.join(D3TALES_DIR, "workflows", "actions\\examples\\ca_testing\\ca_test6.csv"))
 
 
-def cv_ex(scan_rate=0.100, **kwargs):
+def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
                          {"voltage": 0.7, "scan_rate": scan_rate},
-                         {"voltage": -0.3, "scan_rate": scan_rate},
-                         {"voltage": 0, "scan_rate": scan_rate}]
+                         {"voltage": 0., "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
-    exp = CvExperiment(ex_steps, **kwargs)
+    exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)
     exp.run_experiment()
-    exp.to_txt("examples/iR_testing/R_cv_iR_test.csv")
-    exp.plot("examples/iR_testing/R_cv_iR_test.png")
-    # exp.save_data_records('examples/iR_testing/link_data_nov_13.txt')
-    # exp.save_parsed_data("examples/iR_testing/cv_data_example_iR_slow.json")
+    exp.to_txt(f"examples/cv_ex_ch{potentiostat_channel}.csv")
+    exp.plot(f"examples/cv_ex_ch{potentiostat_channel}.png")
+    print(exp.iR_comp_data)
+    # exp.save_data_records(f"examples/cv_ex_ch{potentiostat_channel}.txt")
+    # exp.save_parsed_data(f"examples/cv_ex_ch{potentiostat_channel}.json")
 
 
 if __name__ == "__main__":
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
-    cv_ex(potentiostat_channel=1, scan_rate=0.100, run_iR=True)
+    cv_ex(potentiostat_channel=2, scan_rate=0.100, run_iR=True)

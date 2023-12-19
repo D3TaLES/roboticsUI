@@ -13,7 +13,7 @@
           },
           "constraint": {
             "speed": {
-              "translation": 0,
+              "translation": 0.3,
               "orientation": 0
             }
           }

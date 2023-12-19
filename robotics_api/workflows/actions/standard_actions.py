@@ -272,7 +272,7 @@ class VialMove(VialStatus):
 
 
 class LiquidStation(StationStatus):
-    def __init__(self, _id, raise_amount=-0.03, **kwargs):
+    def __init__(self, _id, raise_amount=-0.04, **kwargs):
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
@@ -288,16 +288,13 @@ class LiquidStation(StationStatus):
 
     def dispense(self, vial: VialMove, volume, raise_error=True):
         self.place_vial(vial, raise_error=raise_error)
-        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        if DISPENSE:
-            send_arduino_cmd(self.arduino_name, arduino_vol)
-        actual_volume = volume  # TODO get actual volume
+        actual_volume = self.dispense_only(volume)
         vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
-    def dispense_only(self, volume):
+    def dispense_only(self, volume, dispense=DISPENSE):
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        if DISPENSE:
+        if dispense:
             send_arduino_cmd(self.arduino_name, arduino_vol)
         actual_volume = volume  # TODO get actual volume
         return actual_volume
@@ -525,6 +522,12 @@ class PotentiostatStation(StationStatus):
         return collection_params
 
 
+def check_usb():
+    # list connection ports
+    for port, desc, hw_id in sorted(comports()):
+       print("{}: {} [{}]".format(port, desc, hw_id))
+
+
 def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
     get_place_vial(VialMove(_id=col+"_04").home_snapshot, action_type='get', raise_error=True)
@@ -536,7 +539,7 @@ def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
-def reset(end_home=False):
+def reset_stations(end_home=False):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
     PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
     PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
@@ -545,50 +548,31 @@ def reset(end_home=False):
         snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
 
 
+def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
+    vial = VialMove(_id=vial_id)
+    solv_stat = LiquidStation(_id=solv_id)
+
+    solv_stat.place_vial(vial)
+    print("Actual Volume:  ", solv_stat.dispense_only(volume, dispense=True))
+
+    if go_home:
+        vial.leave_station(solv_stat)
+        vial.place_home()
+
+
 if __name__ == "__main__":
+    test_vial = VialMove(_id="A_01")
+    test_potent = PotentiostatStation("potentiostat_A_02")
 
-    # list connection ports
-    for port, desc, hw_id in sorted(comports()):
-       print("{}: {} [{}]".format(port, desc, hw_id))
+    # reset_test_db()
+    # reset_stations(end_home=False)
 
-    # VialMove(_id="A_04").place_station(PotentiostatStation("potentiostat_A_01"))
-    # VialMove(_id="A_04").place_home()
-    #
-    # PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
-    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="up")
-    # PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
-    #
-    # snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    # snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "pre_potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "potentiostat_A_01.json"), target_position=VIAL_GRIP_TARGET)
+    # test_vial.place_station(test_potent)
+    # test_vial.place_home()
 
-    # get_place_vial(VialMove(_id="S_01").home_snapshot, action_type='get', raise_error=True)
-    # snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    # pot = PotentiostatStation("potentiostat_A_01")
-    # vial_col_test("C")
-    # solv_station = LiquidStation(_id="solvent_01")
-    # snapshot_move(os.path.join(SNAPSHOT_DIR, "solvent_01.json"))
+    test_potent.move_elevator(endpoint="up")
+    # test_potent.move_elevator(endpoint="down")
 
-    # r = ReagentStatus(r_name="Acetonitrile")
-    # VialMove(_id="B_04").add_reagent(r, amount="5cL", default_unit=VOLUME_UNIT)
-
-    # snapshot_move(target_position=VIAL_GRIP_TARGET)
-    # snapshot_move(target_position=OPEN_GRIP_TARGET)
-
-    # send_arduino_cmd("E_1", "1")
-
-
-    # vial = VialMove(_id="A_04")
-    # solv_stat = LiquidStation(_id="solvent_01")
-
-    # vial.leave_station(solv_stat)
-    # solv_stat.dispense_only(10)
-    # stir_station = StirHeatStation(_id="stir-heat_01")
-    # vial.place_home()
-    # solv_stat.dispense(vial, 5)
-    # stir_station.perform_stir_heat(vial, stir_time=60, temperature=273)
-    # stir_station.stir(stir_time=60)
-    # reset(end_home=False)
+    flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
 
 

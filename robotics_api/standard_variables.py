@@ -6,8 +6,8 @@ from pathlib import Path
 # ---------  TESTING OPERATION VARIABLES -------------
 RUN_CV = True
 CV_DELAY = 10  # seconds
-STIR = False
-DISPENSE = False
+STIR = True
+DISPENSE = True
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
@@ -17,7 +17,7 @@ FIZZLE_DIRTY_ELECTRODE = False  # TODO
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 75
+VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 
@@ -104,5 +104,5 @@ ROBOT_FWORKER = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')
-PROCESS_INSTRUMENT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process_instrument.yaml')
+INSTRUMENT_FWORKER = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_instrument.yaml')

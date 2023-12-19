@@ -44,6 +44,8 @@ class InitializeStatusDB(FiretaskBase):
         reagents = fw_spec.get("reagents") or self.get("reagents") or {}
         experiments = fw_spec.get("experiment_vials") or self.get("experiment_vials") or {}
         wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
+        print("REAGENTS: ", reagents)
+        print("EXPS: ", experiments)
         reset_reagent_db(reagents, current_wflow_name=wflow_name)
         reset_vial_db(experiments, current_wflow_name=wflow_name)
         reset_station_db(current_wflow_name=wflow_name)
@@ -53,6 +55,17 @@ class InitializeStatusDB(FiretaskBase):
 @add_metaclass(abc.ABCMeta)
 class ProcessBase(FiretaskBase):
     _fw_name = "ProcessBase"
+    metadata: dict
+    collection_data: dict
+    processing_data: dict
+    mol_id: str
+    name: str
+    processing_id: str
+    coll_dict: dict
+    cv_cycle: float
+    collect_tag: str
+    lpad: LaunchPad
+    data_path: str
 
     def setup_task(self, fw_spec, data_len_error=True):
         self.metadata = fw_spec.get("metadata", {})
@@ -132,7 +145,9 @@ class ProcessBase(FiretaskBase):
         # Process solvent CV data
         solv_data = self.coll_dict.get("solv_cv", [])
         for d in solv_data:
-            self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            p_data = self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            if FIZZLE_DIRTY_ELECTRODE:
+                pass  # TODO check for dirty electrode
             print(f"Solvent {d} processed.")
 
 
@@ -161,8 +176,14 @@ class ProcessCVBenchmarking(ProcessBase):
         # Calculate new voltage sequence
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
         peaks_dict = descriptor_cal.peaks(p_data)
-        forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
-        reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
+        try:
+            forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
+            reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
+        except Exception as e:
+            print(e)
+            warnings.warn(f"WARNING! Error calculating benchmark peaks; DEFAULT VOLTAGE RANGES WILL BE USED.")
+            return FWAction(update_spec=self.updated_specs())
+
         voltage_sequence = "{}, {}, {}V".format(reverse_peak - AUTO_VOLT_BUFFER, forward_peak + AUTO_VOLT_BUFFER,
                                                 reverse_peak - AUTO_VOLT_BUFFER)
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)

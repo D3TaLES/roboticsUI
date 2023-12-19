@@ -91,11 +91,15 @@ class SetLocations(tk.Toplevel):
         self.iconphoto(False, logo)
 
         # Text
-        tk.Label(self, text="Set Locations", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0, columnspan=4)
-        tk.Label(self, text="Set Reagent Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=0, row=2, columnspan=2)
+        tk.Label(self, text="Set Locations", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0,
+                                                                                           columnspan=4)
+        tk.Label(self, text="Set Reagent Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=0, row=2,
+                                                                                                   columnspan=2)
         tk.Label(self, text="Select the starting position for each reagent.", font=("Raleway", 16, 'bold'), pady=10,
                  wraplength=600, fg=d3navy).grid(column=0, row=2, columnspan=2)
-        tk.Label(self, text="Set Experiment Vial Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=2, row=2, columnspan=2)
+        tk.Label(self, text="Set Experiment Vial Locations", font=("Raleway", 24, 'bold'), fg=d3navy).grid(column=2,
+                                                                                                           row=2,
+                                                                                                           columnspan=2)
         tk.Label(self, text="Select the starting vial home position for each experiment. The selected position"
                             "specifies the column then the row (e.g., A_03 is column A, row 03).",
                  font=("Raleway", 16, 'bold'), pady=10, wraplength=600, fg=d3navy).grid(column=2, row=2, columnspan=2)
@@ -286,16 +290,18 @@ class PushToDB_Exp(tk.Toplevel):
         self.push_dict = {}
         for i, fw_id in enumerate(self.processing_fws.keys()):
             push_var = tk.BooleanVar()
-            checkbox = tk.Checkbutton(self, text=self.processing_fws[fw_id], variable=push_var, onvalue=True, offvalue=False, justify="left")
+            checkbox = tk.Checkbutton(self, text=self.processing_fws[fw_id], variable=push_var, onvalue=True,
+                                      offvalue=False, justify="left")
             checkbox.grid(column=0, row=i + 2)
-            button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"), command=lambda fw_id=fw_id: self.dir_open(fw_id))
+            button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"),
+                               command=lambda fw_id=fw_id: self.dir_open(fw_id))
             button.grid(column=1, row=i + 2)
             self.push_dict[fw_id] = push_var
 
         # Button
         tk.Button(self, text="Push selected data to D3TaLES DB".format(self.workflow), command=self.push_wf,
                   font=("Raleway", 16), bg=d3orange, fg='white', height=2, width=45).grid(columnspan=3, column=0,
-                                                                                          row=rowspan-1)
+                                                                                          row=rowspan - 1)
 
     def dir_open(self, fw_id):
         query = self.lpad.fireworks.find_one({'fw_id': int(fw_id)}, {"spec.cv_locations": 1})
@@ -305,14 +311,16 @@ class PushToDB_Exp(tk.Toplevel):
     def push_wf(self):
         fw_ids = [i for i, b in self.push_dict.items() if b.get()]
         launch_ids = []
-        [launch_ids.extend(l.get("launches")) for l in self.lpad.fireworks.find({'fw_id': {"$in": fw_ids}}, {"launches": 1})]
+        [launch_ids.extend(l.get("launches")) for l in
+         self.lpad.fireworks.find({'fw_id': {"$in": fw_ids}}, {"launches": 1})]
         launches = [self.lpad.launches.find_one({'launch_id': l_id}, {"action.update_spec": 1}) for l_id in launch_ids]
         for launch in launches:
             print(launch)
             p_ids = launch.get("action", {}).get("update_spec", {}).get("processing_ids")
             print(p_ids)
             m_id = launch.get("action", {}).get("update_spec", {}).get("metadata_id")
-            meta_dict = D3Database(database="robotics", collection_name="metadata").coll.find_one({"_id": m_id}).get("metadata")
+            meta_dict = D3Database(database="robotics", collection_name="metadata").coll.find_one({"_id": m_id}).get(
+                "metadata")
             for p_id in p_ids:
                 p_data = D3Database(database="robotics", collection_name="experimentation").coll.find_one({"_id": p_id})
                 BackDB(collection_name="experimentation", instance=p_data)
@@ -454,8 +462,7 @@ class RunBase(tk.Toplevel):
         self.parent = parent
 
         self.fireworker = None
-        self.category = None
-        self.category_str = ""
+        self.category = ""
         self.run_txt = tk.StringVar()
         self.run_all_txt = tk.StringVar()
         self.run_cont_txt = tk.StringVar()
@@ -475,8 +482,36 @@ class RunBase(tk.Toplevel):
         else:
             return "No ready firework found."
 
+    def design_frame(self):
+        frame = tk.Canvas(self, width=400, height=400)
+        frame.grid(columnspan=1, rowspan=6)
+
+        logo = ImageTk.PhotoImage(d3logo)
+        self.iconphoto(False, logo)
+
+        # Text
+        tk.Label(self, text=f"Run {self.category.capitalize()} Jobs", font=("Raleway", 36, 'bold'), fg=d3navy).grid(
+            column=0, row=0)
+        tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0,
+                                                                                                               row=1)
+
+        # buttons
+        self.run_txt.set("Run a Job")
+        self.run_all_txt.set("Run All Ready Jobs")
+        self.run_cont_txt.set("Run Jobs Continuously")
+        tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy,
+                  fg='white', height=1, width=15).grid(column=0, row=2)
+        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job, fg='white',
+                  height=2, width=30).grid(column=0, row=3)
+        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_all,
+                  fg='white', height=2, width=30).grid(column=0, row=4)
+        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=d3orange,
+                  command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
+
+        tk.Canvas(self, width=400, height=50).grid(columnspan=3)
+
     def run_job(self):
-        self.run_txt.set("Launching {} Job...".format(self.category_str.capitalize()))
+        self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
         os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
         os.chdir(HOME_DIR)
@@ -489,14 +524,14 @@ class RunBase(tk.Toplevel):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
         subprocess.call('cls', shell=True)
-        print('LAUNCHING ALL READY {} JOBS...\n\n'.format(self.category_str.upper()))
+        print('LAUNCHING ALL READY {} JOBS...\n\n'.format(self.category.upper()))
         subprocess.call('rlaunch -w {} rapidfire'.format(self.fireworker), )
 
     def run_job_continuous(self):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
         subprocess.call('cls', shell=True)
-        print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category_str.upper()))
+        print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category.upper()))
         subprocess.call('rlaunch -w {} rapidfire --nlaunches infinite --sleep 10'.format(self.fireworker), )
 
     def view_fw_workflows(self):
@@ -512,35 +547,7 @@ class RunRobot(RunBase):
         self.title('Run Robot')
         self.fireworker = ROBOT_FWORKER
         self.category = "robotics"
-        self.category_str = "robotics"
         self.design_frame()
-
-    def design_frame(self):
-        frame = tk.Canvas(self, width=400, height=400)
-        frame.grid(columnspan=1, rowspan=5)
-
-        logo = ImageTk.PhotoImage(d3logo)
-        self.iconphoto(False, logo)
-
-        # Text
-        tk.Label(self, text="Run the Robot", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
-        tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0,
-                                                                                                               row=1)
-
-        # buttons
-        self.run_txt.set("Run a Job")
-        self.run_all_txt.set("Run All Ready Jobs")
-        self.run_cont_txt.set("Run Jobs Continuously")
-        tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy,
-                  fg='white', height=1, width=15).grid(column=0, row=2)
-        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job, fg='white',
-                  height=2, width=30).grid(column=0, row=3)
-        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_all,
-                  fg='white', height=2, width=30).grid(column=0, row=4)
-        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=d3orange,
-                  command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
-
-        tk.Canvas(self, width=400, height=50).grid(columnspan=3)
 
 
 class RunProcess(RunBase):
@@ -548,38 +555,21 @@ class RunProcess(RunBase):
         super().__init__(parent)
         self.parent = parent
 
-        self.title('Run Processing/Instrument')
-        self.fireworker = PROCESS_INSTRUMENT_FWORKER
-        self.category = {"$in": ["processing", "instrument"]}
-        self.category_str = "processing and instrument"
+        self.title('Run Processing')
+        self.fireworker = PROCESS_FWORKER
+        self.category = "processing"
         self.design_frame()
 
-    def design_frame(self):
-        frame = tk.Canvas(self, width=400, height=400)
-        frame.grid(columnspan=1, rowspan=6)
 
-        logo = ImageTk.PhotoImage(d3logo)
-        self.iconphoto(False, logo)
+class RunInstrument(RunBase):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
 
-        # Text
-        tk.Label(self, text="Run Robotic Processing and Instruments", font=("Raleway", 36, 'bold'), fg=d3navy).grid(column=0, row=0)
-        tk.Label(self, text="The Next Job(s):\t" + self.next_fw, font=("Raleway", 16, 'bold'), fg=d3navy).grid(column=0,
-                                                                                                               row=1)
-
-        # buttons
-        self.run_txt.set("Run a Job")
-        self.run_all_txt.set("Run All Ready Jobs")
-        self.run_cont_txt.set("Run Jobs Continuously")
-        tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=d3navy,
-                  fg='white', height=1, width=15).grid(column=0, row=2)
-        tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job, fg='white',
-                  height=2, width=30).grid(column=0, row=3)
-        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=d3orange, command=self.run_job_all,
-                  fg='white', height=2, width=30).grid(column=0, row=4)
-        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=d3orange,
-                  command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
-
-        tk.Canvas(self, width=400, height=50).grid(columnspan=3)
+        self.title('Run Instruments')
+        self.fireworker = INSTRUMENT_FWORKER
+        self.category = "instrument"
+        self.design_frame()
 
 
 class RoboticsGUI(tk.Tk):
@@ -591,7 +581,7 @@ class RoboticsGUI(tk.Tk):
 
     def design_frame(self):
         info_frame = tk.Canvas(self, width=500, height=300)
-        info_frame.grid(columnspan=2, rowspan=5)
+        info_frame.grid(columnspan=2, rowspan=6)
 
         # logo
         logo = ImageTk.PhotoImage(d3logo)
@@ -610,16 +600,21 @@ class RoboticsGUI(tk.Tk):
         add_job = tk.Button(self, text="Add Job", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
                             height=1, width=15)
         add_job.grid(column=0, row=4, pady=5)
+        push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),
+                               bg=d3blue, fg='white', height=1, width=15)
+        push_to_db.grid(column=0, row=5, pady=5)
+
         run_job = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
                             fg='white', height=1, width=20)
         run_job.grid(column=1, row=2, pady=5)
-        run_process = tk.Button(self, text="Run Process/Instruments", command=self.open_run_process, font=("Raleway", 14),
+        run_process = tk.Button(self, text="Run Process", command=self.open_run_process, font=("Raleway", 14),
                                 bg=d3orange,
                                 fg='white', height=1, width=20)
         run_process.grid(column=1, row=3, pady=5)
-        push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),
-                               bg=d3blue, fg='white', height=1, width=15)
-        push_to_db.grid(column=1, row=4, pady=5)
+        run_instrument = tk.Button(self, text="Run Instruments", command=self.open_run_instrument, font=("Raleway", 14),
+                                   bg=d3orange,
+                                   fg='white', height=1, width=20)
+        run_instrument.grid(column=1, row=4, pady=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=2)
 
@@ -643,6 +638,10 @@ class RoboticsGUI(tk.Tk):
 
     def open_run_process(self):
         window = RunProcess(self)
+        window.grab_set()
+
+    def open_run_instrument(self):
+        window = RunInstrument(self)
         window.grab_set()
 
     def view_fw_workflows(self):

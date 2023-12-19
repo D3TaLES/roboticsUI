@@ -14,6 +14,7 @@ CAPPED_ERROR = False
 CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_DIRTY_ELECTRODE = False  # TODO
+DIRTY_ELECTRODE_CURRENT = 0.00001  # max current allowed (A) for a clean electrode
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"

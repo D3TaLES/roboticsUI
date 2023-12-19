@@ -147,7 +147,10 @@ class ProcessBase(FiretaskBase):
         for d in solv_data:
             p_data = self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
             if FIZZLE_DIRTY_ELECTRODE:
-                pass  # TODO check for dirty electrode
+                dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
+                dirty = dirty_calc.calculate(p_data, max_current_range=DIRTY_ELECTRODE_CURRENT)
+                if dirty:
+                    raise SystemError("WARNING! Electrode may be dirty!")
             print(f"Solvent {d} processed.")
 
 

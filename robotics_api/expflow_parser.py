@@ -93,8 +93,7 @@ class EF2Experiment(ProcessExpFlowObj):
         for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
             tasks = [self.get_firetask(task) for task in cluster]
-            # priority = self.priority - 2 if i == 0 else self.priority - 1 if "process" in fw_type else self.priority
-            priority = self.priority - 1 if "process" in fw_type else self.priority
+            priority = self.priority + 2 if i == 0 else self.priority - 1 if "process" in fw_type else self.priority
             if "process" in fw_type:
                 fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=collect_parent or parent,
                                   fw_specs=self.fw_specs, mol_id=self.molecule_id, priority=priority)

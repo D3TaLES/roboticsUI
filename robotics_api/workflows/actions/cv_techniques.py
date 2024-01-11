@@ -284,7 +284,7 @@ class PotentiostatExperiment:
     def iR_comp_data(self):
         """
         Parses iR compensation data if run_iR is True and iR compensation has been run.
-        :return: float,
+        :return: tuple, (real resistence, imaginary resistence). All units in Ohm
         """
         if self.run_iR:
             current_values, data_info, data_record = self.data[2]
@@ -296,7 +296,7 @@ class PotentiostatExperiment:
             abs_res = abs_Ewe / abs_I
             real_ = abs_res * math.cos(phase_Zwe)
             imaginary_ = abs(abs_res * math.sin(phase_Zwe))
-            return real_
+            return real_, imaginary_
         raise ValueError("iR compensation was not run, no value to return")
 
     def save_parsed_data(self, out_file):
@@ -321,6 +321,9 @@ class PotentiostatExperiment:
     def to_txt(self, outfile, header='', note=''):
         # Collect data
         extracted_data = self.trimmed_data
+        if not extracted_data:
+            print("WARNING. No CV data extracted.")
+            return None
         times = [s["t"] for s in extracted_data]
         voltages = [s["Ewe"] for s in extracted_data]
         currents = [s["I"] for s in extracted_data]
@@ -352,124 +355,6 @@ class PotentiostatExperiment:
             f.write("\n")
             f.write("Potential/V, Current/A\n")
             f.writelines(["{:.3e}, {:.3e}\n".format(v, i) for v, i in zip(voltages, currents)])
-
-
-class iRCompExperiment(PotentiostatExperiment):
-    def __init__(self,
-                 amplitude_voltage=0.5,  # Set this manually
-                 final_frequency=5000,
-                 initial_frequency=500,
-                 average_n_times=5,
-                 wait_for_steady=0,
-                 sweep=True,
-                 rcomp_level=RCOMP_LEVEL,
-                 rcmp_mode=0,  # always software unless an SP-300 series and running loop function
-                 **kwargs):
-        """
-        Class to run iR compensation alone.
-
-        :param amplitude_voltage:
-        :param final_frequency:
-        :param initial_frequency:
-        :param average_n_times:
-        :param wait_for_steady:
-        :param sweep:
-        :param rcomp_level:
-        :param rcmp_mode:
-        :param kwargs:
-        """
-        super().__init__(15, **kwargs)
-
-        # Initialize Parameters
-        self.final_frequency = final_frequency
-        self.initial_frequency = initial_frequency
-        self.amplitude_voltage = amplitude_voltage
-        self.average_n_times = average_n_times
-        self.wait_for_steady = wait_for_steady
-        self.sweep = sweep
-        self.rcomp_level = rcomp_level
-        self.rcmp_mode = rcmp_mode
-
-        # Set Parameters
-        self.params = self.parameterize()
-        self.data = []
-
-    @property
-    def tech_file(self):
-        # pick the correct ecc file based on the instrument family
-        return 'pzir.ecc' if self.is_VMP3 else 'pzir4.ecc'
-
-    def parameterize(self):
-        iR_params = {
-            'final_frequency': ECC_parm("Final_frequency", float),
-            'initial_frequency': ECC_parm("Initial_frequency", float),
-            'amplitude_voltage': ECC_parm("Amplitude_Voltage", float),
-            'average_n_times': ECC_parm("Average_N_times", int),
-            'wait_for_steady': ECC_parm("Wait_for_steady", float),
-            'sweep': ECC_parm("sweep", bool),
-            'rcomp_level': ECC_parm("Rcomp_Level", float),
-            # 'rcmp_mode': ECC_parm("Rcmp_Mode", int),
-        }
-
-        exp_params = list()
-
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['final_frequency'], self.final_frequency))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['initial_frequency'], self.initial_frequency))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['amplitude_voltage'], self.amplitude_voltage))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['average_n_times'], self.average_n_times))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['wait_for_steady'], self.wait_for_steady))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['sweep'], self.sweep))
-        exp_params.append(make_ecc_parm(self.k_api, iR_params['rcomp_level'], self.rcomp_level))
-        # exp_params.append(make_ecc_parm(self.k_api, iR_params['rcmp_mode'], self.rcmp_mode))
-
-        # make the technique parameter array
-        ecc_params = make_ecc_parms(self.k_api, *exp_params)
-        return ecc_params
-
-    @property
-    def parsed_data(self, strict_error=False):
-        extracted_data = []
-        for data_step in self.data:
-            current_values, data_info, data_record = data_step
-            tech_name = TECH_ID(data_info.TechniqueID).name
-            if data_info.NbCols != self.nb_words:
-                if strict_error:
-                    raise RuntimeError(f"{tech_name} : unexpected record length ({data_info.NbCols})")
-                continue
-            ix = 0
-            for _ in range(data_info.NbRows):
-                # progress through record
-                inx = ix + data_info.NbCols
-                row = data_record[ix:inx]
-                t, Freq, abs_Ewe, abs_Ece, abs_I, abs_Ice, i, i_range, phase_Zwe, phase_Zce, \
-                    Ewe, Ece, abs_res, real_, imaginary_ = self.cv_row_parser(row)
-
-                extracted_data.append({'t': t, 'Ewe': Ewe, 'Ece': Ece, 'I': i, 'freq': Freq, 'abs_ewe': abs_Ewe,
-                                       'abs_ece': abs_Ece, 'abs_iwe': abs_I, 'abs_ice': abs_Ice, 'i_range': i_range,
-                                       'phase_zwe': phase_Zwe, 'phase_zce': phase_Zce, 'real': real_,
-                                       'imag': imaginary_})
-                ix = inx
-
-        return extracted_data
-
-    def to_txt(self, outfile, header='', note=''):
-        extracted_data = self.parsed_data
-        df = pd.DataFrame(extracted_data)
-        df.to_csv(outfile)
-
-    def experiment_print(self, data_step):
-        current_values, data_info, data_record = data_step
-        print("-------------------time / frequency-------------------------")
-        ix = 0
-        for _ in range(data_info.NbRows):
-            # progress through record
-            inx = ix + data_info.NbCols
-            # extract timestamp and one row
-            row = data_record[ix:inx]
-            t = self.k_api.ConvertNumericIntoSingle(row[-2])
-            freq = self.k_api.ConvertNumericIntoSingle(row[0])
-            print('-------------------{} / {}-------------------------'.format(t, freq))
-            ix = inx
 
 
 class EisExperiment(PotentiostatExperiment):
@@ -866,7 +751,8 @@ class CvExperiment(PotentiostatExperiment):
 
     def plot(self, out_file):
         if not self.trimmed_data:
-            raise Exception("Cannot plot data because there is no parsed_data. Make sure you have run an experiment.")
+            print("Cannot plot data because there is no parsed_data. Make sure you have run an experiment.")
+            return None
         potentials = [s["Ewe"] for s in self.trimmed_data]
         current = [s["I"] for s in self.trimmed_data]
 
@@ -1022,7 +908,7 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 
 def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
-                         {"voltage": 1.2, "scan_rate": scan_rate},
+                         {"voltage": 0, "scan_rate": scan_rate},
                          {"voltage": 0., "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
     exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)

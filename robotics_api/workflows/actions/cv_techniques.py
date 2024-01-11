@@ -282,11 +282,21 @@ class PotentiostatExperiment:
 
     @property
     def iR_comp_data(self):
+        """
+        Parses iR compensation data if run_iR is True and iR compensation has been run.
+        :return: float,
+        """
         if self.run_iR:
-            return self.data[2]
-            # t, Freq, abs_Ewe, abs_Ece, abs_I, abs_Ice, i, i_range, phase_Zwe, phase_Zce, \
-            #     Ewe, Ece, abs_res, real_, imaginary_ = self.cv_row_parser(self.data[2])
-            # return real_
+            current_values, data_info, data_record = self.data[2]
+            f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
+                abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = data_record
+            abs_Ewe = self.k_api.ConvertNumericIntoSingle(abs_Ewe)
+            abs_I = self.k_api.ConvertNumericIntoSingle(abs_I)
+            phase_Zwe = self.k_api.ConvertNumericIntoSingle(phase_Zwe)
+            abs_res = abs_Ewe / abs_I
+            real_ = abs_res * math.cos(phase_Zwe)
+            imaginary_ = abs(abs_res * math.sin(phase_Zwe))
+            return real_
         raise ValueError("iR compensation was not run, no value to return")
 
     def save_parsed_data(self, out_file):
@@ -1012,7 +1022,7 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
 
 def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
     collection_params = [{"voltage": 0., "scan_rate": scan_rate},
-                         {"voltage": 0.7, "scan_rate": scan_rate},
+                         {"voltage": 1.2, "scan_rate": scan_rate},
                          {"voltage": 0., "scan_rate": scan_rate}]
     ex_steps = [voltage_step(**p) for p in collection_params]
     exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)
@@ -1026,4 +1036,4 @@ def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
 
 if __name__ == "__main__":
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
-    cv_ex(potentiostat_channel=2, scan_rate=0.100, run_iR=True)
+    cv_ex(potentiostat_channel=1, scan_rate=0.100, run_iR=True)

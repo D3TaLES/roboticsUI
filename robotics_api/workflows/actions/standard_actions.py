@@ -1,9 +1,9 @@
 import time
 import pint
 import serial
+import warnings
 from serial.tools.list_ports import comports
 from robotics_api.workflows.actions.kinova_move import *
-from robotics_api.workflows.actions.cv_techniques import *
 from robotics_api.workflows.actions.status_db_manipulations import *
 
 
@@ -476,14 +476,15 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
-    def run_cv(self, data_path, collect_params=None, voltage_sequence=None, scan_rate=None, **kwargs):
+    def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
         Args:
             data_path: str, output data file path
-            collect_params: list, list of steps with step parameters as dicts
             voltage_sequence: str, comma-seperated list of voltage points
             scan_rate: str, scan rate
+            dE: float, potential increment (V)
+            sens: float, current sensitivity (A/V)
 
         Returns: bool, success
         """
@@ -492,15 +493,33 @@ class PotentiostatStation(StationStatus):
             time.sleep(CV_DELAY)
             return True
         # Benchmark CV for voltage range
-        if not collect_params:
+        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE")
+        if POTENTIOSTAT_MODEL == "KBIO":
+            from kbio_cv_techniques import CvExperiment, voltage_step
+            # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
-        print("RUN CV WITH COLLECTION PARAMS: ", collect_params)
-        expt = CvExperiment([voltage_step(**p) for p in collect_params],
-                            potentiostat_address=self.p_address, potentiostat_channel=self.p_channel, **kwargs)
-        # TODO iR compensation
-        expt.run_experiment()
-        time.sleep(TIME_AFTER_CV)
-        expt.to_txt(data_path)
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=dE,
+                                potentiostat_address=self.p_address, potentiostat_channel=self.p_channel, **kwargs)
+            # Run CV and save data
+            expt.run_experiment()
+            time.sleep(TIME_AFTER_CV)
+            expt.to_txt(data_path)
+        elif POTENTIOSTAT_MODEL == "CHI":
+            import hardpotato as hp
+            # Set CV parameters
+            out_folder = "/".join(data_path.split("/")[:-1])
+            f_name = data_path.split("/")[-1]
+            nSweeps = round((len(voltage_sequence) - 2) / 2)
+            volts = unit_conversion(voltage_sequence, default_unit="V")
+            sr = unit_conversion(scan_rate, default_unit="V/s")
+
+            # Install potentiostat and run CV
+            hp.potentiostat.Setup(CHI_MODEL, CHI_EXE_PATH, out_folder, port=self.p_address)
+            cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
+            cv.run()
+            time.sleep(TIME_AFTER_CV)
+        else:
+            raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")
         return True
 
     @staticmethod

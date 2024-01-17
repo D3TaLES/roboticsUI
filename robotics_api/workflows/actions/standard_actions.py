@@ -384,6 +384,7 @@ class PotentiostatStation(StationStatus):
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
+        self.p_exe_path = eval(f"POTENTIOSTAT_{self.potentiostat}_EXE_PATH")
         elevator = self.p_channel
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
@@ -494,7 +495,7 @@ class PotentiostatStation(StationStatus):
             return True
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE")
-        if POTENTIOSTAT_MODEL == "KBIO":
+        if "kbio" in POTENTIOSTAT_MODEL:
             from kbio_cv_techniques import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
@@ -504,17 +505,18 @@ class PotentiostatStation(StationStatus):
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
-        elif POTENTIOSTAT_MODEL == "CHI":
+        elif "chi" in POTENTIOSTAT_MODEL:
             import hardpotato as hp
             # Set CV parameters
-            out_folder = "/".join(data_path.split("/")[:-1])
-            f_name = data_path.split("/")[-1]
-            nSweeps = round((len(voltage_sequence) - 2) / 2)
-            volts = unit_conversion(voltage_sequence, default_unit="V")
+            out_folder = "/".join(data_path.split("\\")[:-1])
+            f_name = data_path.split("\\")[-1].split(".")[0]
+            nSweeps = math.ceil((len(voltage_sequence) - 2) / 2)
+            volts = [unit_conversion(v, default_unit="V") for v in voltage_sequence]
             sr = unit_conversion(scan_rate, default_unit="V/s")
 
             # Install potentiostat and run CV
-            hp.potentiostat.Setup(CHI_MODEL, CHI_EXE_PATH, out_folder, port=self.p_address)
+            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            print("PARAMS: ", volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
             cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
             cv.run()
             time.sleep(TIME_AFTER_CV)
@@ -581,7 +583,10 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("potentiostat_A_02")
+    test_potent = PotentiostatStation("potentiostat_A_01")
+
+    d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "examples", "PotentiostatStation_Test.csv")
+    test_potent.run_cv(d_path, voltage_sequence=[0, 1, 0], scan_rate=0.1)
 
     # reset_test_db()
     # reset_stations(end_home=False)
@@ -589,9 +594,9 @@ if __name__ == "__main__":
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
-    test_potent.move_elevator(endpoint="up")
+    # test_potent.move_elevator(endpoint="up")
     # test_potent.move_elevator(endpoint="down")
 
-    flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
-
+    # flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
+    # check_usb()
 

@@ -6,11 +6,9 @@ from robotics_api.workflows.Processing import *
 from robotics_api.workflows.Robotics_FW import *
 from robotics_api.workflows.ExperimentActions import *
 
-BASE_DIR = Path(__file__).resolve().parent
-
 
 class EF2Experiment(ProcessExpFlowObj):
-    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=None, data_type=None, exp_name='exp',
+    def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
         super().__init__(expflow_obj, source_group, **kwargs)
         self.fw_parents = fw_parents
@@ -40,6 +38,28 @@ class EF2Experiment(ProcessExpFlowObj):
         new_task = dict2obj(task_dict)
         return new_task
 
+    @staticmethod
+    def check_multi_task(task):
+        if "multi_cv" in task.name:
+            task_list = []
+            scan_rates_param = [p for p in task.parameters if p.description == "scan_rates"][0]
+            voltages_param = [p for p in task.parameters if p.description == "voltage_sequence"][0]
+            for i, scan_rate in enumerate(scan_rates_param.value.strip(" ").split(",")):
+                task_dict = copy.deepcopy(task.__dict__)
+                task_dict["name"] = "collect_cv_data"
+                task_dict["parameters"] = [
+                        voltages_param.__dict__,
+                        {
+                            "description": "scan_rate",
+                            "value": scan_rate,
+                            "unit": scan_rates_param.unit
+                        }
+                    ]
+                task_list.append(dict2obj(task_dict))
+            return task_list
+        else:
+            return [task]
+
     @property
     def task_clusters(self):
         all_tasks, task_cluster = [], []
@@ -58,6 +78,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 previous_name = self.workflow[i - count].name if i - count > 0 else ""
                 count += 1
 
+            # Set up task clusters based on task types
             if "process" in task.name:
                 all_tasks.append(task_cluster) if task_cluster else None
                 all_tasks.append([task])
@@ -68,9 +89,9 @@ class EF2Experiment(ProcessExpFlowObj):
                 task_cluster = [task]
             elif "collect" in task.name and "collect" not in previous_name:
                 all_tasks.append(task_cluster) if task_cluster else None
-                task_cluster = [task]
+                task_cluster = self.check_multi_task(task)
             else:
-                task_cluster.append(task)
+                task_cluster.extend(self.check_multi_task(task))
                 if "collect" in next_name and "collect" not in task.name:
                     all_tasks.append(task_cluster) if task_cluster else None
                     task_cluster = [self.collect_task(self.workflow[i + 1], tag="setup")]
@@ -148,7 +169,8 @@ class EF2Experiment(ProcessExpFlowObj):
 
 
 if __name__ == "__main__":
-    expflow_file = os.path.join(BASE_DIR, 'management/example_expflows', 'cv_robot_diffusion_2_workflow.json')
+    downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
+    expflow_file = os.path.join(downloaded_wfls_dir, 'ConcStudy_5C_TEMPO_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
-    experiment.fireworks
+    print(experiment.fireworks)

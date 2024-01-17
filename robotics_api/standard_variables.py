@@ -41,18 +41,17 @@ SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
 SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
 
 # ---------  POTENTIOSTAT VARIABLES -------------
-POTENTIOSTAT_MODEL = "CHI"  # KBIO
-CHI_MODEL = ""  # TODO
-CHI_EXE_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"  # TODO
+POTENTIOSTAT_MODEL = "chi601e"  # kbio
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
-POTENTIOSTAT_A_ADDRESS = "USB0"  # TODO
+POTENTIOSTAT_A_ADDRESS = "COM6"
+POTENTIOSTAT_A_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
 # POTENTIOSTAT_B_ADDRESS = "USB1"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
-SENSITIVITY = 1e-6  # A/V, current sensitivity
+SENSITIVITY = 1e-5  # A/V, current sensitivity
 CUT_BEGINNING = 0.007  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 MIN_CV_STEPS = 6  # minimum number of CV steps

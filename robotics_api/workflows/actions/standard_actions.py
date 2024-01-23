@@ -398,7 +398,7 @@ class PotentiostatStation(StationStatus):
         """
         return self.coll.update_one({"_id": self.id}, {"$set": {"current_experiment": experiment}})
 
-    def initiate_cv(self, vial: VialMove = None):
+    def initiate_pot(self, vial: VialMove = None):
         if vial:
             if not vial.current_location == self.id:
                 raise Exception(f"Vial {vial.id} is not currently located in potentiostat {self.id}.")
@@ -412,7 +412,7 @@ class PotentiostatStation(StationStatus):
                 time.sleep(5)
                 return True
 
-    def end_cv(self):
+    def end_pot(self):
         if self.state == "down":
             return True
         elif self.state == "up":
@@ -424,7 +424,7 @@ class PotentiostatStation(StationStatus):
         if self.current_content != vial_id:
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
                             f"because vial {vial_id} is not located in this potentiostat")
-        success = self.end_cv()
+        success = self.end_pot()
         success += get_place_vial(self.location_snapshot, action_type='get',
                                   pre_position_file=self.pre_location_snapshot,
                                   raise_amount=self.raise_amount, **move_kwargs)
@@ -489,7 +489,7 @@ class PotentiostatStation(StationStatus):
 
         Returns: bool, success
         """
-        if not RUN_CV:
+        if not RUN_POTENT:
             print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
             time.sleep(CV_DELAY)
             return True
@@ -516,9 +516,43 @@ class PotentiostatStation(StationStatus):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
-            print("PARAMS: ", volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
             cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
             cv.run()
+            time.sleep(TIME_AFTER_CV)
+        else:
+            raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")
+        return True
+
+    def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY, steps=STEPS):
+        """
+        Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
+        Args:
+            data_path: str, output data file path
+            voltage_sequence: str, comma-seperated list of voltage points
+            dE: float, potential increment (V)
+            pw: float, pulse width (sec)
+            sens: float, current sensitivity (A/V)
+            step: float, number of steps
+
+        Returns: bool, success
+        """
+        if not RUN_POTENT:
+            print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
+            time.sleep(CV_DELAY)
+            return True
+        # Benchmark CV for voltage range
+        print(f"RUN CA WITH {voltage_sequence} VOLTAGES")
+        if "chi" in POTENTIOSTAT_MODEL:
+            import hardpotato as hp
+            # Set CV parameters
+            f_name = data_path.split("\\")[-1].split(".")[0]
+            out_folder = "/".join(data_path.split("\\")[:-1])
+            volts = [unit_conversion(v, default_unit="V") for v in voltage_sequence]
+
+            # Install potentiostat and run CA
+            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            ca = hp.potentiostat.CA(volts[0], max(volts), min(volts), dE, steps, pw, sens, f_name, "CA " + f_name)
+            ca.run()
             time.sleep(TIME_AFTER_CV)
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")

@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 # ---------  TESTING OPERATION VARIABLES -------------
-RUN_CV = True
+RUN_POTENT = True
 CV_DELAY = 10  # seconds
 STIR = True
 DISPENSE = True
@@ -13,14 +13,9 @@ DISPENSE = True
 CAPPED_ERROR = False
 CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
+FIZZLE_CONCENTRATION_FAILURE = False
 FIZZLE_DIRTY_ELECTRODE = True
 DIRTY_ELECTRODE_CURRENT = 0.00001  # max current allowed (A) for a clean electrode
-
-# ---------  ROBOT VARIABLES -------------
-KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 60
-OPEN_GRIP_TARGET = 40
-RAISE_AMOUNT = 0.07
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -32,6 +27,12 @@ TIME_UNIT = "s"
 MASS_UNIT = "mg"
 VOLUME_UNIT = "mL"
 TEMPERATURE_UNIT = "K"
+
+# ---------  ROBOT VARIABLES -------------
+KINOVA_01_IP = "192.168.1.10"
+VIAL_GRIP_TARGET = 60
+OPEN_GRIP_TARGET = 40
+RAISE_AMOUNT = 0.07
 
 # ---------  PATH VARIABLES -------------
 D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
@@ -52,6 +53,8 @@ SCAN_NUMBER = 1  # Not currently included in CV parameters
 AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
 SENSITIVITY = 1e-5  # A/V, current sensitivity
+PULSE_WIDTH = 0.25  # sec, pulse width for CA
+STEPS = 200  # number of steps for CA
 CUT_BEGINNING = 0.007  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 MIN_CV_STEPS = 6  # minimum number of CV steps

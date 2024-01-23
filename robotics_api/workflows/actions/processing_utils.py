@@ -15,8 +15,10 @@ def get_rmol_concentration(vial_content, fw_spec):
     rom_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == rom_id]
     solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
     if not rom_mass or not solv_vol:
-        raise Exception(f"Redox mol calculation did not work...check all variables: rom_id={rom_id}, "
-                        f"solv_id={solv_id}, rom_mass={rom_mass}, solv_vol={solv_vol}")
+        if FIZZLE_CONCENTRATION_FAILURE:
+            raise Exception(f"Redox mol calculation did not work...check all variables: rom_id={rom_id}, "
+                            f"solv_id={solv_id}, rom_mass={rom_mass}, solv_vol={solv_vol}")
+        return DEFAULT_CONCENTRATION
     rom_mw = "{}g/mol".format(ReagentStatus(_id=rom_id).molecular_weight)
     ureg = pint.UnitRegistry()
     volume = ureg(solv_vol[0])

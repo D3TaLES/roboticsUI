@@ -191,7 +191,8 @@ class SetupPotentiostat(RoboticsBase):
         else:
             collect_vial = self.exp_vial
             cycle = self.metadata.get("cv_cycle", 0)
-            self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1, "cv_idx": 1})
+            self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1,
+                                  "cv_idx": 1, "ca_idx": 1})
             self.release_defused = True
 
         # Uncap vial if capped
@@ -262,7 +263,7 @@ class BenchmarkCV(RoboticsBase):
 
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
-        potent.initiate_cv()
+        potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
@@ -293,11 +294,41 @@ class RunCV(RoboticsBase):
 
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
-        potent.initiate_cv()
+        potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
+                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "data_location": data_path})
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class RunCA(RoboticsBase):
+    # FireTask for running CA
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+
+        # CA parameters and keywords
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
+
+        # Prep output data file info
+        collect_tag_ca = self.metadata.get("collect_tag").replace("cv", "ca")
+        collect_vial_id = self.metadata.get("collect_vial_id")
+        ca_idx = self.metadata.get("ca_idx", 1)
+        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
+        os.makedirs(data_dir, exist_ok=True)
+        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.csv"))
+
+        # Run CV experiment
+        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        potent.initiate_pot()
+        self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
+
+        self.metadata.update({"ca_idx": ca_idx + 1})
+        self.collection_data.append({"collect_tag": collect_tag_ca,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

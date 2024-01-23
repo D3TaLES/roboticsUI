@@ -26,8 +26,8 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):
-        if "_cv_" in collect_task.name or "electrode" in collect_task.name:
-            analysis = "cv"
+        if any(kw in collect_task.name for kw in ["_cv_", "_ca_", "electrode"]):
+            analysis = "pot"
         elif "_ir_" in collect_task.name:
             analysis = "ir"
         # TODO setup more instruments
@@ -157,14 +157,15 @@ class EF2Experiment(ProcessExpFlowObj):
             "rinse_electrode": RinseElectrode,  # needs: TIME
             "clean_electrode": CleanElectrode,
             "collect_cv_data": RunCV,
+            "collect_ca_data": RunCA,
             "process_cv_data": CVProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
             "collect_electrode_test": RunCV,  # TODO remove eventually
             "collect_electrode_test_data": RunCV,  # TODO remove eventually
             "collect_cv_benchmark_data": BenchmarkCV,
 
-            "setup_cv": SetupPotentiostat,
-            "finish_cv": FinishPotentiostat,
+            "setup_pot": SetupPotentiostat,
+            "finish_pot": FinishPotentiostat,
         }
 
 

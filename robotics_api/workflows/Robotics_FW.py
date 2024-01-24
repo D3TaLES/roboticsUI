@@ -53,7 +53,7 @@ class CVProcessing(Firework):
         spec = {'_category': 'processing', '_priority': priority}
         spec.update(fw_specs or {})
         tasks = f_tasks or [
-            CVProcessor(mol_id=mol_id, name=name),
+            PotProcessor(mol_id=mol_id, name=name),
             # SendToStorage(),
         ]
         super(CVProcessing, self).__init__(tasks, parents=parents, spec=spec, name=name, **kwargs)

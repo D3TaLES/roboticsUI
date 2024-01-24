@@ -158,7 +158,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "clean_electrode": CleanElectrode,
             "collect_cv_data": RunCV,
             "collect_ca_data": RunCA,
-            "process_cv_data": CVProcessor,
+            "process_cv_data": PotProcessor,
             "process_cv_benchmarking": ProcessCVBenchmarking,
             "collect_electrode_test": RunCV,  # TODO remove eventually
             "collect_electrode_test_data": RunCV,  # TODO remove eventually

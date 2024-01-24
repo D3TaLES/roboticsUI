@@ -106,22 +106,13 @@ class ProcessBase(FiretaskBase):
             "source": "d3tales_robot",
             "author": "d3tales_robot",
             "author_email": 'd3tales@gmail.com',
-            "upload_time": datetime.datetime.now().isoformat(),
+            "upload_time": datetime.now().isoformat(),
             "file_type": file_type,
             "data_category": "experimentation",
             "data_type": "cv",
         }
 
-    def process_cv_data(self, cv_loc, metadata, insert=True, title_tag=""):
-        # Process data file
-        print("Data File: ", cv_loc)
-        if not os.path.isfile(cv_loc):
-            warnings.warn("WARNING. File {} not found. Processing did not occur.".format(cv_loc))
-            return None
-        file_type = cv_loc.split('.')[-1]
-        metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
-        p_data = ProcessCV(cv_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
-                           metadata=metadata, parsing_class=ParseChiCV).data_dict
+    def plot_cv(self, cv_loc, p_data, title_tag=""):
         # Plot CV
         image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
         CVPlotter(connector={"scan_data": "data.scan_data",
@@ -132,6 +123,18 @@ class ProcessBase(FiretaskBase):
                                           ylabel=MULTI_PLOT_YLABEL,
                                           current_density=PLOT_CURRENT_DENSITY,
                                           a_to_ma=CONVERT_A_TO_MA)
+
+    def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=ProcessCV):
+        # Process data file
+        print("Data File: ", file_loc)
+        if not os.path.isfile(file_loc):
+            warnings.warn("WARNING. File {} not found. Processing did not occur.".format(file_loc))
+            return None
+        file_type = file_loc.split('.')[-1]
+        metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
+        p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
+                               metadata=metadata).data_dict
+
         # TODO Launch send to storage FireTask
 
         # Insert data into database
@@ -145,7 +148,8 @@ class ProcessBase(FiretaskBase):
         # Process solvent CV data
         solv_data = self.coll_dict.get("solv_cv", [])
         for d in solv_data:
-            p_data = self.process_cv_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            self.plot_cv(d.get("data_location"), p_data)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
                 dirty = dirty_calc.calculate(p_data, max_current_range=DIRTY_ELECTRODE_CURRENT)
@@ -173,8 +177,10 @@ class ProcessCVBenchmarking(ProcessBase):
             return FWAction(update_spec=self.updated_specs())
 
         # Process benchmarking data
-        self.metadata.update({"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
-        p_data = self.process_cv_data(cv_loc, metadata=self.metadata, title_tag="Benchmark", insert=False)
+        self.metadata.update(
+            {"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
+        p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
+        self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
 
         # Calculate new voltage sequence
         descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
@@ -194,8 +200,9 @@ class ProcessCVBenchmarking(ProcessBase):
         return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))
 
 
+# noinspection PyTypeChecker
 @explicit_serialize
-class CVProcessor(ProcessBase):
+class PotProcessor(ProcessBase):
     # FireTask for processing CV file
 
     def run_task(self, fw_spec):
@@ -203,15 +210,26 @@ class CVProcessor(ProcessBase):
         self.process_solv_data()
 
         cv_data = self.coll_dict.get(self.collect_tag, [])
+        ca_data = self.coll_dict.get(self.collect_tag.replace("cv", "ca"), [])
 
         # Process CV data for cycle
         processed_data = []
         for d in cv_data:
             m_data = self.metadata
             m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
-            data = self.process_cv_data(d.get("data_location"), metadata=m_data)
-            if data:
-                processed_data.append(data)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
+            self.plot_cv(d.get("data_location"), p_data)
+            if p_data:
+                processed_data.append(p_data)
+
+        # Process CA data for cycle
+        processed_ca_data = []
+        for d in ca_data:
+            m_data = self.metadata
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, parsing_class=ParseChiCA)
+            if p_data:
+                processed_ca_data.append(p_data)
 
         # Plot all CVs
         multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
@@ -230,6 +248,7 @@ class CVProcessor(ProcessBase):
                    validate_schema=False).insert(metadata_id)
 
         # Record all data
+        # TODO Add conductivity
         with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
             fn.write(json.dumps(processed_data))
         with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:

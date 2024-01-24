@@ -1,8 +1,8 @@
-import time
 import pint
 import serial
 import warnings
 from serial.tools.list_ports import comports
+from d3tales_api.Processors.parser_cv import *
 from robotics_api.workflows.actions.kinova_move import *
 from robotics_api.workflows.actions.status_db_manipulations import *
 
@@ -124,7 +124,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
     while True:
         print("trying to read...")
         data = arduino.readline()
-        print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time()-start_time))
+        print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
         if data:
             result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
             print("Arduino Result: ", result_txt)
@@ -161,7 +161,8 @@ class VialMove(VialStatus):
                 station = LiquidStation(self.current_location)
                 success += station.retrieve_vial(self)
             else:
-                success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error, **move_kwargs)
+                success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
+                                          **move_kwargs)
             success += snapshot_move(SNAPSHOT_HOME)
             self.update_position("robot_grip")
         else:
@@ -325,13 +326,13 @@ class StirHeatStation(StationStatus):
 
         Returns: bool, True if stir action was a success
         """
+        # TODO implement heating
         if temperature and temp_time:
-            success = True  # TODO implement heating
             success = self.arduino_name
             return success
         elif temperature:
-            heat_cmd = 3 if heat_cmd == "off" or str(heat_cmd) == "3" else heat_cmd
             heat_cmd = 4 if heat_cmd == "on" or str(heat_cmd) == "4" else heat_cmd
+            print(heat_cmd)
             return True
         return False
 
@@ -477,13 +478,15 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
-    def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
+    def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=None,
+               dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
         Args:
             data_path: str, output data file path
             voltage_sequence: str, comma-seperated list of voltage points
             scan_rate: str, scan rate
+            resistance: float, solution resistance for iR compensation (A)
             dE: float, potential increment (V)
             sens: float, current sensitivity (A/V)
 
@@ -516,14 +519,54 @@ class PotentiostatStation(StationStatus):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
-            cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens, f_name, f_name)
+            cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens,
+                                    fileName=f_name, header="CV " + f_name, resistance=resistance*RCOMP_LEVEL)
             cv.run()
             time.sleep(TIME_AFTER_CV)
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")
         return True
 
-    def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY, steps=STEPS):
+    def run_ircomp_test(self, data_path, e_ini=0, low_freq=INITIAL_FREQUENCY, high_freq=FINAL_FREQUENCY,
+                        amplitude=0.01, sens=SENSITIVITY):
+        """
+        Run iR comp test to determine resistance
+        Args:
+            data_path: str, output data file path
+            e_ini: float, V, initial voltage
+            low_freq: float, Hz, low frequency
+            high_freq: float, Hz, high frequency
+            amplitude: float, V, ac amplitude (half peak-to-peak)
+            sens: float, current sensitivity (A/V)
+
+        Returns: bool, success
+        """
+        if not RUN_POTENT:
+            print(f"iR Comp Test is NOT running because RUN_CV is set to False. "
+                  f"Observing the {CV_DELAY} second CV_DELAY.")
+            time.sleep(CV_DELAY)
+            return True
+        # Benchmark CV for voltage range
+        print(f"RUN IR COMP TEST")
+        if "chi" in POTENTIOSTAT_MODEL:
+            import hardpotato as hp
+            # Set CV parameters
+            out_folder = "/".join(data_path.split("\\")[:-1])
+            f_name = data_path.split("\\")[-1].split(".")[0]
+
+            # Install potentiostat and run CV
+            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq, high_freq=high_freq, amplitude=amplitude, sens=sens,
+                                      fileName=f_name, header="iRComp " + f_name)
+            eis.run()
+
+            # Load recently acquired data
+            data = ParseChiESI(data_path)
+            time.sleep(TIME_AFTER_CV)
+            return data.resistance
+
+    def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY,
+               steps=STEPS):
         """
         Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
         Args:
@@ -532,7 +575,7 @@ class PotentiostatStation(StationStatus):
             dE: float, potential increment (V)
             pw: float, pulse width (sec)
             sens: float, current sensitivity (A/V)
-            step: float, number of steps
+            steps: float, number of steps
 
         Returns: bool, success
         """
@@ -580,17 +623,17 @@ class PotentiostatStation(StationStatus):
 def check_usb():
     # list connection ports
     for port, desc, hw_id in sorted(comports()):
-       print("{}: {} [{}]".format(port, desc, hw_id))
+        print("{}: {} [{}]".format(port, desc, hw_id))
 
 
 def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    get_place_vial(VialMove(_id=col+"_04").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col+"_03").home_snapshot, action_type='place', raise_error=True)
-    get_place_vial(VialMove(_id=col+"_03").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col+"_02").home_snapshot, action_type='place', raise_error=True)
-    get_place_vial(VialMove(_id=col+"_02").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col+"_01").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_04").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='get', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_01").home_snapshot, action_type='place', raise_error=True)
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 
@@ -633,4 +676,3 @@ if __name__ == "__main__":
 
     # flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
     # check_usb()
-

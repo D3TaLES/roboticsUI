@@ -265,11 +265,12 @@ class BenchmarkCV(RoboticsBase):
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
+        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "benchmark_iRComp_"))
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(resistance=resistance))
 
 
 @explicit_serialize
@@ -283,6 +284,7 @@ class RunCV(RoboticsBase):
         # ir_comp = fw_spec.get("ir_comp") or self.get("ir_comp", "")
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
+        resistance = fw_spec.get("resistance") or self.get("resistance", "")
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -295,7 +297,8 @@ class RunCV(RoboticsBase):
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_pot()
-        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
+        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
+                                      resistance=resistance)
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,

@@ -1,7 +1,7 @@
 import hardpotato as hp
 import softpotato as sp
 from robotics_api.standard_variables import *
-from d3tales_api.Processors.parser_cv import ParseChiESI
+from d3tales_api.Processors.parser_cv import *
 
 # Folder where to save the data, it needs to be created previously
 out_folder = os.path.join(D3TALES_DIR, "workflows", "actions", "examples")
@@ -50,15 +50,14 @@ def ca_ex():
     header = 'CA'  # header for data file
 
     ca = hp.potentiostat.CA(Eini, Ev1, Ev2, dE, nSweeps, pw, sens, fileName, header)
-    ca.run()
+    # ca.run()
 
     # Load recently acquired data
-    data = hp.load_data.CA(fileName + '.txt', out_folder, POTENTIOSTAT_MODEL)
-    i = data.i
-    t = data.t
+    data = ParseChiCA(os.path.join(out_folder, fileName+".txt"))
+    print(data.parsed_data)
 
     # Plot CV with softpotato
-    sp.plotting.plot(t, i, xlab='$t$ / s', fig=1, show=1)
+    # sp.plotting.plot(data.t, data.i, xlab='$t$ / s', fig=1, show=1)
 
 
 def ircomp_ex():

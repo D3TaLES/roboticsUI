@@ -152,7 +152,7 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error, **move_kwargs)
-            elif "potentiostat" in self.current_location:
+            elif "Potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
@@ -380,7 +380,7 @@ class PotentiostatStation(StationStatus):
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a potentiostat, a potentiostat name must be provided.")
-        if "potentiostat" not in self.id:
+        if "Potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.potentiostat = self.id.split("_")[-2]
         self.p_channel = int(self.id.split("_")[-1])
@@ -479,6 +479,34 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
+    @staticmethod
+    def generate_volts(voltage_sequence: str, volt_unit="V"):
+        # Get voltages with appropriate units
+        ureg = pint.UnitRegistry()
+        voltages = voltage_sequence.split(',')
+        voltage_units = ureg(voltages[-1]).units
+        for i, v in enumerate(voltages):
+            v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(
+                " ").isnumeric() else v
+            v_unit = ureg(v_unit)
+            voltages[i] = v_unit.to(volt_unit).magnitude
+
+        return voltages
+
+    def generate_col_params(self, voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
+        # Get voltages with appropriate units
+        voltages = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit=volt_unit)
+
+        # Get scan rate with appropriate units
+        ureg = pint.UnitRegistry()
+        scan_rate = ureg(scan_rate).to(scan_unit).magnitude
+        return [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
+
+
+class CVPotentiostatStation(PotentiostatStation):
+    def __init__(self, _id, raise_amount=0.028, **kwargs):
+        super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
+
     def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
                dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
         """
@@ -572,6 +600,11 @@ class PotentiostatStation(StationStatus):
             print(data.resistance)
             return data.resistance
 
+
+class CAPotentiostatStation(PotentiostatStation):
+    def __init__(self, _id, raise_amount=0.028, **kwargs):
+        super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
+
     def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY,
                steps=STEPS):
         """
@@ -607,29 +640,6 @@ class PotentiostatStation(StationStatus):
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True
-
-    @staticmethod
-    def generate_volts(voltage_sequence: str, volt_unit="V"):
-        # Get voltages with appropriate units
-        ureg = pint.UnitRegistry()
-        voltages = voltage_sequence.split(',')
-        voltage_units = ureg(voltages[-1]).units
-        for i, v in enumerate(voltages):
-            v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(
-                " ").isnumeric() else v
-            v_unit = ureg(v_unit)
-            voltages[i] = v_unit.to(volt_unit).magnitude
-
-        return voltages
-
-    def generate_col_params(self, voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
-        # Get voltages with appropriate units
-        voltages = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit=volt_unit)
-
-        # Get scan rate with appropriate units
-        ureg = pint.UnitRegistry()
-        scan_rate = ureg(scan_rate).to(scan_unit).magnitude
-        return [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
 
 
 def check_usb():

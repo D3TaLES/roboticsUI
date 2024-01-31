@@ -82,6 +82,6 @@ def ircomp_ex():
 
 
 if __name__ == "__main__":
-    # cv_ex()
+    cv_ex()
     # ca_ex()
-    ircomp_ex()
+    # ircomp_ex()

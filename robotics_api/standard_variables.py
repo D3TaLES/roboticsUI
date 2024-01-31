@@ -88,7 +88,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["potentiostat_A_01", "potentiostat_A_02"]
+MEASUREMENT_STATIONS = ["CVPotentiostat_A_01", "CAPotentiostat_B_01"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

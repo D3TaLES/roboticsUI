@@ -25,12 +25,13 @@ class EF2Experiment(ProcessExpFlowObj):
                          "metadata": self.metadata}
 
     @staticmethod
-    def collect_task(collect_task, tag="setup", default_analysis="pot"):
-        if any(kw in collect_task.name for kw in ["_cv_", "_ca_", "electrode"]):
-            analysis = "pot"
+    def collect_task(collect_task, tag="setup", default_analysis="cv"):
+        if any(kw in collect_task.name for kw in ["_cv_", "electrode"]):
+            analysis = "cv"
+        elif "_ca_" in collect_task.name:
+            analysis = "ca"
         elif "_ir_" in collect_task.name:
             analysis = "ir"
-        # TODO setup more instruments
         else:
             analysis = default_analysis
         task_dict = copy.deepcopy(collect_task.__dict__)
@@ -164,7 +165,8 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_electrode_test_data": RunCV,  # TODO remove eventually
             "collect_cv_benchmark_data": BenchmarkCV,
 
-            "setup_pot": SetupPotentiostat,
+            "setup_cv": SetupCVPotentiostat,
+            "setup_ca": SetupCAPotentiostat,
             "finish_pot": FinishPotentiostat,
         }
 

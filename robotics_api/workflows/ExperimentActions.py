@@ -44,7 +44,7 @@ class RoboticsBase(FiretaskBase):
 
     def updated_specs(self, **kwargs):
         # When updating specs, check for open potentiostat
-        if self.release_defused and StationStatus().get_all_available("potentiostat"):
+        if self.release_defused and StationStatus().get_all_available("Potentiostat"):
             defuse_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
             [self.lpad.reignite_fw(fw) for fw in defuse_fws]
             print(f"Fireworks {str(defuse_fws)} released from defused state.")
@@ -171,9 +171,11 @@ class CleanElectrode(RoboticsBase):
         return FWAction(update_spec=self.updated_specs())
 
 
-@explicit_serialize
+
+@add_metaclass(abc.ABCMeta)
 class SetupPotentiostat(RoboticsBase):
-    def run_task(self, fw_spec):
+
+    def get_vial(self, fw_spec):
         self.setup_task(fw_spec)
 
         # Pause all other setup fireworks
@@ -196,29 +198,46 @@ class SetupPotentiostat(RoboticsBase):
             self.release_defused = True
 
         # Uncap vial if capped
-        self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
+        self.success += self.collect_vial.uncap(raise_error=CAPPED_ERROR)
+        return collect_vial
 
+    def move_to_elevator(self, pot_type="CVPotentiostat"):
         # Move vial to potentiostat elevator
-        if collect_vial.current_station.type == "potentiostat":
-            potentiostat = collect_vial.current_station.id
+        if pot_type in self.collect_vial.current_station.type:
+            potentiostat = self.collect_vial.current_station.id
             if self.exp_name != PotentiostatStation(potentiostat).current_experiment:
                 return self.self_defuse()
         else:
             # Use the same potentiostat as previous actions in this experiment if applicable
-            if self.metadata.get("potentiostat"):
-                potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
+            if self.metadata.get(pot_type):
+                potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 self.success += potentiostat.wait_till_available()
             else:
-                potentiostat = PotentiostatStation(StationStatus().get_first_available("potentiostat",
-                                                                                       check_experiment=True))
+                potentiostat = PotentiostatStation(StationStatus().get_first_available(pot_type, check_experiment=True))
             # Defuse if potentiostat not available
             if not self.success and potentiostat:
                 return self.self_defuse()
             potentiostat.update_experiment(self.exp_name)
-            self.success += collect_vial.place_station(potentiostat)
+            self.success += self.collect_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
+        return potentiostat
 
-        self.metadata.update({"potentiostat": potentiostat, "collect_vial_id": collect_vial.id})
+
+@explicit_serialize
+class SetupCVPotentiostat(SetupPotentiostat):
+    def run_task(self, fw_spec):
+        collect_vial = self.get_vial(fw_spec)
+        potentiostat = self.move_to_elevator(pot_type="CVPotentiostat")
+        self.metadata.update({"CVPotentiostat": potentiostat, "collect_vial_id": collect_vial.id})
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class SetupCAPotentiostat(SetupPotentiostat):
+    def run_task(self, fw_spec):
+        collect_vial = self.get_vial(fw_spec)
+        potentiostat = self.move_to_elevator(pot_type="CAPotentiostat")
+        self.metadata.update({"CAPotentiostat": potentiostat, "collect_vial_id": collect_vial.id})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -227,7 +246,7 @@ class FinishPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        potentiostat = PotentiostatStation(self.metadata.get("potentiostat"))
+        potentiostat = PotentiostatStation(self.metadata.get("CVPotentiostat"))
         vial_id = self.metadata.get("collect_vial_id") or potentiostat.current_content
 
         if vial_id:
@@ -262,7 +281,7 @@ class BenchmarkCV(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.txt"))
 
         # Run CV experiment
-        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        potent = CVPotentiostatStation(self.metadata.get("CVPotentiostat"))
         potent.initiate_pot()
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
@@ -298,7 +317,7 @@ class RunCV(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.txt"))
 
         # Run CV experiment
-        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        potent = CVPotentiostatStation(self.metadata.get("CVPotentiostat"))
         potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance)
@@ -329,8 +348,8 @@ class RunCA(RoboticsBase):
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.txt"))
 
-        # Run CV experiment
-        potent = PotentiostatStation(self.metadata.get("potentiostat"))
+        # Run CA experiment
+        potent = CAPotentiostatStation(self.metadata.get("CVPotentiostat"))
         potent.initiate_pot()
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]

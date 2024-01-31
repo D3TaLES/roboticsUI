@@ -259,18 +259,21 @@ class BenchmarkCV(RoboticsBase):
         collect_vial_id = self.metadata.get("collect_vial_id")
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.csv"))
+        data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.txt"))
 
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_pot()
-        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate)
-        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "benchmark_iRComp_"))
+        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
+        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
+                                      resistance=resistance)
+        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs(resistance=resistance))
+        self.metadata.update({"resistance": resistance})
+        return FWAction(update_spec=self.updated_specs())
 
 
 @explicit_serialize
@@ -284,7 +287,7 @@ class RunCV(RoboticsBase):
         # ir_comp = fw_spec.get("ir_comp") or self.get("ir_comp", "")
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        resistance = fw_spec.get("resistance") or self.get("resistance", "")
+        resistance = self.metadata.get("resistance", 0)
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -292,13 +295,14 @@ class RunCV(RoboticsBase):
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.csv"))
+        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.txt"))
 
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance)
+        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
@@ -323,12 +327,13 @@ class RunCA(RoboticsBase):
         ca_idx = self.metadata.get("ca_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.csv"))
+        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.txt"))
 
         # Run CV experiment
         potent = PotentiostatStation(self.metadata.get("potentiostat"))
         potent.initiate_pot()
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
+        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"ca_idx": ca_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag_ca,

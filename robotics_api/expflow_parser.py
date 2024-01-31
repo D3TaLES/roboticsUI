@@ -25,7 +25,7 @@ class EF2Experiment(ProcessExpFlowObj):
                          "metadata": self.metadata}
 
     @staticmethod
-    def collect_task(collect_task, tag="setup", default_analysis="cv"):
+    def collect_task(collect_task, tag="setup", default_analysis="pot"):
         if any(kw in collect_task.name for kw in ["_cv_", "_ca_", "electrode"]):
             analysis = "pot"
         elif "_ir_" in collect_task.name:
@@ -85,7 +85,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 task_cluster = []
             elif "collect" not in task.name and "collect" in previous_name:
                 all_tasks.append(task_cluster) if task_cluster else None
-                all_tasks.append([self.collect_task(self.workflow[i + 1], tag="finish")])
+                all_tasks.append([self.collect_task(self.workflow[i - 1], tag="finish")])
                 task_cluster = [task]
             elif "collect" in task.name and "collect" not in previous_name:
                 all_tasks.append(task_cluster) if task_cluster else None

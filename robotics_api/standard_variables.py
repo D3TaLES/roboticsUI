@@ -6,8 +6,8 @@ from pathlib import Path
 # ---------  TESTING OPERATION VARIABLES -------------
 RUN_POTENT = True
 CV_DELAY = 10  # seconds
-STIR = True
-DISPENSE = True
+STIR = False
+DISPENSE = False
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
@@ -42,11 +42,10 @@ SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
 SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
 
 # ---------  POTENTIOSTAT VARIABLES -------------
-POTENTIOSTAT_MODEL = "chi601e"  # kbio
-ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 POTENTIOSTAT_A_ADDRESS = "COM6"
 POTENTIOSTAT_A_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
 # POTENTIOSTAT_B_ADDRESS = "USB1"
+# POTENTIOSTAT_B_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
@@ -64,13 +63,13 @@ I_RANGE = 'I_RANGE_10mA'
 VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
-MAX_WAIT_TIME = 30  # seconds
+MAX_WAIT_TIME = 30  # seconds, time to wait for station to be available
 
-AUTO_VOLT_BUFFER = 0.25  # Volts
+AUTO_VOLT_BUFFER = 0.25  # volts, buffer used in setting voltage range from benchmark peaks
 
 # iR Compensation Variables
-RCOMP_LEVEL = 0.85
-INITIAL_FREQUENCY = 99000
+RCOMP_LEVEL = 0.85  # percentage as decimal of solution resistance to use
+INITIAL_FREQUENCY = 10000
 FINAL_FREQUENCY = 100000
 
 

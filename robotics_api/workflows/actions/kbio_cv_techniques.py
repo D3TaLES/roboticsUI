@@ -20,6 +20,7 @@ except ModuleNotFoundError:
 from robotics_api.standard_variables import *
 
 VERBOSITY = 1
+ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
 
 
 @dataclass
@@ -38,7 +39,8 @@ class voltage_step:
 
 class PotentiostatExperiment:
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=CUT_BEGINNING, cut_end=CUT_END,
-                 run_iR=True, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1, **iR_kwargs):
+                 run_iR=True, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1,
+                 exe_path=ECLIB_DLL_PATH, **iR_kwargs):
         """
         Base class for operating a BioLogic potentiostat.
 
@@ -50,10 +52,11 @@ class PotentiostatExperiment:
         :param run_iR: bool, run iR compensation if True
         :param potentiostat_address: str, potentiostat connection address
         :param potentiostat_channel: int, potentiostat channel  number
+        :param exe_path: str, potentiostat executable path
         :param iR_kwargs:
         """
         self.nb_words = nb_words
-        self.k_api = KBIO_api(ECLIB_DLL_PATH)
+        self.k_api = KBIO_api(exe_path)
         self.id_, self.d_info = self.k_api.Connect(potentiostat_address, time_out)
         self.potent_address = potentiostat_address
         self.potent_channel = potentiostat_channel
@@ -311,7 +314,7 @@ class PotentiostatExperiment:
                 data_record_converted = []
                 for i in data_record:
                     try:
-                        record = KBIO_api(ECLIB_DLL_PATH).ConvertNumericIntoSingle(i)
+                        record = self.k_api.ConvertNumericIntoSingle(i)
                     except:
                         record = i
                     data_record_converted.append(record)

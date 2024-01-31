@@ -114,15 +114,16 @@ class ProcessBase(FiretaskBase):
 
     def plot_cv(self, cv_loc, p_data, title_tag=""):
         # Plot CV
-        image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
-        CVPlotter(connector={"scan_data": "data.scan_data",
-                             "we_surface_area": "data.conditions.working_electrode_surface_area"
-                             }).live_plot(p_data, fig_path=image_path,
-                                          title=f"{title_tag} CV Plot for {self.name}",
-                                          xlabel=MULTI_PLOT_XLABEL,
-                                          ylabel=MULTI_PLOT_YLABEL,
-                                          current_density=PLOT_CURRENT_DENSITY,
-                                          a_to_ma=CONVERT_A_TO_MA)
+        if 'chi' not in POTENTIOSTAT_A_EXE_PATH:
+            image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
+                                 }).live_plot(p_data, fig_path=image_path,
+                                              title=f"{title_tag} CV Plot for {self.name}",
+                                              xlabel=MULTI_PLOT_XLABEL,
+                                              ylabel=MULTI_PLOT_YLABEL,
+                                              current_density=PLOT_CURRENT_DENSITY,
+                                              a_to_ma=CONVERT_A_TO_MA)
 
     def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=ProcessCV):
         # Process data file
@@ -193,8 +194,9 @@ class ProcessCVBenchmarking(ProcessBase):
             warnings.warn(f"WARNING! Error calculating benchmark peaks; DEFAULT VOLTAGE RANGES WILL BE USED.")
             return FWAction(update_spec=self.updated_specs())
 
-        voltage_sequence = "{}, {}, {}V".format(reverse_peak - AUTO_VOLT_BUFFER, forward_peak + AUTO_VOLT_BUFFER,
-                                                reverse_peak - AUTO_VOLT_BUFFER)
+        voltage_sequence = "{:.3f}, {:.3f}, {:.3f}V".format(reverse_peak - AUTO_VOLT_BUFFER,
+                                                            forward_peak + AUTO_VOLT_BUFFER,
+                                                            reverse_peak - AUTO_VOLT_BUFFER)
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
 
         return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))

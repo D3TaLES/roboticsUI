@@ -117,7 +117,7 @@ def example_twist_command(base):
 
 def main():
     # Import the utilities helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
     from argparse import Namespace
 
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")

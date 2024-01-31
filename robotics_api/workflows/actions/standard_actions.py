@@ -386,6 +386,7 @@ class PotentiostatStation(StationStatus):
         self.p_channel = int(self.id.split("_")[-1])
         self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
         self.p_exe_path = eval(f"POTENTIOSTAT_{self.potentiostat}_EXE_PATH")
+        self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
         elevator = self.p_channel
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
@@ -478,7 +479,7 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
-    def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=None,
+    def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
                dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
@@ -497,34 +498,38 @@ class PotentiostatStation(StationStatus):
             time.sleep(CV_DELAY)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE")
-        if "kbio" in POTENTIOSTAT_MODEL:
+        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
+        if "EC" in self.pot_model:
             from kbio_cv_techniques import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=dE,
-                                potentiostat_address=self.p_address, potentiostat_channel=self.p_channel, **kwargs)
+                                potentiostat_address=self.p_address, potentiostat_channel=self.p_channel,
+                                exe_path=self.p_exe_path, **kwargs)
             # Run CV and save data
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
             expt.to_txt(data_path)
-        elif "chi" in POTENTIOSTAT_MODEL:
+        elif "chi" in self.pot_model:
+            if not resistance:
+                warnings.warn("Warning. Resistance is 0 so IR compensation is not in use.")
             import hardpotato as hp
             # Set CV parameters
             out_folder = "/".join(data_path.split("\\")[:-1])
             f_name = data_path.split("\\")[-1].split(".")[0]
-            nSweeps = math.ceil((len(voltage_sequence) - 2) / 2)
-            volts = [unit_conversion(v, default_unit="V") for v in voltage_sequence]
+            volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
+            nSweeps = math.ceil((len(volts) - 2) / 2)
+            print("NSWEEPS: ", nSweeps)
             sr = unit_conversion(scan_rate, default_unit="V/s")
 
             # Install potentiostat and run CV
-            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens,
                                     fileName=f_name, header="CV " + f_name, resistance=resistance*RCOMP_LEVEL)
             cv.run()
             time.sleep(TIME_AFTER_CV)
         else:
-            raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")
+            raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=INITIAL_FREQUENCY, high_freq=FINAL_FREQUENCY,
@@ -548,21 +553,23 @@ class PotentiostatStation(StationStatus):
             return True
         # Benchmark CV for voltage range
         print(f"RUN IR COMP TEST")
-        if "chi" in POTENTIOSTAT_MODEL:
+        if "chi" in self.pot_model:
             import hardpotato as hp
             # Set CV parameters
             out_folder = "/".join(data_path.split("\\")[:-1])
             f_name = data_path.split("\\")[-1].split(".")[0]
 
             # Install potentiostat and run CV
-            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq, high_freq=high_freq, amplitude=amplitude, sens=sens,
                                       fileName=f_name, header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
-            data = ParseChiESI(data_path)
+            data = ParseChiESI(os.path.join(out_folder, f_name+".txt"))
             time.sleep(TIME_AFTER_CV)
+
+            print(data.resistance)
             return data.resistance
 
     def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY,
@@ -585,27 +592,26 @@ class PotentiostatStation(StationStatus):
             return True
         # Benchmark CV for voltage range
         print(f"RUN CA WITH {voltage_sequence} VOLTAGES")
-        if "chi" in POTENTIOSTAT_MODEL:
+        if "chi" in self.pot_model:
             import hardpotato as hp
             # Set CV parameters
             f_name = data_path.split("\\")[-1].split(".")[0]
             out_folder = "/".join(data_path.split("\\")[:-1])
-            volts = [unit_conversion(v, default_unit="V") for v in voltage_sequence]
+            volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
 
             # Install potentiostat and run CA
-            hp.potentiostat.Setup(POTENTIOSTAT_MODEL, self.p_exe_path, out_folder, port=self.p_address)
+            hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             ca = hp.potentiostat.CA(volts[0], max(volts), min(volts), dE, steps, pw, sens, f_name, "CA " + f_name)
             ca.run()
             time.sleep(TIME_AFTER_CV)
         else:
-            raise Exception(f"CV not performed. No procedure for running a CV on {POTENTIOSTAT_MODEL} model.")
+            raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True
 
     @staticmethod
-    def generate_col_params(voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
-        ureg = pint.UnitRegistry()
-
+    def generate_volts(voltage_sequence: str, volt_unit="V"):
         # Get voltages with appropriate units
+        ureg = pint.UnitRegistry()
         voltages = voltage_sequence.split(',')
         voltage_units = ureg(voltages[-1]).units
         for i, v in enumerate(voltages):
@@ -614,10 +620,16 @@ class PotentiostatStation(StationStatus):
             v_unit = ureg(v_unit)
             voltages[i] = v_unit.to(volt_unit).magnitude
 
+        return voltages
+
+    def generate_col_params(self, voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
+        # Get voltages with appropriate units
+        voltages = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit=volt_unit)
+
         # Get scan rate with appropriate units
+        ureg = pint.UnitRegistry()
         scan_rate = ureg(scan_rate).to(scan_unit).magnitude
-        collection_params = [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
-        return collection_params
+        return [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
 
 
 def check_usb():
@@ -661,9 +673,9 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
     test_potent = PotentiostatStation("potentiostat_A_01")
-
     d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "examples", "PotentiostatStation_Test.csv")
-    test_potent.run_cv(d_path, voltage_sequence=[0, 1, 0], scan_rate=0.1)
+
+    # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # reset_test_db()
     # reset_stations(end_home=False)
@@ -672,7 +684,7 @@ if __name__ == "__main__":
     # test_vial.place_home()
 
     # test_potent.move_elevator(endpoint="up")
-    # test_potent.move_elevator(endpoint="down")
+    test_potent.move_elevator(endpoint="down")
 
     # flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
     # check_usb()

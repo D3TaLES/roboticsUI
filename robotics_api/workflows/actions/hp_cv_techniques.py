@@ -7,7 +7,8 @@ from d3tales_api.Processors.parser_cv import *
 out_folder = os.path.join(D3TALES_DIR, "workflows", "actions", "examples")
 
 # Initialization:
-hp.potentiostat.Setup(POTENTIOSTAT_MODEL, POTENTIOSTAT_A_EXE_PATH, out_folder, port=POTENTIOSTAT_A_ADDRESS)
+pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
+hp.potentiostat.Setup(pot_model, POTENTIOSTAT_A_EXE_PATH, out_folder, port=POTENTIOSTAT_A_ADDRESS)
 
 
 def cv_ex():
@@ -29,7 +30,7 @@ def cv_ex():
     cv.run()
 
     # Load recently acquired data
-    data = hp.load_data.CV(fileName + '.txt', out_folder, POTENTIOSTAT_MODEL)
+    data = hp.load_data.CV(fileName + '.txt', out_folder, pot_model)
     i = data.i
     E = data.E
 
@@ -63,7 +64,7 @@ def ca_ex():
 def ircomp_ex():
     # Experimental parameters:
     Eini = 0  # V, initial potential
-    low_freq = 99999  # Hz, low frequency
+    low_freq = 10000  # Hz, low frequency
     high_freq = 100000  # Hz, high frequency
     amplitude = 0.01  # V, ac amplitude (half peak-to-peak)
     sens = 1e-5  # A/V, current sensitivity
@@ -74,7 +75,7 @@ def ircomp_ex():
     eis.run()
 
     # Load recently acquired data
-    # data = hp.load_data.EIS(fileName + '.txt', out_folder, POTENTIOSTAT_MODEL)
+    # data = hp.load_data.EIS(fileName + '.txt', out_folder, pot_model)
     # print(data.phase)
     data = ParseChiESI(os.path.join(out_folder, fileName+".txt"))
     print(data.resistance)
@@ -82,5 +83,5 @@ def ircomp_ex():
 
 if __name__ == "__main__":
     # cv_ex()
-    ca_ex()
-    # ircomp_ex()
+    # ca_ex()
+    ircomp_ex()

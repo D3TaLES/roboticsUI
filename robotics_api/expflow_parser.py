@@ -1,8 +1,4 @@
-from fireworks import Firework
-from itertools import groupby
-from monty.serialization import loadfn
 from d3tales_api.Processors.expflow_parser import *
-from robotics_api.workflows.Processing import *
 from robotics_api.workflows.Robotics_FW import *
 from robotics_api.workflows.ExperimentActions import *
 
@@ -67,6 +63,44 @@ class EF2Experiment(ProcessExpFlowObj):
         if "collect" in self.workflow[0].name:
             task_cluster = [self.collect_task(self.workflow[0], tag="setup")]
         for i, task in enumerate(self.workflow):
+            # Get previous task name
+            previous_name = self.workflow[:i][-1].name if self.workflow[:i] else ""
+            # Get next non-processing name
+            next_tasks = [t for t in self.workflow[i+1:] if "process" not in t.name]
+            next_name = next_tasks[0].name if next_tasks else ""
+
+            # Set up task clusters based on task types
+            if "process" in task.name:
+                # Make new Fireworks with only one Firetask for processing jobs
+                all_tasks.append(task_cluster) if task_cluster else None
+                all_tasks.append([task])
+                task_cluster = []
+            elif "collect" in task.name and "collect" not in previous_name:
+                # Make new Firework for collect jobs
+                all_tasks.append(task_cluster) if task_cluster else None
+                task_cluster = self.check_multi_task(task)
+            else:
+                # Extend current task cluster if not a special case
+                task_cluster.extend(self.check_multi_task(task))
+
+            # Create setup Firetasks if about to start collect jobs
+            if "collect" not in task.name and "collect" in next_name:
+                task_cluster.append(self.collect_task(next_tasks[0], tag="setup"))
+            # Create finish Firetasks if at end of measurements
+            if "collect" in task.name and "collect" not in next_name:
+                all_tasks.append(task_cluster) if task_cluster else None
+                task_cluster = [self.collect_task(task, tag="finish")]
+
+        all_tasks.append(task_cluster) if task_cluster else None
+        [print(f"FW {i + 1}:\t", [c.name for c in clus]) for i, clus in enumerate(all_tasks)]
+        return all_tasks
+
+    @property
+    def old_task_clusters(self):
+        all_tasks, task_cluster = [], []
+        if "collect" in self.workflow[0].name:
+            task_cluster = [self.collect_task(self.workflow[0], tag="setup")]
+        for i, task in enumerate(self.workflow):
             # Get previous and next non-processing name
             next_name = self.workflow[i + 1].name if i + 1 < len(self.workflow) else ""
             count = 2
@@ -103,7 +137,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 task_cluster = [self.collect_task(self.workflow[i + 1], tag="finish")]
 
         all_tasks.append(task_cluster) if task_cluster else None
-        print([[t.name for t in c] for c in all_tasks])
+        [print(f"FW {i + 1}:\t", [c.name for c in clus]) for i, clus in enumerate(all_tasks)]
         return all_tasks
 
     @property
@@ -159,21 +193,24 @@ class EF2Experiment(ProcessExpFlowObj):
             "clean_electrode": CleanElectrode,
             "collect_cv_data": RunCV,
             "collect_ca_data": RunCA,
-            "process_cv_data": PotProcessor,
-            "process_cv_benchmarking": ProcessCVBenchmarking,
-            "collect_electrode_test": RunCV,  # TODO remove eventually
-            "collect_electrode_test_data": RunCV,  # TODO remove eventually
+            "process_data": DataProcessor,
             "collect_cv_benchmark_data": BenchmarkCV,
+            "process_cv_benchmarking": ProcessCVBenchmarking,
 
             "setup_cv": SetupCVPotentiostat,
             "setup_ca": SetupCAPotentiostat,
-            "finish_pot": FinishPotentiostat,
+            "finish_cv": FinishPotentiostat,
+            "finish_ca": FinishPotentiostat,
+
+            "process_cv_data": DataProcessor,  # TODO Deprecated. Remove eventually
+            "collect_electrode_test": RunCV,  # TODO Deprecated. Remove eventually
+            "collect_electrode_test_data": RunCV,  # TODO Deprecated. Remove eventually
         }
 
 
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'ConcStudy_5C_TEMPO_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCVCATest_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
-    print(experiment.fireworks)
+    tc = experiment.task_clusters

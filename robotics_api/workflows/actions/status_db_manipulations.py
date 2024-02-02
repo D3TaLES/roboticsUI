@@ -293,7 +293,7 @@ def reset_reagent_db(reagents_list, current_wflow_name=""):
 def reset_station_db(current_wflow_name=""):
     StationStatus().coll.delete_many({})
     for station in STATIONS:
-        state = "down" if "Potentiostat" in station else ""
+        state = "down" if "potentiostat" in station else ""
         StationStatus(instance={
             "_id": station,
             "current_wflow_name": current_wflow_name,

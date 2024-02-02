@@ -4,8 +4,8 @@ from pathlib import Path
 
 
 # ---------  TESTING OPERATION VARIABLES -------------
-RUN_POTENT = True
-CV_DELAY = 10  # seconds
+RUN_POTENT = False
+CV_DELAY = 2  # seconds
 STIR = False
 DISPENSE = False
 
@@ -30,7 +30,7 @@ TEMPERATURE_UNIT = "K"
 
 # ---------  ROBOT VARIABLES -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 60
+VIAL_GRIP_TARGET = 70
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 
@@ -44,8 +44,8 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 # ---------  POTENTIOSTAT VARIABLES -------------
 POTENTIOSTAT_A_ADDRESS = "COM6"
 POTENTIOSTAT_A_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
-# POTENTIOSTAT_B_ADDRESS = "USB1"
-# POTENTIOSTAT_B_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
+POTENTIOSTAT_B_ADDRESS = "COM4"
+POTENTIOSTAT_B_EXE_PATH = r"C:\CH_Instruments\CHI620e\chi620e.exe"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
@@ -88,7 +88,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
 DISPENSE_STATIONS = ["solvent_01"]
-MEASUREMENT_STATIONS = ["CVPotentiostat_A_01", "CAPotentiostat_B_01"]
+MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
@@ -98,7 +98,7 @@ VIALS = [
     "C_01", "C_02", "C_03", "C_04",
 ]
 SOLVENT_VIALS = {"solvent_01": "S_01"}
-
+ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
 # ---------  FIREWORKS VARIABLES -------------
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))

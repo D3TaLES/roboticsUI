@@ -66,6 +66,7 @@ class ProcessBase(FiretaskBase):
     collect_tag: str
     lpad: LaunchPad
     data_path: str
+    processed_locs: list
 
     def setup_task(self, fw_spec, data_len_error=True):
         self.metadata = fw_spec.get("metadata", {})
@@ -81,7 +82,7 @@ class ProcessBase(FiretaskBase):
         self.lpad = LaunchPad().from_file(LAUNCHPAD)
 
         if not self.collection_data and data_len_error:
-            warnings.warn("WARNING! No CV locations were found, so no file processing occurred.")
+            warnings.warn("WARNING! No data locations were found, so no file processing occurred.")
             return FWAction(update_spec=self.updated_specs())
 
         if self.collection_data:
@@ -131,6 +132,9 @@ class ProcessBase(FiretaskBase):
         if not os.path.isfile(file_loc):
             warnings.warn("WARNING. File {} not found. Processing did not occur.".format(file_loc))
             return None
+        if file_loc in self.processed_locs:
+            warnings.warn("WARNING. File {} already processed. Further processing did not occur.".format(file_loc))
+            return None
         file_type = file_loc.split('.')[-1]
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
         p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
@@ -143,6 +147,7 @@ class ProcessBase(FiretaskBase):
         if self.mol_id and insert:
             D3Database(database="robotics", collection_name="experimentation",
                        instance=p_data, validate_schema=False).insert(_id)
+        self.processed_locs.append(file_loc)
         return p_data
 
     def process_solv_data(self):
@@ -204,7 +209,7 @@ class ProcessCVBenchmarking(ProcessBase):
 
 # noinspection PyTypeChecker
 @explicit_serialize
-class PotProcessor(ProcessBase):
+class DataProcessor(ProcessBase):
     # FireTask for processing CV file
 
     def run_task(self, fw_spec):
@@ -257,7 +262,8 @@ class PotProcessor(ProcessBase):
             fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
 
         self.processing_data.update({'processed_data': processed_data, "metadata_id": metadata_id,
-                                     'processing_ids': [d.get("_id") for d in processed_data]})
+                                     'processing_ids': [d.get("_id") for d in processed_data],
+                                     'processed_locs': self.processed_locs})
         return FWAction(update_spec=self.updated_specs())
 
 

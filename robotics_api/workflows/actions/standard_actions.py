@@ -152,7 +152,7 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error, **move_kwargs)
-            elif "Potentiostat" in self.current_location:
+            elif "potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
@@ -378,19 +378,19 @@ class StirHeatStation(StationStatus):
 class PotentiostatStation(StationStatus):
     def __init__(self, _id, raise_amount=0.028, **kwargs):
         super().__init__(_id=_id, **kwargs)
+        self.current_experiment = self.get_prop("current_experiment") or None
         if not self.id:
             raise Exception("To operate a potentiostat, a potentiostat name must be provided.")
-        if "Potentiostat" not in self.id:
+        if "potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
-        self.potentiostat = self.id.split("_")[-2]
-        self.p_channel = int(self.id.split("_")[-1])
-        self.p_address = eval(f"POTENTIOSTAT_{self.potentiostat}_ADDRESS")
-        self.p_exe_path = eval(f"POTENTIOSTAT_{self.potentiostat}_EXE_PATH")
+        self.method, _, self.pot, self.p_channel = self.id.split("_")
+        self.p_address = eval(f"POTENTIOSTAT_{self.pot}_ADDRESS")
+        self.p_exe_path = eval(f"POTENTIOSTAT_{self.pot}_EXE_PATH")
         self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
-        elevator = self.p_channel
+
+        elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
         self.arduino_name = f"E_{elevator:1d}"
         self.raise_amount = raise_amount
-        self.current_experiment = self.get_prop("current_experiment") or None
 
     def update_experiment(self, experiment: str or None):
         """
@@ -522,7 +522,7 @@ class CVPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
+            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {CV_DELAY} second CV_DELAY.")
             time.sleep(CV_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -532,7 +532,7 @@ class CVPotentiostatStation(PotentiostatStation):
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=dE,
-                                potentiostat_address=self.p_address, potentiostat_channel=self.p_channel,
+                                potentiostat_address=self.p_address, potentiostat_channel=int(self.p_channel),
                                 exe_path=self.p_exe_path, **kwargs)
             # Run CV and save data
             expt.run_experiment()
@@ -575,7 +575,7 @@ class CVPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         if not RUN_POTENT:
-            print(f"iR Comp Test is NOT running because RUN_CV is set to False. "
+            print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
                   f"Observing the {CV_DELAY} second CV_DELAY.")
             time.sleep(CV_DELAY)
             return True
@@ -620,7 +620,7 @@ class CAPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_CV is set to False. Observing the {CV_DELAY} second CV_DELAY.")
+            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {CV_DELAY} second CV_DELAY.")
             time.sleep(CV_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -682,7 +682,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("potentiostat_A_01")
+    test_potent = PotentiostatStation("cv_potentiostat_A_01")
     d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "examples", "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)

@@ -11,13 +11,13 @@ pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
 hp.potentiostat.Setup(pot_model, POTENTIOSTAT_A_EXE_PATH, out_folder, port=POTENTIOSTAT_A_ADDRESS)
 
 
-def cv_ex():
+def cv_ex(resistance=0):
     # Experimental parameters:
     Eini = 0  # V, initial potential
     Ev1 = 0  # V, first vertex potential
-    Ev2 = 1  # V, second vertex potential
+    Ev2 = 0.8  # V, second vertex potential
     Efin = 0  # V, final potential
-    sr = 0.1  # V/s, scan rate
+    sr = 0.01  # V/s, scan rate
     dE = 0.001  # V, potential increment
     nSweeps = 1  # number of sweeps
     sens = 1e-5  # A/V, current sensitivity
@@ -25,7 +25,7 @@ def cv_ex():
     header = 'CV'  # header for data file
 
     # Initialize experiment:
-    cv = hp.potentiostat.CV(Eini, Ev1, Ev2, Efin, sr, dE, nSweeps, sens, fileName, header, resistance=10)
+    cv = hp.potentiostat.CV(Eini, Ev1, Ev2, Efin, sr, dE, nSweeps, sens, fileName, header, resistance=resistance)
     # Run experiment:
     cv.run()
 
@@ -74,14 +74,12 @@ def ircomp_ex():
     eis = hp.potentiostat.EIS(Eini, low_freq, high_freq, amplitude, sens, fileName, header)
     eis.run()
 
-    # Load recently acquired data
-    # data = hp.load_data.EIS(fileName + '.txt', out_folder, pot_model)
-    # print(data.phase)
     data = ParseChiESI(os.path.join(out_folder, fileName+".txt"))
-    print(data.resistance)
+    return data.resistance
 
 
 if __name__ == "__main__":
-    cv_ex()
+    resist = ircomp_ex()
+    print(resist)
+    cv_ex(resistance=resist)
     # ca_ex()
-    # ircomp_ex()

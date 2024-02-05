@@ -210,7 +210,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCVCATest_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'Micro_BasicCACVTest_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
     tc = experiment.task_clusters

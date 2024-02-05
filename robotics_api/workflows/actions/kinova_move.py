@@ -1,6 +1,7 @@
 import sys
 import json
 import time
+import warnings
 import threading
 from argparse import Namespace
 
@@ -187,6 +188,10 @@ def snapshot_move(snapshot_file=None, target_position=None):
     :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
     :return: bool, True if movement was a success
     """
+    if not RUN_ROBOT:
+        warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
+        return True
+
     # Import the utilities' helper module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     finished = True

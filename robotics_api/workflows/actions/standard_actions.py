@@ -351,10 +351,10 @@ class StirHeatStation(StationStatus):
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
             success = False
             success += self.heat(temperature, heat_cmd="on")
-            success += send_arduino_cmd(self.arduino_name, 1)
+            success += send_arduino_cmd(self.arduino_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             time.sleep(seconds)
-            success += send_arduino_cmd(self.arduino_name, 0)
+            success += send_arduino_cmd(self.arduino_name, 0) if STIR else True
             success += self.heat(temperature, heat_cmd="off")
             return success
 
@@ -467,6 +467,10 @@ class PotentiostatStation(StationStatus):
 
         Returns: bool, True if elevator action was a success
         """
+        if not MOVE_ELEVATORS:
+            warnings.warn("Elevators NOT moving because MOVE_ELEVATORS is False")
+            return True
+
         endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
         endpoint = 1 if endpoint == "up" or str(endpoint) == "1" else endpoint
         if endpoint not in [0, 1]:

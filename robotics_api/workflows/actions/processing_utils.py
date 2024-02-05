@@ -4231,6 +4231,7 @@ if __name__ == "__main__":
                           [-0.08481, 4.081e-07], [-0.07468, 5.48e-07], [-0.06431, 7.436e-07], [-0.05419, 1.022e-06],
                           [-0.0441, 1.415e-06], [-0.03395, 1.995e-06], [-0.02362, 2.824e-06], [-0.01351, 4.015e-06]]]}}]
     # print(print_cv_analysis(test_data))
-    meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE, "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA}
+    meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
+                 "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA, "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS}
     cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
     processing_test(cv_dir, metadata=meta_data)

@@ -114,8 +114,9 @@ class RecordWorkingElectrodeArea(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         # working_electrode_area = self.get("size", DEFAULT_WORKING_ELECTRODE_AREA)
-        working_electrode_area = DEFAULT_WORKING_ELECTRODE_AREA
-        self.metadata.update({"working_electrode_surface_area": working_electrode_area})
+        # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
+        self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
+                              "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -220,7 +221,8 @@ class SetupPotentiostat(RoboticsBase):
             potentiostat.update_experiment(self.exp_name)
             self.success += collect_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
-        self.metadata.update({"cv_potentiostat": potentiostat, "collect_vial_id": collect_vial.id})
+        self.metadata.update({f"{self.method}_potentiostat": potentiostat, "collect_vial_id": collect_vial.id,
+                              "active_method": self.method})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -239,7 +241,8 @@ class FinishPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        potentiostat = PotentiostatStation(self.metadata.get("cv_potentiostat"))
+        method = self.metadata.get("active_method")
+        potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
         vial_id = self.metadata.get("collect_vial_id") or potentiostat.current_content
 
         if vial_id:
@@ -342,7 +345,7 @@ class RunCA(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.txt"))
 
         # Run CA experiment
-        potent = CAPotentiostatStation(self.metadata.get("cv_potentiostat"))
+        potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot()
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]

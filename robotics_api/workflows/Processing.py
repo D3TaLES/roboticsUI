@@ -28,10 +28,11 @@ class InitializeRobot(FiretaskBase):
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
         # Create connection to the device and get the router
-        connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-        with DeviceConnection.createTcpConnection(connector) as router:
-            BaseClient(router)
-            BaseCyclicClient(router)
+        if RUN_ROBOT:
+            connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+            with DeviceConnection.createTcpConnection(connector) as router:
+                BaseClient(router)
+                BaseCyclicClient(router)
 
         return FWAction(update_spec={"success": True})
 
@@ -72,6 +73,7 @@ class ProcessBase(FiretaskBase):
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data") or {}
         self.processing_data = fw_spec.get("processing_data") or {}
+        self.processed_locs = self.processing_data.get("processed_locs") or []
         self.mol_id = fw_spec.get("mol_id") or self.get("mol_id")
         self.name = fw_spec.get("full_name") or self.get("full_name")
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
@@ -126,7 +128,7 @@ class ProcessBase(FiretaskBase):
                                               current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
 
-    def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=ProcessCV):
+    def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=None):
         # Process data file
         print("Data File: ", file_loc)
         if not os.path.isfile(file_loc):
@@ -137,6 +139,7 @@ class ProcessBase(FiretaskBase):
             return None
         file_type = file_loc.split('.')[-1]
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
+        parsing_class = parsing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
         p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
                                metadata=metadata).data_dict
 
@@ -189,11 +192,15 @@ class ProcessCVBenchmarking(ProcessBase):
         self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
 
         # Calculate new voltage sequence
-        descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
-        peaks_dict = descriptor_cal.peaks(p_data)
         try:
-            forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
-            reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
+            if MICRO_ELECTRODES:
+                e_half = p_data.get("data", {}).get("e_half")[0]
+                forward_peak, reverse_peak = e_half + ADD_MICRO_BUFFER, e_half - ADD_MICRO_BUFFER
+            else:
+                descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
+                peaks_dict = descriptor_cal.peaks(p_data)
+                forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
+                reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
         except Exception as e:
             print(e)
             warnings.warn(f"WARNING! Error calculating benchmark peaks; DEFAULT VOLTAGE RANGES WILL BE USED.")
@@ -218,16 +225,40 @@ class DataProcessor(ProcessBase):
 
         cv_data = self.coll_dict.get(self.collect_tag, [])
         ca_data = self.coll_dict.get(self.collect_tag.replace("cv", "ca"), [])
+        metadata_dict = {}
 
         # Process CV data for cycle
-        processed_data = []
+        processed_cv_data = []
         for d in cv_data:
             m_data = self.metadata
             m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
             self.plot_cv(d.get("data_location"), p_data)
             if p_data:
-                processed_data.append(p_data)
+                processed_cv_data.append(p_data)
+
+        # CV Meta Calcs and Data Recording
+        if processed_cv_data:
+            # Plot all CVs
+            multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "variable_prop": "data.conditions.scan_rate.value",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
+                processed_cv_data, fig_path=multi_path, title=f"Multi CV Plot for {self.mol_id}",
+                xlabel=MULTI_PLOT_XLABEL,
+                ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
+                a_to_ma=CONVERT_A_TO_MA)
+
+            # CV Meta Properties
+            print("Calculating metadata...")
+            metadata_dict.update(CV2Front(backend_data=processed_cv_data, run_anodic=RUN_ANODIC, insert=False,
+                                          micro_electrodes=MICRO_ELECTRODES).meta_dict)
+
+            # Record all data
+            with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
+                fn.write(json.dumps(processed_cv_data))
+            with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:
+                fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
         processed_ca_data = []
@@ -238,31 +269,15 @@ class DataProcessor(ProcessBase):
             if p_data:
                 processed_ca_data.append(p_data)
 
-        # Plot all CVs
-        multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
-        CVPlotter(connector={"scan_data": "data.scan_data",
-                             "variable_prop": "data.conditions.scan_rate.value",
-                             "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
-            processed_data, fig_path=multi_path, title=f"Multi CV Plot for {self.mol_id}", xlabel=MULTI_PLOT_XLABEL,
-            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
-            a_to_ma=CONVERT_A_TO_MA)
+        if processed_ca_data:
+            metadata_dict.update({})
+            # TODO Add conductivity meta calcs and record data
 
-        # Meta Properties
-        print("Calculating metadata...")
-        metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
         metadata_id = str(uuid.uuid4())
         D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
                    validate_schema=False).insert(metadata_id)
-
-        # Record all data
-        # TODO Add conductivity
-        with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
-            fn.write(json.dumps(processed_data))
-        with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:
-            fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
-
-        self.processing_data.update({'processed_data': processed_data, "metadata_id": metadata_id,
-                                     'processing_ids': [d.get("_id") for d in processed_data],
+        self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
+                                     'processing_ids': [d.get("_id") for d in processed_cv_data],
                                      'processed_locs': self.processed_locs})
         return FWAction(update_spec=self.updated_specs())
 

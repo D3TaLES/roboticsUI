@@ -8,6 +8,8 @@ RUN_POTENT = False
 CV_DELAY = 2  # seconds
 STIR = False
 DISPENSE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
@@ -20,8 +22,9 @@ DIRTY_ELECTRODE_CURRENT = 0.00001  # max current allowed (A) for a clean electro
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_CONCENTRATION = "0.01M"
-DEFAULT_WORKING_ELECTRODE_RADIUS = 1  # radius assumed in mm
+DEFAULT_WORKING_ELECTRODE_RADIUS = 0.01  # radius assumed in mm
 DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2)) * 0.01  # area given in cm^2
+MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False  # TODO confirm condition
 
 TIME_UNIT = "s"
 MASS_UNIT = "mg"
@@ -66,6 +69,7 @@ TIME_AFTER_CV = 5  # seconds
 MAX_WAIT_TIME = 30  # seconds, time to wait for station to be available
 
 AUTO_VOLT_BUFFER = 0.25  # volts, buffer used in setting voltage range from benchmark peaks
+ADD_MICRO_BUFFER = 0.15  # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
 
 # iR Compensation Variables
 RCOMP_LEVEL = 0.85  # percentage as decimal of solution resistance to use

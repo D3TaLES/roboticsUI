@@ -166,8 +166,9 @@ class VialMove(VialStatus):
             success += snapshot_move(SNAPSHOT_HOME)
             self.update_position("robot_grip")
         else:
-            warnings.warn(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot currently "
-                          f"contains {StationStatus('robot_grip').current_content}.")
+            if raise_error:
+                raise Exception(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot "
+                                f"currently contains {StationStatus('robot_grip').current_content}.")
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully retrieved. Vial {self.id} is located "
                             f"at {self.current_location}. ")
@@ -526,8 +527,8 @@ class CVPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {CV_DELAY} second CV_DELAY.")
-            time.sleep(CV_DELAY)
+            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
@@ -580,8 +581,8 @@ class CVPotentiostatStation(PotentiostatStation):
         """
         if not RUN_POTENT:
             print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
-                  f"Observing the {CV_DELAY} second CV_DELAY.")
-            time.sleep(CV_DELAY)
+                  f"Observing the {POT_DELAY} second CV_DELAY.")
+            time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
         print(f"RUN IR COMP TEST")
@@ -624,8 +625,8 @@ class CAPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {CV_DELAY} second CV_DELAY.")
-            time.sleep(CV_DELAY)
+            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
         print(f"RUN CA WITH {voltage_sequence} VOLTAGES")
@@ -665,8 +666,8 @@ def vial_col_test(col):
 
 def reset_stations(end_home=False):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    PotentiostatStation("potentiostat_A_01").move_elevator(endpoint="down")
-    PotentiostatStation("potentiostat_A_02").move_elevator(endpoint="down")
+    PotentiostatStation("cv_potentiostat_A_01").move_elevator(endpoint="down")
+    PotentiostatStation("ca_potentiostat_B_01").move_elevator(endpoint="down")
     if end_home:
         snapshot_move(target_position=10)
         snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
@@ -692,13 +693,14 @@ if __name__ == "__main__":
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # reset_test_db()
-    # reset_stations(end_home=False)
+    reset_stations(end_home=False)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
     # test_potent.move_elevator(endpoint="up")
-    test_potent.move_elevator(endpoint="down")
+    # test_potent.move_elevator(endpoint="down")
 
     # flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
     # check_usb()
+    # snapshot_move(SNAPSHOT_END_HOME)

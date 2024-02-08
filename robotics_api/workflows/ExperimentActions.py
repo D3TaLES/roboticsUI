@@ -1,5 +1,7 @@
 # Copyright 2022, University of Kentucky
 import abc
+import warnings
+
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -10,7 +12,6 @@ from robotics_api.workflows.actions.status_db_manipulations import *
 @add_metaclass(abc.ABCMeta)
 class RoboticsBase(FiretaskBase):
     wflow_name: str
-    fw_id: int
     exp_name: str
     full_name: str
     release_defused: bool
@@ -25,7 +26,6 @@ class RoboticsBase(FiretaskBase):
 
     def setup_task(self, fw_spec):
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
-        self.fw_id = fw_spec.get("fw_id", self.get("fw_id"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
         self.release_defused = fw_spec.get("release_defused", self.get("release_defused", False))
@@ -64,8 +64,8 @@ class RoboticsBase(FiretaskBase):
 
     def self_defuse(self):
         self.updated_specs()
-        self.lpad.defuse_fw(self.fw_id)
-        print(f"Self defusing firework {self.fw_id}")
+        raise Exception(f"Self defusing Firetask {self._fw_name}")
+        # self.lpad.defuse_fw(self.fw_id)
 
 
 @explicit_serialize
@@ -172,7 +172,6 @@ class CleanElectrode(RoboticsBase):
         return FWAction(update_spec=self.updated_specs())
 
 
-
 @add_metaclass(abc.ABCMeta)
 class SetupPotentiostat(RoboticsBase):
     method: str
@@ -180,10 +179,10 @@ class SetupPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        # Pause all other setup fireworks
-        setup_fws = self.lpad.fireworks.find({"state": {"$in": ["READY", "WAITING"]},
-                                              "name": {"$regex": "_setup_"}}).distinct("fw_id")
-        [self.lpad.defuse_fw(fw) for fw in setup_fws]
+        # # Pause all other setup fireworks
+        # setup_fws = self.lpad.fireworks.find({"state": {"$in": ["READY", "WAITING"]},
+        #                                       "name": {"$regex": f"_setup_{self.method}"}}).distinct("fw_id")
+        # [self.lpad.defuse_fw(fw) for fw in setup_fws]
 
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
@@ -214,9 +213,13 @@ class SetupPotentiostat(RoboticsBase):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 self.success += potentiostat.wait_till_available()
             else:
-                potentiostat = PotentiostatStation(StationStatus().get_first_available(pot_type, check_experiment=True))
-            # Defuse if potentiostat not available
-            if not self.success and potentiostat:
+                available_pot = StationStatus().get_first_available(pot_type, exp_name=self.exp_name)
+                potentiostat = PotentiostatStation(available_pot) if available_pot else None
+            # If potentiostat not available, return current vial home and defuse.
+            if not (self.success and potentiostat):
+                warnings.warn(f"Station {potentiostat} not available. Moving vial {collect_vial} back home.")
+                collect_vial.place_home()
+                self.updated_specs()
                 return self.self_defuse()
             potentiostat.update_experiment(self.exp_name)
             self.success += collect_vial.place_station(potentiostat)

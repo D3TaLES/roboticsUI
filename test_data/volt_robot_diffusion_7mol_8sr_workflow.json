@@ -140,7 +140,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -486,7 +486,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -832,7 +832,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -1178,7 +1178,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -1524,7 +1524,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -1870,7 +1870,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -2216,7 +2216,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",
@@ -2562,7 +2562,7 @@
                 {
                     "sequence": "4",
                     "description": "measure surface area of working electrode",
-                    "name": "measure_working_electrode_area",
+                    "name": "process_working_electrode_area",
                     "start_uuid": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
                     "start_position": "Polycrystalline platinum electrode",
                     "start_type": "electrode_working",

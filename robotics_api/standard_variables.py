@@ -8,8 +8,8 @@ RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
@@ -66,7 +66,7 @@ I_RANGE = 'I_RANGE_10mA'
 VS_INITIAL = False
 TIME_OUT = 10  # seconds
 TIME_AFTER_CV = 5  # seconds
-MAX_WAIT_TIME = 10  # seconds, time to wait for station to be available
+MAX_WAIT_TIME = 4  # seconds, time to wait for station to be available
 
 AUTO_VOLT_BUFFER = 0.25  # volts, buffer used in setting voltage range from benchmark peaks
 ADD_MICRO_BUFFER = 0.15  # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes

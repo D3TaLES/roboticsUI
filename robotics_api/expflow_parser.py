@@ -20,6 +20,11 @@ class EF2Experiment(ProcessExpFlowObj):
                          "mol_id": self.molecule_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
                          "metadata": self.metadata}
 
+        # Check for multi tasks
+        self.workflow = []
+        [self.workflow.extend(self.check_multi_task(t)) for t in self.expflow_obj.workflow]
+
+
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):
         if any(kw in collect_task.name for kw in ["_cv_", "electrode"]):
@@ -59,7 +64,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @property
     def task_clusters(self):
-        all_tasks, task_cluster = [], []
+        all_tasks, task_cluster, active_method = [], [], None
         if "collect" in self.workflow[0].name:
             task_cluster = [self.collect_task(self.workflow[0], tag="setup")]
         for i, task in enumerate(self.workflow):
@@ -69,6 +74,7 @@ class EF2Experiment(ProcessExpFlowObj):
             # Get next non-processing name
             next_nonP_tasks = [t for t in self.workflow[i+1:] if "process" not in t.name]
             next_nonP_name = next_nonP_tasks[0].name if next_nonP_tasks else ""
+            next_nonP_start = next_nonP_tasks[0].start_type if next_nonP_tasks else ""
 
             # Set up task clusters based on task types
             if "process" in task.name:
@@ -80,20 +86,27 @@ class EF2Experiment(ProcessExpFlowObj):
             elif "collect" in task.name and "collect" not in previous_name:
                 # Make new Firework for collect jobs
                 all_tasks.append(task_cluster) if task_cluster else None
-                task_cluster = self.check_multi_task(task)
+                task_cluster = [task]
             else:
                 # Extend current task cluster if not a special case
-                task_cluster.extend(self.check_multi_task(task))
+                task_cluster.append(task)
 
             # Create setup Firetasks if about to start collect jobs
-            if "collect" not in task.name and "collect" in next_nonP_name:
+            method = next_nonP_name.split("_")[1] if "collect" in next_nonP_name else None
+            print(task.name)
+            print(task.start_type)
+            print("---", active_method)
+            if method != active_method and "collect" in next_nonP_name:
                 setup_task = self.collect_task(next_nonP_tasks[0], tag="setup")
                 all_tasks.extend([task_cluster, [setup_task]]) if task_cluster else all_tasks.append([setup_task])
                 task_cluster = []
+            # TODO figure out a better way to separate test CV runs
+            active_method = method if next_nonP_start != "solvent" else None
             # Create finish Firetasks if at end of measurements
             if "collect" in task.name and "collect" not in next_nonP_name:
                 all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = [self.collect_task(task, tag="finish")]
+                active_method = None
 
         all_tasks.append(task_cluster) if task_cluster else None
         [print(f"FW {i + 1}:\t", [c.name for c in clus]) for i, clus in enumerate(all_tasks)]
@@ -170,7 +183,8 @@ class EF2Experiment(ProcessExpFlowObj):
 
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCACVTest_workflow.json')
+    # expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCACVTest_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'TEST_ConcStudy_Cond1Cond3_5C_MACRO_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
     tc = experiment.task_clusters

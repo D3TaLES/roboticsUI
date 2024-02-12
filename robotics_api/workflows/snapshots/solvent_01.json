@@ -4,12 +4,12 @@
       {
         "reachPose":{
           "targetPose":{
-            "x":0.45505109429359436,
-            "y":0.00631638802587986,
-            "z":0.25,
+            "x":0.312,
+            "y":-0.42,
+            "z":0.23,
             "thetaX":90,
             "thetaY":0,
-            "thetaZ":90},
+            "thetaZ":44},
           "constraint":{
             "speed":{
               "translation":0,
@@ -23,7 +23,7 @@
           "permission":7,
           "actionType":6
         },
-        "name":"Home"
+        "name":"solvent_01"
       }
     ]
   }

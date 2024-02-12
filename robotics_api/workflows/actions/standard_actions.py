@@ -133,6 +133,10 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
         time.sleep(1)
 
 
+def write_test(file_path, test_text="test"):
+    with open(file_path, 'w+') as fn:
+        fn.write(test_text)
+
 class VialMove(VialStatus):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -528,6 +532,7 @@ class CVPotentiostatStation(PotentiostatStation):
         """
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            write_test(data_path, test_text="test CV")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -582,6 +587,7 @@ class CVPotentiostatStation(PotentiostatStation):
         if not RUN_POTENT:
             print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
                   f"Observing the {POT_DELAY} second CV_DELAY.")
+            write_test(data_path, test_text="test iRComp")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -626,6 +632,7 @@ class CAPotentiostatStation(PotentiostatStation):
         """
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            write_test(data_path, test_text="test CA")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -693,7 +700,7 @@ if __name__ == "__main__":
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # reset_test_db()
-    reset_stations(end_home=False)
+    reset_stations(end_home=True)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()

@@ -185,14 +185,14 @@ class ProcessCVBenchmarking(ProcessBase):
             warnings.warn(f"WARNING! CV benchmarking file {cv_loc} not found; DEFAULT VOLTAGE RANGES WILL BE USED.")
             return FWAction(update_spec=self.updated_specs())
 
-        # Process benchmarking data
-        self.metadata.update(
-            {"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
-        p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
-        self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
-
-        # Calculate new voltage sequence
         try:
+            # Process benchmarking data
+            self.metadata.update(
+                {"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
+            p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
+            self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
+
+            # Calculate new voltage sequence
             if MICRO_ELECTRODES:
                 e_half = p_data.get("data", {}).get("e_half")[0]
                 forward_peak, reverse_peak = e_half + ADD_MICRO_BUFFER, e_half - ADD_MICRO_BUFFER

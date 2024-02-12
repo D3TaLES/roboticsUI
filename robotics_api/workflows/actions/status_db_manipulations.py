@@ -172,12 +172,13 @@ class StationStatus(RobotStatusDB):
         else:
             return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
 
-    def get_first_available(self, name_str, wait=True, max_time=MAX_WAIT_TIME, **kwargs):
+    def get_first_available(self, name_str, wait=True, max_time=MAX_WAIT_TIME, wait_interval=2, **kwargs):
         """
         Get first available stations with name_str in name
         :param name_str: str, name string
         :param wait: bool, wait for available station if True
         :param max_time: int, maximum time to wait in seconds
+        :param wait_interval: int,
         :return: prop
         """
         available_stations = self.get_all_available(name_str, **kwargs)
@@ -185,31 +186,29 @@ class StationStatus(RobotStatusDB):
             return available_stations[0] if available_stations else None
         total_time = 0
         while not available_stations:
-            available_stations = self.get_all_available(name_str)
-            print(f"Waiting for available {name_str} station...")
-            if not self.wait_interval(total_time, 10, max_time=max_time):
+            print(f"Waited for {total_time} seconds and a {name_str} station is still not available.")
+            time.sleep(wait_interval)
+            total_time += wait_interval
+            if max_time and (total_time >= max_time):
                 return None
+            available_stations = self.get_all_available(name_str)
         return available_stations[0]
 
-    def wait_till_available(self, max_time=MAX_WAIT_TIME):
+    def wait_till_available(self, max_time=MAX_WAIT_TIME, wait_interval=2):
         """
         Wait until station is available
-        :param max_time: int, maximum time to wait in seconds
+        :param max_time: int,
+        :param wait_interval: int,
         """
         total_time = 0
         while not self.available:
-            print(f"Waiting for station {self} to become available...")
-            if not self.wait_interval(total_time, 10, max_time=max_time):
+            print(f"Waited for {total_time} seconds and {self} station is still not available.")
+            time.sleep(wait_interval)
+            total_time += wait_interval
+            if max_time and (total_time >= max_time):
                 return False
         return True
 
-    def wait_interval(self, total_time, wait_time, max_time=MAX_WAIT_TIME):
-        time.sleep(wait_time)
-        total_time += wait_time
-        if max_time and (total_time >= max_time):
-            print(f"Waited for {total_time} seconds and {self.type} station is still not available.")
-            return False
-        return True
 
     def update_available(self, value: bool):
         """

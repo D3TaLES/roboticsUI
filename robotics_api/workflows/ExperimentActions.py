@@ -14,7 +14,6 @@ class RoboticsBase(FiretaskBase):
     wflow_name: str
     exp_name: str
     full_name: str
-    release_defused: bool
     success: bool
     lpad: LaunchPad
     metadata: dict
@@ -28,7 +27,6 @@ class RoboticsBase(FiretaskBase):
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
-        self.release_defused = fw_spec.get("release_defused", self.get("release_defused", False))
         self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
@@ -43,11 +41,7 @@ class RoboticsBase(FiretaskBase):
         print(f"VIAL: {self.exp_vial}")
 
     def updated_specs(self, **kwargs):
-        # When updating specs, check for open potentiostat
-        if self.release_defused and StationStatus().get_all_available("potentiostat"):
-            defuse_fws = self.lpad.fireworks.find({"state": "DEFUSED", "name": {"$regex": "_setup_"}}).distinct("fw_id")
-            [self.lpad.reignite_fw(fw) for fw in defuse_fws]
-            print(f"Fireworks {str(defuse_fws)} released from defused state.")
+        # When updating specs, check for fizzled robot jobs and rerun
         if RERUN_FIZZLED_ROBOT:
             fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
                 {"name": {"$regex": "_setup_"}},
@@ -58,14 +52,13 @@ class RoboticsBase(FiretaskBase):
 
         # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
-                 "processing_data": self.processing_data, "release_defused": self.release_defused}
+                 "processing_data": self.processing_data}
         specs.update(dict(**kwargs))
         return specs
 
-    def self_defuse(self):
+    def self_fizzle(self):
         self.updated_specs()
         raise Exception(f"Self defusing Firetask {self._fw_name}")
-        # self.lpad.defuse_fw(self.fw_id)
 
 
 @explicit_serialize
@@ -177,12 +170,12 @@ class RinseElectrode(RoboticsBase):
             available_pot = StationStatus().get_first_available("cv_potentiostat", exp_name=self.exp_name)
             potentiostat = PotentiostatStation(available_pot) if available_pot else None
 
-        # If potentiostat not available, return current vial home and defuse.
+        # If potentiostat not available, return current vial home and fizzle.
         if not (self.success and potentiostat):
             warnings.warn(f"Station {potentiostat} not available. Moving vial {solv_vial} back home.")
             solv_vial.place_home()
             self.updated_specs()
-            return self.self_defuse()
+            return self.self_fizzle()
         potentiostat.update_experiment(self.exp_name)
         self.success += solv_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
@@ -207,24 +200,17 @@ class SetupPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
-        # # Pause all other setup fireworks
-        # setup_fws = self.lpad.fireworks.find({"state": {"$in": ["READY", "WAITING"]},
-        #                                       "name": {"$regex": f"_setup_{self.method}"}}).distinct("fw_id")
-        # [self.lpad.defuse_fw(fw) for fw in setup_fws]
-
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         if start_reagent.type == "solvent":
             solvent = LiquidStation(start_reagent.location)
             collect_vial = VialMove(_id=solvent.blank_vial)
             self.metadata.update({"collect_tag": "solv_cv"})
-            self.release_defused = False
         else:
             collect_vial = self.exp_vial
             cycle = self.metadata.get("cv_cycle", 0)
             self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1,
                                   "cv_idx": 1, "ca_idx": 1})
-            self.release_defused = True
 
         # Uncap vial if capped
         self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
@@ -233,7 +219,7 @@ class SetupPotentiostat(RoboticsBase):
         if self.method in collect_vial.current_station.type:
             potentiostat = collect_vial.current_station.id
             if self.exp_name != PotentiostatStation(potentiostat).current_experiment:
-                return self.self_defuse()
+                return self.self_fizzle()
         else:
             # Use the same potentiostat as previous actions in this experiment if applicable
             pot_type = f"{self.method}_potentiostat"
@@ -241,14 +227,14 @@ class SetupPotentiostat(RoboticsBase):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 self.success += potentiostat.wait_till_available()
             else:
-                available_pot = StationStatus().get_first_available(pot_type, exp_name=self.exp_name)
+                available_pot = StationStatus().get_first_available(pot_type)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
-            # If potentiostat not available, return current vial home and defuse.
+            # If potentiostat not available, return current vial home and fizzle.
             if not (self.success and potentiostat):
                 warnings.warn(f"Station {potentiostat} not available. Moving vial {collect_vial} back home.")
                 collect_vial.place_home()
                 self.updated_specs()
-                return self.self_defuse()
+                return self.self_fizzle()
             potentiostat.update_experiment(self.exp_name)
             self.success += collect_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
@@ -281,7 +267,6 @@ class FinishPotentiostat(RoboticsBase):
             collect_vial = VialMove(_id=vial_id)
             print("STARTING HOME PLACEMENT")
             self.success += collect_vial.place_home()
-            self.release_defused = True
             print("ENDING HOME PLACEMENT")
 
         if self.end_experiment:

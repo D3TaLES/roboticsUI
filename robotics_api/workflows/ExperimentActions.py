@@ -3,10 +3,12 @@ import abc
 import warnings
 
 from six import add_metaclass
+from fireworks import Firework
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.status_db_manipulations import *
+from robotics_api.workflows.Processing import ProcessCVBenchmarking, DataProcessor
 
 
 @add_metaclass(abc.ABCMeta)
@@ -81,7 +83,7 @@ class DispenseLiquid(RoboticsBase):
             volume = solv_station.dispense(self.exp_vial, volume)
         self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -97,7 +99,7 @@ class DispenseSolid(RoboticsBase):
             pass  # TODO Dispense solid
         self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
 
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -110,7 +112,7 @@ class RecordWorkingElectrodeArea(RoboticsBase):
         # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
         self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
                               "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -125,7 +127,7 @@ class Heat(RoboticsBase):
         self.success += stir_station.perform_stir_heat(self.exp_vial, temperature=temperature, heat_time=heat_time)
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -142,7 +144,7 @@ class HeatStir(RoboticsBase):
         self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -180,7 +182,7 @@ class RinseElectrode(RoboticsBase):
         self.success += solv_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
         self.metadata.update({"cv_potentiostat": potentiostat})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -190,7 +192,7 @@ class CleanElectrode(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         # time = self.get("time")
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @add_metaclass(abc.ABCMeta)
@@ -240,7 +242,8 @@ class SetupPotentiostat(RoboticsBase):
         print("POTENTIOSTAT: ", potentiostat)
         self.metadata.update({f"{self.method}_potentiostat": potentiostat, "collect_vial_id": collect_vial.id,
                               "active_method": self.method})
-        return FWAction(update_spec=self.updated_specs())
+        detours = RecordWorkingElectrodeArea if self.method == "cv" else None
+        return FWAction(update_spec=self.updated_specs(), propagate=True, detours=detours)
 
 
 @explicit_serialize
@@ -272,7 +275,8 @@ class FinishPotentiostat(RoboticsBase):
         if self.end_experiment:
             potentiostat.update_experiment(None)
 
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True,
+                        additions=Firework(DataProcessor(mol_id=fw_spec.get("mol_id")), name=f"{method}_processing"))
 
 
 @explicit_serialize
@@ -304,7 +308,8 @@ class BenchmarkCV(RoboticsBase):
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
         self.metadata.update({"resistance": resistance})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True,
+                        detours=Firework(ProcessCVBenchmarking(mol_id=fw_spec.get("mol_id")), name="benchmark_processing"))
 
 
 @explicit_serialize
@@ -339,7 +344,7 @@ class RunCV(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize
@@ -370,4 +375,4 @@ class RunCA(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag_ca,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)

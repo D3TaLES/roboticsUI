@@ -40,7 +40,7 @@ def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
     """
     cv_locations = [f for f in os.listdir(cv_dir) if f.endswith(".csv")]
     print(cv_locations)
-    fws = [CVProcessing(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
+    fws = [Processing(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
 
     wf = Workflow(fws, name="{}_workflow".format(name_tag))
     return wf

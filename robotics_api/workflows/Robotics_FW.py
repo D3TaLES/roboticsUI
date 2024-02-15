@@ -1,7 +1,7 @@
 # FireWorks for an experiment type
 # Copyright 2022, University of Kentucky
 
-from fireworks import Firework, ScriptTask
+from fireworks import Firework
 from robotics_api.workflows.Processing import *
 from robotics_api.workflows.ExperimentActions import *
 
@@ -48,7 +48,7 @@ class AnalysisFirework(Firework):
         super(AnalysisFirework, self).__init__(f_tasks, parents=parents, spec=spec, name=name.strip("_"), **kwargs)
 
 
-class CVProcessing(Firework):
+class Processing(Firework):
     def __init__(self, f_tasks, name="cv_process", mol_id=None, priority=None, parents=None, fw_specs=None, **kwargs):
         spec = {'_category': 'processing', '_priority': priority}
         spec.update(fw_specs or {})
@@ -56,4 +56,4 @@ class CVProcessing(Firework):
             DataProcessor(mol_id=mol_id, name=name),
             # SendToStorage(),
         ]
-        super(CVProcessing, self).__init__(tasks, parents=parents, spec=spec, name=name, **kwargs)
+        super(Processing, self).__init__(tasks, parents=parents, spec=spec, name=name, **kwargs)

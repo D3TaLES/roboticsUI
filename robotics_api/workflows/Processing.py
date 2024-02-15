@@ -85,7 +85,7 @@ class ProcessBase(FiretaskBase):
 
         if not self.collection_data and data_len_error:
             warnings.warn("WARNING! No data locations were found, so no file processing occurred.")
-            return FWAction(update_spec=self.updated_specs())
+            return FWAction(update_spec=self.updated_specs(), propagate=True)
 
         if self.collection_data:
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
@@ -128,7 +128,7 @@ class ProcessBase(FiretaskBase):
                                               current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
 
-    def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=None):
+    def process_pot_data(self, file_loc, metadata, insert=True, processing_class=None):
         # Process data file
         print("Data File: ", file_loc)
         if not os.path.isfile(file_loc):
@@ -139,9 +139,9 @@ class ProcessBase(FiretaskBase):
             return None
         file_type = file_loc.split('.')[-1]
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
-        parsing_class = parsing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
-        p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
-                               metadata=metadata).data_dict
+        processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
+        p_data = processing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
+                                  metadata=metadata).data_dict
 
         # TODO Launch send to storage FireTask
 
@@ -179,11 +179,11 @@ class ProcessCVBenchmarking(ProcessBase):
         cv_data = self.coll_dict.get("benchmark_cv")
         if not cv_data:
             warnings.warn("WARNING! No CV locations found for CV benchmarking; DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=self.updated_specs())
+            return FWAction(update_spec=self.updated_specs(), propagate=True)
         cv_loc = cv_data[0].get("data_location")
         if not os.path.isfile(cv_loc):
             warnings.warn(f"WARNING! CV benchmarking file {cv_loc} not found; DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=self.updated_specs())
+            return FWAction(update_spec=self.updated_specs(), propagate=True)
 
         try:
             # Process benchmarking data
@@ -204,7 +204,7 @@ class ProcessCVBenchmarking(ProcessBase):
         except Exception as e:
             print(e)
             warnings.warn(f"WARNING! Error calculating benchmark peaks; DEFAULT VOLTAGE RANGES WILL BE USED.")
-            return FWAction(update_spec=self.updated_specs())
+            return FWAction(update_spec=self.updated_specs(), propagate=True)
 
         voltage_sequence = "{:.3f}, {:.3f}, {:.3f}V".format(reverse_peak - AUTO_VOLT_BUFFER,
                                                             forward_peak + AUTO_VOLT_BUFFER,
@@ -214,7 +214,6 @@ class ProcessCVBenchmarking(ProcessBase):
         return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))
 
 
-# noinspection PyTypeChecker
 @explicit_serialize
 class DataProcessor(ProcessBase):
     # FireTask for processing CV file
@@ -255,23 +254,31 @@ class DataProcessor(ProcessBase):
                                           micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag}_cv_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_cv_data))
-            with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
                 fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, parsing_class=ParseChiCA)
+            ca_calib_measured, ca_calib_true = get_calib(d.get("vial_contents"), fw_spec)
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
+                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)
 
         if processed_ca_data:
-            metadata_dict.update({})
-            # TODO Add conductivity meta calcs and record data
+            # CA Meta Properties
+            save_props = ["conductivity", "measured_conductivity", "resistance", "measured_resistance"]
+            metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
+            # Record all data
+            with open(self.data_path + f"\\{self.collect_tag}_ca_all_data.txt", 'w') as fn:
+                fn.write(json.dumps(processed_ca_data))
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+                fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())
         D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
@@ -279,7 +286,82 @@ class DataProcessor(ProcessBase):
         self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
                                      'processing_ids': [d.get("_id") for d in processed_cv_data],
                                      'processed_locs': self.processed_locs})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
+
+
+@explicit_serialize
+class ProcessCallibration(ProcessBase):
+    # FireTask for processing CV file
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+        self.process_solv_data()
+
+        cv_data = self.coll_dict.get(self.collect_tag, [])
+        ca_data = self.coll_dict.get(self.collect_tag.replace("cv", "ca"), [])
+        metadata_dict = {}
+
+        # Process CV data for cycle
+        processed_cv_data = []
+        for d in cv_data:
+            m_data = self.metadata
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
+            self.plot_cv(d.get("data_location"), p_data)
+            if p_data:
+                processed_cv_data.append(p_data)
+
+        # CV Meta Calcs and Data Recording
+        if processed_cv_data:
+            # Plot all CVs
+            multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "variable_prop": "data.conditions.scan_rate.value",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
+                processed_cv_data, fig_path=multi_path, title=f"Multi CV Plot for {self.mol_id}",
+                xlabel=MULTI_PLOT_XLABEL,
+                ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
+                a_to_ma=CONVERT_A_TO_MA)
+
+            # CV Meta Properties
+            print("Calculating metadata...")
+            metadata_dict.update(CV2Front(backend_data=processed_cv_data, run_anodic=RUN_ANODIC, insert=False,
+                                          micro_electrodes=MICRO_ELECTRODES).meta_dict)
+
+            # Record all data
+            with open(self.data_path + f"\\{self.collect_tag}_cv_all_data.txt", 'w') as fn:
+                fn.write(json.dumps(processed_cv_data))
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+                fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
+
+        # Process CA data for cycle
+        processed_ca_data = []
+        for d in ca_data:
+            m_data = self.metadata
+            ca_calib_measured, ca_calib_true = get_calib(d.get("vial_contents"), fw_spec)
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
+                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
+            if p_data:
+                processed_ca_data.append(p_data)
+
+        if processed_ca_data:
+            # CA Meta Properties
+            save_props = ["conductivity", "measured_conductivity", "resistance", "measured_resistance"]
+            metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
+            # Record all data
+            with open(self.data_path + f"\\{self.collect_tag}_ca_all_data.txt", 'w') as fn:
+                fn.write(json.dumps(processed_ca_data))
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+                fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
+
+        metadata_id = str(uuid.uuid4())
+        D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
+                   validate_schema=False).insert(metadata_id)
+        self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
+                                     'processing_ids': [d.get("_id") for d in processed_cv_data],
+                                     'processed_locs': self.processed_locs})
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize

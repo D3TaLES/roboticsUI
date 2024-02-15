@@ -27,6 +27,24 @@ def get_rmol_concentration(vial_content, fw_spec):
     concentration = mass/mw/volume
     return "{}M".format(concentration.to('M').magnitude)
 
+def get_calib(vial_content, fw_spec):
+    rom_id = fw_spec.get("rom_id")
+    solv_id = fw_spec.get("solv_id")
+    rom_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == rom_id]
+    solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
+    if not rom_mass or not solv_vol:
+        if FIZZLE_CONCENTRATION_FAILURE:
+            raise Exception(f"Redox mol calculation did not work...check all variables: rom_id={rom_id}, "
+                            f"solv_id={solv_id}, rom_mass={rom_mass}, solv_vol={solv_vol}")
+        return DEFAULT_CONCENTRATION
+    rom_mw = "{}g/mol".format(ReagentStatus(_id=rom_id).molecular_weight)
+    ureg = pint.UnitRegistry()
+    volume = ureg(solv_vol[0])
+    mass = ureg(rom_mass[0])
+    mw = ureg(rom_mw)
+    concentration = mass/mw/volume
+    return ca_calib_measured, ca_calib_true
+
 
 def all_cvs_data(multi_data, verbose=1):
     connector = {
@@ -80,6 +98,27 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for d in multi_data:
         out_txt += d.get("_id") + '\n'
+
+    return str(out_txt)
+
+
+def print_ca_analysis(multi_data, verbose=1):
+    out_txt = ""
+
+    out_txt += "\n------------- Single CAs Analysis -------------\n"
+    for i, i_data in enumerate(multi_data):
+        if verbose:
+            print("Getting data for {} CA...".format(i + 1))
+        data_dict = i_data.get("data", {})
+        out_txt += "\n---------- CA {} ----------".format(i + 1)
+        out_txt += "Conductivity: \t{}".format(data_dict.get("conductivity"))
+        out_txt += "Measured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
+        out_txt += "Resistance: \t{}".format(data_dict.get("resistance"))
+        out_txt += "Measured Resistance: \t{}".format(data_dict.get("measured_resistance"))
+
+    out_txt += "\n\n------------- Processing IDs -------------\n"
+    for i_data in multi_data:
+        out_txt += i_data.get("_id") + '\n'
 
     return str(out_txt)
 

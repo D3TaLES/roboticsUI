@@ -148,8 +148,9 @@ class VialMove(VialStatus):
         if self.current_location == "robot_grip":
             if StationStatus("robot_grip").current_content == self.id:
                 return True
-            warnings.warn(f"Vial {self.id} location is listed as robot_grip, but robot grip current_content is "
-                          f"listed as {StationStatus('robot_grip').current_content}.")
+            if raise_error:
+                raise Exception(f"Vial {self.id} location is listed as robot_grip, but robot grip current_content is "
+                                f"listed as {StationStatus('robot_grip').current_content}.")
         elif self.robot_available():
             print("Robot is available")
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home

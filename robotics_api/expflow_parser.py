@@ -1,3 +1,5 @@
+from functools import reduce
+from operator import iconcat
 from d3tales_api.Processors.expflow_parser import *
 from robotics_api.workflows.Robotics_FW import *
 from robotics_api.workflows.ExperimentActions import *
@@ -91,22 +93,17 @@ class EF2Experiment(ProcessExpFlowObj):
                 # Extend current task cluster if not a special case
                 task_cluster.append(task)
 
-            # Create setup Firetasks if about to start collect jobs
-            method = next_nonP_name.split("_")[1] if "collect" in next_nonP_name else None
-            print(task.name)
-            print(task.start_type)
-            print("---", active_method)
-            if method != active_method and "collect" in next_nonP_name:
-                setup_task = self.collect_task(next_nonP_tasks[0], tag="setup")
-                all_tasks.extend([task_cluster, [setup_task]]) if task_cluster else all_tasks.append([setup_task])
+            # Create setup Firetasks if about to start collect jobs and finish Firetasks if at end of measurements
+            next_method = next_nonP_name.split("_")[1] if "collect" in next_nonP_name else None
+            if next_method != active_method:
+                all_tasks.append(task_cluster) if task_cluster else None
+                new_tasks = [self.collect_task(task, tag="finish")] if "collect" in task.name else []
+                new_tasks.append(
+                    self.collect_task(next_nonP_tasks[0], tag="setup")) if "collect" in next_nonP_name else None
+                all_tasks.append(new_tasks)
                 task_cluster = []
             # TODO figure out a better way to separate test CV runs
-            active_method = method if next_nonP_start != "solvent" else None
-            # Create finish Firetasks if at end of measurements
-            if "collect" in task.name and "collect" not in next_nonP_name:
-                all_tasks.append(task_cluster) if task_cluster else None
-                task_cluster = [self.collect_task(task, tag="finish")]
-                active_method = None
+            active_method = next_method if next_nonP_start != "solvent" else None
 
         all_tasks.append(task_cluster) if task_cluster else None
         [print(f"FW {i + 1}:\t", [c.name for c in clus]) for i, clus in enumerate(all_tasks)]
@@ -120,7 +117,8 @@ class EF2Experiment(ProcessExpFlowObj):
         collect_parent = None
         for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
-            tasks = [self.get_firetask(task) for task in cluster]
+            # Turn tasks into Firetasks and flatten resulting list
+            tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             priority = self.priority - 1 if i == 0 else self.priority
             if "process" in fw_type:
                 fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=collect_parent or parent,
@@ -146,38 +144,39 @@ class EF2Experiment(ProcessExpFlowObj):
         return fireworks
 
     def get_firetask(self, task):
-        firetask = self.task_dictionary.get(task.name)
+        firetasks = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
             parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))
-        return firetask(**parameters_dict)
+        return [firetask(**parameters_dict) for firetask in firetasks]
 
     @property
     def task_dictionary(self):
         return {
-            "transfer_liquid": DispenseLiquid,  # needs: VOLUME
-            "transfer_solid": DispenseSolid,  # needs: MASS
-            "heat": Heat,  # needs: TEMPERATURE
-            "heat_stir": HeatStir,  # needs: TEMPERATURE, TIME
-            "process_working_electrode_area": RecordWorkingElectrodeArea,  # needs: SIZE
-            "rinse_electrode": RinseElectrode,  # needs: TIME
-            "clean_electrode": CleanElectrode,
-            "collect_cv_data": RunCV,
-            "collect_ca_data": RunCA,
-            "process_data": DataProcessor,
-            "collect_cv_benchmark_data": BenchmarkCV,
-            "process_cv_benchmarking": ProcessCVBenchmarking,
+            "transfer_liquid": [DispenseLiquid],  # needs: VOLUME
+            "transfer_solid": [DispenseSolid],  # needs: MASS
+            "heat": [Heat],  # needs: TEMPERATURE
+            "heat_stir": [HeatStir],  # needs: TEMPERATURE, TIME
+            "process_working_electrode_area": [RecordWorkingElectrodeArea],  # needs: SIZE
+            "rinse_electrode": [RinseElectrode],  # needs: TIME
+            "clean_electrode": [CleanElectrode],
+            "collect_cv_data": [RunCV],
+            "collect_ca_data": [RunCA],
+            "process_data": [RecordWorkingElectrodeArea, DataProcessor],
+            "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
-            "setup_cv": SetupCVPotentiostat,
-            "setup_ca": SetupCAPotentiostat,
-            "finish_cv": FinishPotentiostat,
-            "finish_ca": FinishPotentiostat,
+            "setup_cv": [SetupCVPotentiostat],
+            "setup_ca": [SetupCAPotentiostat],
+            "finish_cv": [FinishPotentiostat],
+            "finish_ca": [FinishPotentiostat],
 
-            "measure_working_electrode_area": RecordWorkingElectrodeArea,  # TODO Deprecated. Remove eventually
-            "process_cv_data": DataProcessor,  # TODO Deprecated. Remove eventually
-            "collect_electrode_test": RunCV,  # TODO Deprecated. Remove eventually
-            "collect_electrode_test_data": RunCV,  # TODO Deprecated. Remove eventually
+            # TODO Deprecated. Remove eventually
+            "process_cv_benchmarking": [ProcessCVBenchmarking],
+            "measure_working_electrode_area": [RecordWorkingElectrodeArea],
+            "process_cv_data": [DataProcessor],
+            "collect_electrode_test": [RunCV],
+            "collect_electrode_test_data": [RunCV],
         }
 
 

@@ -71,13 +71,13 @@ class DispenseLiquid(RoboticsBase):
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         if solvent.type != "solvent":
             solvent = ReagentStatus(_id=fw_spec.get("solv_id"))
-        solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
-
-        # Uncap vial if capped
-        self.success += self.exp_vial.retrieve()
-        self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
-
         if solvent.location != "experiment_vial":
+            solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
+
+            # Uncap vial if capped
+            self.success += self.exp_vial.retrieve()
+            self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
+
             volume = solv_station.dispense(self.exp_vial, volume)
         self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 

@@ -173,7 +173,6 @@ class ProcessCVBenchmarking(ProcessBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
-        self.process_solv_data()
 
         # Check Benchmarking data file
         cv_data = self.coll_dict.get("benchmark_cv")

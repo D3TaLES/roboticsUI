@@ -8,8 +8,8 @@ RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False

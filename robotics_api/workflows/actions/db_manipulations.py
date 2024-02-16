@@ -457,4 +457,4 @@ if __name__ == "__main__":
     # StationStatus().get_first_available("cv", exp_name="exp01")
     # setup_formal_potentials()
     print(ChemStandardsDB(standards_type="mol_props", _id="06TNKR").get_prop("formal_potential"))
-    test_calib()
+    # test_calib()

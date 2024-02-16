@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.standard_variables import *
@@ -440,8 +441,20 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
         ChemStandardsDB(standards_type="mol_props", instance=instance)
 
 
+def test_calib():
+    for c in [1,2,3,4]:
+        calib_instance = {
+            "_id": datetime.now().isoformat(),  # Date
+            "date": datetime.now().strftime('%Y_%m_%d'),  # Day
+            "calib_measured": 0.6*c+1,
+            "calib_true": c
+        }
+        ChemStandardsDB(standards_type="ca_calib", instance=calib_instance)
+
+
 if __name__ == "__main__":
     # reset_test_db()
     # StationStatus().get_first_available("cv", exp_name="exp01")
     # setup_formal_potentials()
     print(ChemStandardsDB(standards_type="mol_props", _id="06TNKR").get_prop("formal_potential"))
+    test_calib()

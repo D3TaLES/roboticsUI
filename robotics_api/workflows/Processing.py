@@ -131,7 +131,7 @@ class ProcessBase(FiretaskBase):
                                               current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
 
-    def process_pot_data(self, file_loc, metadata, insert=True, parsing_class=None):
+    def process_pot_data(self, file_loc, metadata, insert=True, processing_class=None):
         # Process data file
         print("Data File: ", file_loc)
         if not os.path.isfile(file_loc):
@@ -144,11 +144,9 @@ class ProcessBase(FiretaskBase):
         e_ref = ChemStandardsDB(standards_type="mol_props", _id=self.mol_id).get_prop("formal_potential")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
-        parsing_class = parsing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
-        p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
-                               metadata=metadata).data_dict
-
-        # TODO Launch send to storage FireTask
+        processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
+        p_data = processing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
+                                  metadata=metadata).data_dict
 
         # Insert data into database
         _id = p_data["_id"]
@@ -231,21 +229,23 @@ class ProcessCalibration(ProcessBase):
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, parsing_class=ParseChiCA)
+            ca_calib_measured, ca_calib_true = get_calib(d.get("vial_contents"), fw_spec)
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
+                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)
 
-        if processed_ca_data:
-            metadata_dict.update({})
-            # TODO Add conductivity meta calcs and record data
+            # Insert CA calibration
+            calib_instance = {
+                "_id": datetime.now().isoformat(),  # Date
+                "date": datetime.now().strftime('%Y_%m_%d'),  # Day
+                "calib_measured": p_data.get("measured_conductivity"),
+                "calib_true": CA_CALIB_STDS.get(self.mol_id)
+            }
+            ChemStandardsDB(standards_type="ca_calib", instance=calib_instance)
 
-        metadata_id = str(uuid.uuid4())
-        D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
-                   validate_schema=False).insert(metadata_id)
-        self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
-                                     'processing_ids': [d.get("_id") for d in processed_cv_data],
-                                     'processed_locs': self.processed_locs})
+        self.processing_data.update({'processed_locs': self.processed_locs})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -290,23 +290,31 @@ class DataProcessor(ProcessBase):
                                           micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag}_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag}_cv_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_cv_data))
-            with open(self.data_path + f"\\{self.collect_tag}_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
                 fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, parsing_class=ParseChiCA)
+            ca_calib_measured, ca_calib_true = get_calib()
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
+                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)
 
         if processed_ca_data:
-            metadata_dict.update({})
-            # TODO Add conductivity meta calcs and record data
+            # CA Meta Properties
+            save_props = ["conductivity", "measured_conductivity", "resistance", "measured_resistance"]
+            metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
+            # Record all data
+            with open(self.data_path + f"\\{self.collect_tag}_ca_all_data.txt", 'w') as fn:
+                fn.write(json.dumps(processed_ca_data))
+            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+                fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())
         D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
@@ -314,7 +322,7 @@ class DataProcessor(ProcessBase):
         self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
                                      'processing_ids': [d.get("_id") for d in processed_cv_data],
                                      'processed_locs': self.processed_locs})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
 
 
 @explicit_serialize

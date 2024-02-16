@@ -87,7 +87,8 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
-FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53}  # Formal potentials in V
+CA_CALIB_STDS = {"11JNLU": 0.30, "06IGCB": 0.53, "05MYHH": 0}  # True conductivity for KCl and H2O, respectively TODO update
+FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53, "05MYHH": 0}  # Formal potentials in V
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_ADDRESS = "COM4"

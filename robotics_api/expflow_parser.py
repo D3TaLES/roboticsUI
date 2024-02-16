@@ -164,7 +164,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_data": [RunCV],
             "collect_ca_data": [RunCA],
             "process_calibration": [ProcessCalibration],
-            "process_data": [RecordWorkingElectrodeArea, DataProcessor],
+            "process_data": [DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],

@@ -1,7 +1,7 @@
 from d3tales_api.Processors.d3tales_parser import *
 from d3tales_api.Processors.back2front import *
 from robotics_api.standard_variables import *
-from robotics_api.workflows.actions.db_manipulations import ReagentStatus
+from robotics_api.workflows.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
 
 def collection_dict(coll_data):
@@ -26,6 +26,21 @@ def get_rmol_concentration(vial_content, fw_spec):
     mw = ureg(rom_mw)
     concentration = mass/mw/volume
     return "{}M".format(concentration.to('M').magnitude)
+
+
+def get_calib(raise_error=True):
+    date = datetime.now().strftime('%Y_%m_%d')
+    query = list(ChemStandardsDB(standards_type="ca_calib").coll.find({'$and': [
+            {"date": date},
+            {"calib_measured": {"$exists": True}},
+            {"calib_true": {"$exists": True}}
+        ]}))
+    ca_calib_measured = [c.get("calib_measured") for c in query]
+    ca_calib_true = [c.get("calib_true") for c in query]
+    if not (ca_calib_measured and ca_calib_true) and raise_error:
+        raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
+                         f"workflow today before preceding with CA experiments.")
+    return ca_calib_measured, ca_calib_true
 
 
 def all_cvs_data(multi_data, verbose=1):
@@ -80,6 +95,27 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for d in multi_data:
         out_txt += d.get("_id") + '\n'
+
+    return str(out_txt)
+
+
+def print_ca_analysis(multi_data, verbose=1):
+    out_txt = ""
+
+    out_txt += "\n------------- Single CAs Analysis -------------\n"
+    for i, i_data in enumerate(multi_data):
+        if verbose:
+            print("Getting data for {} CA...".format(i + 1))
+        data_dict = i_data.get("data", {})
+        out_txt += "\n---------- CA {} ----------".format(i + 1)
+        out_txt += "Conductivity: \t{}".format(data_dict.get("conductivity"))
+        out_txt += "Measured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
+        out_txt += "Resistance: \t{}".format(data_dict.get("resistance"))
+        out_txt += "Measured Resistance: \t{}".format(data_dict.get("measured_resistance"))
+
+    out_txt += "\n\n------------- Processing IDs -------------\n"
+    for i_data in multi_data:
+        out_txt += i_data.get("_id") + '\n'
 
     return str(out_txt)
 

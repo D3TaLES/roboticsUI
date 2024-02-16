@@ -1,7 +1,7 @@
 from d3tales_api.Processors.d3tales_parser import *
 from d3tales_api.Processors.back2front import *
 from robotics_api.standard_variables import *
-from robotics_api.workflows.actions.status_db_manipulations import ReagentStatus
+from robotics_api.workflows.actions.db_manipulations import ReagentStatus
 
 
 def collection_dict(coll_data):

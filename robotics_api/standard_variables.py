@@ -8,8 +8,8 @@ RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION VARIABLES -------------
 CAPPED_ERROR = False
@@ -86,6 +86,8 @@ MULTI_PLOT_YLABEL = None  # uses default D3TaLES API y label
 MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
+
+FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53}  # Formal potentials in V
 
 # ---------  ARDUINO VARIABLES -------------
 ARDUINO_ADDRESS = "COM4"

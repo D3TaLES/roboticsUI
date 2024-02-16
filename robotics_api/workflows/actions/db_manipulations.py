@@ -3,13 +3,13 @@ from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.standard_variables import *
 from d3tales_api.Calculators.utils import unit_conversion
-from d3tales_api.D3database.d3database import RobotStatusDB
+from d3tales_api.D3database.d3database import RobotStatusDB, D3Database, FrontDB
 
 
 class VialStatus(RobotStatusDB):
     """
     Class for accessing the Robot Vial Status database
-    Copyright 2021, University of Kentucky
+    Copyright 2023, University of Kentucky
     """
 
     def __init__(self, _id: str = None, exp_name: str = None, **kwargs):
@@ -112,7 +112,7 @@ class VialStatus(RobotStatusDB):
 class StationStatus(RobotStatusDB):
     """
     Class for accessing the Robot Vial Status database
-    Copyright 2021, University of Kentucky
+    Copyright 2023, University of Kentucky
     """
 
     def __init__(self, _id: str = None, state_id: str = None, **kwargs):
@@ -243,7 +243,7 @@ class StationStatus(RobotStatusDB):
 class ReagentStatus(RobotStatusDB):
     """
     Class for accessing the Robot Reagent Status database
-    Copyright 2021, University of Kentucky
+    Copyright 2023, University of Kentucky
     """
 
     def __init__(self, r_name=None, r_smiles=None, **kwargs):
@@ -275,6 +275,45 @@ class ReagentStatus(RobotStatusDB):
             raise Exception(f"Cannot calculate molecular weight because no SMILES is associated with {self}.")
         rdkmol = MolFromSmiles(self.smiles)
         return CalcExactMolWt(rdkmol)
+
+
+class ChemStandardsDB(D3Database):
+    """
+    Class for accessing the Chem Standards database for robotic workflows 
+    Copyright 2024, University of Kentucky
+    """
+
+    def __init__(self, standards_type: str, _id: str = None, instance: dict = None, override_lists: bool = True):
+        """
+        Initiate class
+        :param standards_type: str, type of chemistry standard
+        :param _id: str, _id
+        :param instance: dict, instance to insert or validate
+        :param override_lists: bool,
+        """
+        self.db_name = 'standards_' + standards_type
+        super().__init__(database="robotics", collection_name=self.db_name, instance=instance, validate_schema=False)
+        self.id = _id or self.instance.get("_id")
+        if instance:
+            instance["_id"] = self.id
+            if not self.id:
+                raise IOError("ID is required for {} database insertion.".format(self.db_name))
+            self.insert(self.id, override_lists=override_lists)
+
+    def __str__(self):
+        return self.db_name
+
+    @property
+    def exists(self):
+        return True if self.coll.find_one({"_id": self.id}) else False
+
+    def get_prop(self, prop: str):
+        """
+        Get database prop for instance with _id
+        :param prop: str, property name
+        :return: prop
+        """
+        return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
 
 def check_duplicates(test_list, exemptions=None):
@@ -389,6 +428,20 @@ def reset_test_db():
     reset_station_db(current_wflow_name=wflow_name)
 
 
+def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
+    for mol_id, potent in potentials_dict.items():
+        query = FrontDB().make_query({"_id": "06TNKR"}, {"mol_info.smiles": 1}, output='json')
+        smiles = query[0].get("mol_info", {}).get("smiles")
+        instance = {
+            "_id": mol_id,
+            "smiles": smiles,
+            "formal_potential": potent
+        }
+        ChemStandardsDB(standards_type="mol_props", instance=instance)
+
+
 if __name__ == "__main__":
     # reset_test_db()
-    StationStatus().get_first_available("cv", exp_name="exp01")
+    # StationStatus().get_first_available("cv", exp_name="exp01")
+    # setup_formal_potentials()
+    print(ChemStandardsDB(standards_type="mol_props", _id="06TNKR").get_prop("formal_potential"))

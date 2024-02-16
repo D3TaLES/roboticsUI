@@ -9,12 +9,12 @@ from d3tales_api.D3database.d3database import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.processing_utils import *
 from robotics_api.workflows.actions.standard_actions import *
-from robotics_api.workflows.actions.status_db_manipulations import *
+from robotics_api.workflows.actions.db_manipulations import *
 from robotics_api.standard_variables import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
-# Copyright 2021, University of Kentucky
+# Copyright 2023, University of Kentucky
 TESTING = False
 VERBOSE = 1
 
@@ -50,6 +50,9 @@ class InitializeStatusDB(FiretaskBase):
         reset_reagent_db(reagents, current_wflow_name=wflow_name)
         reset_vial_db(experiments, current_wflow_name=wflow_name)
         reset_station_db(current_wflow_name=wflow_name)
+
+        # Setup standards databases
+        setup_formal_potentials()
         return FWAction(update_spec={"success": True})
 
 
@@ -138,7 +141,9 @@ class ProcessBase(FiretaskBase):
             warnings.warn("WARNING. File {} already processed. Further processing did not occur.".format(file_loc))
             return None
         file_type = file_loc.split('.')[-1]
-        metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}"})
+        e_ref = ChemStandardsDB(standards_type="mol_props", _id=self.mol_id).get_prop("formal_potential")
+        metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
+                         "e_ref": e_ref})
         parsing_class = parsing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
         p_data = parsing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
                                metadata=metadata).data_dict
@@ -215,6 +220,37 @@ class ProcessCVBenchmarking(ProcessBase):
 
 # noinspection PyTypeChecker
 @explicit_serialize
+class ProcessCalibration(ProcessBase):
+    # FireTask for processing Calibration jobs
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+
+        # Process CA calibration data
+        ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
+        processed_ca_data = []
+        for d in ca_data:
+            m_data = self.metadata
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, parsing_class=ParseChiCA)
+            if p_data:
+                processed_ca_data.append(p_data)
+
+        if processed_ca_data:
+            metadata_dict.update({})
+            # TODO Add conductivity meta calcs and record data
+
+        metadata_id = str(uuid.uuid4())
+        D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
+                   validate_schema=False).insert(metadata_id)
+        self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
+                                     'processing_ids': [d.get("_id") for d in processed_cv_data],
+                                     'processed_locs': self.processed_locs})
+        return FWAction(update_spec=self.updated_specs())
+
+
+# noinspection PyTypeChecker
+@explicit_serialize
 class DataProcessor(ProcessBase):
     # FireTask for processing CV file
 
@@ -222,8 +258,8 @@ class DataProcessor(ProcessBase):
         self.setup_task(fw_spec)
         self.process_solv_data()
 
-        cv_data = self.coll_dict.get(self.collect_tag, [])
-        ca_data = self.coll_dict.get(self.collect_tag.replace("cv", "ca"), [])
+        cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cv", [])
+        ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
         metadata_dict = {}
 
         # Process CV data for cycle

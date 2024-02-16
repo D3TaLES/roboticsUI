@@ -6,7 +6,7 @@ from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.workflows.actions.standard_actions import *
-from robotics_api.workflows.actions.status_db_manipulations import *
+from robotics_api.workflows.actions.db_manipulations import *
 
 
 @add_metaclass(abc.ABCMeta)
@@ -205,11 +205,11 @@ class SetupPotentiostat(RoboticsBase):
         if start_reagent.type == "solvent":
             solvent = LiquidStation(start_reagent.location)
             collect_vial = VialMove(_id=solvent.blank_vial)
-            self.metadata.update({"collect_tag": "solv_cv"})
+            self.metadata.update({"collect_tag": f"solv_{self.method}"})
         else:
             collect_vial = self.exp_vial
             cycle = self.metadata.get("cv_cycle", 0)
-            self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_cv", "cv_cycle": cycle+1,
+            self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_{self.method}", "cv_cycle": cycle+1,
                                   "cv_idx": 1, "ca_idx": 1})
 
         # Uncap vial if capped
@@ -353,12 +353,12 @@ class RunCA(RoboticsBase):
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
 
         # Prep output data file info
-        collect_tag_ca = self.metadata.get("collect_tag").replace("cv", "ca")
+        collect_tag = self.metadata.get("collect_tag")
         collect_vial_id = self.metadata.get("collect_vial_id")
         ca_idx = self.metadata.get("ca_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
-        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag_ca}{ca_idx:02d}_%H_%M_%S.txt"))
+        data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{ca_idx:02d}_%H_%M_%S.txt"))
 
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
@@ -367,7 +367,7 @@ class RunCA(RoboticsBase):
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"ca_idx": ca_idx + 1})
-        self.collection_data.append({"collect_tag": collect_tag_ca,
+        self.collection_data.append({"collect_tag": collect_tag,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

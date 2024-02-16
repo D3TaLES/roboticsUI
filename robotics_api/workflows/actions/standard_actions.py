@@ -4,7 +4,7 @@ import warnings
 from serial.tools.list_ports import comports
 from d3tales_api.Processors.parser_cv import *
 from robotics_api.workflows.actions.kinova_move import *
-from robotics_api.workflows.actions.status_db_manipulations import *
+from robotics_api.workflows.actions.db_manipulations import *
 
 
 def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
@@ -136,6 +136,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
 def write_test(file_path, test_text="test"):
     with open(file_path, 'w+') as fn:
         fn.write(test_text)
+
 
 class VialMove(VialStatus):
     def __init__(self, **kwargs):

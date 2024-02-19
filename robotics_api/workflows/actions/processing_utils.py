@@ -32,8 +32,8 @@ def get_calib(raise_error=True):
     date = datetime.now().strftime('%Y_%m_%d')
     query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},
-            {"calib_measured": {"$exists": True}},
-            {"calib_true": {"$exists": True}}
+            {"cond_measured": {"$exists": True}},
+            {"cond_true": {"$exists": True}}
         ]}))
     ca_calib_measured = [c.get("calib_measured") for c in query]
     ca_calib_true = [c.get("calib_true") for c in query]

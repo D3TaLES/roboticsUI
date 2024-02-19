@@ -235,11 +235,14 @@ class ProcessCalibration(ProcessBase):
                 processed_ca_data.append(p_data)
 
             # Insert CA calibration
+            cond_true = CA_CALIB_STDS.get(self.mol_id)
             calib_instance = {
                 "_id": self.mol_id,  # D3TaLES ID
                 "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
-                "calib_measured": p_data.get("data", {}).get("measured_conductivity"),
-                "calib_true": CA_CALIB_STDS.get(self.mol_id)
+                "cond_measured": p_data.get("data", {}).get("measured_conductivity"),
+                "cond_true": cond_true,
+                "res_measured": p_data.get("data", {}).get("measured_resistance"),
+                "res_true": 1 / cond_true if cond_true else None,
             }
             ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 

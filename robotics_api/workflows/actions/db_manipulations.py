@@ -438,7 +438,7 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
             "smiles": smiles,
             "formal_potential": potent
         }
-        ChemStandardsDB(standards_type="mol_props", instance=instance)
+        ChemStandardsDB(standards_type="MolProps", instance=instance)
 
 
 def test_calib():
@@ -449,12 +449,12 @@ def test_calib():
             "calib_measured": 0.6*c+1,
             "calib_true": c
         }
-        ChemStandardsDB(standards_type="ca_calib", instance=calib_instance)
+        ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 
 
 if __name__ == "__main__":
     # reset_test_db()
     # StationStatus().get_first_available("cv", exp_name="exp01")
     # setup_formal_potentials()
-    print(ChemStandardsDB(standards_type="mol_props", _id="06TNKR").get_prop("formal_potential"))
+    print(ChemStandardsDB(standards_type="MolProps", _id="06TNKR").get_prop("formal_potential"))
     # test_calib()

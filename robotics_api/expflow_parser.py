@@ -26,7 +26,6 @@ class EF2Experiment(ProcessExpFlowObj):
         self.workflow = []
         [self.workflow.extend(self.check_multi_task(t)) for t in self.expflow_obj.workflow]
 
-
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):
         if any(kw in collect_task.name for kw in ["_cv_", "electrode"]):
@@ -39,6 +38,13 @@ class EF2Experiment(ProcessExpFlowObj):
             analysis = default_analysis
         task_dict = copy.deepcopy(collect_task.__dict__)
         task_dict["name"] = f"{tag}_{analysis}"
+        new_task = dict2obj(task_dict)
+        return new_task
+
+    @staticmethod
+    def process_task(collect_task):
+        task_dict = copy.deepcopy(collect_task.__dict__)
+        task_dict["name"] = f"process_data"
         new_task = dict2obj(task_dict)
         return new_task
 
@@ -97,10 +103,14 @@ class EF2Experiment(ProcessExpFlowObj):
             next_method = next_nonP_name.split("_")[1] if "collect" in next_nonP_name else None
             if next_method != active_method:
                 all_tasks.append(task_cluster) if task_cluster else None
-                new_tasks = [self.collect_task(task, tag="finish")] if "collect" in task.name else []
-                new_tasks.append(
-                    self.collect_task(next_nonP_tasks[0], tag="setup")) if "collect" in next_nonP_name else None
-                all_tasks.append(new_tasks)
+                task_cluster = []
+                if "collect" in task.name:
+                    if "process" not in next_name:
+                        all_tasks.append([self.process_task(task)])
+                    task_cluster.append(self.collect_task(task, tag="finish"))
+                if "collect" in next_nonP_name:
+                    task_cluster.append(self.collect_task(next_nonP_tasks[0], tag="setup"))
+                all_tasks.append(task_cluster)
                 task_cluster = []
             # TODO figure out a better way to separate test CV runs
             active_method = next_method if next_nonP_start != "solvent" else None
@@ -164,7 +174,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_data": [RunCV],
             "collect_ca_data": [RunCA],
             "process_calibration": [ProcessCalibration],
-            "process_data": [DataProcessor],
+            "process_data": [RecordWorkingElectrodeArea, DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],

@@ -141,7 +141,7 @@ class ProcessBase(FiretaskBase):
             warnings.warn("WARNING. File {} already processed. Further processing did not occur.".format(file_loc))
             return None
         file_type = file_loc.split('.')[-1]
-        e_ref = ChemStandardsDB(standards_type="mol_props", _id=self.mol_id).get_prop("formal_potential")
+        e_ref = ChemStandardsDB(standards_type="MolProps", _id=self.mol_id).get_prop("formal_potential")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
         processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
@@ -229,21 +229,19 @@ class ProcessCalibration(ProcessBase):
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            ca_calib_measured, ca_calib_true = get_calib(d.get("vial_contents"), fw_spec)
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
-                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)
 
             # Insert CA calibration
             calib_instance = {
-                "_id": datetime.now().isoformat(),  # Date
-                "date": datetime.now().strftime('%Y_%m_%d'),  # Day
-                "calib_measured": p_data.get("measured_conductivity"),
+                "_id": self.mol_id,  # D3TaLES ID
+                "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
+                "calib_measured": p_data.get("data", {}).get("measured_conductivity"),
                 "calib_true": CA_CALIB_STDS.get(self.mol_id)
             }
-            ChemStandardsDB(standards_type="ca_calib", instance=calib_instance)
+            ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 
         self.processing_data.update({'processed_locs': self.processed_locs})
         return FWAction(update_spec=self.updated_specs())

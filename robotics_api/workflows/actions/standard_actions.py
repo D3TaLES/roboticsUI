@@ -701,8 +701,8 @@ if __name__ == "__main__":
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
-    # reset_test_db()
-    reset_stations(end_home=True)
+    reset_test_db()
+    # reset_stations(end_home=True)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
@@ -710,6 +710,6 @@ if __name__ == "__main__":
     # test_potent.move_elevator(endpoint="up")
     # test_potent.move_elevator(endpoint="down")
 
-    # flush_solvent(10, vial_id="S_04", solv_id="solvent_01", go_home=True)
-    # check_usb()
+    # flush_solvent(0, vial_id="S_01", solv_id="solvent_01", go_home=False)
+    # # check_usb()
     # snapshot_move(SNAPSHOT_END_HOME)

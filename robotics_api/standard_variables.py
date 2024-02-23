@@ -8,7 +8,7 @@ RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = False
+RUN_ROBOT = True
 MOVE_ELEVATORS = False
 
 # ---------  OPERATION VARIABLES -------------
@@ -94,7 +94,7 @@ FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53, "05MYHH": 0}  # Formal pote
 ARDUINO_ADDRESS = "COM4"
 
 # ---------  LOCATION VARIABLES -------------
-DISPENSE_STATIONS = ["solvent_01"]
+DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
 MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS

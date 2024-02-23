@@ -4,8 +4,8 @@
       {
         "reachPose":{
           "targetPose":{
-            "x":0.437,
-            "y":-0.385,
+            "x":0.317,
+            "y":-0.388,
             "z":0.245,
             "thetaX":90,
             "thetaY":0,
@@ -23,7 +23,7 @@
           "permission":7,
           "actionType":6
         },
-        "name":"solvent_01"
+        "name":"solvent_03"
       }
     ]
   }

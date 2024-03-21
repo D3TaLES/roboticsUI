@@ -1,15 +1,35 @@
 from d3tales_api.Processors.d3tales_parser import *
 from d3tales_api.Processors.back2front import *
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from robotics_api.workflows.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
 
 def collection_dict(coll_data):
+    """
+    Create a dictionary from a list of dictionaries based on a common key.
+
+    Args:
+        coll_data (list): List of dictionaries.
+
+    Returns:
+        dict: A dictionary with keys as unique values from the 'collect_tag' field and values as lists of dictionaries
+            having the same 'collect_tag' value.
+    """
     tags = set([d.get("collect_tag") for d in coll_data])
     return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
 
 
 def get_rmol_concentration(vial_content, fw_spec):
+    """
+    Calculate the concentration of a redox molecule based on reagent and solvent information.
+
+    Args:
+        vial_content (list): List of dictionaries representing vial content.
+        fw_spec (dict): Forward specification containing reagent and solvent IDs.
+
+    Returns:
+        str: Concentration of the redox molecule in molarity.
+    """
     rom_id = fw_spec.get("rom_id")
     solv_id = fw_spec.get("solv_id")
     rom_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == rom_id]
@@ -29,6 +49,15 @@ def get_rmol_concentration(vial_content, fw_spec):
 
 
 def get_calib(raise_error=True):
+    """
+    Get conductivity calibration data for the current day.
+
+    Args:
+        raise_error (bool, optional): Whether to raise an error if calibration data is not found. Defaults to True.
+
+    Returns:
+        tuple: Tuple containing lists of measured and true conductivity calibration values.
+    """
     date = datetime.now().strftime('%Y_%m_%d')
     query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},
@@ -44,6 +73,16 @@ def get_calib(raise_error=True):
 
 
 def all_cvs_data(multi_data, verbose=1):
+    """
+    Get data from all single CVs and calculate additional properties.
+
+    Args:
+        multi_data (list): List of dictionaries representing data from multiple CVs.
+        verbose (int, optional): Verbosity level. Defaults to 1.
+
+    Returns:
+        list: List containing strings of data from all single CVs.
+    """
     connector = {
         "A": "data.conditions.working_electrode_surface_area",
         "v": "data.conditions.scan_rate",
@@ -68,6 +107,17 @@ def all_cvs_data(multi_data, verbose=1):
 
 
 def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
+    """
+    Generate text analysis of CV data.
+
+    Args:
+        multi_data (list): List of dictionaries representing data from multiple CVs.
+        metadata (dict): Metadata for the CV analysis.
+        run_anodic (bool, optional): Whether to run anodic analysis. Defaults to RUN_ANODIC.
+
+    Returns:
+        str: Text analysis of the CV data.
+    """
     e_halfs = metadata.get("oxidation_potential")
 
     out_txt = ""
@@ -100,6 +150,16 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
 
 
 def print_ca_analysis(multi_data, verbose=1):
+    """
+    Generate text analysis of CA data.
+
+    Args:
+        multi_data (list): List of dictionaries representing data from multiple CA experiments.
+        verbose (int, optional): Verbosity level. Defaults to 1.
+
+    Returns:
+        str: Text analysis of the CA data.
+    """
     out_txt = ""
 
     out_txt += "\n------------- Single CAs Analysis -------------\n"
@@ -121,6 +181,17 @@ def print_ca_analysis(multi_data, verbose=1):
 
 
 def prop_by_order(prop_list, order=1, notes=None):
+    """
+    Retrieve a property from a list based on order and optional notes.
+
+    Args:
+        prop_list (list): List of property dictionaries.
+        order (int, optional): Order of the property. Defaults to 1.
+        notes (str, optional): Notes associated with the property. Defaults to None.
+
+    Returns:
+        dict: Property dictionary matching the specified order and notes.
+    """
     result_prop = [p for p in prop_list if p.get("order") == order]
     if notes:
         result_prop = [p for p in result_prop if notes in p.get("notes")]
@@ -132,6 +203,15 @@ def prop_by_order(prop_list, order=1, notes=None):
 
 def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robot_diffusion_2\\20230209\\",
                     submission_info: dict = None, metadata: dict = None):
+    """
+    FOR TESTING ONLY
+    Perform processing of cyclic voltammetry (CV) data.
+
+    Args:
+        cv_dir (str, optional): Directory path containing CV data files. Defaults to specified directory.
+        submission_info (dict, optional): Information about the submission. Defaults to None.
+        metadata (dict, optional): Metadata for the CV analysis. Defaults to None.
+    """
     cv_locations = [os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")]
     processed_data = []
     for cv_location in cv_locations:

@@ -697,7 +697,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
     test_potent = PotentiostatStation("cv_potentiostat_A_01")
-    d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "examples", "PotentiostatStation_Test.csv")
+    d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "test_data", "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 

@@ -1,7 +1,7 @@
 import json
 import itertools
 from monty.serialization import loadfn
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 
 
 def get_exp_reagents(exp_json):

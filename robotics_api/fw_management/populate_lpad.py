@@ -1,9 +1,4 @@
-import os
-import json
 from sys import argv
-from pathlib import Path
-from fireworks import LaunchPad
-from monty.serialization import loadfn
 from robotics_api.workflows.wf_writer import *
 from robotics_api.workflows.Robotics_FW import *
 
@@ -18,13 +13,13 @@ param_tag = ''
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-lpad_file = os.path.join(BASE_DIR, 'management', 'config/launchpad_robot.yaml')
+lpad_file = os.path.join(BASE_DIR, 'fw_management', 'config/launchpad_robot.yaml')
 
 if __name__ == "__main__":
     try:
         expflow_file = argv[1]
     except IndexError:
-        expflow_file = os.path.join(BASE_DIR, 'management', 'example_expflows', param_tag + 'new_wf_ex.json')
+        expflow_file = os.path.join(BASE_DIR, 'fw_management', '../../../downloaded_wfs/example_expflows', param_tag + 'new_wf_ex.json')
 
     if END_WF_JOB:
         wf = Workflow([EndWorkflowProcess()], name="EndWorkflow")

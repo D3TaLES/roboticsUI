@@ -17,7 +17,7 @@ try:
     from kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
 except ModuleNotFoundError:
     warnings.warn("KBIO module not imported.")
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 
 VERBOSITY = 1
 ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\EClib64.dll"
@@ -906,7 +906,7 @@ def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
     experiment.run_experiment()
     p_data = experiment.parsed_data
     df = pd.DataFrame(p_data)
-    df.to_csv(os.path.join(D3TALES_DIR, "workflows", "actions\\examples\\ca_testing\\ca_test6.csv"))
+    df.to_csv(os.path.join(D3TALES_DIR, "workflows", "actions\\test_data\\ca_testing\\ca_test6.csv"))
 
 
 def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
@@ -916,11 +916,11 @@ def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
     ex_steps = [voltage_step(**p) for p in collection_params]
     exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)
     exp.run_experiment()
-    exp.to_txt(f"examples/cv_ex_ch{potentiostat_channel}.csv")
-    exp.plot(f"examples/cv_ex_ch{potentiostat_channel}.png")
+    exp.to_txt(f"test_data/cv_ex_ch{potentiostat_channel}.csv")
+    exp.plot(f"test_data/cv_ex_ch{potentiostat_channel}.png")
     print(exp.iR_comp_data)
-    # exp.save_data_records(f"examples/cv_ex_ch{potentiostat_channel}.txt")
-    # exp.save_parsed_data(f"examples/cv_ex_ch{potentiostat_channel}.json")
+    # exp.save_data_records(f"test_data/cv_ex_ch{potentiostat_channel}.txt")
+    # exp.save_parsed_data(f"test_data/cv_ex_ch{potentiostat_channel}.json")
 
 
 if __name__ == "__main__":

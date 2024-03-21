@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from fireworks import LaunchPad
 from tkinter.filedialog import askopenfile
 from app_processing import *
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from robotics_api.workflows.wf_writer import *
 
 d3orange = "#FF9004"

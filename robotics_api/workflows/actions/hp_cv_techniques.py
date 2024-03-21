@@ -1,10 +1,10 @@
 import hardpotato as hp
 import softpotato as sp
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from d3tales_api.Processors.parser_cv import *
 
 # Folder where to save the data, it needs to be created previously
-out_folder = os.path.join(D3TALES_DIR, "workflows", "actions", "examples")
+out_folder = os.path.join(D3TALES_DIR, "workflows", "actions", "test_data")
 
 # Initialization:
 pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
@@ -39,23 +39,30 @@ def cv_ex(resistance=0):
 
 
 def ca_ex():
-    # Experimental parameters:
+    # Experimental parameters. (None means use robotics default)
     Eini = 0  # V, initial potential
     Ev1 = 0.025  # V, first vertex potential
     Ev2 = -0.025  # V, second vertex potential
-    pw = 1e-4  # s, pulse width
-    dE = 1e-6  # V, potential increment
-    nSweeps = 200  # number of sweeps
-    sens = 1e-4  # A/V, current sensitivity
+    pw = None  # 1e-4  # s, pulse width
+    dE = None  # 1e-6  # V, potential increment
+    nSweeps = None  # 200  # number of sweeps
+    sens = None  # 1e-4  # A/V, current sensitivity
     fileName = 'CA'  # base file name for data file
     header = 'CA'  # header for data file
 
-    ca = hp.potentiostat.CA(Eini, Ev1, Ev2, dE, nSweeps, pw, sens, fileName, header)
-    # ca.run()
+    pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
+    hp.potentiostat.Setup(pot_model, POTENTIOSTAT_A_EXE_PATH, out_folder, port=POTENTIOSTAT_A_ADDRESS)
+
+    ca = hp.potentiostat.CA(Eini, Ev1, Ev2, fileName, header,
+                            dE or RECORD_EVERY_DE,
+                            nSweeps or STEPS,
+                            pw or PULSE_WIDTH,
+                            sens or SENSITIVITY)
+    ca.run()
 
     # Load recently acquired data
     data = ParseChiCA(os.path.join(out_folder, fileName+".txt"))
-    print(data.parsed_data)
+    print(data.parsed_data.measured_resistance)
 
     # Plot CV with softpotato
     # sp.plotting.plot(data.t, data.i, xlab='$t$ / s', fig=1, show=1)
@@ -79,7 +86,7 @@ def ircomp_ex():
 
 
 if __name__ == "__main__":
-    resist = ircomp_ex()
-    print(resist)
-    cv_ex(resistance=resist)
-    # ca_ex()
+    # resist = ircomp_ex()
+    # print(resist)
+    # cv_ex(resistance=resist)
+    ca_ex()

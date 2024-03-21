@@ -1,6 +1,6 @@
 import argparse
 
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from kortex_api.TCPTransport import TCPTransport
 from kortex_api.UDPTransport import UDPTransport
 from kortex_api.SessionManager import SessionManager

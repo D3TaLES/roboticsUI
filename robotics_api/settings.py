@@ -2,22 +2,29 @@ import os
 import math
 from pathlib import Path
 
+"""
+It This code contains various settings and configurations for a robotics experiment setup. It includes
+operation settings, default conditions, instrument settings, processing settings, station configurations, 
+file paths, and more. Be sure to review all settings listed here before running a robotic workflow. 
 
-# ---------  TESTING OPERATION VARIABLES -------------
-RUN_POTENT = False
+Copyright 2022, University of Kentucky
+"""
+
+
+# ---------  TESTING OPERATION SETTINGS -------------
+RUN_POTENT = True
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
 RUN_ROBOT = True
-MOVE_ELEVATORS = False
+MOVE_ELEVATORS = True
 
-# ---------  OPERATION VARIABLES -------------
+# ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
 CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_CONCENTRATION_FAILURE = False
 FIZZLE_DIRTY_ELECTRODE = True
-DIRTY_ELECTRODE_CURRENT = 0.00001  # max current allowed (A) for a clean electrode
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -25,26 +32,20 @@ DEFAULT_CONCENTRATION = "0.01M"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 0.01  # radius assumed in mm
 DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2)) * 0.01  # area given in cm^2
 MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False  # TODO confirm condition
+DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allowed (A) for a clean electrode
 
 TIME_UNIT = "s"
 MASS_UNIT = "mg"
 VOLUME_UNIT = "mL"
 TEMPERATURE_UNIT = "K"
 
-# ---------  ROBOT VARIABLES -------------
+# ---------  ROBOT SETTINGS -------------
 KINOVA_01_IP = "192.168.1.10"
 VIAL_GRIP_TARGET = 75
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 
-# ---------  PATH VARIABLES -------------
-D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
-DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
-SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
-SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
-SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
-
-# ---------  POTENTIOSTAT VARIABLES -------------
+# ---------  POTENTIOSTAT SETTINGS -------------
 POTENTIOSTAT_A_ADDRESS = "COM6"
 POTENTIOSTAT_A_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
 POTENTIOSTAT_B_ADDRESS = "COM4"
@@ -76,8 +77,7 @@ RCOMP_LEVEL = 0.85  # percentage as decimal of solution resistance to use
 INITIAL_FREQUENCY = 10000
 FINAL_FREQUENCY = 100000
 
-
-# ---------  PROCESSING VARIABLES -------------
+# ---------  PROCESSING SETTINGS -------------
 RUN_ANODIC = False
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
@@ -90,10 +90,10 @@ PEAK_WIDTH = 0.5
 CA_CALIB_STDS = {"11JNLU": 0.30, "06IGCB": 0.53, "05MYHH": 0}  # True conductivity for KCl and H2O, respectively TODO update
 FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53, "05MYHH": 0}  # Formal potentials in V
 
-# ---------  ARDUINO VARIABLES -------------
+# ---------  ARDUINO ADDRESS -------------
 ARDUINO_ADDRESS = "COM4"
 
-# ---------  LOCATION VARIABLES -------------
+# ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
 MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01"]
 ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
@@ -107,14 +107,21 @@ VIALS = [
 SOLVENT_VIALS = {"solvent_01": "S_01"}
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
-# ---------  FIREWORKS VARIABLES -------------
+# ---------  PATH VARIABLES -------------
+D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
+DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
+SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
+SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
+SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
+
+# ---------  FIREWORKS PATH VARIABLES -------------
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 LAUNCHPAD = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\launchpad_robot.yaml')
+    '/robotics_api/fw_management\\config\\launchpad_robot.yaml')
 ROBOT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_robot.yaml')
+    '/robotics_api/fw_management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_process.yaml')
+    '/robotics_api/fw_management\\config\\fireworker_process.yaml')
 INSTRUMENT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\management\\config\\fireworker_instrument.yaml')
+    '/robotics_api/fw_management\\config\\fireworker_instrument.yaml')

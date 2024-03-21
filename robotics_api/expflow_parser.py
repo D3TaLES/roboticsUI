@@ -6,6 +6,34 @@ from robotics_api.workflows.ExperimentActions import *
 
 
 class EF2Experiment(ProcessExpFlowObj):
+    """
+    Class for converting an ExpFlow robotics workflow into a Fireworks Workflow that
+    can be run on the robotic setup.
+
+    Args:
+        expflow_obj: The ExpFlow object (often parsed from a JSON).
+        source_group (str): Source group for the experiment.
+        fw_parents (list): List of parent Fireworks.
+        priority (int): Priority of the Firework.
+        data_type (str): Type of experiment data.
+        exp_name (str): Name of the experiment.
+        wflow_name (str): Name of the workflow.
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        fw_parents (list): List of parent Fireworks.
+        priority (int): Priority of the Firework.
+        full_name (str): Full name of the experiment.
+        wflow_name (str): Name of the workflow.
+        rom_id (str): Redox molecule ID.
+        rom_name (str): Redox molecule name.
+        solv_id (str): Solvent ID.
+        metadata (dict): Metadata related to the experiment.
+        end_exp (Firework): Firework marking the end of the experiment.
+        fw_specs (dict): Specifications for the Firework.
+        workflow (list): List of tasks in the experiment workflow.
+    """
+
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
         super().__init__(expflow_obj, source_group, **kwargs)
@@ -14,13 +42,14 @@ class EF2Experiment(ProcessExpFlowObj):
         self.full_name = "{}_{}".format(exp_name, self.molecule_id)
         self.wflow_name = wflow_name
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
+        self.rom_name = getattr(self.redox_mol, "name", "no_redox_mol_name")
         self.solv_id = get_id(self.solvent) or "no_solvent"
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
         self.end_exp = None
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
                          "mol_id": self.molecule_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
-                         "metadata": self.metadata}
+                         "metadata": self.metadata, "rom_name": self.rom_name}
 
         # Check for multi tasks
         self.workflow = []
@@ -28,6 +57,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @staticmethod
     def collect_task(collect_task, tag="setup", default_analysis="cv"):
+        """Generates setup or finish tasks"""
         if any(kw in collect_task.name for kw in ["_cv_", "electrode"]):
             analysis = "cv"
         elif "_ca_" in collect_task.name:
@@ -43,6 +73,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @staticmethod
     def process_task(collect_task):
+        """Generates a processing task"""
         task_dict = copy.deepcopy(collect_task.__dict__)
         task_dict["name"] = f"process_data"
         new_task = dict2obj(task_dict)
@@ -50,6 +81,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @staticmethod
     def check_multi_task(task):
+        """Checks for multitasks in the workflow."""
         if "multi_cv" in task.name:
             task_list = []
             scan_rates_param = [p for p in task.parameters if p.description == "scan_rates"][0]
@@ -72,6 +104,8 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @property
     def task_clusters(self):
+        """Generates task clusters for the workflow."""
+
         all_tasks, task_cluster, active_method = [], [], None
         if "collect" in self.workflow[0].name:
             task_cluster = [self.collect_task(self.workflow[0], tag="setup")]
@@ -121,6 +155,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @property
     def fireworks(self):
+        """Generates a list of Fireworks for the experiment"""
         # Return active Firework
         fireworks = []
         parent = self.fw_parents
@@ -154,6 +189,7 @@ class EF2Experiment(ProcessExpFlowObj):
         return fireworks
 
     def get_firetask(self, task):
+        """Retrieves associated Firetasks for the given ExpFlow task."""
         firetasks = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
@@ -163,6 +199,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
     @property
     def task_dictionary(self):
+        """Returns dictionary mapping ExpFlow tasks to Firetasks."""
         return {
             "transfer_liquid": [DispenseLiquid],  # needs: VOLUME
             "transfer_solid": [DispenseSolid],  # needs: MASS

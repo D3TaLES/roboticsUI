@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from d3tales_api.Calculators.utils import unit_conversion
 from d3tales_api.D3database.d3database import RobotStatusDB, D3Database, FrontDB
 
@@ -15,9 +15,12 @@ class VialStatus(RobotStatusDB):
 
     def __init__(self, _id: str = None, exp_name: str = None, **kwargs):
         """
-        Initiate class
-        :param _id: str, _id
-        :param exp_name: str, experiment name
+        Initialize class instance.
+
+        Args:
+            _id (str, optional): The ID. Defaults to None.
+            exp_name (str, optional): The experiment name. Defaults to None.
+            **kwargs: Additional keyword arguments.
         """
         super().__init__(apparatus_type='vials', _id=_id, **kwargs)
         if exp_name:
@@ -36,59 +39,100 @@ class VialStatus(RobotStatusDB):
 
     @property
     def vial_content(self):
+        """
+        Get the vial content.
+
+        Returns:
+            list: The vial content.
+        """
         return self.get_prop("vial_content") or []
 
     @property
     def capped(self):
+        """
+        Get the capped status.
+
+        Returns:
+            bool: The capped status.
+        """
         return self.get_prop("capped") or []
 
     @property
     def current_location(self):
+        """
+        Get the current location.
+
+        Returns:
+            str: The current location.
+        """
         return self.get_prop("current_location") or []
 
     @property
     def location_history(self):
+        """
+        Get the location history.
+
+        Returns:
+            list: The location history.
+        """
         return self.get_prop("location_history") or []
 
     @property
     def current_station(self):
+        """
+        Get the current station.
+
+        Returns:
+            StationStatus: The current station status.
+        """
         return StationStatus(_id=self.current_location)
 
     def update_capped(self, value: bool):
         """
-        Get capped prop for instance with _id
-        :param value: bool, capped prop
-        :return: prop
+        Update the capped status.
+
+        Args:
+            value (bool): The new capped status.
+
+        Returns:
+            prop: The updated capped status.
         """
         return self.coll.update_one({"_id": self.id}, {"$set": {"capped": value}})
 
-    def update_location(self, new_location):
+    def update_location(self, new_location: str):
         """
-        Update status for a vial location or station vial
-        :param new_location: str, new vial location
+        Update the vial location or station vial status.
+
+        Args:
+            new_location (str): The new vial location.
         """
         self.update_status(new_location, "location")
 
     def update_vial_content(self, new_content):
         """
-        Update status for a vial location or station vial
-        :param new_content: dict, new vial content
+        Update the vial content.
+
+        Args:
+            new_content (dict): The new vial content.
         """
         self.vial_content.append(new_content)
         self.insert(self.id, override_lists=True, instance={"vial_content": self.vial_content})
 
     def clear_vial_content(self):
-        """
-        Clear vial content
-        """
+        """Clear the vial content."""
         self.insert(self.id, override_lists=True, instance={"vial_content": []})
 
     def add_reagent(self, reagent, amount, default_unit):
         """
-        Update status for a vial location or station vial
-        :param reagent: str or obj, new reagent for vial content
-        :param amount: str or float, amount for new reagent
-        :param default_unit: str, default unit for reagent amount
+        Add a reagent to the vial content.
+
+        Args:
+            reagent (str or obj): The reagent ID or instance.
+            amount (str or float or dict): The amount of the reagent.
+            default_unit (str): The default unit for the reagent amount.
+
+        Raises:
+            NameError: If the reagent does not exist in the reagent database.
         """
         reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
         if not reagent:
@@ -118,8 +162,12 @@ class StationStatus(RobotStatusDB):
 
     def __init__(self, _id: str = None, state_id: str = None, **kwargs):
         """
-        Initiate class
-        :param _id: str, _id
+        Initialize class instance.
+
+        Args:
+            _id (str, optional): The ID. Defaults to None.
+            state_id (str, optional): The state ID. Defaults to None.
+            **kwargs: Additional keyword arguments.
         """
         super().__init__(apparatus_type='stations', _id=_id, **kwargs)
         if state_id:
@@ -134,32 +182,74 @@ class StationStatus(RobotStatusDB):
 
     @property
     def available(self):
+        """
+        Get the availability status.
+
+        Returns:
+            bool: The availability status.
+        """
         return self.get_prop("available")
 
     @property
     def state(self):
+        """
+        Get the state.
+
+        Returns:
+            str: The state.
+        """
         return self.get_prop("state")
 
     @property
     def current_content(self):
+        """
+        Get the current content.
+
+        Returns:
+            str: The current content.
+        """
         return self.get_prop("current_content")
 
     @property
     def content_history(self):
+        """
+        Get the content history.
+
+        Returns:
+            list: The content history.
+        """
         return self.get_prop("content_history")
 
     def place_vial(self, vial, **kwargs):
+        """
+        Placeholder method for placing a vial.
+
+        Args:
+            vial: The vial to place.
+            **kwargs: Additional keyword arguments.
+        """
         return
 
     def retrieve_vial(self, vial, **kwargs):
+        """
+        Placeholder method for retrieving a vial.
+
+        Args:
+            vial: The vial to retrieve.
+            **kwargs: Additional keyword arguments.
+        """
         return
 
-    def get_all_available(self, name_str, exp_name=None):
+    def get_all_available(self, name_str: str, exp_name=None):
         """
-        Get all available stations with name_str in name
-        :param name_str: str, name string
-        :param exp_name: str, experiment name
-        :return: prop
+        Get all available stations with a specified name string.
+
+        Args:
+            name_str (str): The name string to search for.
+            exp_name (str, optional): The experiment name. Defaults to None.
+
+        Returns:
+            list: List of available station IDs.
         """
         if exp_name:
             return self.coll.find({
@@ -175,12 +265,17 @@ class StationStatus(RobotStatusDB):
 
     def get_first_available(self, name_str, wait=True, max_time=MAX_WAIT_TIME, wait_interval=2, **kwargs):
         """
-        Get first available stations with name_str in name
-        :param name_str: str, name string
-        :param wait: bool, wait for available station if True
-        :param max_time: int, maximum time to wait in seconds
-        :param wait_interval: int,
-        :return: prop
+        Get the first available station with a specified name string.
+
+        Args:
+            name_str (str): The name string to search for.
+            wait (bool, optional): Whether to wait for an available station. Defaults to True.
+            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
+            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            str: The ID of the first available station.
         """
         available_stations = self.get_all_available(name_str, **kwargs)
         if not wait:
@@ -197,9 +292,14 @@ class StationStatus(RobotStatusDB):
 
     def wait_till_available(self, max_time=MAX_WAIT_TIME, wait_interval=2):
         """
-        Wait until station is available
-        :param max_time: int,
-        :param wait_interval: int,
+        Wait until the station is available.
+
+        Args:
+            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
+            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.
+
+        Returns:
+            bool: True if the station becomes available, False otherwise.
         """
         total_time = 0
         while not self.available:
@@ -210,33 +310,38 @@ class StationStatus(RobotStatusDB):
                 return False
         return True
 
-
     def update_available(self, value: bool):
         """
-        Get available prop for instance with _id
-        :param value: bool, available prop
-        :return: prop
+        Update the availability status.
+
+        Args:
+            value (bool): The new availability status.
+
+        Returns:
+            prop: The updated availability status.
         """
         return self.coll.update_one({"_id": self.id}, {"$set": {"available": value}})
 
-    def update_state(self, new_state):
+    def update_state(self, new_state: str):
         """
-        Update status for a vial location or station vial
-        :param new_state: str, new state for station
+        Update the station state.
+
+        Args:
+            new_state (str): The new state for the station.
         """
         self.coll.update_one({"_id": self.id}, {"$set": {"state": new_state}})
 
     def update_content(self, new_content):
         """
-        Update status for a vial location or station vial
-        :param new_content: str, new vial in station
+        Update the station content.
+
+        Args:
+            new_content: The new content in the station.
         """
         self.update_status(new_content, "content")
 
     def empty(self):
-        """
-        Empty station content and update availability
-        """
+        """Empty the station content and update availability."""
         self.update_status("", "content")
         self.update_available(True)
 
@@ -248,6 +353,14 @@ class ReagentStatus(RobotStatusDB):
     """
 
     def __init__(self, r_name=None, r_smiles=None, **kwargs):
+        """
+        Initialize class instance.
+
+        Args:
+            r_name (str, optional): The name of the reagent. Defaults to None.
+            r_smiles (str, optional): The SMILES representation of the reagent. Defaults to None.
+            **kwargs: Additional keyword arguments.
+        """
         super().__init__(apparatus_type='reagents', **kwargs)
         if r_name:
             self.id = (self.coll.find_one({"name": r_name}) or {}).get("_id")
@@ -272,6 +385,12 @@ class ReagentStatus(RobotStatusDB):
 
     @property
     def molecular_weight(self):
+        """
+        Calculate the molecular weight of the reagent.
+
+        Returns:
+            float: The molecular weight of the reagent.
+        """
         if not self.smiles:
             raise Exception(f"Cannot calculate molecular weight because no SMILES is associated with {self}.")
         rdkmol = MolFromSmiles(self.smiles)
@@ -286,11 +405,13 @@ class ChemStandardsDB(D3Database):
 
     def __init__(self, standards_type: str, _id: str = None, instance: dict = None, override_lists: bool = True):
         """
-        Initiate class
-        :param standards_type: str, type of chemistry standard
-        :param _id: str, _id
-        :param instance: dict, instance to insert or validate
-        :param override_lists: bool,
+        Initialize class instance.
+
+        Args:
+            standards_type (str): The type of chemistry standard.
+            _id (str, optional): The ID of the standard. Defaults to None.
+            instance (dict, optional): The instance to insert or validate. Defaults to None.
+            override_lists (bool, optional): Whether to override existing lists. Defaults to True.
         """
         self.db_name = 'standards_' + standards_type
         super().__init__(database="robotics", collection_name=self.db_name, instance=instance, validate_schema=False)
@@ -302,22 +423,48 @@ class ChemStandardsDB(D3Database):
             self.insert(self.id, override_lists=override_lists)
 
     def __str__(self):
+        """
+        Return a string representation of the ChemStandardsDB instance.
+
+        Returns:
+            str: A string representation of the instance.
+        """
         return self.db_name
 
     @property
     def exists(self):
+        """
+        Check if the standard exists in the database.
+
+        Returns:
+            bool: True if the standard exists, False otherwise.
+        """
         return True if self.coll.find_one({"_id": self.id}) else False
 
     def get_prop(self, prop: str):
         """
-        Get database prop for instance with _id
-        :param prop: str, property name
-        :return: prop
+        Get a property of the standard from the database.
+
+        Args:
+            prop (str): The property to retrieve.
+
+        Returns:
+            Any: The value of the property.
         """
         return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
 
 def check_duplicates(test_list, exemptions=None):
+    """
+    Check for duplicates in a list, excluding specified exemptions.
+
+    Args:
+        test_list (list): The list to check for duplicates.
+        exemptions (list, optional): Items to exclude from duplicate checking. Defaults to None.
+
+    Returns:
+        str: A comma-separated string of duplicate items, or None if no duplicates are found.
+    """
     for e in exemptions or [""]:
         test_list = [t for t in test_list if e not in t]
     if len(test_list) > len(set(test_list)):
@@ -326,6 +473,13 @@ def check_duplicates(test_list, exemptions=None):
 
 
 def reset_reagent_db(reagents_list, current_wflow_name=""):
+    """
+    Reset the reagent database with the provided list of reagents.
+
+    Args:
+        reagents_list (list): List of dictionaries representing reagents.
+        current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
+    """
     # Check reagent locations 1-to-1 status
     reagent_locs = [r.get("location") for r in reagents_list]
     duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent"])
@@ -339,6 +493,12 @@ def reset_reagent_db(reagents_list, current_wflow_name=""):
 
 
 def reset_station_db(current_wflow_name=""):
+    """
+    Reset the station database.
+
+    Args:
+        current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
+    """
     StationStatus().coll.delete_many({})
     for station in STATIONS:
         state = "down" if "potentiostat" in station else ""
@@ -353,6 +513,14 @@ def reset_station_db(current_wflow_name=""):
 
 
 def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_DEFAULT):
+    """
+    Reset the vial database with the provided experiment locations.
+
+    Args:
+        experiment_locs (dict): Dictionary mapping vial IDs to experiment names.
+        current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
+        capped_default (bool, optional): Default value for vial cap status. Defaults to CAPPED_DEFAULT.
+    """
     # Check experiment locations 1-to-1 status
     experiment_locs.update(SOLVENT_VIALS)
     if check_duplicates(experiment_locs.values()):
@@ -376,6 +544,9 @@ def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_
 
 
 def reset_test_db():
+    """
+    Reset the test database with default configurations.
+    """
     wflow_name = "test_workflow"
     reagents = [
         {
@@ -430,6 +601,13 @@ def reset_test_db():
 
 
 def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
+    """
+    Set up formal potentials for specified molecules.
+
+    Args:
+        potentials_dict (dict, optional): Dictionary mapping molecule IDs to formal potentials.
+            Defaults to FORMAL_POTENTIALS.
+    """
     for mol_id, potent in potentials_dict.items():
         query = FrontDB().make_query({"_id": "06TNKR"}, {"mol_info.smiles": 1}, output='json')
         smiles = query[0].get("mol_info", {}).get("smiles")
@@ -442,7 +620,10 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
 
 
 def test_calib():
-    for c in [1,2,3,4]:
+    """
+    Tests calibration database
+    """
+    for c in [1, 2, 3, 4]:
         calib_instance = {
             "_id": datetime.now().isoformat(),  # Date
             "date": datetime.now().strftime('%Y_%m_%d'),  # Day

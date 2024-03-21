@@ -5,12 +5,11 @@ import traceback
 from six import add_metaclass
 from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
-from d3tales_api.D3database.d3database import *
 from robotics_api.workflows.actions.utilities import DeviceConnection
 from robotics_api.workflows.actions.processing_utils import *
 from robotics_api.workflows.actions.standard_actions import *
 from robotics_api.workflows.actions.db_manipulations import *
-from robotics_api.standard_variables import *
+from robotics_api.settings import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 

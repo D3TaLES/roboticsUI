@@ -1,4 +1,4 @@
-# Copyright 2022, University of Kentucky
+# Copyright 2024, University of Kentucky
 import abc
 import warnings
 
@@ -70,7 +70,7 @@ class DispenseLiquid(RoboticsBase):
         volume = self.get("volume")
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         if solvent.type != "solvent":
-            solvent = ReagentStatus(_id=fw_spec.get("solv_id"))
+            raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
         if solvent.location != "experiment_vial":
             solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
 

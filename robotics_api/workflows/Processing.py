@@ -1,5 +1,5 @@
 # FireTasks for individual experiment processing
-# Copyright 2022, University of Kentucky
+# Copyright 2024, University of Kentucky
 
 import traceback
 from six import add_metaclass
@@ -13,7 +13,7 @@ from robotics_api.settings import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
-# Copyright 2023, University of Kentucky
+# Copyright 2024, University of Kentucky
 TESTING = False
 VERBOSE = 1
 
@@ -188,8 +188,10 @@ class ProcessCVBenchmarking(ProcessBase):
 
         try:
             # Process benchmarking data
-            self.metadata.update(
-                {"redox_mol_concentration": get_rmol_concentration(cv_data[0].get("vial_contents"), fw_spec)})
+            self.metadata.update({
+                "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), fw_spec, "rom_id"),
+                "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), fw_spec, "elect_id")
+            })
             p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
             self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
 
@@ -228,7 +230,10 @@ class ProcessCalibration(ProcessBase):
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
+            self.metadata.update({
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
+            })
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)
@@ -266,7 +271,11 @@ class DataProcessor(ProcessBase):
         processed_cv_data = []
         for d in cv_data:
             m_data = self.metadata
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec)})
+            self.metadata.update({
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
+            })
+            print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
             self.plot_cv(d.get("data_location"), p_data)
             if p_data:
@@ -300,8 +309,12 @@ class DataProcessor(ProcessBase):
         for d in ca_data:
             m_data = self.metadata
             ca_calib_measured, ca_calib_true = get_calib()
-            m_data.update({"redox_mol_concentration": get_rmol_concentration(d.get("vial_contents"), fw_spec),
-                           "calib_measured": ca_calib_measured, "calib_true": ca_calib_true})
+            self.metadata.update({
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id"),
+                "calib_measured": ca_calib_measured, "calib_true": ca_calib_true
+            })
+            print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
                 processed_ca_data.append(p_data)

@@ -133,7 +133,18 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
         time.sleep(1)
 
 
-def write_test(file_path, test_text="test"):
+def write_test(file_path, test_type=""):
+    test_files = {
+        "cv": os.path.join(D3TALES_DIR, "workflows", "actions", "standards", "CV.txt"),
+        "ca": os.path.join(D3TALES_DIR, "workflows", "actions", "standards", "CA.txt"),
+        "ircomp": os.path.join(D3TALES_DIR, "workflows", "actions", "standards", "iRComp.txt"),
+    }
+    test_fn = test_files.get(test_type.lower())
+    if os.path.isfile(test_fn):
+        with open(test_fn, 'r') as fn:
+            test_text = fn.read()
+    else:
+        test_text = "test"
     with open(file_path, 'w+') as fn:
         fn.write(test_text)
 
@@ -534,7 +545,7 @@ class CVPotentiostatStation(PotentiostatStation):
         """
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
-            write_test(data_path, test_text="test CV")
+            write_test(data_path, test_type="cv")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -589,7 +600,7 @@ class CVPotentiostatStation(PotentiostatStation):
         if not RUN_POTENT:
             print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
                   f"Observing the {POT_DELAY} second CV_DELAY.")
-            write_test(data_path, test_text="test iRComp")
+            write_test(data_path, test_type="iRComp")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
@@ -634,7 +645,7 @@ class CAPotentiostatStation(PotentiostatStation):
         """
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
-            write_test(data_path, test_text="test CA")
+            write_test(data_path, test_type="ca")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range

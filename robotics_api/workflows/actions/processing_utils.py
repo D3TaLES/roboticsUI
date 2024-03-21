@@ -19,31 +19,32 @@ def collection_dict(coll_data):
     return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
 
 
-def get_rmol_concentration(vial_content, fw_spec):
+def get_concentration(vial_content, fw_spec, solute_spec="rom_id"):
     """
-    Calculate the concentration of a redox molecule based on reagent and solvent information.
+   Calculate the concentration of a solute in a solvent based on the provided vial content and Fireworks specs.
 
-    Args:
-        vial_content (list): List of dictionaries representing vial content.
-        fw_spec (dict): Forward specification containing reagent and solvent IDs.
+   Args:
+       vial_content (list): List of dictionaries representing the content of the vial.
+       fw_spec (dict): Fireworks specs containing information about the solute and solvent.
+       solute_spec (str, optional): Key specifying the solute in the fw_spec. Defaults to "rom_id".
 
-    Returns:
-        str: Concentration of the redox molecule in molarity.
-    """
-    rom_id = fw_spec.get("rom_id")
+   Returns:
+       str: Concentration of the solute in the solvent, expressed in molarity.
+   """
+    solute_id = fw_spec.get(solute_spec)
     solv_id = fw_spec.get("solv_id")
-    rom_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == rom_id]
+    solute_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
     solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
-    if not rom_mass or not solv_vol:
+    if not solute_mass or not solv_vol:
         if FIZZLE_CONCENTRATION_FAILURE:
-            raise Exception(f"Redox mol calculation did not work...check all variables: rom_id={rom_id}, "
-                            f"solv_id={solv_id}, rom_mass={rom_mass}, solv_vol={solv_vol}")
+            raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
+                            f"solv_id={solv_id}, solute_mass={solute_mass}, solv_vol={solv_vol}")
         return DEFAULT_CONCENTRATION
-    rom_mw = "{}g/mol".format(ReagentStatus(_id=rom_id).molecular_weight)
+    solute_mw = "{}g/mol".format(ReagentStatus(_id=solute_id).molecular_weight)
     ureg = pint.UnitRegistry()
     volume = ureg(solv_vol[0])
-    mass = ureg(rom_mass[0])
-    mw = ureg(rom_mw)
+    mass = ureg(solute_mass[0])
+    mw = ureg(solute_mw)
     concentration = mass/mw/volume
     return "{}M".format(concentration.to('M').magnitude)
 

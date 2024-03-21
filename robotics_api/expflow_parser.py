@@ -44,12 +44,13 @@ class EF2Experiment(ProcessExpFlowObj):
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.rom_name = getattr(self.redox_mol, "name", "no_redox_mol_name")
         self.solv_id = get_id(self.solvent) or "no_solvent"
+        self.elect_id = get_id(self.electrolyte) or "no_electrolyte"
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
         self.end_exp = None
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
                          "mol_id": self.molecule_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
-                         "metadata": self.metadata, "rom_name": self.rom_name}
+                         "elect_id": self.elect_id, "metadata": self.metadata, "rom_name": self.rom_name}
 
         # Check for multi tasks
         self.workflow = []

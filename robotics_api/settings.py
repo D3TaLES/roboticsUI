@@ -7,24 +7,24 @@ It This code contains various settings and configurations for a robotics experim
 operation settings, default conditions, instrument settings, processing settings, station configurations, 
 file paths, and more. Be sure to review all settings listed here before running a robotic workflow. 
 
-Copyright 2022, University of Kentucky
+Copyright 2024, University of Kentucky
 """
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
+RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
 CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_CONCENTRATION_FAILURE = False
-FIZZLE_DIRTY_ELECTRODE = True
+FIZZLE_DIRTY_ELECTRODE = False
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -118,10 +118,10 @@ SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_hom
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 LAUNCHPAD = os.path.abspath(
-    '/robotics_api/fw_management\\config\\launchpad_robot.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\launchpad_robot.yaml')
 ROBOT_FWORKER = os.path.abspath(
-    '/robotics_api/fw_management\\config\\fireworker_robot.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
-    '/robotics_api/fw_management\\config\\fireworker_process.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_process.yaml')
 INSTRUMENT_FWORKER = os.path.abspath(
-    '/robotics_api/fw_management\\config\\fireworker_instrument.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_instrument.yaml')

@@ -10,7 +10,7 @@ from d3tales_api.D3database.d3database import RobotStatusDB, D3Database, FrontDB
 class VialStatus(RobotStatusDB):
     """
     Class for accessing the Robot Vial Status database
-    Copyright 2023, University of Kentucky
+    Copyright 2024, University of Kentucky
     """
 
     def __init__(self, _id: str = None, exp_name: str = None, **kwargs):
@@ -157,7 +157,7 @@ class VialStatus(RobotStatusDB):
 class StationStatus(RobotStatusDB):
     """
     Class for accessing the Robot Vial Status database
-    Copyright 2023, University of Kentucky
+    Copyright 2024, University of Kentucky
     """
 
     def __init__(self, _id: str = None, state_id: str = None, **kwargs):
@@ -349,7 +349,7 @@ class StationStatus(RobotStatusDB):
 class ReagentStatus(RobotStatusDB):
     """
     Class for accessing the Robot Reagent Status database
-    Copyright 2023, University of Kentucky
+    Copyright 2024, University of Kentucky
     """
 
     def __init__(self, r_name=None, r_smiles=None, **kwargs):

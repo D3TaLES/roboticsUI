@@ -1,5 +1,5 @@
 # FireWorks for an experiment type
-# Copyright 2022, University of Kentucky
+# Copyright 2024, University of Kentucky
 
 # Import necessary modules
 from fireworks import Firework, ScriptTask

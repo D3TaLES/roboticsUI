@@ -14,10 +14,10 @@ Copyright 2024, University of Kentucky
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
 POT_DELAY = 5  # seconds
-STIR = False
+STIR = True
 DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -41,7 +41,7 @@ TEMPERATURE_UNIT = "K"
 
 # ---------  ROBOT SETTINGS -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 75
+VIAL_GRIP_TARGET = 65
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 
@@ -87,7 +87,7 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
-CA_CALIB_STDS = {"11JNLU": 0.30, "06IGCB": 0.53, "05MYHH": 0}  # True conductivity for KCl and H2O, respectively TODO update
+CA_CALIB_STDS = {"11JNLU": 0.30, "06IGCB": 0.53}  # True conductivity for KCl and H2O, respectively TODO update
 FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53, "05MYHH": 0}  # Formal potentials in V
 
 # ---------  ARDUINO ADDRESS -------------

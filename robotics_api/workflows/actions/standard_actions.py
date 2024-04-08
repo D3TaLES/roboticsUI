@@ -1,6 +1,5 @@
 import pint
 import serial
-import warnings
 from serial.tools.list_ports import comports
 from d3tales_api.Processors.parser_cv import *
 from robotics_api.workflows.actions.kinova_move import *
@@ -108,7 +107,7 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
     return success
 
 
-def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
+def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
@@ -126,10 +125,12 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS):
         data = arduino.readline()
         print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
         if data:
-            result_txt = str(data.rstrip(b'\n'))  # strip out the new lines for now\
+            result_txt = data.decode().strip()  # strip out the new lines
             print("Arduino Result: ", result_txt)
             if "success" in result_txt:
-                return True
+                return result_txt if return_txt else True
+            elif "failure" in result_txt:
+                return False
         time.sleep(1)
 
 
@@ -300,7 +301,7 @@ class LiquidStation(StationStatus):
         self.raise_amount = raise_amount
         self.blank_vial = SOLVENT_VIALS.get(self.id)
         self.pre_location_snapshot = None
-        self.arduino_name = "L_{:02d}".format(int(self.id.split("_")[-1]))
+        self.arduino_name = "L{:01d}".format(int(self.id.split("_")[-1]))
 
     def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
@@ -327,7 +328,7 @@ class StirHeatStation(StationStatus):
         if self.type != "stir-heat":
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.pre_location_snapshot = None
-        self.arduino_name = "S_{:02d}".format(int(self.id.split("_")[-1]))
+        self.arduino_name = "S{:1d}".format(int(self.id.split("_")[-1]))
         self.raise_amount = 0
 
     def place_vial(self, vial: VialMove, raise_error=True):
@@ -407,7 +408,8 @@ class PotentiostatStation(StationStatus):
         self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
 
         elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
-        self.arduino_name = f"E_{elevator:1d}"
+        self.arduino_name = f"E{elevator:1d}"
+        self.temp_arduino_name = f"T{elevator:1d}"
         self.raise_amount = raise_amount
 
     def update_experiment(self, experiment: str or None):
@@ -501,6 +503,17 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
+    def get_temperature(self):
+        """
+        Get temperature associated with this potentiostat station
+
+        Returns: float, temperature (K)
+        """
+
+        arduino_result = send_arduino_cmd(self.temp_arduino_name, "", return_txt=True)
+        if arduino_result:
+            return float(arduino_result.split(":")[1].strip())
+
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
         # Get voltages with appropriate units
@@ -570,7 +583,7 @@ class CVPotentiostatStation(PotentiostatStation):
             f_name = data_path.split("\\")[-1].split(".")[0]
             volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
             nSweeps = math.ceil((len(volts) - 2) / 2)
-            print("NSWEEPS: ", nSweeps)
+            print("N_SWEEPS: ", nSweeps)
             sr = unit_conversion(scan_rate, default_unit="V/s")
 
             # Install potentiostat and run CV
@@ -613,8 +626,8 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq, high_freq=high_freq, amplitude=amplitude, sens=sens,
-                                      fileName=f_name, header="iRComp " + f_name)
+            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq, high_freq=high_freq, amplitude=amplitude,
+                                      sens=sens, fileName=f_name, header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
@@ -707,20 +720,21 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("cv_potentiostat_A_01")
+    test_potent = PotentiostatStation("ca_potentiostat_B_01")
     d_path = os.path.join(D3TALES_DIR, "workflows", "actions", "test_data", "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
-    reset_test_db()
+    # reset_test_db()
+    # snapshot_move(SNAPSHOT_HOME)
     # reset_stations(end_home=True)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
-    # test_potent.move_elevator(endpoint="up")
-    # test_potent.move_elevator(endpoint="down")
+    test_potent.move_elevator(endpoint="up")
+    test_potent.move_elevator(endpoint="down")
 
-    # flush_solvent(0, vial_id="S_01", solv_id="solvent_01", go_home=False)
+    # flush_solvent(8, vial_id="S_01", solv_id="solvent_04", go_home=False)
     # # check_usb()
     # snapshot_move(SNAPSHOT_END_HOME)

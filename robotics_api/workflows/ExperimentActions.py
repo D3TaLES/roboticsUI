@@ -366,8 +366,12 @@ class RunCA(RoboticsBase):
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
-        self.metadata.update({"ca_idx": ca_idx + 1})
+        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        print("RECORDED TEMPERATURE: ", temperature)
+
+        self.metadata.update({"ca_idx": ca_idx + 1, "temperature": temperature})
         self.collection_data.append({"collect_tag": collect_tag,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "temperature": temperature,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

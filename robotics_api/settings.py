@@ -16,8 +16,8 @@ RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False

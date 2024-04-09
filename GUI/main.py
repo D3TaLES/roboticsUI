@@ -5,17 +5,15 @@ import subprocess
 import webbrowser
 import tkinter as tk
 from PIL import Image, ImageTk
-from fireworks import LaunchPad
 from tkinter.filedialog import askopenfile
-from app_processing import *
-from robotics_api.settings import *
+from GUI.app_processing import *
 from robotics_api.workflows.wf_writer import *
 
 d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("images/D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 

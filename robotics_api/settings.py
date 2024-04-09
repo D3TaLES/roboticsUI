@@ -14,7 +14,7 @@ Copyright 2024, University of Kentucky
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
 POT_DELAY = 5  # seconds
-STIR = True
+STIR = False
 DISPENSE = False
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
@@ -108,11 +108,12 @@ SOLVENT_VIALS = {"solvent_01": "S_01"}
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
 # ---------  PATH VARIABLES -------------
-D3TALES_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
+ROBOTICS_API = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
+TEST_DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "test_data")
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
-SNAPSHOT_DIR = os.path.join(D3TALES_DIR, "workflows", "snapshots")
-SNAPSHOT_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "home.json")
-SNAPSHOT_END_HOME = os.path.join(D3TALES_DIR, "workflows", "snapshots", "end_home.json")
+SNAPSHOT_DIR = os.path.join(ROBOTICS_API, "snapshots")
+SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
+SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 
 # ---------  FIREWORKS PATH VARIABLES -------------
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))

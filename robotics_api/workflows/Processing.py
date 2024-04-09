@@ -5,10 +5,10 @@ import traceback
 from six import add_metaclass
 from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
-from robotics_api.workflows.actions.utilities import DeviceConnection
-from robotics_api.workflows.actions.processing_utils import *
-from robotics_api.workflows.actions.standard_actions import *
-from robotics_api.workflows.actions.db_manipulations import *
+from robotics_api.actions.kinova_utils import DeviceConnection
+from robotics_api.actions.processing_utils import *
+from robotics_api.actions.standard_actions import *
+from robotics_api.actions.db_manipulations import *
 from robotics_api.settings import *
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
@@ -50,7 +50,7 @@ class InitializeStatusDB(FiretaskBase):
         reset_vial_db(experiments, current_wflow_name=wflow_name)
         reset_station_db(current_wflow_name=wflow_name)
 
-        # Setup standards databases
+        # Setup standard_data databases
         setup_formal_potentials()
         return FWAction(update_spec={"success": True})
 

@@ -5,8 +5,8 @@ import warnings
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
-from robotics_api.workflows.actions.standard_actions import *
-from robotics_api.workflows.actions.db_manipulations import *
+from robotics_api.actions.standard_actions import *
+from robotics_api.actions.db_manipulations import *
 
 
 @add_metaclass(abc.ABCMeta)

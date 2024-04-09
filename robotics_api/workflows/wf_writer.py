@@ -3,7 +3,7 @@
 
 from fireworks import Workflow
 from robotics_api.workflows.Robotics_FW import *
-from robotics_api.expflow_parser import EF2Experiment
+from robotics_api.workflows.expflow_parser import EF2Experiment
 
 
 def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):

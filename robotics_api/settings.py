@@ -47,9 +47,9 @@ RAISE_AMOUNT = 0.07
 
 # ---------  POTENTIOSTAT SETTINGS -------------
 POTENTIOSTAT_A_ADDRESS = "COM6"
-POTENTIOSTAT_A_EXE_PATH = r"C:\CH_Instruments\CHI650e\chi650e.exe"
+POTENTIOSTAT_A_EXE_PATH = r"C:\Users\Lab\Desktop\chi650e.exe"
 POTENTIOSTAT_B_ADDRESS = "COM4"
-POTENTIOSTAT_B_EXE_PATH = r"C:\CH_Instruments\CHI620e\chi620e.exe"
+POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
 
 N_CYCLES = 0
 SCAN_NUMBER = 1  # Not currently included in CV parameters
@@ -76,6 +76,7 @@ ADD_MICRO_BUFFER = 0.15  # volts, additional buffer for setting voltage range fr
 RCOMP_LEVEL = 0.85  # percentage as decimal of solution resistance to use
 INITIAL_FREQUENCY = 10000
 FINAL_FREQUENCY = 100000
+AMPLITUDE = 0.01
 
 # ---------  PROCESSING SETTINGS -------------
 RUN_ANODIC = False

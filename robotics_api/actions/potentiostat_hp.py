@@ -5,8 +5,8 @@ from d3tales_api.Processors.parser_cv import *
 
 
 # Initialization:
-pot_model = POTENTIOSTAT_B_EXE_PATH.split("\\")[-1].split(".")[0]
-hp.potentiostat.Setup(pot_model, POTENTIOSTAT_B_EXE_PATH, TEST_DATA_DIR, port=POTENTIOSTAT_A_ADDRESS)
+pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
+hp.potentiostat.Setup(pot_model, POTENTIOSTAT_A_EXE_PATH, TEST_DATA_DIR, port=POTENTIOSTAT_A_ADDRESS)
 
 
 def cv_ex(resistance=0):
@@ -15,20 +15,24 @@ def cv_ex(resistance=0):
     Ev1 = 0  # V, first vertex potential
     Ev2 = 0.8  # V, second vertex potential
     Efin = 0  # V, final potential
-    sr = 0.01  # V/s, scan rate
-    dE = 0.001  # V, potential increment
-    nSweeps = 1  # number of sweeps
-    sens = 1e-2  # A/V, current sensitivity
+    sr = 0.1  # V/s, scan rate
+    dE = None  # V, potential increment
+    nSweeps = None  # number of sweeps
+    sens = None  # A/V, current sensitivity
     fileName = 'CV'  # base file name for data file
     header = 'CV'  # header for data file
 
     # Initialize experiment:
-    cv = hp.potentiostat.CV(Eini, Ev1, Ev2, Efin, sr, dE, nSweeps, sens, fileName, header, resistance=resistance)
+    cv = hp.potentiostat.CV(Eini=Eini, Ev1=Ev1, Ev2=Ev2, Efin=Efin, sr=sr, resistance=resistance,
+                            dE=dE or RECORD_EVERY_DE,
+                            nSweeps=nSweeps or STEPS,
+                            sens=sens or SENSITIVITY,
+                            fileName=fileName, header=header)
     # Run experiment:
     cv.run()
 
     # Load recently acquired data
-    data = hp.load_data.CV(fileName + '.txt', out_folder, pot_model)
+    data = hp.load_data.CV(fileName + '.txt', TEST_DATA_DIR, pot_model)
     i = data.i
     E = data.E
 
@@ -39,17 +43,21 @@ def cv_ex(resistance=0):
 def ircomp_ex():
     # Experimental parameters:
     Eini = 0  # V, initial potential
-    low_freq = 10000  # Hz, low frequency
-    high_freq = 100000  # Hz, high frequency
-    amplitude = 0.01  # V, ac amplitude (half peak-to-peak)
-    sens = 1e-5  # A/V, current sensitivity
+    low_freq = None  # Hz, low frequency
+    high_freq = None  # Hz, high frequency
+    amplitude = None  # V, ac amplitude (half peak-to-peak)
+    sens = None  # A/V, current sensitivity
     fileName = 'iRComp'  # base file name for data file
     header = 'iRComp'  # header for data file
 
-    eis = hp.potentiostat.EIS(Eini, low_freq, high_freq, amplitude, sens, fileName, header)
+    eis = hp.potentiostat.EIS(Eini=Eini,
+                              low_freq=low_freq or INITIAL_FREQUENCY, high_freq=high_freq or FINAL_FREQUENCY,
+                              amplitude=amplitude or AMPLITUDE,
+                              sens=sens or SENSITIVITY,
+                              fileName=fileName, header=header)
     eis.run()
 
-    data = ParseChiESI(os.path.join(out_folder, fileName+".txt"))
+    data = ParseChiESI(os.path.join(TEST_DATA_DIR, fileName+".txt"))
     return data.resistance
 
 
@@ -61,21 +69,21 @@ def ca_ex():
     pw = None  # 1e-4  # s, pulse width
     dE = None  # 1e-6  # V, potential increment
     nSweeps = None  # 200  # number of sweeps
-    sens = None  # 1e-4  # A/V, current sensitivity
+    sens = 1e-2  # 1e-4  # A/V, current sensitivity
     fileName = 'CA'  # base file name for data file
     header = 'CA'  # header for data file
 
-    ca = hp.potentiostat.CA(Eini, Ev1, Ev2,
-                            dE or RECORD_EVERY_DE,
-                            nSweeps or STEPS,
-                            pw or PULSE_WIDTH,
-                            sens or SENSITIVITY,
+    ca = hp.potentiostat.CA(Eini=Eini, Ev1=Ev1, Ev2=Ev2,
+                            dE=dE or RECORD_EVERY_DE,
+                            nSweeps=nSweeps or STEPS,
+                            pw=pw or PULSE_WIDTH,
+                            sens=sens or SENSITIVITY,
                             fileName=fileName, header=header)
     ca.run()
 
     # Load recently acquired data
-    data = ParseChiCA(os.path.join(out_folder, fileName+".txt"))
-    print(data.parsed_data.measured_resistance)
+    data = ParseChiCA(os.path.join(TEST_DATA_DIR, fileName+".txt"))
+    print("Resistance (Ohm): ", data.measured_resistance)
 
     # Plot CV with softpotato
     # sp.plotting.plot(data.t, data.i, xlab='$t$ / s', fig=1, show=1)

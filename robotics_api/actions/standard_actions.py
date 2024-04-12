@@ -597,7 +597,7 @@ class CVPotentiostatStation(PotentiostatStation):
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=INITIAL_FREQUENCY, high_freq=FINAL_FREQUENCY,
-                        amplitude=0.01, sens=SENSITIVITY):
+                        amplitude=AMPLITUDE, sens=SENSITIVITY):
         """
         Run iR comp test to determine resistance
         Args:

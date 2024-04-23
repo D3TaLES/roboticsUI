@@ -1,0 +1,4 @@
+name: robotics_pc_process
+category: ["instrument"]
+query: "{}"
+env:

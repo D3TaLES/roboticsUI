@@ -4,3 +4,5 @@ __pycache__/*
 d3tales_api/
 logs/
 db_infos.json
+workflows/actions/examples/
+/test_data/

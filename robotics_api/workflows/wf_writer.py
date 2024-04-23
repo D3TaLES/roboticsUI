@@ -1,19 +1,19 @@
 # Workflows for running full experiments
-# Copyright 2022, University of Kentucky
+# Copyright 2024, University of Kentucky
 
 from fireworks import Workflow
 from robotics_api.workflows.Robotics_FW import *
-from robotics_api.expflow_parser import EF2Experiment
+from robotics_api.workflows.expflow_parser import EF2Experiment
 
 
 def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
     """
     Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules
     Args:
-        exp_params:
-        expflow_wf: dict, experiment dictionary from an ExpFlow instance
-        name_tag: str, name tag for workflow
-        **kwargs:
+        expflow_wf (dict): experiment dictionary from an ExpFlow instance
+        name_tag (str): name tag for workflow
+        exp_params (dict): experimental parameters that will be passed to the Fireworks specs
+        **kwargs: Additional keyword arguments.
     Returns:
         Fireworks Workflow object
     """
@@ -36,10 +36,16 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
 
 def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
     """
-    Establishes Fireworks workflow for running an example basic CV
+    FOR TESTING ONLY
+    Establishes Fireworks workflow for running an example basic CV processing job.
+    Args:
+        cv_dir (str): path the directory containing experimental CV files
+        molecule_id (str): D3TaLES ID for redox active molecule
+        name_tag (str): tame tag for workflow
+        **kwargs: Additional keyword arguments.
     """
     cv_locations = [f for f in os.listdir(cv_dir) if f.endswith(".csv")]
-    print(cv_locations)
+
     fws = [CVProcessing(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
 
     wf = Workflow(fws, name="{}_workflow".format(name_tag))

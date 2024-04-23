@@ -12,12 +12,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 POT_DELAY = 5  # seconds
-STIR = False
-DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+STIR = True
+DISPENSE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -51,16 +51,19 @@ POTENTIOSTAT_A_EXE_PATH = r"C:\Users\Lab\Desktop\chi650e.exe"
 POTENTIOSTAT_B_ADDRESS = "COM4"
 POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
 
-N_CYCLES = 0
-SCAN_NUMBER = 1  # Not currently included in CV parameters
-AVERAGE_OVER_DE = True
 RECORD_EVERY_DE = 0.01  # Volts
-SENSITIVITY = 1e-5  # A/V, current sensitivity
-PULSE_WIDTH = 0.25  # sec, pulse width for CA
-STEPS = 200  # number of steps for CA
+# CV Settings
+N_CYCLES = 0
 CUT_BEGINNING = 0.007  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
-MIN_CV_STEPS = 6  # minimum number of CV steps
+CV_SENSITIVITY = 1e-5  # A/V, current sensitivity
+# CA Settings
+SAMPLE_INTERVAL = 1e-6  # seconds
+PULSE_WIDTH = 1e-4  # sec, pulse width for CA
+STEPS = 200  # number of steps for CA
+CA_SENSITIVITY = 1e-3  # A/V, current sensitivity
+MAX_CA_VOLT = 0.001  # maximum acceptable voltage for CA experiment
+MIN_CA_VOLT = -0.001  # minimum acceptable voltage for CA experiment
 
 RECORD_EVERY_DT = 0.01  # seconds
 I_RANGE = 'I_RANGE_10mA'
@@ -88,8 +91,8 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
-CA_CALIB_STDS = {"11JNLU": 0.30, "06IGCB": 0.53}  # True conductivity for KCl and H2O, respectively TODO update
-FORMAL_POTENTIALS = {"06TNKR": 0.30, "11DELT": 0.53, "05MYHH": 0}  # Formal potentials in V
+CA_CALIB_STDS = {"11JNLU": 1.299, "06IGCB": 0}  # True conductivity for KCl and H2O, respectively TODO update
+FORMAL_POTENTIALS = {"06TNKR": 0.30, "05MYHH": 0}  # Formal potentials in V
 
 # ---------  ARDUINO ADDRESS -------------
 ARDUINO_ADDRESS = "COM4"
@@ -105,7 +108,7 @@ VIALS = [
     "B_01", "B_02", "B_03", "B_04",
     "C_01", "C_02", "C_03", "C_04",
 ]
-SOLVENT_VIALS = {"solvent_01": "S_01"}
+SOLVENT_VIALS = {"solvent_01": "S_01", "solvent_02": "S_02", "solvent_03": "S_03", "solvent_04": "S_04"}
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
 # ---------  PATH VARIABLES -------------

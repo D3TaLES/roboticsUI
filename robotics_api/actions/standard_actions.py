@@ -120,18 +120,22 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False
     arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
     start_time = time.time()
-    while True:
-        print("trying to read...")
-        data = arduino.readline()
-        print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
-        if data:
-            result_txt = data.decode().strip()  # strip out the new lines
-            print("Arduino Result: ", result_txt)
-            if "success" in result_txt:
-                return result_txt if return_txt else True
-            elif "failure" in result_txt:
-                return False
-        time.sleep(1)
+    try:
+        while True:
+            print("trying to read...")
+            data = arduino.readline()
+            print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
+            if data:
+                result_txt = data.decode().strip()  # strip out the new lines
+                print("Arduino Result: ", result_txt)
+                if "success" in result_txt:
+                    return result_txt if return_txt else True
+                elif "failure" in result_txt:
+                    return False
+            time.sleep(1)
+    except KeyboardInterrupt:
+        arduino.write(bytes(f"ABORT_{station}_{command}", encoding='utf-8'))
+        raise KeyboardInterrupt
 
 
 def write_test(file_path, test_type=""):
@@ -543,7 +547,7 @@ class CVPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
-               dE=RECORD_EVERY_DE, sens=SENSITIVITY, **kwargs):
+               dE=RECORD_EVERY_DE, sens=CV_SENSITIVITY, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
         Args:
@@ -588,7 +592,7 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            cv = hp.potentiostat.CV(volts[0], max(volts), min(volts), volts[-1], sr, dE, nSweeps, sens,
+            cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr, dE=dE, nSweeps=nSweeps, sens=sens,
                                     fileName=f_name, header="CV " + f_name, resistance=resistance*RCOMP_LEVEL)
             cv.run()
             time.sleep(TIME_AFTER_CV)
@@ -597,7 +601,7 @@ class CVPotentiostatStation(PotentiostatStation):
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=INITIAL_FREQUENCY, high_freq=FINAL_FREQUENCY,
-                        amplitude=AMPLITUDE, sens=SENSITIVITY):
+                        amplitude=AMPLITUDE, sens=CV_SENSITIVITY):
         """
         Run iR comp test to determine resistance
         Args:
@@ -642,17 +646,19 @@ class CAPotentiostatStation(PotentiostatStation):
     def __init__(self, _id, raise_amount=0.028, **kwargs):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
-    def run_ca(self, data_path, voltage_sequence=None, dE=RECORD_EVERY_DE, pw=PULSE_WIDTH, sens=SENSITIVITY,
-               steps=STEPS):
+    def run_ca(self, data_path, voltage_sequence=None, si=SAMPLE_INTERVAL, pw=PULSE_WIDTH, sens=CA_SENSITIVITY,
+               steps=STEPS, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT):
         """
         Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
         Args:
             data_path: str, output data file path
             voltage_sequence: str, comma-seperated list of voltage points
-            dE: float, potential increment (V)
+            si: float, sample interval (sec)
             pw: float, pulse width (sec)
             sens: float, current sensitivity (A/V)
             steps: float, number of steps
+            volt_min: float, minimum acceptable voltage for CA experiment
+            volt_max: float, maximum acceptable voltage for CA experiment
 
         Returns: bool, success
         """
@@ -669,10 +675,14 @@ class CAPotentiostatStation(PotentiostatStation):
             f_name = data_path.split("\\")[-1].split(".")[0]
             out_folder = "/".join(data_path.split("\\")[:-1])
             volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
+            max_volt = min((max(volts), volt_max)) if volt_max else max(volts)
+            min_volt = max((min(volts), volt_min)) if volt_min else min(volts)
+            print(max_volt, min_volt)
 
             # Install potentiostat and run CA
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            ca = hp.potentiostat.CA(volts[0], max(volts), min(volts), dE, steps, pw, sens, f_name, "CA " + f_name)
+            ca = hp.potentiostat.CA(Eini=max_volt, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw, sens=sens,
+                                    fileName=f_name, header="CA " + f_name)
             ca.run()
             time.sleep(TIME_AFTER_CV)
         else:
@@ -720,7 +730,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("ca_potentiostat_B_01")
+    test_potent = PotentiostatStation("ca_potentiostat_A_01")
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
@@ -735,6 +745,7 @@ if __name__ == "__main__":
     # test_potent.move_elevator(endpoint="up")
     # test_potent.move_elevator(endpoint="down")
 
-    # flush_solvent(8, vial_id="S_01", solv_id="solvent_04", go_home=False)
+    # flush_solvent(4, vial_id="S_02", solv_id="solvent_01", go_home=False)
     # # check_usb()
     # snapshot_move(SNAPSHOT_END_HOME)
+    # StirHeatStation("stir-heat_01").stir(60)

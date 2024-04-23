@@ -630,10 +630,10 @@ class CvExperiment(PotentiostatExperiment):
                  steps: list,
                  vs_initial: bool = VS_INITIAL,
                  n_cycles: int = N_CYCLES,
-                 scan_number: int = SCAN_NUMBER,
+                 scan_number: int = 1,
                  record_every_de: float = RECORD_EVERY_DE,
-                 average_over_de: bool = AVERAGE_OVER_DE,
-                 min_steps: int = MIN_CV_STEPS,
+                 average_over_de: bool = True,
+                 min_steps: int = 6,
                  **kwargs):
         """
         Class to run cyclic voltammetry experiments

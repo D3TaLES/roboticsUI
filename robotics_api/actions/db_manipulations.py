@@ -593,7 +593,9 @@ def reset_test_db():
 
     experiments = {
         'exp01': 'A_01',
-        'exp02': 'A_02'
+        'exp02': 'A_02',
+        'exp03': 'A_03',
+        'exp04': 'A_04',
     }
     reset_reagent_db(reagents, current_wflow_name=wflow_name)
     reset_vial_db(experiments, current_wflow_name=wflow_name)
@@ -609,7 +611,7 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
             Defaults to FORMAL_POTENTIALS.
     """
     for mol_id, potent in potentials_dict.items():
-        query = FrontDB().make_query({"_id": "06TNKR"}, {"mol_info.smiles": 1}, output='json')
+        query = FrontDB().make_query({"_id": mol_id}, {"mol_info.smiles": 1}, output='json')
         smiles = query[0].get("mol_info", {}).get("smiles")
         instance = {
             "_id": mol_id,

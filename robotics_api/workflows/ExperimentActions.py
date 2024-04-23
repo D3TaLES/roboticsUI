@@ -199,6 +199,7 @@ class SetupPotentiostat(RoboticsBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
+        self.method = self.method or self.metadata.get("active_method")
 
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))

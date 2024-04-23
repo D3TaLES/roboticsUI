@@ -26,7 +26,7 @@ def cv_ex(resistance=0):
     cv = hp.potentiostat.CV(Eini=Eini, Ev1=Ev1, Ev2=Ev2, Efin=Efin, sr=sr, resistance=resistance,
                             dE=dE or RECORD_EVERY_DE,
                             nSweeps=nSweeps or STEPS,
-                            sens=sens or SENSITIVITY,
+                            sens=sens or CV_SENSITIVITY,
                             fileName=fileName, header=header)
     # Run experiment:
     cv.run()
@@ -53,7 +53,7 @@ def ircomp_ex():
     eis = hp.potentiostat.EIS(Eini=Eini,
                               low_freq=low_freq or INITIAL_FREQUENCY, high_freq=high_freq or FINAL_FREQUENCY,
                               amplitude=amplitude or AMPLITUDE,
-                              sens=sens or SENSITIVITY,
+                              sens=sens or CV_SENSITIVITY,
                               fileName=fileName, header=header)
     eis.run()
 
@@ -77,7 +77,7 @@ def ca_ex():
                             dE=dE or RECORD_EVERY_DE,
                             nSweeps=nSweeps or STEPS,
                             pw=pw or PULSE_WIDTH,
-                            sens=sens or SENSITIVITY,
+                            sens=sens or CA_SENSITIVITY,
                             fileName=fileName, header=header)
     ca.run()
 

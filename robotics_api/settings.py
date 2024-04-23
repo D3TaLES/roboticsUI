@@ -12,12 +12,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
+RUN_POTENT = False
 POT_DELAY = 5  # seconds
-STIR = True
-DISPENSE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+STIR = False
+DISPENSE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -50,6 +50,8 @@ POTENTIOSTAT_A_ADDRESS = "COM6"
 POTENTIOSTAT_A_EXE_PATH = r"C:\Users\Lab\Desktop\chi650e.exe"
 POTENTIOSTAT_B_ADDRESS = "COM4"
 POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
+
+IR_COMP = False  # Perform IR Compensation
 
 RECORD_EVERY_DE = 0.01  # Volts
 # CV Settings
@@ -92,7 +94,7 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 PEAK_WIDTH = 0.5
 
 CA_CALIB_STDS = {"11JNLU": 1.299, "06IGCB": 0}  # True conductivity for KCl and H2O, respectively TODO update
-FORMAL_POTENTIALS = {"06TNKR": 0.30, "05MYHH": 0}  # Formal potentials in V
+FORMAL_POTENTIALS = {"06TNKR": 0.30, "05MYHH": 0, "11CDLB": 0}  # Formal potentials in V
 
 # ---------  ARDUINO ADDRESS -------------
 ARDUINO_ADDRESS = "COM4"

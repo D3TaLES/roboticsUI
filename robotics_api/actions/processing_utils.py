@@ -65,8 +65,8 @@ def get_calib(raise_error=True):
             {"cond_measured": {"$exists": True}},
             {"cond_true": {"$exists": True}}
         ]}))
-    ca_calib_measured = [c.get("calib_measured") for c in query]
-    ca_calib_true = [c.get("calib_true") for c in query]
+    ca_calib_measured = [c.get("cond_measured") for c in query]
+    ca_calib_true = [c.get("cond_true") for c in query]
     if not (ca_calib_measured and ca_calib_true) and raise_error:
         raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
                          f"workflow today before preceding with CA experiments.")

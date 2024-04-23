@@ -1,5 +1,6 @@
 # Copyright 2024, University of Kentucky
 import abc
+import time
 import warnings
 
 from six import add_metaclass
@@ -23,7 +24,7 @@ class RoboticsBase(FiretaskBase):
     end_experiment: bool
     _fw_name = "RoboticsBase"
 
-    def setup_task(self, fw_spec):
+    def setup_task(self, fw_spec, get_exp_vial=True):
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
@@ -37,8 +38,9 @@ class RoboticsBase(FiretaskBase):
         self.collection_data = fw_spec.get("collection_data", [])
         self.processing_data = fw_spec.get("processing_data", {})
 
-        self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
-        print(f"VIAL: {self.exp_vial}")
+        if get_exp_vial:
+            self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
+            print(f"VIAL: {self.exp_vial}")
 
     def updated_specs(self, **kwargs):
         # When updating specs, check for fizzled robot jobs and rerun
@@ -105,7 +107,7 @@ class RecordWorkingElectrodeArea(RoboticsBase):
     # FireTask for recording size of working electrode
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        self.setup_task(fw_spec, get_exp_vial=False)
         # working_electrode_area = self.get("size", DEFAULT_WORKING_ELECTRODE_AREA)
         # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
         self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
@@ -151,6 +153,7 @@ class RinseElectrode(RoboticsBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
+        rinse_time = unit_conversion(self.get("time", 0), default_unit='s')
 
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         if start_reagent.type != "solvent":
@@ -163,11 +166,12 @@ class RinseElectrode(RoboticsBase):
         self.success += solv_vial.uncap(raise_error=CAPPED_ERROR)
 
         # Use the same potentiostat as previous actions in this experiment if applicable
-        if self.metadata.get("cv_potentiostat"):
-            potentiostat = PotentiostatStation(self.metadata.get("cv_potentiostat"))
+        method = self.metadata.get("active_method", "cv")
+        if self.metadata.get(f"{method}_potentiostat"):
+            potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
             self.success += potentiostat.wait_till_available()
         else:
-            available_pot = StationStatus().get_first_available("cv_potentiostat", exp_name=self.exp_name)
+            available_pot = StationStatus().get_first_available(f"{method}_potentiostat", exp_name=self.exp_name)
             potentiostat = PotentiostatStation(available_pot) if available_pot else None
 
         # If potentiostat not available, return current vial home and fizzle.
@@ -178,7 +182,8 @@ class RinseElectrode(RoboticsBase):
             return self.self_fizzle()
         potentiostat.update_experiment(self.exp_name)
         self.success += solv_vial.place_station(potentiostat)
-        print("POTENTIOSTAT: ", potentiostat)
+        print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
+        time.sleep(rinse_time)
         self.metadata.update({"cv_potentiostat": potentiostat})
         return FWAction(update_spec=self.updated_specs())
 
@@ -245,6 +250,11 @@ class SetupPotentiostat(RoboticsBase):
 
 
 @explicit_serialize
+class SetupActivePotentiostat(SetupPotentiostat):
+    method = None
+
+
+@explicit_serialize
 class SetupCVPotentiostat(SetupPotentiostat):
     method = "cv"
 
@@ -296,7 +306,7 @@ class BenchmarkCV(RoboticsBase):
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot()
-        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
+        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
@@ -316,7 +326,6 @@ class RunCV(RoboticsBase):
         self.setup_task(fw_spec)
 
         # CV parameters and keywords
-        # ir_comp = fw_spec.get("ir_comp") or self.get("ir_comp", "")
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         resistance = self.metadata.get("resistance", 0)

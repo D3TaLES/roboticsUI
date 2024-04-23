@@ -141,6 +141,8 @@ class ProcessBase(FiretaskBase):
             return None
         file_type = file_loc.split('.')[-1]
         e_ref = ChemStandardsDB(standards_type="MolProps", _id=self.mol_id).get_prop("formal_potential")
+        if not e_ref:
+            raise KeyError(f"No formal potential exists in the standards databse for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
         processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
@@ -317,6 +319,8 @@ class DataProcessor(ProcessBase):
             print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
+                print("---------- CA CALCULATION RESULTS ----------")
+                print("Conductivity: ", p_data.get("data", {}).get("conductivity"))
                 processed_ca_data.append(p_data)
 
         if processed_ca_data:

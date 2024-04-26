@@ -154,37 +154,13 @@ class RinseElectrode(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         rinse_time = unit_conversion(self.get("time", 0), default_unit='s')
+        method = self.metadata.get("active_method")
 
-        start_reagent = ReagentStatus(_id=self.get("start_uuid"))
-        if start_reagent.type != "solvent":
-            raise ValueError(f"RinseElectrode task must have a solvent start reagent. {start_reagent.name} is a "
-                             f"{start_reagent.type}. ")
-        solvent = LiquidStation(start_reagent.location)
-        solv_vial = VialMove(_id=solvent.blank_vial)
-
-        # Uncap vial if capped
-        self.success += solv_vial.uncap(raise_error=CAPPED_ERROR)
-
-        # Use the same potentiostat as previous actions in this experiment if applicable
-        method = self.metadata.get("active_method", "cv")
-        if self.metadata.get(f"{method}_potentiostat"):
-            potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
-            self.success += potentiostat.wait_till_available()
-        else:
-            available_pot = StationStatus().get_first_available(f"{method}_potentiostat", exp_name=self.exp_name)
-            potentiostat = PotentiostatStation(available_pot) if available_pot else None
-
-        # If potentiostat not available, return current vial home and fizzle.
-        if not (self.success and potentiostat):
-            warnings.warn(f"Station {potentiostat} not available. Moving vial {solv_vial} back home.")
-            solv_vial.place_home()
-            self.updated_specs()
-            return self.self_fizzle()
-        potentiostat.update_experiment(self.exp_name)
-        self.success += solv_vial.place_station(potentiostat)
+        potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
+        potentiostat.initiate_pot()
         print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
         time.sleep(rinse_time)
-        self.metadata.update({"cv_potentiostat": potentiostat})
+
         return FWAction(update_spec=self.updated_specs())
 
 

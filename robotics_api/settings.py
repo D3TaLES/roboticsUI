@@ -15,9 +15,9 @@ Copyright 2024, University of Kentucky
 RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
-DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+DISPENSE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -41,7 +41,7 @@ TEMPERATURE_UNIT = "K"
 
 # ---------  ROBOT SETTINGS -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 65
+VIAL_GRIP_TARGET = 75
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
 

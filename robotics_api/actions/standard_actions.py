@@ -127,15 +127,22 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False
             print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
             if data:
                 result_txt = data.decode().strip()  # strip out the new lines
-                print("Arduino Result: ", result_txt)
+                print("ARDUINO RESULT: ", result_txt)
                 if "success" in result_txt:
                     return result_txt if return_txt else True
                 elif "failure" in result_txt:
                     return False
             time.sleep(1)
     except KeyboardInterrupt:
-        arduino.write(bytes(f"ABORT_{station}_{command}", encoding='utf-8'))
-        raise KeyboardInterrupt
+        arduino.write(bytes(f"ABORT_{station}", encoding='utf-8'))
+        while True:
+            print("Aborted arduino. Trying to read abort message...")
+            data = arduino.readline()
+            if data:
+                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the new lines
+                raise KeyboardInterrupt
+            time.sleep(1)
+
 
 
 def write_test(file_path, test_type=""):
@@ -730,14 +737,14 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("ca_potentiostat_A_01")
+    test_potent = PotentiostatStation("cv_potentiostat_A_01")
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
-    # reset_test_db()
-    # snapshot_move(SNAPSHOT_HOME)
-    # reset_stations(end_home=True)
+    reset_test_db()
+    snapshot_move(SNAPSHOT_HOME)
+    reset_stations(end_home=True)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
@@ -745,6 +752,7 @@ if __name__ == "__main__":
     # test_potent.move_elevator(endpoint="up")
     # test_potent.move_elevator(endpoint="down")
 
+    # LiquidStation(_id="solvent_01").dispense_only(1)
     # flush_solvent(4, vial_id="S_02", solv_id="solvent_01", go_home=False)
     # # check_usb()
     # snapshot_move(SNAPSHOT_END_HOME)

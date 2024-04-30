@@ -137,11 +137,14 @@ class HeatStir(RoboticsBase):
         temperature = self.get("temperature")
         stir_time = self.get("time")
 
-        self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
+        if stir_time:
+            self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
 
-        # TODO fix stirring
-        stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
-        self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
+            # TODO fix stirring
+            stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
+            self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
+        else:
+            print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec=self.updated_specs())
@@ -184,6 +187,7 @@ class SetupPotentiostat(RoboticsBase):
 
         # Get vial for CV
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
+        print("START", start_reagent.__dict__)
         if start_reagent.type == "solvent":
             solvent = LiquidStation(start_reagent.location)
             collect_vial = VialMove(_id=solvent.blank_vial)

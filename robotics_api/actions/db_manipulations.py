@@ -612,13 +612,14 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
     """
     for mol_id, potent in potentials_dict.items():
         query = FrontDB().make_query({"_id": mol_id}, {"mol_info.smiles": 1}, output='json')
-        smiles = query[0].get("mol_info", {}).get("smiles")
-        instance = {
-            "_id": mol_id,
-            "smiles": smiles,
-            "formal_potential": potent
-        }
-        ChemStandardsDB(standards_type="MolProps", instance=instance)
+        if query:
+            smiles = query[0].get("mol_info", {}).get("smiles")
+            instance = {
+                "_id": mol_id,
+                "smiles": smiles,
+                "formal_potential": potent
+            }
+            ChemStandardsDB(standards_type="MolProps", instance=instance)
 
 
 def test_calib():

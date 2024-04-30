@@ -15,9 +15,9 @@ Copyright 2024, University of Kentucky
 RUN_POTENT = False
 POT_DELAY = 5  # seconds
 STIR = False
-DISPENSE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+DISPENSE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -93,8 +93,20 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
-CA_CALIB_STDS = {"11JNLU": 1.299, "06IGCB": 0}  # True conductivity for KCl and H2O, respectively TODO update
-FORMAL_POTENTIALS = {"06TNKR": 0.30, "05MYHH": 0, "11CDLB": 0}  # Formal potentials in V
+CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
+    "11JNLU": 1.299,  # KCl
+    "06IGCB": 0,  # H2O
+    "Calib__01": 1,  # CA Calibration 1
+    "Calib__02": 5,  # CA Calibration 2
+    "Calib__03": 7,  # CA Calibration 3
+}
+FORMAL_POTENTIALS = {  # Formal potentials in V
+    "06TNKR": 0.30,  # TEMPO
+    "05MYHH": 0,   # MEEPT
+    "Calib__01": 0,  # CA Calibration 1
+    "Calib__02": 0,  # CA Calibration 2
+    "Calib__03": 0,  # CA Calibration 3
+}
 
 # ---------  ARDUINO ADDRESS -------------
 ARDUINO_ADDRESS = "COM4"

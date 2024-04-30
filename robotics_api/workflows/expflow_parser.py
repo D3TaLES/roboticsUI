@@ -36,20 +36,21 @@ class EF2Experiment(ProcessExpFlowObj):
 
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
-        super().__init__(expflow_obj, source_group, **kwargs)
+        super().__init__(expflow_obj, source_group, redox_id_error=False, **kwargs)
         self.fw_parents = fw_parents
         self.priority = priority if priority > 2 else 2
-        self.full_name = "{}_{}".format(exp_name, self.molecule_id)
+        self.mol_id = self.molecule_id or getattr(self.redox_mol, "smiles", None)
+        self.full_name = "{}_{}".format(exp_name, self.mol_id)
         self.wflow_name = wflow_name
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.rom_name = getattr(self.redox_mol, "name", "no_redox_mol_name")
         self.solv_id = get_id(self.solvent) or "no_solvent"
         self.elect_id = get_id(self.electrolyte) or "no_electrolyte"
-        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group), data_type + "_metadata", {})
+        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False), data_type + "_metadata", {})
         self.end_exp = None
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
-                         "mol_id": self.molecule_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
+                         "mol_id": self.mol_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
                          "elect_id": self.elect_id, "metadata": self.metadata, "rom_name": self.rom_name}
 
         # Check for multi tasks
@@ -193,7 +194,7 @@ class EF2Experiment(ProcessExpFlowObj):
             priority = self.priority - 1 if i == 0 else self.priority
             if "process" in fw_type:
                 fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=collect_parent or parent,
-                                  fw_specs=self.fw_specs, mol_id=self.molecule_id, priority=priority - 1)
+                                  fw_specs=self.fw_specs, mol_id=self.mol_id, priority=priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
             elif "setup" in fw_type:
                 name = "{}_{}".format(self.full_name, fw_type)
@@ -259,7 +260,7 @@ class EF2Experiment(ProcessExpFlowObj):
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
     # expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCACVTest_workflow.json')
-    expflow_file = os.path.join(downloaded_wfls_dir, 'ConcStudy_Cond1_5C_MEEPT_rinse_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'CACalibration_workflow.json')
     expflow_exp = loadfn(expflow_file)
-    experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
+    experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
     tc = experiment.task_clusters

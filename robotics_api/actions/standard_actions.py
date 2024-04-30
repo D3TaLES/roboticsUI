@@ -147,9 +147,9 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False
 
 def write_test(file_path, test_type=""):
     test_files = {
-        "cv": os.path.join(ROBOTICS_API, "workflows", "actions", "standard_data", "CV.txt"),
-        "ca": os.path.join(ROBOTICS_API, "workflows", "actions", "standard_data", "CA.txt"),
-        "ircomp": os.path.join(ROBOTICS_API, "workflows", "actions", "standard_data", "iRComp.txt"),
+        "cv": os.path.join(ROBOTICS_API, "actions", "standard_data", "CV.txt"),
+        "ca": os.path.join(ROBOTICS_API, "actions", "standard_data", "CA.txt"),
+        "ircomp": os.path.join(ROBOTICS_API, "actions", "standard_data", "iRComp.txt"),
     }
     test_fn = test_files.get(test_type.lower())
     if os.path.isfile(test_fn):
@@ -308,7 +308,7 @@ class LiquidStation(StationStatus):
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
         if self.type != "solvent":
-            raise Exception(f"Station {self.id} is not a potentiostat.")
+            raise Exception(f"Station {self.id} is not a liquid.")
         self.raise_amount = raise_amount
         self.blank_vial = SOLVENT_VIALS.get(self.id)
         self.pre_location_snapshot = None
@@ -523,7 +523,8 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_arduino_name, "", return_txt=True)
         if arduino_result:
-            return float(arduino_result.split(":")[1].strip())
+            temp_c = float(arduino_result.split(":")[1].strip())
+            return "{:.2f}C".format(temp_c)
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
@@ -737,14 +738,15 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("cv_potentiostat_A_01")
+    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
-    reset_test_db()
-    snapshot_move(SNAPSHOT_HOME)
-    reset_stations(end_home=True)
+    # reset_test_db()
+    # snapshot_move(SNAPSHOT_HOME)
+    # reset_stations(end_home=
+    print(test_potent.get_temperature())
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()

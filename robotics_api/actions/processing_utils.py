@@ -4,7 +4,7 @@ from robotics_api.settings import *
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
 
-def collection_dict(coll_data):
+def collection_dict(coll_data: list):
     """
     Create a dictionary from a list of dictionaries based on a common key.
 
@@ -123,19 +123,15 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
 
     out_txt = ""
 
-    out_txt += "\n------------- Single CVs Analysis -------------\n"
-    out_txt += '\n'.join(all_cvs_data(multi_data, **kwargs))
-    out_txt += '\n'
-
     for i, e_half in enumerate(e_halfs):
         out_txt += "\n------------- Metadata for Oxidation {} -------------\n".format(i + 1)
         e_half_sr = e_half.get("conditions", {}).get("scan_rate", {})
-        out_txt += "E1/2 at {}{}: \t{} {}\n".format(e_half_sr.get("value"), e_half_sr.get("unit"), e_half.get("value"), e_half.get("unit"))
+        out_txt += "E1/2 at {:.5f} {}: \t{:.5f} {}\n".format(e_half_sr.get("value"), e_half_sr.get("unit"), e_half.get("value"), e_half.get("unit"))
 
         diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="cathodic")
-        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
+        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{:.9f} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
         trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i+1, notes="cathodic")
-        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
+        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{:.9f} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
 
     if run_anodic:
         diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="anodic")
@@ -146,6 +142,10 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for d in multi_data:
         out_txt += d.get("_id") + '\n'
+
+    out_txt += "\n------------- Single CVs Analysis -------------\n"
+    out_txt += '\n'.join(all_cvs_data(multi_data, **kwargs))
+    out_txt += '\n'
 
     return str(out_txt)
 
@@ -169,10 +169,10 @@ def print_ca_analysis(multi_data, verbose=1):
             print("Getting data for {} CA...".format(i + 1))
         data_dict = i_data.get("data", {})
         out_txt += "\n---------- CA {} ----------".format(i + 1)
-        out_txt += "\nConductivity: \t{}".format(data_dict.get("conductivity"))
-        out_txt += "\nMeasured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
-        out_txt += "\nResistance: \t{}".format(data_dict.get("resistance"))
-        out_txt += "\nMeasured Resistance: \t{}".format(data_dict.get("measured_resistance"))
+        out_txt += "\nConductivity: \t{:.5f} S/m".format(data_dict.get("conductivity"))
+        out_txt += "\nMeasured Conductivity: \t{:.5f} S/m".format(data_dict.get("measured_conductivity"))
+        out_txt += "\nResistance: \t{:.5f} Ohm".format(data_dict.get("resistance"))
+        out_txt += "\nMeasured Resistance: \t{:.5f} Ohm".format(data_dict.get("measured_resistance"))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for i_data in multi_data:

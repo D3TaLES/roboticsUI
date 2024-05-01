@@ -169,10 +169,10 @@ def print_ca_analysis(multi_data, verbose=1):
             print("Getting data for {} CA...".format(i + 1))
         data_dict = i_data.get("data", {})
         out_txt += "\n---------- CA {} ----------".format(i + 1)
-        out_txt += "Conductivity: \t{}".format(data_dict.get("conductivity"))
-        out_txt += "Measured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
-        out_txt += "Resistance: \t{}".format(data_dict.get("resistance"))
-        out_txt += "Measured Resistance: \t{}".format(data_dict.get("measured_resistance"))
+        out_txt += "\nConductivity: \t{}".format(data_dict.get("conductivity"))
+        out_txt += "\nMeasured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
+        out_txt += "\nResistance: \t{}".format(data_dict.get("resistance"))
+        out_txt += "\nMeasured Resistance: \t{}".format(data_dict.get("measured_resistance"))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for i_data in multi_data:

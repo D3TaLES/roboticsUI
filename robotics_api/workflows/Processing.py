@@ -66,6 +66,7 @@ class ProcessBase(FiretaskBase):
     processing_id: str
     coll_dict: dict
     cv_cycle: float
+    ca_cycle: float
     collect_tag: str
     lpad: LaunchPad
     data_path: str
@@ -82,6 +83,7 @@ class ProcessBase(FiretaskBase):
 
         self.coll_dict = collection_dict(self.collection_data)
         self.cv_cycle = self.metadata.get("cv_cycle", 1)
+        self.ca_cycle = self.metadata.get("ca_cycle", 1)
         self.collect_tag = self.metadata.get("collect_tag", f"Cycle{self.cv_cycle:02d}_cv")
         self.lpad = LaunchPad().from_file(LAUNCHPAD)
 
@@ -141,8 +143,9 @@ class ProcessBase(FiretaskBase):
             return None
         file_type = file_loc.split('.')[-1]
         e_ref = ChemStandardsDB(standards_type="MolProps", _id=self.mol_id).get_prop("formal_potential")
-        if not e_ref:
-            pass #raise KeyError(f"No formal potential exists in the standards database for {self.mol_id}")
+        if self.mol_id and not e_ref:
+            if "Calib" not in self.mol_id:
+                raise KeyError(f"No formal potential exists in the standards database for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
         processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
@@ -301,9 +304,9 @@ class DataProcessor(ProcessBase):
                                           micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag}_cv_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.cv_cycle}_cv_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_cv_data))
-            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.cv_cycle}_cv_summary.txt", 'w') as fn:
                 fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
@@ -328,9 +331,9 @@ class DataProcessor(ProcessBase):
             save_props = ["conductivity", "measured_conductivity", "resistance", "measured_resistance"]
             metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag}_ca_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.ca_cycle}_ca_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_ca_data))
-            with open(self.data_path + f"\\{self.collect_tag}_cv_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.ca_cycle}_ca_summary.txt", 'w') as fn:
                 fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())

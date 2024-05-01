@@ -12,12 +12,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 POT_DELAY = 5  # seconds
-STIR = False
-DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+STIR = True
+DISPENSE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -64,8 +64,8 @@ SAMPLE_INTERVAL = 1e-6  # seconds
 PULSE_WIDTH = 1e-4  # sec, pulse width for CA
 STEPS = 200  # number of steps for CA
 CA_SENSITIVITY = 1e-3  # A/V, current sensitivity
-MAX_CA_VOLT = 0.001  # maximum acceptable voltage for CA experiment
-MIN_CA_VOLT = -0.001  # minimum acceptable voltage for CA experiment
+MAX_CA_VOLT = 0.001  # V, maximum acceptable voltage for CA experiment
+MIN_CA_VOLT = -0.001  # V, minimum acceptable voltage for CA experiment
 
 RECORD_EVERY_DT = 0.01  # seconds
 I_RANGE = 'I_RANGE_10mA'
@@ -100,12 +100,9 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "Calib__02": 5,  # CA Calibration 2
     "Calib__03": 7,  # CA Calibration 3
 }
-FORMAL_POTENTIALS = {  # Formal potentials in V
-    "06TNKR": 0.30,  # TEMPO
+FORMAL_POTENTIALS = {  # Formal potentials
+    "06TNKR": 0.30,  # TEMPO, V vs. Ag/Ag+
     "05MYHH": 0,   # MEEPT
-    "Calib__01": 0,  # CA Calibration 1
-    "Calib__02": 0,  # CA Calibration 2
-    "Calib__03": 0,  # CA Calibration 3
 }
 
 # ---------  ARDUINO ADDRESS -------------

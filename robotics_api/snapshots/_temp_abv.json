@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.515,
-            "y": -0.272,
-            "z": 0.065,
-            "thetaX": 90.3653335571289,
-            "thetaY": 1.8023817539215088,
-            "thetaZ": 63.44614791870117
+            "x": 0.511,
+            "y": 0.352,
+            "z": 0.066,
+            "thetaX": 90.589,
+            "thetaY": 3.413,
+            "thetaZ": 129.705
           },
           "constraint": {
             "speed": {
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "Stir_plate"
+        "name": "Potentiostat Elevator 1"
       }
     ]
   }

@@ -329,7 +329,7 @@ class RunCV(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag,
                                      "vial_contents": VialStatus(collect_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
+        return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  # TODO figure out if we want to propogate voltage sequence
 
 
 @explicit_serialize

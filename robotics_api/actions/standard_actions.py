@@ -523,8 +523,7 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_arduino_name, "", return_txt=True)
         if arduino_result:
-            temp_c = float(arduino_result.split(":")[1].strip())
-            return "{:.2f}C".format(temp_c)
+            return float(arduino_result.split(":")[1].strip()) + 273.15
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
@@ -745,8 +744,8 @@ if __name__ == "__main__":
 
     # reset_test_db()
     # snapshot_move(SNAPSHOT_HOME)
-    # reset_stations(end_home=
-    print(test_potent.get_temperature())
+    # reset_stations(end_home=False)
+    # print(PotentiostatStation("ca_potentiostat_B_01").get_temperature())
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
@@ -755,7 +754,7 @@ if __name__ == "__main__":
     # test_potent.move_elevator(endpoint="down")
 
     # LiquidStation(_id="solvent_01").dispense_only(1)
-    # flush_solvent(4, vial_id="S_02", solv_id="solvent_01", go_home=False)
+    # flush_solvent(2, vial_id="S_02", solv_id="solvent_01", go_home=True)
     # # check_usb()
     # snapshot_move(SNAPSHOT_END_HOME)
     # StirHeatStation("stir-heat_01").stir(60)

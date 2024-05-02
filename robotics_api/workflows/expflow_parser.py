@@ -29,7 +29,7 @@ class EF2Experiment(ProcessExpFlowObj):
         rom_name (str): Redox molecule name.
         solv_id (str): Solvent ID.
         metadata (dict): Metadata related to the experiment.
-        end_exp (Firework): Firework marking the end of the experiment.
+        end_exp (Firework): Fireworks marking the end of the experiment.
         fw_specs (dict): Specifications for the Firework.
         workflow (list): List of tasks in the experiment workflow.
     """
@@ -37,7 +37,7 @@ class EF2Experiment(ProcessExpFlowObj):
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
         super().__init__(expflow_obj, source_group, redox_id_error=False, **kwargs)
-        self.fw_parents = fw_parents
+        self.fw_parents = fw_parents or []
         self.priority = priority if priority > 2 else 2
         self.mol_id = self.molecule_id or getattr(self.redox_mol, "smiles", None)
         self.full_name = "{}_{}".format(exp_name, self.mol_id)
@@ -47,7 +47,7 @@ class EF2Experiment(ProcessExpFlowObj):
         self.solv_id = get_id(self.solvent) or "no_solvent"
         self.elect_id = get_id(self.electrolyte) or "no_electrolyte"
         self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False), data_type + "_metadata", {})
-        self.end_exp = None
+        self.end_exps = []
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
                          "mol_id": self.mol_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
@@ -60,7 +60,6 @@ class EF2Experiment(ProcessExpFlowObj):
     @staticmethod
     def instrument_task(collect_task, tag="setup", default_analysis=""):
         """Generates setup or finish tasks"""
-        print(collect_task.__dict__)
         if "_cv_" in collect_task.name:
             analysis = "cv"
         elif "_ca_" in collect_task.name:
@@ -69,7 +68,6 @@ class EF2Experiment(ProcessExpFlowObj):
             analysis = "ir"
         else:
             analysis = default_analysis
-        print("Analysis: ", analysis)
         task_dict = copy.deepcopy(collect_task.__dict__)
         task_dict["name"] = f"{tag}_{analysis}"
         new_task = dict2obj(task_dict)
@@ -87,7 +85,7 @@ class EF2Experiment(ProcessExpFlowObj):
     def is_inst_task(task):
         """Checks if a task is an instrument task"""
         task_name = task if isinstance(task, str) else getattr(task, "name", "")
-        instrument_tasks = ['collect', 'rinse']
+        instrument_tasks = ['collect']
         for i_t in instrument_tasks:
             if i_t in task_name:
                 return True
@@ -132,7 +130,6 @@ class EF2Experiment(ProcessExpFlowObj):
             task_cluster = [self.instrument_task(self.workflow[0], tag="setup")]
             active_method = self.workflow[0].name.split("_")[1]
         for i, task in enumerate(self.workflow):
-            print("---", task.name)
             # Get previous and next task names
             previous_name = self.workflow[:i][-1].name if self.workflow[:i] else ""
             next_name = self.workflow[i+1:][0].name if self.workflow[i+1:] else ""
@@ -141,8 +138,8 @@ class EF2Experiment(ProcessExpFlowObj):
             next_nonP = next_nonP_tasks[0] if next_nonP_tasks else ""
 
             # Set up task clusters based on task types
-            if "process" in task.name:
-                # Make new Fireworks for processing jobs
+            if "process" in task.name or "rinse" in task.name:
+                # Make new Fireworks for processing or rinse jobs
                 all_tasks.extend([task_cluster, [task]]) if task_cluster else all_tasks.append([task])
                 task_cluster = []
                 if "process" in next_name:
@@ -184,7 +181,7 @@ class EF2Experiment(ProcessExpFlowObj):
     def fireworks(self):
         """Generates a list of Fireworks for the experiment"""
         # Return active Firework
-        fireworks = []
+        fireworks, end_exp = [], None
         parent = self.fw_parents
         collect_parent = None
         for i, cluster in enumerate(self.task_clusters):
@@ -196,6 +193,16 @@ class EF2Experiment(ProcessExpFlowObj):
                 fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=collect_parent or parent,
                                   fw_specs=self.fw_specs, mol_id=self.mol_id, priority=priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
+            elif "rinse" in fw_type:
+                r1 = RobotFirework([SetupActivePotentiostat()], name="{}_robot".format(self.full_name), parents=parent,
+                                   priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                r2 = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), parents=[r1],
+                                      priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                r3 = RobotFirework([FinishPotentiostat()], name="{}_robot".format(self.full_name),  parents=[r2],
+                                   priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                fireworks.extend([r1, r2, r3])
+                self.end_exps.append(r3)
+                continue
             elif "setup" in fw_type:
                 name = "{}_{}".format(self.full_name, fw_type)
                 fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=priority,
@@ -210,9 +217,10 @@ class EF2Experiment(ProcessExpFlowObj):
                 fw = RobotFirework(tasks, name="{}_robot".format(self.full_name), wflow_name=self.wflow_name,
                                    priority=priority, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
-                self.end_exp = fw
+                end_exp = fw
             fireworks.append(fw)
-        self.end_exp.spec.update({"end_experiment": True})
+        end_exp.spec.update({"end_experiment": True})
+        self.end_exps.append(end_exp)
         return fireworks
 
     def get_firetask(self, task):
@@ -259,8 +267,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    # expflow_file = os.path.join(downloaded_wfls_dir, 'BasicCACVTest_workflow.json')
-    expflow_file = os.path.join(downloaded_wfls_dir, 'CACalibration_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'SE_Scan_TBAPF6_workflow.json')
     expflow_exp = loadfn(expflow_file)
-    experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
+    experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
     tc = experiment.task_clusters

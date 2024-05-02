@@ -300,8 +300,10 @@ class DataProcessor(ProcessBase):
 
             # CV Meta Properties
             print("Calculating metadata...")
-            metadata_dict.update(CV2Front(backend_data=processed_cv_data, run_anodic=RUN_ANODIC, insert=False,
-                                          micro_electrodes=MICRO_ELECTRODES).meta_dict)
+            if self.mol_id:
+                print(self.mol_id)
+                metadata_dict.update(CV2Front(backend_data=processed_cv_data, run_anodic=RUN_ANODIC, insert=False,
+                                              micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
             with open(self.data_path + f"\\{self.cv_cycle}_cv_all_data.txt", 'w') as fn:

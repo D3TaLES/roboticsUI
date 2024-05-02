@@ -119,7 +119,7 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     Returns:
         str: Text analysis of the CV data.
     """
-    e_halfs = metadata.get("oxidation_potential")
+    e_halfs = metadata.get("oxidation_potential", [])
 
     out_txt = ""
 

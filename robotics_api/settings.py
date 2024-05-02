@@ -12,12 +12,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
+RUN_POTENT = False
 POT_DELAY = 5  # seconds
-STIR = True
-DISPENSE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+STIR = False
+DISPENSE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False

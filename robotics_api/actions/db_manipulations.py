@@ -631,7 +631,8 @@ def test_calib():
             "_id": datetime.now().isoformat(),  # Date
             "date": datetime.now().strftime('%Y_%m_%d'),  # Day
             "calib_measured": 0.6*c+1,
-            "calib_true": c
+            "calib_true": c,
+            "temperature": "298K",
         }
         ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 

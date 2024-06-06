@@ -194,8 +194,11 @@ class EF2Experiment(ProcessExpFlowObj):
                                   fw_specs=self.fw_specs, mol_id=self.mol_id, priority=priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
             elif "rinse" in fw_type:
-                r1 = RobotFirework([SetupActivePotentiostat()], name="{}_robot".format(self.full_name), parents=parent,
-                                   priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                r1 = RobotFirework(
+                    [SetupActivePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
+                    name="{}_robot".format(self.full_name), parents=parent, priority=priority - 1,
+                    wflow_name=self.wflow_name, fw_specs=self.fw_specs
+                )
                 r2 = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), parents=[r1],
                                       priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 r3 = RobotFirework([FinishPotentiostat()], name="{}_robot".format(self.full_name),  parents=[r2],

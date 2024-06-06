@@ -4,7 +4,7 @@ from robotics_api.settings import *
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
 
-def collection_dict(coll_data):
+def collection_dict(coll_data: list):
     """
     Create a dictionary from a list of dictionaries based on a common key.
 
@@ -45,13 +45,35 @@ def get_concentration(vial_content, fw_spec, solute_spec="rom_id"):
     volume = ureg(solv_vol[0])
     mass = ureg(solute_mass[0])
     mw = ureg(solute_mw)
-    concentration = mass/mw/volume
+    concentration = mass / mw / volume
     return "{}M".format(concentration.to('M').magnitude)
 
 
-def get_calib(raise_error=True):
+def get_kcl_conductivity(temp):
+    temp_k = round(unit_conversion(temp, default_unit="K"))
+    return {
+        15: 1141.5,
+        16: 1167.5,
+        17: 1193.5,
+        18: 1219.9,
+        19: 1246.4,
+        20: 1273.0,
+        21: 1299.7,
+        22: 1326.6,
+        23: 1353.6,
+        24: 1380.8,
+        25: 1408.1,
+        26: 1435.6,
+        27: 1463.2,
+        28: 1490.9,
+        29: 1518.7,
+        30: 1546.7,
+    }.get(temp_k - 273)
+
+
+def get_cell_constant(raise_error=True):
     """
-    Get conductivity calibration data for the current day.
+    Get cell constant from conductivity calibration data for the current day.
 
     Args:
         raise_error (bool, optional): Whether to raise an error if calibration data is not found. Defaults to True.
@@ -59,18 +81,27 @@ def get_calib(raise_error=True):
     Returns:
         tuple: Tuple containing lists of measured and true conductivity calibration values.
     """
-    date = datetime.now().strftime('%Y_%m_%d')
-    query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
+    date = CALIB_DATE or datetime.now().strftime('%Y_%m_%d')
+    if KCL_CALIB:
+        query = ChemStandardsDB(standards_type="CACalib").coll.find_one({'$and': [
+            {"date_updated": date},
+            {"cond_measured": {"$exists": True}},
+            {"cond_true": {"$exists": True}}
+        ]})
+        conductance_measured, temp = query.get("cond_measured"), query.get("temperature", DEFAULT_TEMPERATURE)
+        return (get_kcl_conductivity(temp) + DI_WATER_COND) / conductance_measured
+    else:
+        query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},
             {"cond_measured": {"$exists": True}},
             {"cond_true": {"$exists": True}}
         ]}))
-    ca_calib_measured = [c.get("cond_measured") for c in query]
-    ca_calib_true = [c.get("cond_true") for c in query]
-    if not (ca_calib_measured and ca_calib_true) and raise_error:
-        raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
-                         f"workflow today before preceding with CA experiments.")
-    return ca_calib_measured, ca_calib_true
+        ca_calib_measured = [c.get("cond_measured") for c in query]
+        ca_calib_true = [c.get("cond_true") for c in query]
+        if not (ca_calib_measured and ca_calib_true) and raise_error:
+            raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
+                             f"workflow today before preceding with CA experiments.")
+        return np.polyfit(ca_calib_measured, ca_calib_true, 1)[0]
 
 
 def all_cvs_data(multi_data, verbose=1):
@@ -123,24 +154,24 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
 
     out_txt = ""
 
-    out_txt += "\n------------- Single CVs Analysis -------------\n"
-    out_txt += '\n'.join(all_cvs_data(multi_data, **kwargs))
-    out_txt += '\n'
-
     for i, e_half in enumerate(e_halfs):
         out_txt += "\n------------- Metadata for Oxidation {} -------------\n".format(i + 1)
         e_half_sr = e_half.get("conditions", {}).get("scan_rate", {})
-        out_txt += "E1/2 at {}{}: \t{} {}\n".format(e_half_sr.get("value"), e_half_sr.get("unit"), e_half.get("value"), e_half.get("unit"))
+        out_txt += "E1/2 at {}{}: \t{} {}\n".format(e_half_sr.get("value"), e_half_sr.get("unit"), e_half.get("value"),
+                                                    e_half.get("unit"))
 
-        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="cathodic")
-        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
-        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i+1, notes="cathodic")
-        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
+        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
+        out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"),
+                                                                                 diff_coef.get("unit"))
+        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
+        out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"),
+                                                                         trans_rate.get("unit"))
 
     if run_anodic:
-        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i+1, notes="anodic")
-        out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"), diff_coef.get("unit"))
-        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i+1, notes="anodic")
+        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="anodic")
+        out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{} {}\n".format(diff_coef.get("value"),
+                                                                               diff_coef.get("unit"))
+        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="anodic")
         out_txt += "Anodic Charge Transfer Rate: \t\t\t{} {}\n".format(trans_rate.get("value"), trans_rate.get("unit"))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
@@ -169,10 +200,10 @@ def print_ca_analysis(multi_data, verbose=1):
             print("Getting data for {} CA...".format(i + 1))
         data_dict = i_data.get("data", {})
         out_txt += "\n---------- CA {} ----------".format(i + 1)
-        out_txt += "\nConductivity: \t{}".format(data_dict.get("conductivity"))
-        out_txt += "\nMeasured Conductivity: \t{}".format(data_dict.get("measured_conductivity"))
-        out_txt += "\nResistance: \t{}".format(data_dict.get("resistance"))
-        out_txt += "\nMeasured Resistance: \t{}".format(data_dict.get("measured_resistance"))
+        out_txt += "\nConductivity: \t{} S/m".format(data_dict.get("conductivity"))
+        out_txt += "\nMeasured Conductance: \t{} S".format(data_dict.get("measured_conductance"))
+        out_txt += "\nResistance: \t{} Ohm".format(data_dict.get("resistance"))
+        out_txt += "\nMeasured Resistance: \t{} Ohm".format(data_dict.get("measured_resistance"))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for i_data in multi_data:
@@ -1333,7 +1364,8 @@ if __name__ == "__main__":
                                                                                                        'line': {
                                                                                                            'color': '#003396',
                                                                                                            'width': 3}}],
-                     'reversibility': ['irreversible'], 'e_half': [0.098], 'peak_splittings.py': [2.193], 'middle_sweep': [
+                     'reversibility': ['irreversible'], 'e_half': [0.098], 'peak_splittings.py': [2.193],
+                     'middle_sweep': [
                          [[0.01522, -3.383e-07], [0.02538, -1.054e-07], [0.03549, -5.698e-08], [0.04604, -7.075e-09],
                           [0.05577, 2.768e-08], [0.06598, 6.438e-08], [0.07622, 9.599e-08], [0.08616, 1.156e-07],
                           [0.09662, 1.368e-07], [0.1065, 1.532e-07], [0.1173, 1.725e-07], [0.1267, 1.885e-07],
@@ -4349,6 +4381,7 @@ if __name__ == "__main__":
                           [-0.0441, 1.415e-06], [-0.03395, 1.995e-06], [-0.02362, 2.824e-06], [-0.01351, 4.015e-06]]]}}]
     # print(print_cv_analysis(test_data))
     meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
-                 "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA, "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS}
+                 "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
+                 "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS}
     cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
     processing_test(cv_dir, metadata=meta_data)

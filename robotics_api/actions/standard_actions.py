@@ -1,3 +1,5 @@
+import time
+
 import pint
 import serial
 from serial.tools.list_ports import comports
@@ -6,16 +8,16 @@ from robotics_api.actions.kinova_move import *
 from robotics_api.actions.db_manipulations import *
 
 
-def generate_abv_position(snapshot_file, raise_amount=RAISE_AMOUNT):
+def perturbed_snapshot(snapshot_file, perturb_amount=RAISE_AMOUNT, axis="z"):
     with open(snapshot_file, 'r') as fn:
         master_data = json.load(fn)
 
-    # Generate VialHomeAbv files
-    new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] + raise_amount
-    master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = new_height
-    with open(os.path.join(SNAPSHOT_DIR, "_temp_abv.json"), "w+") as fn:
+    # Generate temporary perturbed file
+    new_height = master_data["poses"]["pose"][0]["reachPose"]["targetPose"][axis] + perturb_amount
+    master_data["poses"]["pose"][0]["reachPose"]["targetPose"][axis] = new_height
+    with open(os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json"), "w+") as fn:
         json.dump(master_data, fn, indent=2)
-    return os.path.join(SNAPSHOT_DIR, "_temp_abv.json")
+    return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
 def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT,
@@ -34,7 +36,7 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
         leave: bool, leave from snapshot file location if True
     Returns: bool, success of action
     """
-    snapshot_file_above = generate_abv_position(snapshot_file, raise_amount=raise_amount)
+    snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
     # Start open if getting a vial
     success = snapshot_move(target_position='open') if action_type == "get" else True
@@ -84,10 +86,10 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
     Returns: bool, success of action
     """
     snapshot_start = os.path.join(SNAPSHOT_DIR, starting_position)
-    snapshot_top = generate_abv_position(snapshot_start, raise_amount=0.02)
+    snapshot_top = perturbed_snapshot(snapshot_start, perturb_amount=0.02)
     if screw:
         success = snapshot_move(snapshot_top)
-        snapshot_start = generate_abv_position(snapshot_start, raise_amount=0.0005)
+        snapshot_start = perturbed_snapshot(snapshot_start, perturb_amount=0.0005)
     else:
         success = snapshot_move(target_position='open')
     success += snapshot_move(snapshot_start)
@@ -142,7 +144,6 @@ def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False
                 print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the new lines
                 raise KeyboardInterrupt
             time.sleep(1)
-
 
 
 def write_test(file_path, test_type=""):
@@ -366,14 +367,16 @@ class StirHeatStation(StationStatus):
             return True
         return False
 
-    def stir(self, stir_time=None, temperature=None, stir_cmd="off"):
+    def stir(self, stir_time=None, temperature=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
         """
         Operate CV elevator
         Args:
             stir_time: int, time (seconds) for stir plate to be on
-            temperature: float; degree (Kelvin) for stir plate heating during stirring
+            temperature: float, degree (Kelvin) for stir plate heating during stirring
             stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be
                 'on' or 'off'.
+            perturb_amount: float, amount to perturb vial during stirring
+            move_sleep: float, time (seconds) for robot to sleep between stirring moves
 
         Returns: bool, True if stir action was a success
         """
@@ -383,7 +386,18 @@ class StirHeatStation(StationStatus):
             success += self.heat(temperature, heat_cmd="on")
             success += send_arduino_cmd(self.arduino_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
-            time.sleep(seconds)
+            start_time, end_time = time.time(), time.time()
+            while (end_time - start_time) < seconds:
+                # Move vial around stir plate center
+                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="x"))
+                time.sleep(move_sleep)
+                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="y"))
+                time.sleep(move_sleep)
+                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=-perturb_amount, axis="x"))
+                time.sleep(move_sleep)
+                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=-perturb_amount, axis="y"))
+                time.sleep(move_sleep)
+                end_time = time.time()
             success += send_arduino_cmd(self.arduino_name, 0) if STIR else True
             success += self.heat(temperature, heat_cmd="off")
             return success
@@ -599,8 +613,9 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr, dE=dE, nSweeps=nSweeps, sens=sens,
-                                    fileName=f_name, header="CV " + f_name, resistance=resistance*RCOMP_LEVEL)
+            cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr, dE=dE,
+                                    nSweeps=nSweeps, sens=sens,
+                                    fileName=f_name, header="CV " + f_name, resistance=resistance * RCOMP_LEVEL)
             cv.run()
             time.sleep(TIME_AFTER_CV)
         else:
@@ -642,7 +657,7 @@ class CVPotentiostatStation(PotentiostatStation):
             eis.run()
 
             # Load recently acquired data
-            data = ParseChiESI(os.path.join(out_folder, f_name+".txt"))
+            data = ParseChiESI(os.path.join(out_folder, f_name + ".txt"))
             time.sleep(TIME_AFTER_CV)
 
             print(data.resistance)
@@ -688,7 +703,7 @@ class CAPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CA
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            ca = hp.potentiostat.CA(Eini=max_volt, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw, sens=sens,
+            ca = hp.potentiostat.CA(Eini=0, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw, sens=sens,
                                     fileName=f_name, header="CA " + f_name)
             ca.run()
             time.sleep(TIME_AFTER_CV)
@@ -737,24 +752,24 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    test_potent = PotentiostatStation("cv_potentiostat_A_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # reset_test_db()
-    # snapshot_move(SNAPSHOT_HOME)
     # reset_stations(end_home=False)
     # print(PotentiostatStation("ca_potentiostat_B_01").get_temperature())
+    # snapshot_move(SNAPSHOT_END_HOME)
 
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
-    # test_potent.move_elevator(endpoint="up")
-    # test_potent.move_elevator(endpoint="down")
+    test_potent.move_elevator(endpoint="up")
+    test_potent.move_elevator(endpoint="down")
 
-    # LiquidStation(_id="solvent_01").dispense_only(1)
+    # LiquidStation(_id="solvent_01").dispense_only(8)
     # flush_solvent(2, vial_id="S_02", solv_id="solvent_01", go_home=True)
-    # # check_usb()
-    # snapshot_move(SNAPSHOT_END_HOME)
-    # StirHeatStation("stir-heat_01").stir(60)
+
+    # snapshot_move(SNAPSHOT_HOME)
+    # StirHeatStation("stir-heat_01").perform_stir_heat(test_vial, stir_time=30)

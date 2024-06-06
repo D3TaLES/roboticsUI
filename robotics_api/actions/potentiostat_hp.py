@@ -5,8 +5,8 @@ from d3tales_api.Processors.parser_cv import *
 
 
 # Initialization:
-pot_model = POTENTIOSTAT_A_EXE_PATH.split("\\")[-1].split(".")[0]
-hp.potentiostat.Setup(pot_model, POTENTIOSTAT_A_EXE_PATH, TEST_DATA_DIR, port=POTENTIOSTAT_A_ADDRESS)
+pot_model = POTENTIOSTAT_B_EXE_PATH.split("\\")[-1].split(".")[0]
+hp.potentiostat.Setup(pot_model, POTENTIOSTAT_B_EXE_PATH, TEST_DATA_DIR, port=POTENTIOSTAT_B_ADDRESS)
 
 
 def cv_ex(resistance=0):
@@ -67,14 +67,14 @@ def ca_ex():
     Ev1 = 0.025  # V, first vertex potential
     Ev2 = -0.025  # V, second vertex potential
     pw = None  # 1e-4  # s, pulse width
-    dE = None  # 1e-6  # V, potential increment
+    si = None  # 1e-6  # V, potential increment
     nSweeps = None  # 200  # number of sweeps
-    sens = 1e-2  # 1e-4  # A/V, current sensitivity
+    sens = None  # 1e-4  # A/V, current sensitivity
     fileName = 'CA'  # base file name for data file
     header = 'CA'  # header for data file
 
     ca = hp.potentiostat.CA(Eini=Eini, Ev1=Ev1, Ev2=Ev2,
-                            dE=dE or RECORD_EVERY_DE,
+                            dE=si or SAMPLE_INTERVAL,
                             nSweeps=nSweeps or STEPS,
                             pw=pw or PULSE_WIDTH,
                             sens=sens or CA_SENSITIVITY,

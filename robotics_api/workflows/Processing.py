@@ -65,8 +65,6 @@ class ProcessBase(FiretaskBase):
     name: str
     processing_id: str
     coll_dict: dict
-    cv_cycle: float
-    ca_cycle: float
     collect_tag: str
     lpad: LaunchPad
     data_path: str
@@ -74,7 +72,7 @@ class ProcessBase(FiretaskBase):
 
     def setup_task(self, fw_spec, data_len_error=True):
         self.metadata = fw_spec.get("metadata", {})
-        self.collection_data = fw_spec.get("collection_data") or {}
+        self.collection_data = fw_spec.get("collection_data") or []
         self.processing_data = fw_spec.get("processing_data") or {}
         self.processed_locs = self.processing_data.get("processed_locs") or []
         self.mol_id = fw_spec.get("mol_id") or self.get("mol_id")
@@ -82,9 +80,7 @@ class ProcessBase(FiretaskBase):
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
 
         self.coll_dict = collection_dict(self.collection_data)
-        self.cv_cycle = self.metadata.get("cv_cycle", 1)
-        self.ca_cycle = self.metadata.get("ca_cycle", 1)
-        self.collect_tag = self.metadata.get("collect_tag", f"Cycle{self.cv_cycle:02d}_cv")
+        self.collect_tag = self.metadata.get("collect_tag", f"UnknownCycle")
         self.lpad = LaunchPad().from_file(LAUNCHPAD)
 
         if not self.collection_data and data_len_error:
@@ -248,10 +244,11 @@ class ProcessCalibration(ProcessBase):
             calib_instance = {
                 "_id": self.mol_id,  # D3TaLES ID
                 "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
-                "cond_measured": p_data.get("data", {}).get("measured_conductivity"),
+                "cond_measured": p_data.get("data", {}).get("measured_conductance"),
                 "cond_true": cond_true,
                 "res_measured": p_data.get("data", {}).get("measured_resistance"),
                 "res_true": 1 / cond_true if cond_true else None,
+                "temperature": self.metadata.get("temperature"),
             }
             ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 
@@ -306,20 +303,19 @@ class DataProcessor(ProcessBase):
                                               micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
-            with open(self.data_path + f"\\{self.cv_cycle}_cv_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_cv_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_cv_data))
-            with open(self.data_path + f"\\{self.cv_cycle}_cv_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_cv_summary.txt", 'w') as fn:
                 fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
         processed_ca_data = []
         for d in ca_data:
             m_data = self.metadata
-            ca_calib_measured, ca_calib_true = get_calib()
             self.metadata.update({
                 "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
                 "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id"),
-                "calib_measured": ca_calib_measured, "calib_true": ca_calib_true
+                "cell_constant": get_cell_constant()
             })
             print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
@@ -330,12 +326,12 @@ class DataProcessor(ProcessBase):
 
         if processed_ca_data:
             # CA Meta Properties
-            save_props = ["conductivity", "measured_conductivity", "resistance", "measured_resistance"]
+            save_props = ["conductivity", "measured_conductance", "resistance", "measured_resistance"]
             metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
             # Record all data
-            with open(self.data_path + f"\\{self.ca_cycle}_ca_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_ca_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_ca_data))
-            with open(self.data_path + f"\\{self.ca_cycle}_ca_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_ca_summary.txt", 'w') as fn:
                 fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())

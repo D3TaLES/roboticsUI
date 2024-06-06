@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 
 """
-It This code contains various settings and configurations for a robotics experiment setup. It includes
+This file contains various settings and configurations for a robotics experiment setup. It includes
 operation settings, default conditions, instrument settings, processing settings, station configurations, 
 file paths, and more. Be sure to review all settings listed here before running a robotic workflow. 
 
@@ -12,12 +12,13 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 POT_DELAY = 5  # seconds
-STIR = False
-DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+STIR = True
+DISPENSE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
+CALIB_DATE = '2024_06_04'
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -29,8 +30,8 @@ FIZZLE_DIRTY_ELECTRODE = False
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
 DEFAULT_CONCENTRATION = "0.01M"
-DEFAULT_WORKING_ELECTRODE_RADIUS = 0.01  # radius assumed in mm
-DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2)) * 0.01  # area given in cm^2
+DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
+DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2))  # area given in cm^2
 MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False  # TODO confirm condition
 DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allowed (A) for a clean electrode
 
@@ -41,9 +42,10 @@ TEMPERATURE_UNIT = "K"
 
 # ---------  ROBOT SETTINGS -------------
 KINOVA_01_IP = "192.168.1.10"
-VIAL_GRIP_TARGET = 75
+VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 40
 RAISE_AMOUNT = 0.07
+STIR_PERTURB = 0.003
 
 # ---------  POTENTIOSTAT SETTINGS -------------
 POTENTIOSTAT_A_ADDRESS = "COM6"
@@ -64,8 +66,8 @@ SAMPLE_INTERVAL = 1e-6  # seconds
 PULSE_WIDTH = 1e-4  # sec, pulse width for CA
 STEPS = 200  # number of steps for CA
 CA_SENSITIVITY = 1e-3  # A/V, current sensitivity
-MAX_CA_VOLT = 0.001  # V, maximum acceptable voltage for CA experiment
-MIN_CA_VOLT = -0.001  # V, minimum acceptable voltage for CA experiment
+MAX_CA_VOLT = 0.025  # V, maximum acceptable voltage for CA experiment
+MIN_CA_VOLT = -0.025  # V, minimum acceptable voltage for CA experiment
 
 RECORD_EVERY_DT = 0.01  # seconds
 I_RANGE = 'I_RANGE_10mA'
@@ -93,6 +95,8 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
+KCL_CALIB = False
+DI_WATER_COND = 0
 CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "11JNLU": 1.299,  # KCl
     "06IGCB": 0,  # H2O

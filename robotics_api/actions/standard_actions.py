@@ -196,9 +196,14 @@ class VialMove(VialStatus):
             success += snapshot_move(SNAPSHOT_HOME)
             self.update_position("robot_grip")
         else:
-            if raise_error:
-                raise Exception(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot "
-                                f"currently contains {StationStatus('robot_grip').current_content}.")
+            robot_content = StationStatus('robot_grip').current_content
+            try:
+                VialMove(_id=robot_content).place_home()
+            except Exception as e:
+                if raise_error:
+                    raise Exception(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot "
+                                    f"currently contains {robot_content}. Tried to Place {robot_content} home. "
+                                    f"Failed with exception {e}")
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully retrieved. Vial {self.id} is located "
                             f"at {self.current_location}. ")
@@ -568,7 +573,7 @@ class CVPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
-               dE=RECORD_EVERY_DE, sens=CV_SENSITIVITY, **kwargs):
+               sample_interval=None, sens=None, **kwargs):
         """
         Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
         Args:
@@ -576,11 +581,13 @@ class CVPotentiostatStation(PotentiostatStation):
             voltage_sequence: str, comma-seperated list of voltage points
             scan_rate: str, scan rate
             resistance: float, solution resistance for iR compensation (A)
-            dE: float, potential increment (V)
+            sample_interval: float, potential increment (V)
             sens: float, current sensitivity (A/V)
 
         Returns: bool, success
         """
+        sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
+        sens = unit_conversion(sens or CV_SAMPLE_INTERVAL, default_unit="A/V")
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
             write_test(data_path, test_type="cv")
@@ -592,7 +599,7 @@ class CVPotentiostatStation(PotentiostatStation):
             from potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
-            expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=dE,
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=sample_interval,
                                 potentiostat_address=self.p_address, potentiostat_channel=int(self.p_channel),
                                 exe_path=self.p_exe_path, **kwargs)
             # Run CV and save data
@@ -613,8 +620,8 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr, dE=dE,
-                                    nSweeps=nSweeps, sens=sens,
+            cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
+                                    nSweeps=nSweeps, dE=sample_interval, sens=sens,
                                     fileName=f_name, header="CV " + f_name, resistance=resistance * RCOMP_LEVEL)
             cv.run()
             time.sleep(TIME_AFTER_CV)
@@ -622,8 +629,8 @@ class CVPotentiostatStation(PotentiostatStation):
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True
 
-    def run_ircomp_test(self, data_path, e_ini=0, low_freq=INITIAL_FREQUENCY, high_freq=FINAL_FREQUENCY,
-                        amplitude=AMPLITUDE, sens=CV_SENSITIVITY):
+    def run_ircomp_test(self, data_path, e_ini=0, low_freq=None, high_freq=None,
+                        amplitude=None, sens=None):
         """
         Run iR comp test to determine resistance
         Args:
@@ -652,8 +659,9 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq, high_freq=high_freq, amplitude=amplitude,
-                                      sens=sens, fileName=f_name, header="iRComp " + f_name)
+            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or INITIAL_FREQUENCY,
+                                      high_freq=high_freq or FINAL_FREQUENCY, amplitude=amplitude or AMPLITUDE,
+                                      sens=sens or CV_SENSITIVITY, fileName=f_name, header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
@@ -668,8 +676,8 @@ class CAPotentiostatStation(PotentiostatStation):
     def __init__(self, _id, raise_amount=0.028, **kwargs):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
-    def run_ca(self, data_path, voltage_sequence=None, si=SAMPLE_INTERVAL, pw=PULSE_WIDTH, sens=CA_SENSITIVITY,
-               steps=STEPS, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT):
+    def run_ca(self, data_path, voltage_sequence=None, si=None, pw=None, sens=None,
+               steps=None, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT):
         """
         Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
         Args:
@@ -684,6 +692,11 @@ class CAPotentiostatStation(PotentiostatStation):
 
         Returns: bool, success
         """
+        si = unit_conversion(si or CA_SAMPLE_INTERVAL, default_unit="s")
+        sens = unit_conversion(sens or CA_SENSITIVITY, default_unit="A/V")
+        pw = unit_conversion(pw or CA_PULSE_WIDTH, default_unit="s")
+        steps = steps or CA_STEPS
+
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
             write_test(data_path, test_type="ca")
@@ -699,12 +712,11 @@ class CAPotentiostatStation(PotentiostatStation):
             volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
             max_volt = min((max(volts), volt_max)) if volt_max else max(volts)
             min_volt = max((min(volts), volt_min)) if volt_min else min(volts)
-            print(max_volt, min_volt)
 
             # Install potentiostat and run CA
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            ca = hp.potentiostat.CA(Eini=0, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw, sens=sens,
-                                    fileName=f_name, header="CA " + f_name)
+            ca = hp.potentiostat.CA(Eini=0, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw,
+                                    sens=sens, fileName=f_name, header="CA " + f_name)
             ca.run()
             time.sleep(TIME_AFTER_CV)
         else:
@@ -755,6 +767,8 @@ if __name__ == "__main__":
     test_potent = PotentiostatStation("cv_potentiostat_A_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
+    # vial_col_test("B")
+
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # reset_test_db()
@@ -765,11 +779,12 @@ if __name__ == "__main__":
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
-    test_potent.move_elevator(endpoint="up")
-    test_potent.move_elevator(endpoint="down")
+    # test_potent.move_elevator(endpoint="up")
+    # print(test_potent.get_temperature())
+    # test_potent.move_elevator(endpoint="down")
 
     # LiquidStation(_id="solvent_01").dispense_only(8)
-    # flush_solvent(2, vial_id="S_02", solv_id="solvent_01", go_home=True)
+    # flush_solvent(8, vial_id="S_02", solv_id="solvent_01", go_home=True)
 
     # snapshot_move(SNAPSHOT_HOME)
     # StirHeatStation("stir-heat_01").perform_stir_heat(test_vial, stir_time=30)

@@ -196,7 +196,7 @@ class EF2Experiment(ProcessExpFlowObj):
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
                     [SetupActivePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
-                    name="{}_robot".format(self.full_name), parents=parent, priority=priority - 1,
+                    name="{}_robot".format(self.full_name), parents=parent, priority=priority + 2,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
                 r2 = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), parents=[r1],

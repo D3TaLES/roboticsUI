@@ -24,8 +24,8 @@ def cv_ex(resistance=0):
 
     # Initialize experiment:
     cv = hp.potentiostat.CV(Eini=Eini, Ev1=Ev1, Ev2=Ev2, Efin=Efin, sr=sr, resistance=resistance,
-                            dE=dE or RECORD_EVERY_DE,
-                            nSweeps=nSweeps or STEPS,
+                            dE=dE or CV_SAMPLE_INTERVAL,
+                            nSweeps=nSweeps or CA_STEPS,
                             sens=sens or CV_SENSITIVITY,
                             fileName=fileName, header=header)
     # Run experiment:
@@ -74,9 +74,9 @@ def ca_ex():
     header = 'CA'  # header for data file
 
     ca = hp.potentiostat.CA(Eini=Eini, Ev1=Ev1, Ev2=Ev2,
-                            dE=si or SAMPLE_INTERVAL,
-                            nSweeps=nSweeps or STEPS,
-                            pw=pw or PULSE_WIDTH,
+                            dE=si or CA_SAMPLE_INTERVAL,
+                            nSweeps=nSweeps or CA_STEPS,
+                            pw=pw or CA_PULSE_WIDTH,
                             sens=sens or CA_SENSITIVITY,
                             fileName=fileName, header=header)
     ca.run()

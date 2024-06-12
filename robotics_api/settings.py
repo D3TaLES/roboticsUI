@@ -12,13 +12,13 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
+RUN_POTENT = False
 POT_DELAY = 5  # seconds
-STIR = True
-DISPENSE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
-CALIB_DATE = '2024_06_04'
+STIR = False
+DISPENSE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
+CALIB_DATE = ''
 
 # ---------  OPERATION SETTING -------------
 CAPPED_ERROR = False
@@ -26,6 +26,7 @@ CAPPED_DEFAULT = False
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_CONCENTRATION_FAILURE = False
 FIZZLE_DIRTY_ELECTRODE = False
+EXIT_ZERO_VOLUME = True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = "293K"
@@ -55,19 +56,18 @@ POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
 
 IR_COMP = False  # Perform IR Compensation
 
-RECORD_EVERY_DE = 0.01  # Volts
-# CV Settings
-N_CYCLES = 0
-CUT_BEGINNING = 0.007  # percentage as decimal of front of CV to cut
+# CV Default Settings
+CV_SAMPLE_INTERVAL = 0.01  # Volts
+CV_SENSITIVITY = 1e-6  # A/V, current sensitivity
+CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
-CV_SENSITIVITY = 1e-5  # A/V, current sensitivity
-# CA Settings
-SAMPLE_INTERVAL = 1e-6  # seconds
-PULSE_WIDTH = 1e-4  # sec, pulse width for CA
-STEPS = 200  # number of steps for CA
+# CA Default Settings
+CA_SAMPLE_INTERVAL = 1e-6  # seconds
 CA_SENSITIVITY = 1e-3  # A/V, current sensitivity
-MAX_CA_VOLT = 0.025  # V, maximum acceptable voltage for CA experiment
-MIN_CA_VOLT = -0.025  # V, minimum acceptable voltage for CA experiment
+CA_PULSE_WIDTH = 1e-4  # sec, pulse width for CA
+CA_STEPS = 200  # number of steps for CA
+MAX_CA_VOLT = None  # V, maximum acceptable voltage for CA experiment
+MIN_CA_VOLT = None  # V, minimum acceptable voltage for CA experiment
 
 RECORD_EVERY_DT = 0.01  # seconds
 I_RANGE = 'I_RANGE_10mA'

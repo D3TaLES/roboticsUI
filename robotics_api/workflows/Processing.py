@@ -242,7 +242,7 @@ class ProcessCalibration(ProcessBase):
             # Insert CA calibration
             cond_true = CA_CALIB_STDS.get(self.mol_id)
             calib_instance = {
-                "_id": self.mol_id,  # D3TaLES ID
+                "mol_id": self.mol_id,  # D3TaLES ID  TODO see if this works
                 "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
                 "cond_measured": p_data.get("data", {}).get("measured_conductance"),
                 "cond_true": cond_true,

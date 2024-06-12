@@ -22,9 +22,13 @@ class RoboticsBase(FiretaskBase):
     processing_data: dict
     exp_vial: VialMove
     end_experiment: bool
+    exit: bool
     _fw_name = "RoboticsBase"
 
     def setup_task(self, fw_spec, get_exp_vial=True):
+        if fw_spec.get("exit", self.get("exit", False)): 
+            print("EXITING WORKFLOW SEQUENCE")
+            return False
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
@@ -41,6 +45,8 @@ class RoboticsBase(FiretaskBase):
         if get_exp_vial:
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
+            
+        return True
 
     def updated_specs(self, **kwargs):
         # When updating specs, check for fizzled robot jobs and rerun
@@ -68,9 +74,12 @@ class DispenseLiquid(RoboticsBase):
     # FireTask for dispensing liquid
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
-        volume = self.get("volume")
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
+        volume = self.get("volume", 0)
+        if not volume and EXIT_ZERO_VOLUME:
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         if solvent.type != "solvent":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
         if solvent.location != "experiment_vial":
@@ -91,7 +100,8 @@ class DispenseSolid(RoboticsBase):
     # FireTask for dispensing solid
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         mass = self.get("mass")
 
         reagent = ReagentStatus(_id=self.get("start_uuid"))
@@ -118,7 +128,8 @@ class RecordWorkingElectrodeArea(RoboticsBase):
 @explicit_serialize
 class Heat(RoboticsBase):
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         temperature = self.get("temperature")
         heat_time = self.get("time")
         self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
@@ -133,7 +144,8 @@ class Heat(RoboticsBase):
 @explicit_serialize
 class HeatStir(RoboticsBase):
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         temperature = self.get("temperature")
         stir_time = self.get("time")
 
@@ -155,7 +167,8 @@ class RinseElectrode(RoboticsBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         rinse_time = unit_conversion(self.get("time", 0), default_unit='s')
         method = self.metadata.get("active_method")
 
@@ -172,7 +185,8 @@ class CleanElectrode(RoboticsBase):
     # FireTask for dispensing solvent
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         # time = self.get("time")
         return FWAction(update_spec=self.updated_specs())
 
@@ -182,7 +196,8 @@ class SetupPotentiostat(RoboticsBase):
     method: str
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         self.method = self.method or self.metadata.get("active_method")
 
         # Get vial for CV
@@ -247,7 +262,8 @@ class SetupCAPotentiostat(SetupPotentiostat):
 @explicit_serialize
 class FinishPotentiostat(RoboticsBase):
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
 
         method = self.metadata.get("active_method")
         potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
@@ -271,11 +287,14 @@ class BenchmarkCV(RoboticsBase):
     # FireTask for testing electrode cleanliness
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
 
         # CV parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
+        sens = fw_spec.get("sens") or self.get("sens", "")
 
         # Prep output file info
         collect_vial_id = self.metadata.get("collect_vial_id")
@@ -288,7 +307,7 @@ class BenchmarkCV(RoboticsBase):
         potent.initiate_pot()
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
-                                      resistance=resistance)
+                                      resistance=resistance, sample_interval=sample_interval, sens=sens)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
@@ -303,12 +322,15 @@ class RunCV(RoboticsBase):
     # FireTask for running CV
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
 
         # CV parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         resistance = self.metadata.get("resistance", 0)
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -322,7 +344,7 @@ class RunCV(RoboticsBase):
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot()
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
-                                      resistance=resistance)
+                                      resistance=resistance, sample_interval=sample_interval, sens=sens)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"cv_idx": cv_idx + 1})
@@ -337,10 +359,15 @@ class RunCA(RoboticsBase):
     # FireTask for running CA
 
     def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
 
         # CA parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
+        pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", "")
+        sens = fw_spec.get("sens") or self.get("sens", "")
+        steps = fw_spec.get("steps") or self.get("steps", "")
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -353,7 +380,8 @@ class RunCA(RoboticsBase):
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot()
-        self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence)
+        self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
+                                      pw=pulse_width, sens=sens, steps=steps)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         temperature = potent.get_temperature() or self.metadata.get("temperature")

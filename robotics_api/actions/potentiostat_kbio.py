@@ -508,9 +508,9 @@ class EisExperiment(PotentiostatExperiment):
 class CpExperiment(PotentiostatExperiment):
 
     def __init__(self,
-                 n_cycles=N_CYCLES,
+                 n_cycles=0,
                  record_every_dt=RECORD_EVERY_DT,  # seconds
-                 record_every_de=RECORD_EVERY_DE,  # Volts
+                 record_every_de=CV_SAMPLE_INTERVAL,  # Volts
                  i_range=I_RANGE,
                  repeat_count=0,
                  **kwargs):
@@ -629,9 +629,9 @@ class CvExperiment(PotentiostatExperiment):
     def __init__(self,
                  steps: list,
                  vs_initial: bool = VS_INITIAL,
-                 n_cycles: int = N_CYCLES,
+                 n_cycles: int = 0,
                  scan_number: int = 1,
-                 record_every_de: float = RECORD_EVERY_DE,
+                 record_every_de: float = CV_SAMPLE_INTERVAL,
                  average_over_de: bool = True,
                  min_steps: int = 6,
                  **kwargs):

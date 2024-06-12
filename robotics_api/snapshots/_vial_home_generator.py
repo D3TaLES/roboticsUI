@@ -6,7 +6,7 @@ from pathlib import Path
 key_ys = {
     "S": 0.303,
     "A": 0.200,
-    "B": 0.100,
+    "B": 0.099,
     "C": -0.001,
     "D": -0.997,
 }
@@ -23,9 +23,9 @@ key_zs = {
     "04": 0.185,
 }
 
-snapshot_home = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots")
+snapshot_home = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots"
 
-with open("VialHomeMaster.json", 'r') as fn:
+with open(snapshot_home / "VialHomeMaster.json", 'r') as fn:
     master_data = json.load(fn)
 
 for column, row in itertools.product(key_ys, key_xs):
@@ -37,8 +37,10 @@ for column, row in itertools.product(key_ys, key_xs):
 
     # Generate VialHome files
     out_name = "VialHome_{}_{}.json".format(column, row)
-    with open(os.path.join(snapshot_home, out_name), "w+") as fn:
+    with open(snapshot_home / out_name, "w+") as fn:
         json.dump(master_data, fn, indent=2)
+
+print("Successfully generated snapshots.")
 
     # # Generate VialHomeAbv files
     # master_data["poses"]["pose"][0]["reachPose"]["targetPose"]["z"] = key_zs.get(row) + 0.1

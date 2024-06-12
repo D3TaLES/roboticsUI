@@ -48,16 +48,6 @@ class VialStatus(RobotStatusDB):
         return self.get_prop("vial_content") or []
 
     @property
-    def capped(self):
-        """
-        Get the capped status.
-
-        Returns:
-            bool: The capped status.
-        """
-        return self.get_prop("capped") or []
-
-    @property
     def current_location(self):
         """
         Get the current location.
@@ -86,18 +76,6 @@ class VialStatus(RobotStatusDB):
             StationStatus: The current station status.
         """
         return StationStatus(_id=self.current_location)
-
-    def update_capped(self, value: bool):
-        """
-        Update the capped status.
-
-        Args:
-            value (bool): The new capped status.
-
-        Returns:
-            prop: The updated capped status.
-        """
-        return self.coll.update_one({"_id": self.id}, {"$set": {"capped": value}})
 
     def update_location(self, new_location: str):
         """
@@ -512,20 +490,19 @@ def reset_station_db(current_wflow_name=""):
         })
 
 
-def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_DEFAULT):
+def reset_vial_db(experiment_locs: dict, current_wflow_name=""):
     """
     Reset the vial database with the provided experiment locations.
 
     Args:
         experiment_locs (dict): Dictionary mapping vial IDs to experiment names.
         current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
-        capped_default (bool, optional): Default value for vial cap status. Defaults to CAPPED_DEFAULT.
     """
     # Check experiment locations 1-to-1 status
     experiment_locs.update(SOLVENT_VIALS)
-    if check_duplicates(experiment_locs.values()):
+    if check_duplicates(list(experiment_locs.values())):
         raise ValueError(
-            "More than one experiment is assigned the same vial(s): " + check_duplicates(experiment_locs.values()))
+            "More than one experiment is assigned same vial(s): " + check_duplicates(list(experiment_locs.values())))
     exp_dict = {v: r for r, v in experiment_locs.items()}
     print("EXPERIMENT DICT: ", exp_dict)
 
@@ -537,7 +514,6 @@ def reset_vial_db(experiment_locs, current_wflow_name="", capped_default=CAPPED_
             "current_wflow_name": current_wflow_name,
             "experiment_name": exp_dict.get(vial, ""),
             "vial_content": [],
-            "capped": capped_default,
             "current_location": "home",
             "location_history": [],
         })

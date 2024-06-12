@@ -271,30 +271,6 @@ class VialMove(VialStatus):
         self.update_position("home")
         return success
 
-    def cap(self, raise_error=CAPPED_ERROR):
-        if self.capped:
-            return True
-        else:
-            success = False  # TODO cap vial
-            if success:
-                self.update_capped(True)
-                return True
-        if raise_error:
-            raise Exception(f"Vial {self.id} is not capped!")
-        return success
-
-    def uncap(self, raise_error=CAPPED_ERROR):
-        if not self.capped:
-            return True
-        else:
-            success = False  # TODO cap vial
-            if success:
-                self.update_capped(False)
-                return True
-        if raise_error:
-            raise Exception(f"Vial {self.id} is still capped!")
-        return success
-
     def update_position(self, position):
         self.update_location(position)
         station = StationStatus(position)

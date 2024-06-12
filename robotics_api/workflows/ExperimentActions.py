@@ -1,8 +1,5 @@
 # Copyright 2024, University of Kentucky
 import abc
-import time
-import warnings
-
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -84,11 +81,7 @@ class DispenseLiquid(RoboticsBase):
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
         if solvent.location != "experiment_vial":
             solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
-
-            # Uncap vial if capped
             self.success += self.exp_vial.retrieve()
-            self.success += self.exp_vial.uncap(raise_error=CAPPED_ERROR)
-
             volume = solv_station.dispense(self.exp_vial, volume)
         self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
@@ -132,9 +125,8 @@ class Heat(RoboticsBase):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         temperature = self.get("temperature")
         heat_time = self.get("time")
-        self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
 
-        stir_station = StationStatus().get_first_available("stir-heat")
+        stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
         self.success += stir_station.perform_stir_heat(self.exp_vial, temperature=temperature, heat_time=heat_time)
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
@@ -150,9 +142,6 @@ class HeatStir(RoboticsBase):
         stir_time = self.get("time")
 
         if stir_time:
-            self.success += self.exp_vial.cap(raise_error=CAPPED_ERROR)
-
-            # TODO fix stirring
             stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
             self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
         else:
@@ -212,9 +201,6 @@ class SetupPotentiostat(RoboticsBase):
             cycle = self.metadata.get("cycle", 0)
             self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_{self.method}", "cycle": cycle+1,
                                   f"{self.method}_idx": self.metadata.get(f"{self.method}_idx", 1)})
-
-        # Uncap vial if capped
-        self.success += collect_vial.uncap(raise_error=CAPPED_ERROR)
 
         # Move vial to potentiostat elevator
         if self.method in collect_vial.current_station.type:

@@ -96,7 +96,7 @@ class EF2Experiment(ProcessExpFlowObj):
         """Checks for multitasks in the workflow."""
         if "multi_cv" in task.name:
             task_list = []
-            scan_rates_param = [p for p in task.parameters if p.description == "scan_rates"][0]
+            scan_rates_param = [p for p in task.parameters if "scan_rate" in p.description][0]
             voltages_param = [p for p in task.parameters if p.description == "voltage_sequence"][0]
             for i, scan_rate in enumerate(scan_rates_param.value.strip(" ").split(",")):
                 task_dict = copy.deepcopy(task.__dict__)
@@ -196,13 +196,13 @@ class EF2Experiment(ProcessExpFlowObj):
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
                     [SetupActivePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
-                    name="{}_robot".format(self.full_name), parents=parent, priority=priority + 2,
+                    name="{}_robot".format(self.full_name), parents=parent, priority=priority + 3,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
                 r2 = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), parents=[r1],
                                       priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 r3 = RobotFirework([FinishPotentiostat()], name="{}_robot".format(self.full_name),  parents=[r2],
-                                   priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                                   priority=priority + 3, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 fireworks.extend([r1, r2, r3])
                 self.end_exps.append(r3)
                 continue
@@ -217,8 +217,9 @@ class EF2Experiment(ProcessExpFlowObj):
                 parent = fw
                 collect_parent = fw
             else:
+                p = priority + 4 if "finish" in fw_type else priority
                 fw = RobotFirework(tasks, name="{}_robot".format(self.full_name), wflow_name=self.wflow_name,
-                                   priority=priority, parents=parent, fw_specs=self.fw_specs)
+                                   priority=p, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
                 end_exp = fw
             fireworks.append(fw)
@@ -231,7 +232,8 @@ class EF2Experiment(ProcessExpFlowObj):
         firetasks = self.task_dictionary.get(task.name)
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
-            parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
+            if param.value:
+                parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))
         return [firetask(**parameters_dict) for firetask in firetasks]
 
@@ -242,7 +244,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "transfer_liquid": [DispenseLiquid],  # needs: VOLUME
             "transfer_solid": [DispenseSolid],  # needs: MASS
             "heat": [Heat],  # needs: TEMPERATURE
-            "heat_stir": [HeatStir],  # needs: TEMPERATURE, TIME
+            "stir": [Stir],  # needs: TIME
             "process_working_electrode_area": [RecordWorkingElectrodeArea],  # needs: SIZE
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
@@ -260,6 +262,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "finish_ca": [FinishPotentiostat],
 
             # TODO Deprecated. Remove eventually
+            "heat_stir": [Stir],  # needs: TEMPERATURE, TIME
             "process_cv_benchmarking": [ProcessCVBenchmarking],
             "measure_working_electrode_area": [RecordWorkingElectrodeArea],
             "process_cv_data": [DataProcessor],
@@ -270,7 +273,7 @@ class EF2Experiment(ProcessExpFlowObj):
 
 if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'SE_Scan_TBAPF6_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
     tc = experiment.task_clusters

@@ -76,6 +76,8 @@ class DispenseLiquid(RoboticsBase):
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
         if not volume and EXIT_ZERO_VOLUME:
+            print(" \n \n!!!!!!!!! \n ATTENTION! This FW and all subsequent FWs will be exited. "
+                  "DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. \n !!!!!!!!! \n \n")
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         if solvent.type != "solvent":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
@@ -123,31 +125,26 @@ class Heat(RoboticsBase):
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
-        temperature = self.get("temperature")
-        heat_time = self.get("time")
-
-        stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
-        self.success += stir_station.perform_stir_heat(self.exp_vial, temperature=temperature, heat_time=heat_time)
+        # temperature = self.get("temperature")
+        # heat_time = self.get("time")
 
         self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec=self.updated_specs())
 
 
 @explicit_serialize
-class HeatStir(RoboticsBase):
+class Stir(RoboticsBase):
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
-        temperature = self.get("temperature")
         stir_time = self.get("time")
 
         if stir_time:
-            stir_station = StirHeatStation(StationStatus().get_first_available("stir-heat"))
-            self.success += stir_station.perform_stir_heat(self.exp_vial, stir_time=stir_time, temperature=temperature)
+            stir_station = StirStation(StationStatus().get_first_available("stir"))
+            self.success += stir_station.perform_stir(self.exp_vial, stir_time=stir_time)
         else:
             print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")
 
-        self.metadata.update({"temperature": DEFAULT_TEMPERATURE})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -162,7 +159,7 @@ class RinseElectrode(RoboticsBase):
         method = self.metadata.get("active_method")
 
         potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
-        potentiostat.initiate_pot()
+        potentiostat.initiate_pot(vial=self.metadata.get("active_vial_id"))
         print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
         time.sleep(rinse_time)
 
@@ -193,18 +190,17 @@ class SetupPotentiostat(RoboticsBase):
         start_reagent = ReagentStatus(_id=self.get("start_uuid"))
         print("START", start_reagent.__dict__)
         if start_reagent.type == "solvent":
-            solvent = LiquidStation(start_reagent.location)
-            collect_vial = VialMove(_id=solvent.blank_vial)
+            action_vial = VialMove(_id=LiquidStation(start_reagent.location).blank_vial)
             self.metadata.update({"collect_tag": f"solv_{self.method}"})
         else:
-            collect_vial = self.exp_vial
+            action_vial = self.exp_vial
             cycle = self.metadata.get("cycle", 0)
             self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_{self.method}", "cycle": cycle+1,
                                   f"{self.method}_idx": self.metadata.get(f"{self.method}_idx", 1)})
 
         # Move vial to potentiostat elevator
-        if self.method in collect_vial.current_station.type:
-            potentiostat = collect_vial.current_station.id
+        if self.method in action_vial.current_station.type:
+            potentiostat = action_vial.current_station.id
             if self.exp_name != PotentiostatStation(potentiostat).current_experiment:
                 return self.self_fizzle()
         else:
@@ -212,20 +208,21 @@ class SetupPotentiostat(RoboticsBase):
             pot_type = f"{self.method}_potentiostat"
             if self.metadata.get(pot_type):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
+                print(f"This experiment already uses instrument {potentiostat}")
                 self.success += potentiostat.wait_till_available()
             else:
                 available_pot = StationStatus().get_first_available(pot_type)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
             # If potentiostat not available, return current vial home and fizzle.
             if not (self.success and potentiostat):
-                warnings.warn(f"Station {potentiostat} not available. Moving vial {collect_vial} back home.")
-                collect_vial.place_home()
+                warnings.warn(f"Station {potentiostat} not available. Moving vial {action_vial} back home.")
+                action_vial.place_home()
                 self.updated_specs()
                 return self.self_fizzle()
             potentiostat.update_experiment(self.exp_name)
-            self.success += collect_vial.place_station(potentiostat)
+            self.success += action_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
-        self.metadata.update({f"{self.method}_potentiostat": potentiostat, "collect_vial_id": collect_vial.id,
+        self.metadata.update({f"{self.method}_potentiostat": potentiostat, "active_vial_id": action_vial.id,
                               "active_method": self.method})
         return FWAction(update_spec=self.updated_specs())
 
@@ -253,14 +250,16 @@ class FinishPotentiostat(RoboticsBase):
 
         method = self.metadata.get("active_method")
         potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
-        vial_id = self.metadata.get("collect_vial_id") or potentiostat.current_content
+        vial_id = self.metadata.get("active_vial_id") or potentiostat.current_content
 
         if vial_id:
             # Get vial
-            collect_vial = VialMove(_id=vial_id)
-            print("STARTING HOME PLACEMENT")
-            self.success += collect_vial.place_home()
-            print("ENDING HOME PLACEMENT")
+            active_vial = VialMove(_id=vial_id)
+            if active_vial.current_location == potentiostat.id:
+                print(f"COLLECTING VIAL {active_vial} FROM {potentiostat}")
+                self.success += active_vial.retrieve()
+            else:
+                print(f"Active vial {active_vial} has already been collected from {potentiostat}")
 
         if self.end_experiment:
             potentiostat.update_experiment(None)
@@ -283,21 +282,21 @@ class BenchmarkCV(RoboticsBase):
         sens = fw_spec.get("sens") or self.get("sens", "")
 
         # Prep output file info
-        collect_vial_id = self.metadata.get("collect_vial_id")
+        active_vial_id = self.metadata.get("active_vial_id")
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.txt"))
 
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
-        potent.initiate_pot()
+        potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
-                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
         self.metadata.update({"resistance": resistance})
         return FWAction(update_spec=self.updated_specs())
@@ -320,7 +319,7 @@ class RunCV(RoboticsBase):
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
-        collect_vial_id = self.metadata.get("collect_vial_id")
+        active_vial_id = self.metadata.get("active_vial_id")
         cv_idx = self.metadata.get("cv_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
@@ -328,14 +327,14 @@ class RunCV(RoboticsBase):
 
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
-        potent.initiate_pot()
+        potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
-                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  # TODO figure out if we want to propogate voltage sequence
 
@@ -357,7 +356,7 @@ class RunCA(RoboticsBase):
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
-        collect_vial_id = self.metadata.get("collect_vial_id")
+        active_vial_id = self.metadata.get("active_vial_id")
         ca_idx = self.metadata.get("ca_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
@@ -365,7 +364,7 @@ class RunCA(RoboticsBase):
 
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
-        potent.initiate_pot()
+        potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
         [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
@@ -375,7 +374,7 @@ class RunCA(RoboticsBase):
 
         self.metadata.update({"ca_idx": ca_idx + 1, "temperature": temperature})
         self.collection_data.append({"collect_tag": collect_tag,
-                                     "vial_contents": VialStatus(collect_vial_id).vial_content,
+                                     "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "temperature": temperature,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

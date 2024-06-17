@@ -13,12 +13,12 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-POT_DELAY = 5  # seconds
+POT_DELAY = 15  # seconds
 STIR = False
 DISPENSE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
-CALIB_DATE = ''
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
+CALIB_DATE = '2024_06_11'
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True
@@ -27,11 +27,11 @@ FIZZLE_DIRTY_ELECTRODE = False
 EXIT_ZERO_VOLUME = True
 
 # ---------  DEFAULT CONDITIONS -------------
-DEFAULT_TEMPERATURE = "293K"
-DEFAULT_CONCENTRATION = "0.01M"
+DEFAULT_TEMPERATURE = None  # "293K"
+DEFAULT_CONCENTRATION = None  # "0.01M"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
 DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2))  # area given in cm^2
-MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False  # TODO confirm condition
+MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False
 DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allowed (A) for a clean electrode
 
 TIME_UNIT = "s"
@@ -56,7 +56,7 @@ IR_COMP = False  # Perform IR Compensation
 
 # CV Default Settings
 CV_SAMPLE_INTERVAL = 0.01  # Volts
-CV_SENSITIVITY = 1e-6  # A/V, current sensitivity
+CV_SENSITIVITY = 1e-5  # A/V, current sensitivity
 CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 # CA Default Settings
@@ -93,6 +93,7 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
+# ---------  CALIBRATION SETTINGS -------------
 KCL_CALIB = False
 DI_WATER_COND = 0
 CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
@@ -113,7 +114,7 @@ ARDUINO_ADDRESS = "COM4"
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
 MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01"]
-ACTION_STATIONS = ["robot_grip", "stir-heat_01"]
+ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
     "S_01", "S_02", "S_03", "S_04",

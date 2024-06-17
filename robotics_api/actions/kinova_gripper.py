@@ -46,7 +46,7 @@ This loop modulates the speed sent to the gripper.
 
 
 class GripperMove:
-    def __init__(self, router, router_real_time, proportional_gain=2.0):
+    def __init__(self, router, router_real_time, proportional_gain=2.0, verbose=0):
         """
             GripperMove class constructor.
 
@@ -103,7 +103,7 @@ class GripperMove:
             self.actuator_command.velocity = 0.0
             self.actuator_command.torque_joint = 0.0
             self.actuator_command.command_id = 0
-            print("Position = ", actuator.position)
+            print("Position = ", actuator.position) if verbose else None
 
         # Save servoing mode before changing it
         self.previous_servoing_mode = self.base.GetServoingMode()

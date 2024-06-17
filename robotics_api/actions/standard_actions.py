@@ -176,7 +176,17 @@ class VialMove(VialStatus):
             if raise_error:
                 raise Exception(f"Vial {self.id} location is listed as robot_grip, but robot grip current_content is "
                                 f"listed as {StationStatus('robot_grip').current_content}.")
-        elif self.robot_available():
+        elif not self.robot_available():
+            robot_content = StationStatus('robot_grip').current_content
+            try:
+                print(f"Trying to place {robot_content} home. ")
+                VialMove(_id=robot_content).place_home()
+            except Exception as e:
+                if raise_error:
+                    raise Exception(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot "
+                                    f"currently contains {robot_content}. Tried to Place {robot_content} home. "
+                                    f"Failed with exception {e}")
+        if self.robot_available():
             print("Robot is available")
             success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             if self.current_location == "home":
@@ -194,16 +204,9 @@ class VialMove(VialStatus):
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
                                           **move_kwargs)
             success += snapshot_move(SNAPSHOT_HOME)
-            self.update_position("robot_grip")
-        else:
-            robot_content = StationStatus('robot_grip').current_content
-            try:
-                VialMove(_id=robot_content).place_home()
-            except Exception as e:
-                if raise_error:
-                    raise Exception(f"Robot cannot retrieve {self.id} vial because robot is unavailable. The robot "
-                                    f"currently contains {robot_content}. Tried to Place {robot_content} home. "
-                                    f"Failed with exception {e}")
+            if success:
+                self.update_position("robot_grip")
+
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully retrieved. Vial {self.id} is located "
                             f"at {self.current_location}. ")
@@ -313,12 +316,12 @@ class LiquidStation(StationStatus):
         return actual_volume
 
 
-class StirHeatStation(StationStatus):
+class StirStation(StationStatus):
     def __init__(self, _id, **kwargs):
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
-        if self.type != "stir-heat":
+        if self.type != "stir":
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.pre_location_snapshot = None
         self.arduino_name = "S{:1d}".format(int(self.id.split("_")[-1]))
@@ -327,33 +330,11 @@ class StirHeatStation(StationStatus):
     def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def heat(self, temperature=None, temp_time=None, heat_cmd="off"):
-        """
-        Operate CV elevator
-        Args:
-            temperature: float; degree (Kelvin) for stir plate heating during stirring
-            temp_time: float; duration (seconds) of heat
-            heat_cmd: str; command for stir plate heating; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off),
-                OR it must be 'on' or 'off'.
-
-        Returns: bool, True if stir action was a success
-        """
-        # TODO implement heating
-        if temperature and temp_time:
-            success = self.arduino_name
-            return success
-        elif temperature:
-            heat_cmd = 4 if heat_cmd == "on" or str(heat_cmd) == "4" else heat_cmd
-            print(heat_cmd)
-            return True
-        return False
-
-    def stir(self, stir_time=None, temperature=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
+    def stir(self, stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
         """
         Operate CV elevator
         Args:
             stir_time: int, time (seconds) for stir plate to be on
-            temperature: float, degree (Kelvin) for stir plate heating during stirring
             stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be
                 'on' or 'off'.
             perturb_amount: float, amount to perturb vial during stirring
@@ -364,7 +345,6 @@ class StirHeatStation(StationStatus):
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
             success = False
-            success += self.heat(temperature, heat_cmd="on")
             success += send_arduino_cmd(self.arduino_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             start_time, end_time = time.time(), time.time()
@@ -380,7 +360,6 @@ class StirHeatStation(StationStatus):
                 time.sleep(move_sleep)
                 end_time = time.time()
             success += send_arduino_cmd(self.arduino_name, 0) if STIR else True
-            success += self.heat(temperature, heat_cmd="off")
             return success
 
         # If stir_time not provided, default to implementing stir_cmd
@@ -390,12 +369,9 @@ class StirHeatStation(StationStatus):
             raise TypeError("Arg 'stir' must be 11 or 10, OR it must be 'up' or 'down'.")
         return send_arduino_cmd(self.arduino_name, stir_cmd)
 
-    def perform_stir_heat(self, vial: VialMove, stir_time=None, temperature=None, temp_time=None, **kwargs):
+    def perform_stir(self, vial: VialMove, stir_time=None, **kwargs):
         success = vial.go_to_station(self, **kwargs)
-        if stir_time:
-            success += self.stir(stir_time=stir_time, temperature=temperature)
-        elif temp_time:
-            success += self.heat(temperature=temperature, temp_time=temp_time)
+        success += self.stir(stir_time=stir_time)
         success += vial.leave_station(self)
         return success
 
@@ -426,12 +402,15 @@ class PotentiostatStation(StationStatus):
         """
         return self.coll.update_one({"_id": self.id}, {"$set": {"current_experiment": experiment}})
 
-    def initiate_pot(self, vial: VialMove = None):
+    def initiate_pot(self, vial: VialMove or str = None):
         if vial:
+            vial = VialMove(_id=vial) if isinstance(vial, str) else vial
             if not vial.current_location == self.id:
-                raise Exception(f"Vial {vial.id} is not currently located in potentiostat {self.id}.")
+                raise Exception(f"Vial {vial.id} is not currently located in potentiostat {self.id}. "
+                                f"It is located at {vial.current_location}")
             if not self.current_content == vial.id:
-                raise Exception(f"Potentiostat {self.id} does not currently contain vial {vial.id}.")
+                raise Exception(f"Potentiostat {self.id} does not currently contain vial {vial.id}. "
+                                f"It contains {self.current_content}")
 
         if self.state == "up":
             return True
@@ -565,9 +544,9 @@ class CVPotentiostatStation(PotentiostatStation):
         sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
         sens = unit_conversion(sens or CV_SAMPLE_INTERVAL, default_unit="A/V")
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY*5} second CV_DELAY.")
             write_test(data_path, test_type="cv")
-            time.sleep(POT_DELAY)
+            time.sleep(POT_DELAY*5)
             return True
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
@@ -740,7 +719,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("cv_potentiostat_A_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # vial_col_test("B")
@@ -763,4 +742,4 @@ if __name__ == "__main__":
     # flush_solvent(8, vial_id="S_02", solv_id="solvent_01", go_home=True)
 
     # snapshot_move(SNAPSHOT_HOME)
-    # StirHeatStation("stir-heat_01").perform_stir_heat(test_vial, stir_time=30)
+    # StirHeatStation("stir_01").perform_stir(test_vial, stir_time=30)

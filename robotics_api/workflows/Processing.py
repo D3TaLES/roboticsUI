@@ -33,6 +33,9 @@ class InitializeRobot(FiretaskBase):
                 BaseClient(router)
                 BaseCyclicClient(router)
 
+        if MOVE_ELEVATORS:
+            reset_stations()
+
         return FWAction(update_spec={"success": True})
 
 
@@ -421,5 +424,8 @@ class SendToStorage(FiretaskBase):
 class EndWorkflow(FiretaskBase):
     # FireTask for ending a workflow
     def run_task(self, fw_spec):
+        robot_content = StationStatus('robot_grip').current_content
+        if robot_content:
+            VialMove(_id=robot_content).place_home()
         success = snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

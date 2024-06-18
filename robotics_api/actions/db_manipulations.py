@@ -233,10 +233,10 @@ class StationStatus(RobotStatusDB):
             return self.coll.find({
                 "_id": {"$regex": name_str},
                 "available": True,
-                "$or": [
-                    {"current_experiment": exp_name},
-                    {"current_experiment": None},
-                ]
+                # "$or": [
+                #     {"current_experiment": exp_name},
+                #     {"current_experiment": None},
+                # ]
             }).distinct("_id")
         else:
             return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
@@ -260,7 +260,7 @@ class StationStatus(RobotStatusDB):
             return available_stations[0] if available_stations else None
         total_time = 0
         while not available_stations:
-            print(f"Waited for {total_time} seconds and a {name_str} station is still not available.")
+            print(f"Waited for {total_time} seconds, and a {name_str} station is still not available.")
             time.sleep(wait_interval)
             total_time += wait_interval
             if max_time and (total_time >= max_time):
@@ -324,6 +324,7 @@ class StationStatus(RobotStatusDB):
         """Empty the station content and update availability."""
         self.update_status("", "content")
         self.update_available(True)
+        print(f"Successfully emptied station {self}")
 
 
 class ReagentStatus(RobotStatusDB):
@@ -501,7 +502,7 @@ def reset_vial_db(experiment_locs: dict, current_wflow_name=""):
         current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
     """
     # Check experiment locations 1-to-1 status
-    experiment_locs.update(SOLVENT_VIALS)
+    experiment_locs.update(RINSE_VIALS)
     if check_duplicates(list(experiment_locs.values())):
         raise ValueError(
             "More than one experiment is assigned same vial(s): " + check_duplicates(list(experiment_locs.values())))

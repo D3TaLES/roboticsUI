@@ -195,7 +195,7 @@ class EF2Experiment(ProcessExpFlowObj):
                 parent = fw if "benchmark" in fw_type else parent
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
-                    [SetupActivePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
+                    [SetupRinsePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
                     name="{}_robot".format(self.full_name), parents=parent, priority=priority + 3,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
@@ -254,10 +254,8 @@ class EF2Experiment(ProcessExpFlowObj):
             "process_data": [RecordWorkingElectrodeArea, DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
-            "setup_": [SetupActivePotentiostat],
             "setup_cv": [SetupCVPotentiostat],
             "setup_ca": [SetupCAPotentiostat],
-            "finish_": [FinishPotentiostat],
             "finish_cv": [FinishPotentiostat],
             "finish_ca": [FinishPotentiostat],
 
@@ -268,6 +266,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "process_cv_data": [DataProcessor],
             "collect_electrode_test": [RunCV],
             "collect_electrode_test_data": [RunCV],
+            "finish_": [FinishPotentiostat],
         }
 
 

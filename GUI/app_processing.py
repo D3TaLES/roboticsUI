@@ -18,7 +18,7 @@ def get_exps(exp_json):
 
 
 def vial_location_options():
-    return [v for v in VIALS if (v not in SOLVENT_VIALS.values() and not v.startswith("S"))]
+    return [v for v in VIALS if (v not in RINSE_VIALS.values() and not v.startswith("S"))]
 
 
 def reagent_location_options():

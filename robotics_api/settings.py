@@ -13,7 +13,7 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-POT_DELAY = 15  # seconds
+POT_DELAY = 10  # seconds
 STIR = False
 DISPENSE = False
 RUN_ROBOT = False
@@ -122,7 +122,7 @@ VIALS = [
     "B_01", "B_02", "B_03", "B_04",
     "C_01", "C_02", "C_03", "C_04",
 ]
-SOLVENT_VIALS = {"solvent_01": "S_01", "solvent_02": "S_02", "solvent_03": "S_03", "solvent_04": "S_04"}
+RINSE_VIALS = {"cv_potentiostat_A_01": "S_01", "ca_potentiostat_B_01": "S_02"}
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
 # ---------  PATH VARIABLES -------------

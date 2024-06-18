@@ -262,7 +262,6 @@ class VialMove(VialStatus):
     def leave_station(station: StationStatus, raise_error=True):
         success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                  raise_error=raise_error, go=False, raise_amount=station.raise_amount)
-        station.update_available(True)
         station.empty()
         return success
 
@@ -295,7 +294,6 @@ class LiquidStation(StationStatus):
         if self.type != "solvent":
             raise Exception(f"Station {self.id} is not a liquid.")
         self.raise_amount = raise_amount
-        self.blank_vial = SOLVENT_VIALS.get(self.id)
         self.pre_location_snapshot = None
         self.arduino_name = "L{:01d}".format(int(self.id.split("_")[-1]))
 
@@ -473,16 +471,17 @@ class PotentiostatStation(StationStatus):
 
         Returns: bool, True if elevator action was a success
         """
-        if not MOVE_ELEVATORS:
+        if MOVE_ELEVATORS:
+            endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
+            endpoint = 1 if endpoint == "up" or str(endpoint) == "1" else endpoint
+            if endpoint not in [0, 1]:
+                raise TypeError("Arg 'endpoint' must be 1 or 0, OR it must be 'up' or 'down'.")
+
+            success = send_arduino_cmd(self.arduino_name, endpoint)
+        else:
+            success = True
             warnings.warn("Elevators NOT moving because MOVE_ELEVATORS is False")
-            return True
 
-        endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
-        endpoint = 1 if endpoint == "up" or str(endpoint) == "1" else endpoint
-        if endpoint not in [0, 1]:
-            raise TypeError("Arg 'endpoint' must be 1 or 0, OR it must be 'up' or 'down'.")
-
-        success = send_arduino_cmd(self.arduino_name, endpoint)
         if success:
             self.update_state("up") if endpoint == 1 else self.update_state("down")
         if not success and raise_error:

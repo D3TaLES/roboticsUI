@@ -149,6 +149,27 @@ class Stir(RoboticsBase):
 
 
 @explicit_serialize
+class SetupRinsePotentiostat(RoboticsBase):
+
+    def run_task(self, fw_spec):
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+
+        potentiostat = PotentiostatStation(self.metadata.get(f"{self.metadata.get('active_method')}_potentiostat"))
+        action_vial = VialMove(_id=RINSE_VIALS.get(potentiostat.id))
+
+        # If potentiostat not available, return current vial home and fizzle.
+        if not potentiostat.wait_till_available():
+            warnings.warn(f"Station {potentiostat} not available. Fizzling rinse.")
+            return self.self_fizzle()
+
+        self.success += action_vial.place_station(potentiostat)
+        self.metadata.update({"active_vial_id": action_vial.id})
+
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
 class RinseElectrode(RoboticsBase):
     # FireTask for dispensing solvent
 
@@ -159,7 +180,7 @@ class RinseElectrode(RoboticsBase):
         method = self.metadata.get("active_method")
 
         potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
-        potentiostat.initiate_pot(vial=self.metadata.get("active_vial_id"))
+        potentiostat.initiate_pot(vial=RINSE_VIALS.get(potentiostat.id))
         print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
         time.sleep(rinse_time)
 
@@ -186,21 +207,9 @@ class SetupPotentiostat(RoboticsBase):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         self.method = self.method or self.metadata.get("active_method")
 
-        # Get vial for CV
-        start_reagent = ReagentStatus(_id=self.get("start_uuid"))
-        print("START", start_reagent.__dict__)
-        if start_reagent.type == "solvent":
-            action_vial = VialMove(_id=LiquidStation(start_reagent.location).blank_vial)
-            self.metadata.update({"collect_tag": f"solv_{self.method}"})
-        else:
-            action_vial = self.exp_vial
-            cycle = self.metadata.get("cycle", 0)
-            self.metadata.update({"collect_tag": f"cycle{cycle+1:02d}_{self.method}", "cycle": cycle+1,
-                                  f"{self.method}_idx": self.metadata.get(f"{self.method}_idx", 1)})
-
         # Move vial to potentiostat elevator
-        if self.method in action_vial.current_station.type:
-            potentiostat = action_vial.current_station.id
+        if self.method in self.exp_vial.current_station.type:
+            potentiostat = self.exp_vial.current_station.id
             if self.exp_name != PotentiostatStation(potentiostat).current_experiment:
                 return self.self_fizzle()
         else:
@@ -214,24 +223,23 @@ class SetupPotentiostat(RoboticsBase):
             else:
                 available_pot = StationStatus().get_first_available(pot_type)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
-            # If potentiostat not available, return current vial home and fizzle.
             print("SUCCESS, POTENT: ", self.success, potentiostat)
+            # If potentiostat not available, return current vial home and fizzle.
             if not (self.success and potentiostat):
-                warnings.warn(f"Station {potentiostat} not available. Moving vial {action_vial} back home.")
-                action_vial.place_home()
-                self.updated_specs()
+                warnings.warn(f"Station {potentiostat} not available. Moving vial {self.exp_vial} back home.")
+                self.exp_vial.place_home()
                 return self.self_fizzle()
             potentiostat.update_experiment(self.exp_name)
-            self.success += action_vial.place_station(potentiostat)
+            self.success += self.exp_vial.place_station(potentiostat)
         print("POTENTIOSTAT: ", potentiostat)
-        self.metadata.update({f"{self.method}_potentiostat": potentiostat, "active_vial_id": action_vial.id,
+
+        # Setup metadata
+        cycle = self.metadata.get("cycle", 0)
+        self.metadata.update({"collect_tag": f"cycle{cycle + 1:02d}_{self.method}", "cycle": cycle + 1,
+                              f"{self.method}_idx": self.metadata.get(f"{self.method}_idx", 1),
+                              f"{self.method}_potentiostat": potentiostat, "active_vial_id": self.exp_vial.id,
                               "active_method": self.method})
         return FWAction(update_spec=self.updated_specs())
-
-
-@explicit_serialize
-class SetupActivePotentiostat(SetupPotentiostat):
-    method = None
 
 
 @explicit_serialize

@@ -455,6 +455,7 @@ class PotentiostatStation(StationStatus):
             success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
         else:
+            success += False
             print(f"Station {self} not available.")
 
         if raise_error and not success:

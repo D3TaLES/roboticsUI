@@ -209,11 +209,13 @@ class SetupPotentiostat(RoboticsBase):
             if self.metadata.get(pot_type):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 print(f"This experiment already uses instrument {potentiostat}")
-                self.success += potentiostat.wait_till_available()
+                self.success = potentiostat.wait_till_available()
+                print("WAITING ", self.success)
             else:
                 available_pot = StationStatus().get_first_available(pot_type)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
             # If potentiostat not available, return current vial home and fizzle.
+            print("SUCCESS, POTENT: ", self.success, potentiostat)
             if not (self.success and potentiostat):
                 warnings.warn(f"Station {potentiostat} not available. Moving vial {action_vial} back home.")
                 action_vial.place_home()

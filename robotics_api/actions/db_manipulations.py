@@ -285,7 +285,9 @@ class StationStatus(RobotStatusDB):
             time.sleep(wait_interval)
             total_time += wait_interval
             if max_time and (total_time >= max_time):
+                print(f"{self} is not available. ")
                 return False
+        print(f"{self} is available!")
         return True
 
     def update_available(self, value: bool):

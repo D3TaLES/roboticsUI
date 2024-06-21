@@ -23,9 +23,6 @@ class RoboticsBase(FiretaskBase):
     _fw_name = "RoboticsBase"
 
     def setup_task(self, fw_spec, get_exp_vial=True):
-        if fw_spec.get("exit", self.get("exit", False)): 
-            print("EXITING WORKFLOW SEQUENCE")
-            return False
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
@@ -39,6 +36,9 @@ class RoboticsBase(FiretaskBase):
         self.collection_data = fw_spec.get("collection_data", [])
         self.processing_data = fw_spec.get("processing_data", {})
 
+        if fw_spec.get("exit", self.get("exit", False)):
+            print("EXITING WORKFLOW SEQUENCE")
+            return False
         if get_exp_vial:
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
@@ -75,7 +75,7 @@ class DispenseLiquid(RoboticsBase):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
-        if not volume and EXIT_ZERO_VOLUME:
+        if not unit_conversion(volume, default_unit=VOLUME_UNIT) and EXIT_ZERO_VOLUME:
             print(" \n \n!!!!!!!!! \n ATTENTION! This FW and all subsequent FWs will be exited. "
                   "DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. \n !!!!!!!!! \n \n")
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)

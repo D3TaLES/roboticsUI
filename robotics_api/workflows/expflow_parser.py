@@ -97,12 +97,11 @@ class EF2Experiment(ProcessExpFlowObj):
         if "multi_cv" in task.name:
             task_list = []
             scan_rates_param = [p for p in task.parameters if "scan_rate" in p.description][0]
-            voltages_param = [p for p in task.parameters if p.description == "voltage_sequence"][0]
+            other_params = [p for p in task.parameters if "scan_rate" not in p.description]
             for i, scan_rate in enumerate(scan_rates_param.value.strip(" ").split(",")):
                 task_dict = copy.deepcopy(task.__dict__)
                 task_dict["name"] = "collect_cv_data"
-                task_dict["parameters"] = [
-                        voltages_param.__dict__,
+                task_dict["parameters"] = other_params + [
                         {
                             "description": "scan_rate",
                             "value": scan_rate,
@@ -190,35 +189,35 @@ class EF2Experiment(ProcessExpFlowObj):
             tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             priority = self.priority - 1 if i == 0 else self.priority
             if "process" in fw_type:
-                fw = CVProcessing(tasks, name="{}_{}".format(self.full_name, fw_type), parents=collect_parent or parent,
+                fw = CVProcessing(tasks, name=f"{self.full_name}_{fw_type}", parents=collect_parent or parent,
                                   fw_specs=self.fw_specs, mol_id=self.mol_id, priority=priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
                     [SetupRinsePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
-                    name="{}_robot".format(self.full_name), parents=parent, priority=priority + 3,
+                    name=f"{self.full_name}_setup", parents=parent, priority=priority + 3,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
-                r2 = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), parents=[r1],
+                r2 = AnalysisFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=[r1],
                                       priority=priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
-                r3 = RobotFirework([FinishPotentiostat()], name="{}_robot".format(self.full_name),  parents=[r2],
+                r3 = RobotFirework([FinishPotentiostat()], name=f"{self.full_name}_finish",  parents=[r2],
                                    priority=priority + 3, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 fireworks.extend([r1, r2, r3])
                 self.end_exps.append(r3)
                 continue
             elif "setup" in fw_type:
-                name = "{}_{}".format(self.full_name, fw_type)
-                fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=priority,
+                name = f"{self.full_name}_{fw_type}"
+                fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=priority+2,
                                             analysis=fw_type.split("_")[1], parents=parent, fw_specs=self.fw_specs)
                 parent = fw
             elif self.is_inst_task(fw_type):
-                fw = AnalysisFirework(tasks, name="{}_{}".format(self.full_name, fw_type), wflow_name=self.wflow_name,
+                fw = AnalysisFirework(tasks, name=f"{self.full_name}_{fw_type}", wflow_name=self.wflow_name,
                                       priority=priority, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
                 collect_parent = fw
             else:
                 p = priority + 4 if "finish" in fw_type else priority
-                fw = RobotFirework(tasks, name="{}_robot".format(self.full_name), wflow_name=self.wflow_name,
+                fw = RobotFirework(tasks, name=f"{self.full_name}_{fw_type}", wflow_name=self.wflow_name,
                                    priority=p, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
                 end_exp = fw

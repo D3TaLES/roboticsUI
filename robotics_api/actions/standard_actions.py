@@ -188,9 +188,9 @@ class VialMove(VialStatus):
                                     f"Failed with exception {e}")
         if self.robot_available():
             print("Robot is available")
-            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             if self.current_location == "home":
                 print("Retrieving vial from home...")
+                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
                 success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error, **move_kwargs)
             elif "potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
@@ -203,7 +203,7 @@ class VialMove(VialStatus):
             else:
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
                                           **move_kwargs)
-            success += snapshot_move(SNAPSHOT_HOME)
+            # success += snapshot_move(SNAPSHOT_HOME)
             if success:
                 self.update_position("robot_grip")
 
@@ -214,8 +214,8 @@ class VialMove(VialStatus):
 
     def go_to_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
         self.retrieve(raise_error=True)
-        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        success += get_place_vial(target_location, action_type='place', release_vial=False,
+        # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        success = get_place_vial(target_location, action_type='place', release_vial=False,
                                   raise_error=raise_error, **move_kwargs)
 
         if raise_error and not success:
@@ -228,7 +228,7 @@ class VialMove(VialStatus):
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         success += get_place_vial(target_location, action_type='place',
                                   raise_error=raise_error, **move_kwargs)
-        success += snapshot_move(SNAPSHOT_HOME)
+        # success += snapshot_move(SNAPSHOT_HOME)
         self.update_position(target_location)
 
         if raise_error and not success:
@@ -446,11 +446,11 @@ class PotentiostatStation(StationStatus):
             success = vial.retrieve(raise_error=True)
 
         if self.available:
-            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+            # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             success += get_place_vial(self.location_snapshot, action_type='place',
                                       pre_position_file=self.pre_location_snapshot,
                                       raise_amount=self.raise_amount, raise_error=raise_error, **move_kwargs)
-            success += snapshot_move(SNAPSHOT_HOME)
+            # success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
         else:
             success += False
@@ -497,7 +497,7 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_arduino_name, "", return_txt=True)
         if arduino_result:
-            return float(arduino_result.split(":")[1].strip()) + 273.15
+            return {"value": float(arduino_result.split(":")[1].strip()) + 273.15, "unit": "K"}
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
@@ -734,7 +734,7 @@ if __name__ == "__main__":
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
-    # test_potent.move_elevator(endpoint="up")
+    test_potent.move_elevator(endpoint="up")
     # print(test_potent.get_temperature())
     # test_potent.move_elevator(endpoint="down")
 

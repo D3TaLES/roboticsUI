@@ -118,14 +118,15 @@ class ProcessBase(FiretaskBase):
             "data_type": "cv",
         }
 
-    def plot_cv(self, cv_loc, p_data, title_tag=""):
+    @staticmethod
+    def plot_cv(cv_loc, p_data, plot_name="", title_tag=""):
         # Plot CV
         if 'chi' not in POTENTIOSTAT_A_EXE_PATH:
             image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
             CVPlotter(connector={"scan_data": "data.scan_data",
                                  "we_surface_area": "data.conditions.working_electrode_surface_area"
                                  }).live_plot(p_data, fig_path=image_path,
-                                              title=f"{title_tag} CV Plot for {self.name}",
+                                              title=f"{title_tag} CV Plot for {plot_name}",
                                               xlabel=MULTI_PLOT_XLABEL,
                                               ylabel=MULTI_PLOT_YLABEL,
                                               current_density=PLOT_CURRENT_DENSITY,
@@ -142,7 +143,7 @@ class ProcessBase(FiretaskBase):
             return None
         file_type = file_loc.split('.')[-1]
         e_ref = ChemStandardsDB(standards_type="MolProps", _id=self.mol_id).get_prop("formal_potential")
-        if self.mol_id and not e_ref:
+        if self.mol_id and e_ref is None:
             if "Calib" not in self.mol_id:
                 raise KeyError(f"No formal potential exists in the standards database for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
@@ -164,7 +165,7 @@ class ProcessBase(FiretaskBase):
         solv_data = self.coll_dict.get("solv_cv", [])
         for d in solv_data:
             p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False)
-            self.plot_cv(d.get("data_location"), p_data)
+            self.plot_cv(d.get("data_location"), p_data, plot_name="Solvent")
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
                 dirty = dirty_calc.calculate(p_data, max_current_range=DIRTY_ELECTRODE_CURRENT)
@@ -197,7 +198,7 @@ class ProcessCVBenchmarking(ProcessBase):
                 "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), fw_spec, "elect_id")
             })
             p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
-            self.plot_cv(cv_loc, p_data, title_tag="Benchmark")
+            self.plot_cv(cv_loc, p_data, plot_name="Benchmark")
 
             # Calculate new voltage sequence
             if MICRO_ELECTRODES:
@@ -243,16 +244,23 @@ class ProcessCalibration(ProcessBase):
                 processed_ca_data.append(p_data)
 
             # Insert CA calibration
-            cond_true = CA_CALIB_STDS.get(self.mol_id)
             calib_instance = {
                 "mol_id": self.mol_id,  # D3TaLES ID  TODO see if this works
                 "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
                 "cond_measured": p_data.get("data", {}).get("measured_conductance"),
-                "cond_true": cond_true,
                 "res_measured": p_data.get("data", {}).get("measured_resistance"),
-                "res_true": 1 / cond_true if cond_true else None,
                 "temperature": self.metadata.get("temperature"),
             }
+            if KCL_CALIB:
+                calib_instance.update({"cell_constant": kcl_cell_constant(calib_instance.get("cond_measured"),
+                                                                          calib_instance.get("temperature"))})
+            else:
+                cond_true = CA_CALIB_STDS.get(self.mol_id)
+                calib_instance.update({
+                    "cond_true": cond_true,
+                    "res_true": 1 / cond_true if cond_true else None,
+                })
+            print(calib_instance)
             ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
 
         self.processing_data.update({'processed_locs': self.processed_locs})
@@ -273,16 +281,15 @@ class DataProcessor(ProcessBase):
         metadata_dict = {}
 
         # Process CV data for cycle
-        processed_cv_data = []
+        processed_cv_data, plot_name = [], ""
         for d in cv_data:
+            redox_conc = get_concentration(d.get("vial_contents"), fw_spec, "rom_id")
+            elec_conc = get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
+            self.metadata.update({"redox_mol_concentration": redox_conc, "electrolyte_concentration": elec_conc})
             m_data = self.metadata
-            self.metadata.update({
-                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
-                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
-            })
-            print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
-            self.plot_cv(d.get("data_location"), p_data)
+            plot_name = f"{self.name}, {redox_conc} redox, {elec_conc} SE"
+            self.plot_cv(d.get("data_location"), p_data, plot_name)
             if p_data:
                 processed_cv_data.append(p_data)
 
@@ -293,7 +300,7 @@ class DataProcessor(ProcessBase):
             CVPlotter(connector={"scan_data": "data.scan_data",
                                  "variable_prop": "data.conditions.scan_rate.value",
                                  "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
-                processed_cv_data, fig_path=multi_path, title=f"Multi CV Plot for {self.mol_id}",
+                processed_cv_data, fig_path=multi_path, title=f"Multi CV Plot for {plot_name or self.mol_id}",
                 xlabel=MULTI_PLOT_XLABEL,
                 ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
                 a_to_ma=CONVERT_A_TO_MA)
@@ -306,20 +313,20 @@ class DataProcessor(ProcessBase):
                                               micro_electrodes=MICRO_ELECTRODES).meta_dict)
 
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_cv_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_cv_data))
-            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_cv_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
                 fn.write(print_cv_analysis(processed_cv_data, metadata_dict, verbose=VERBOSE))
 
         # Process CA data for cycle
         processed_ca_data = []
         for d in ca_data:
-            m_data = self.metadata
             self.metadata.update({
                 "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
                 "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id"),
                 "cell_constant": get_cell_constant()
             })
+            m_data = self.metadata
             print("METADATA: ", self.metadata)
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
@@ -332,9 +339,9 @@ class DataProcessor(ProcessBase):
             save_props = ["conductivity", "measured_conductance", "resistance", "measured_resistance"]
             metadata_dict.update({p: processed_ca_data[-1].get(p) for p in save_props})
             # Record all data
-            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_ca_all_data.txt", 'w') as fn:
+            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
                 fn.write(json.dumps(processed_ca_data))
-            with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_ca_summary.txt", 'w') as fn:
+            with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
                 fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())
@@ -427,5 +434,6 @@ class EndWorkflow(FiretaskBase):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:
             VialMove(_id=robot_content).place_home()
-        success = snapshot_move(SNAPSHOT_END_HOME)
+        success = snapshot_move(SNAPSHOT_HOME)
+        success += snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

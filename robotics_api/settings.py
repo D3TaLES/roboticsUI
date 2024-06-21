@@ -13,12 +13,12 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-POT_DELAY = 10  # seconds
+POT_DELAY = 5  # seconds
 STIR = False
 DISPENSE = False
 RUN_ROBOT = False
 MOVE_ELEVATORS = False
-CALIB_DATE = '2024_06_11'
+CALIB_DATE = '2024_06_20'
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True
@@ -28,7 +28,7 @@ EXIT_ZERO_VOLUME = True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
-DEFAULT_CONCENTRATION = None  # "0.01M"
+DEFAULT_CONCENTRATION = 0  # "0.01M"
 DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
 DEFAULT_WORKING_ELECTRODE_AREA = (math.pi * (DEFAULT_WORKING_ELECTRODE_RADIUS ** 2))  # area given in cm^2
 MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False
@@ -61,7 +61,7 @@ CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 # CA Default Settings
 CA_SAMPLE_INTERVAL = 1e-6  # seconds
-CA_SENSITIVITY = 1e-3  # A/V, current sensitivity
+CA_SENSITIVITY = 1e-4  # A/V, current sensitivity
 CA_PULSE_WIDTH = 1e-4  # sec, pulse width for CA
 CA_STEPS = 200  # number of steps for CA
 MAX_CA_VOLT = None  # V, maximum acceptable voltage for CA experiment
@@ -94,8 +94,8 @@ MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
 PEAK_WIDTH = 0.5
 
 # ---------  CALIBRATION SETTINGS -------------
-KCL_CALIB = False
-DI_WATER_COND = 0
+KCL_CALIB = True
+DI_WATER_COND = 10
 CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "11JNLU": 1.299,  # KCl
     "06IGCB": 0,  # H2O
@@ -106,6 +106,7 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
 FORMAL_POTENTIALS = {  # Formal potentials
     "06TNKR": 0.30,  # TEMPO, V vs. Ag/Ag+
     "05MYHH": 0,   # MEEPT
+    "11JNLU": 0,   # MEEPT
 }
 
 # ---------  ARDUINO ADDRESS -------------
@@ -130,6 +131,7 @@ ROBOTICS_API = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "robo
 TEST_DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "test_data")
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
 SNAPSHOT_DIR = os.path.join(ROBOTICS_API, "snapshots")
+SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
 SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
 SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 

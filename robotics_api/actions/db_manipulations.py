@@ -1,4 +1,5 @@
 import time
+import uuid
 from datetime import datetime
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
@@ -396,11 +397,9 @@ class ChemStandardsDB(D3Database):
         """
         self.db_name = 'standards_' + standards_type
         super().__init__(database="robotics", collection_name=self.db_name, instance=instance, validate_schema=False)
-        self.id = _id or self.instance.get("_id")
+        self.id = _id or self.instance.get("_id", str(uuid.uuid4()))
         if instance:
             instance["_id"] = self.id
-            if not self.id:
-                raise IOError("ID is required for {} database insertion.".format(self.db_name))
             self.insert(self.id, override_lists=override_lists)
 
     def __str__(self):

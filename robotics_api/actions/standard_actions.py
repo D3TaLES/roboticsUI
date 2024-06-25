@@ -216,7 +216,7 @@ class VialMove(VialStatus):
         self.retrieve(raise_error=True)
         # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         success = get_place_vial(target_location, action_type='place', release_vial=False,
-                                  raise_error=raise_error, **move_kwargs)
+                                 raise_error=raise_error, **move_kwargs)
 
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
@@ -346,6 +346,7 @@ class StirStation(StationStatus):
             success += send_arduino_cmd(self.arduino_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             start_time, end_time = time.time(), time.time()
+            time.sleep(10)
             while (end_time - start_time) < seconds:
                 # Move vial around stir plate center
                 snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="x"))
@@ -542,11 +543,12 @@ class CVPotentiostatStation(PotentiostatStation):
         Returns: bool, success
         """
         sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
-        sens = unit_conversion(sens or CV_SAMPLE_INTERVAL, default_unit="A/V")
+        sens = unit_conversion(sens or CV_SENSITIVITY, default_unit="A/V")
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY*5} second CV_DELAY.")
+            print(
+                f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY * 5} second CV_DELAY.")
             write_test(data_path, test_type="cv")
-            time.sleep(POT_DELAY*5)
+            time.sleep(POT_DELAY * 5)
             return True
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
@@ -554,9 +556,9 @@ class CVPotentiostatStation(PotentiostatStation):
             from potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
-            expt = CvExperiment([voltage_step(**p) for p in collect_params], run_iR=True, record_every_de=sample_interval,
+            expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,
                                 potentiostat_address=self.p_address, potentiostat_channel=int(self.p_channel),
-                                exe_path=self.p_exe_path, **kwargs)
+                                exe_path=self.p_exe_path, run_iR=True, **kwargs)
             # Run CV and save data
             expt.run_experiment()
             time.sleep(TIME_AFTER_CV)
@@ -632,7 +634,7 @@ class CAPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_ca(self, data_path, voltage_sequence=None, si=None, pw=None, sens=None,
-               steps=None, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT):
+               steps=None, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
         """
         Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
         Args:
@@ -644,6 +646,7 @@ class CAPotentiostatStation(PotentiostatStation):
             steps: float, number of steps
             volt_min: float, minimum acceptable voltage for CA experiment
             volt_max: float, maximum acceptable voltage for CA experiment
+            run_delay: float, time to wait before running CA experiment (s)
 
         Returns: bool, success
         """
@@ -658,7 +661,8 @@ class CAPotentiostatStation(PotentiostatStation):
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CA WITH {voltage_sequence} VOLTAGES")
+        print(f"RUN CA WITH {voltage_sequence} VOLTAGES. Waiting {run_delay} sec before performing experiment...")
+        time.sleep(run_delay)
         if "chi" in self.pot_model:
             import hardpotato as hp
             # Set CV parameters
@@ -719,7 +723,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    test_potent = PotentiostatStation("cv_potentiostat_A_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # vial_col_test("B")
@@ -734,12 +738,12 @@ if __name__ == "__main__":
     # test_vial.place_station(test_potent)
     # test_vial.place_home()
 
+    # test_potent.move_elevator(endpoint="down")
     test_potent.move_elevator(endpoint="up")
     # print(test_potent.get_temperature())
-    # test_potent.move_elevator(endpoint="down")
 
     # LiquidStation(_id="solvent_01").dispense_only(8)
-    # flush_solvent(8, vial_id="S_02", solv_id="solvent_01", go_home=True)
+    # flush_solvent(8, vial_id="S_04", solv_id="solvent_01", go_home=True)
 
     # snapshot_move(SNAPSHOT_HOME)
     # StirHeatStation("stir_01").perform_stir(test_vial, stir_time=30)

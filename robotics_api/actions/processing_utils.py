@@ -91,11 +91,12 @@ def get_cell_constant(raise_error=True):
     """
     date = CALIB_DATE or datetime.now().strftime('%Y_%m_%d')
     if KCL_CALIB:
-        query = ChemStandardsDB(standards_type="CACalib").coll.find_one({'$and': [
+        query = ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},
             {"cell_constant": {"$exists": True}},
-        ]})
-        return query.get("cell_constant")
+        ]}).distinct("cell_constant")
+        print(f"KCl calibrations for {date}: {query}")
+        return "{}cm^-1".format(np.mean(query))
     else:
         query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},

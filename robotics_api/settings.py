@@ -18,7 +18,7 @@ STIR = False
 DISPENSE = False
 RUN_ROBOT = False
 MOVE_ELEVATORS = False
-CALIB_DATE = '2024_06_20'
+CALIB_DATE = None  # '2024_06_20'
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True
@@ -56,10 +56,11 @@ IR_COMP = False  # Perform IR Compensation
 
 # CV Default Settings
 CV_SAMPLE_INTERVAL = 0.01  # Volts
-CV_SENSITIVITY = 1e-5  # A/V, current sensitivity
+CV_SENSITIVITY = 1e-6  # A/V, current sensitivity
 CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut
 CUT_END = 0.0  # percentage as decimal of end of CV to cut
 # CA Default Settings
+CA_RUN_DELAY = 60  # seconds
 CA_SAMPLE_INTERVAL = 1e-6  # seconds
 CA_SENSITIVITY = 1e-4  # A/V, current sensitivity
 CA_PULSE_WIDTH = 1e-4  # sec, pulse width for CA

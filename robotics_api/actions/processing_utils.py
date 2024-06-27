@@ -191,6 +191,10 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     for d in multi_data:
         out_txt += d.get("_id") + '\n'
 
+    out_txt += "\n------------- Single CVs Analysis -------------\n"
+    out_txt += '\n'.join(all_cvs_data(multi_data, **kwargs))
+    out_txt += '\n'
+
     return str(out_txt)
 
 

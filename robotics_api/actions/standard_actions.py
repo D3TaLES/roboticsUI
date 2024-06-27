@@ -196,9 +196,9 @@ class VialMove(VialStatus):
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
                 success += station.retrieve_vial(self)
-            elif "solvent" in self.current_location:
-                print(f"Retrieving vial from solvent station {self.current_location}...")
-                station = LiquidStation(self.current_location)
+            elif "balance" in self.current_location:
+                print(f"Retrieving vial from balance station {self.current_location}...")
+                station = BalanceStation(self.current_location)
                 success += station.retrieve_vial(self)
             else:
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
@@ -255,8 +255,29 @@ class VialMove(VialStatus):
 
         return success
 
-    def place_station(self, station: StationStatus, raise_error=True):
-        return station.place_vial(self, raise_error=raise_error)
+    def place_station(self, station: StationStatus, raise_error=True, **move_kwargs):
+        vial_id = self if isinstance(self, str) else self.id
+        if station.current_content == vial_id and self.current_location == station.id:
+            return True
+
+        success = False
+        if station.available:
+            self.place_snapshot(station.location_snapshot, action_type='place',
+                                pre_position_file=station.pre_location_snapshot,
+                                raise_amount=station.raise_amount, raise_error=raise_error, **move_kwargs)
+
+        return success
+
+    def retrieve_from_station(self, station: StationStatus, **move_kwargs):
+        vial_id = self if isinstance(self, str) else self.id
+        if station.current_content != vial_id:
+            raise Exception(f"Cannot retrieve vial {vial_id} from station {station.id}"
+                            f"because vial {vial_id} is not located in this station")
+        success = get_place_vial(station.location_snapshot, action_type='get',
+                                 pre_position_file=station.pre_location_snapshot,
+                                 raise_amount=station.raise_amount, **move_kwargs)
+        station.empty()
+        return success
 
     @staticmethod
     def leave_station(station: StationStatus, raise_error=True):
@@ -306,12 +327,57 @@ class LiquidStation(StationStatus):
         vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
+    def dispense_mass(self, vial: VialMove, volume, raise_error=True):
+        if not DISPENSE:
+            return None
+
+        # Pre dispense weighing
+        balance = BalanceStation(StationStatus().get_first_available("balance"))
+        pre_mass = balance.weigh(vial)
+
+        # Dispense liquid
+        self.place_vial(vial, raise_error=raise_error)
+        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+        send_arduino_cmd(self.arduino_name, arduino_vol)
+
+        # Post dispense weighing
+        balance = BalanceStation(StationStatus().get_first_available("balance"))
+        post_mass = balance.weigh(vial)
+
+        final_mass = post_mass - pre_mass
+        vial.leave_station(self, raise_error=raise_error)
+        return f"{final_mass}g"
+
     def dispense_only(self, volume, dispense=DISPENSE):
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
         if dispense:
             send_arduino_cmd(self.arduino_name, arduino_vol)
         actual_volume = volume  # TODO get actual volume
         return actual_volume
+
+
+class BalanceStation(StationStatus):
+    def __init__(self, _id, raise_amount=0.02, **kwargs):
+        super().__init__(_id=_id, **kwargs)
+        if not self.id:
+            raise Exception("To operate a solvent station, a solvent name must be provided.")
+        if self.type != "balance":
+            raise Exception(f"Station {self.id} is not a balance.")
+        self.raise_amount = raise_amount
+        self.arduino_name = "B_{:02d}".format(int(self.id.split("_")[-1]))
+
+    def retrieve_vial(self, vial: VialMove, **move_kwargs):
+        return vial.retrieve_from_station(self, **move_kwargs)
+
+    def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
+        return vial.place_station(self, raise_error=raise_error, **move_kwargs)
+
+    def weigh(self, vial: VialMove, raise_error=True):
+        self.place_vial(vial, raise_error=raise_error)
+        mass = 0  # TODO get mass
+        time.sleep(1)
+        self.retrieve_vial(vial, raise_error=raise_error)
+        return mass
 
 
 class StirStation(StationStatus):

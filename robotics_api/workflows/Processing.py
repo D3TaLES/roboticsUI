@@ -49,12 +49,12 @@ class InitializeStatusDB(FiretaskBase):
         wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name") or "unknown_wflow"
         print("REAGENTS: ", reagents)
         print("EXPS: ", experiments)
+        # Setup standard_data databases
+        setup_formal_potentials()
         reset_reagent_db(reagents, current_wflow_name=wflow_name)
         reset_vial_db(experiments, current_wflow_name=wflow_name)
         reset_station_db(current_wflow_name=wflow_name)
 
-        # Setup standard_data databases
-        setup_formal_potentials()
         return FWAction(update_spec={"success": True})
 
 

@@ -47,7 +47,7 @@ def get_concentration(vial_content, fw_spec, solute_spec="rom_id", precision=3):
     mass = ureg(solute_mass[0])
     mw = ureg(solute_mw)
     concentration = mass / mw / volume
-    return "{}M".format(round(concentration.to('M').magnitude, precision))
+    return "{}{}".format(round(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 
 def get_kcl_conductivity(temp):
@@ -96,7 +96,8 @@ def get_cell_constant(raise_error=True):
             {"cell_constant": {"$exists": True}},
         ]}).distinct("cell_constant")
         print(f"KCl calibrations for {date}: {query}")
-        return "{}cm^-1".format(np.mean(query))
+        if query:
+            return "{}cm^-1".format(np.mean(query))
     else:
         query = list(ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},
@@ -105,10 +106,10 @@ def get_cell_constant(raise_error=True):
         ]}))
         ca_calib_measured = [c.get("cond_measured") for c in query]
         ca_calib_true = [c.get("cond_true") for c in query]
-        if not (ca_calib_measured and ca_calib_true) and raise_error:
-            raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
-                             f"workflow today before preceding with CA experiments.")
-        return np.polyfit(ca_calib_measured, ca_calib_true, 1)[0]
+        if (ca_calib_measured and ca_calib_true) and raise_error:
+            return np.polyfit(ca_calib_measured, ca_calib_true, 1)[0]
+    raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
+                     f"workflow today before preceding with CA experiments.")
 
 
 def print_prop(prop_dict):
@@ -218,7 +219,6 @@ def print_ca_analysis(multi_data, verbose=1):
         out_txt += "SE Conc:         {}\n".format(print_prop(se_conc))
         out_txt += "\nConductivity: \t{}".format(print_prop(data_dict.get("conductivity")))
         out_txt += "\nMeasured Conductance: \t{}".format(print_prop(data_dict.get("measured_conductance")))
-        out_txt += "\nResistance: \t{}".format(print_prop(data_dict.get("resistance")))
         out_txt += "\nMeasured Resistance: \t{}".format(print_prop(data_dict.get("measured_resistance")))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"

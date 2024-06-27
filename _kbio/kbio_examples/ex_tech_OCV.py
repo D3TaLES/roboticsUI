@@ -9,15 +9,14 @@ The script uses parameters which are provided below.
 
 import sys
 import time
-from dataclasses import dataclass
 
-import kbio.kbio_types as KBIO
-from kbio.kbio_api import KBIO_api
+import _kbio.kbio_types as KBIO
+from _kbio.kbio_api import KBIO_api
 
-from kbio.c_utils import c_is_64b
-from kbio.utils import exception_brief
+from _kbio.c_utils import c_is_64b
+from _kbio.utils import exception_brief
 
-from kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
+from _kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
 
 #------------------------------------------------------------------------------#
 
@@ -25,49 +24,30 @@ from kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experi
 
 verbosity = 2
 
-address = "USB0"
-# address = "10.100.100.136"
-channel = 1
+# address = "USB0"
+address = "10.100.100.136"
+channel = 11
 
 binary_path = "../../EC-Lab Development Package/"
 
-# CP parameter values
+# OCV parameter values
 
-cp3_tech_file = "cp.ecc"
-cp4_tech_file = "cp4.ecc"
+ocv3_tech_file   = "ocv.ecc"
+ocv4_tech_file   = "ocv4.ecc"
 
-repeat_count = 2
+duration = 10.   # seconds
 record_dt = 0.1  # seconds
-record_dE = 0.1  # Volts
-i_range = 'I_RANGE_10mA'
+e_range = 'E_RANGE_10V'
 
-# dictionary of CP parameters (non exhaustive)
+# dictionary of OCV parameters (non exhaustive)
 
-CP_parms = {
-    'current_step':  ECC_parm("Current_step", float),
-    'step_duration': ECC_parm("Duration_step", float),
-    'vs_init':       ECC_parm("vs_initial", bool),
-    'nb_steps':      ECC_parm("Step_number", int),
-    'record_dt':     ECC_parm("Record_every_dT", float),
-    'record_dE':     ECC_parm("Record_every_dE", float),
-    'repeat':        ECC_parm("N_Cycles", int),
-    'I_range':       ECC_parm("I_Range", int),
+OCV_parms = {
+    'duration':  ECC_parm("Rest_time_T", float),
+    'record_dt': ECC_parm("Record_every_dT", float),
+    'record_dE': ECC_parm("Record_every_dE", float),
+    'E_range':   ECC_parm("E_Range", int),
+    'timebase':  ECC_parm('tb', int),
 }
-
-# defining a current step parameter
-
-@dataclass
-class current_step :
-    current: float
-    duration: float
-    vs_init: bool = False
-
-# list of step parameters
-steps = [
-  current_step(0.001, 2), # 1mA during 2s
-  current_step(0.002, 1), # 2mA during 1s
-  current_step(0.0005, 3, True), # 0.5mA delta during 3s
-]
 
 #==============================================================================#
 
@@ -79,7 +59,6 @@ def print_exception (e) : print(f"{exception_brief(e, verbosity>=2)}")
 def print_messages (ch) :
     """Repeatedly retrieve and print messages for a given channel."""
     while True :
-        # BL_GetMessage
         msg = api.GetMessage(id_,ch)
         if not msg : break
         print(msg)
@@ -104,8 +83,8 @@ Example main :
   * retrieve the device channel info,
   * test whether the proper firmware is running,
   * if it is, print all the messages this channel has accumulated so far,
-  * create a CP parameter list (a subset of all possible parameters),
-  * load the CP technique into the channel,
+  * create an OCV parameter list (a subset of all possible parameters),
+  * load the OCV technique into the channel,
   * start the technique,
   * in a loop :
       * retrieve and display experiment data,
@@ -148,7 +127,7 @@ try :
         sys.exit(-1)
 
     # pick the correct ecc file based on the instrument family
-    tech_file = cp3_tech_file if is_VMP3 else cp4_tech_file
+    tech_file = ocv3_tech_file if is_VMP3 else ocv4_tech_file
 
     # BL_GetMessage
     print("> messages so far :")
@@ -156,30 +135,10 @@ try :
     newline()
 
     # BL_Define<xxx>Parameter
-
-    p_steps = list()
-
-    for idx, step in enumerate(steps) :
-        parm = make_ecc_parm(api, CP_parms['current_step'], step.current, idx)
-        p_steps.append(parm)
-        parm = make_ecc_parm(api, CP_parms['step_duration'], step.duration, idx)
-        p_steps.append(parm)
-        parm = make_ecc_parm(api, CP_parms['vs_init'], step.vs_init, idx)
-        p_steps.append(parm)
-
-    # number of steps is one less than len(steps)
-    p_nb_steps = make_ecc_parm(api, CP_parms['nb_steps'], idx)
-
-    # record parameters
-    p_record_dt = make_ecc_parm(api, CP_parms['record_dt'], record_dt)
-    p_record_dE = make_ecc_parm(api, CP_parms['record_dE'], record_dE)
-
-    # repeating factor
-    p_repeat = make_ecc_parm(api, CP_parms['repeat'], repeat_count)
-    p_I_range  = make_ecc_parm(api, CP_parms['I_range'], KBIO.I_RANGE[i_range].value)
-
-    # make the technique parameter array
-    ecc_parms = make_ecc_parms(api, *p_steps, p_nb_steps, p_record_dt, p_record_dE, p_I_range, p_repeat)
+    p_duration = make_ecc_parm(api, OCV_parms['duration'], duration)
+    p_record = make_ecc_parm(api, OCV_parms['record_dt'], record_dt)
+    p_erange = make_ecc_parm(api, OCV_parms['E_range'], KBIO.E_RANGE[e_range].value)
+    ecc_parms = make_ecc_parms(api, p_duration, p_record, p_erange)
 
     # BL_LoadTechnique
     api.LoadTechnique(id_, channel, tech_file, ecc_parms, first=True, last=True, display=(verbosity>1))

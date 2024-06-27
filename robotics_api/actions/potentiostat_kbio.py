@@ -11,10 +11,10 @@ from dataclasses import dataclass
 from scipy.stats import linregress
 
 try:
-    import kbio.kbio_types as KBIO
-    from kbio.kbio_api import KBIO_api
-    from kbio.tech_types import TECH_ID
-    from kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
+    import _kbio.kbio_types as KBIO
+    from _kbio.kbio_api import KBIO_api
+    from _kbio.tech_types import TECH_ID
+    from _kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
 except ModuleNotFoundError:
     warnings.warn("KBIO module not imported.")
 from robotics_api.settings import *
@@ -519,7 +519,7 @@ class CpExperiment(PotentiostatExperiment):
             :param n_cycles : Number of cycle, integer ≥ 0
             :param record_every_dt : recording on dt (s), float ≥ 0
             :param record_every_de : recording on dE (V), float ≥ 0
-            :param i_range : kbio I_RANGE keyword, str
+            :param i_range : _kbio I_RANGE keyword, str
             :param repeat_count :
         """
         super().__init__(3, **kwargs)

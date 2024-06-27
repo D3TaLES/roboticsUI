@@ -9,11 +9,11 @@ The script uses parameters which are provided below.
 
 import sys
 
-import kbio.kbio_types as KBIO
-from kbio.kbio_api import KBIO_api
+import _kbio.kbio_types as KBIO
+from _kbio.kbio_api import KBIO_api
 
-from kbio.c_utils import c_is_64b
-from kbio.utils import exception_brief
+from _kbio.c_utils import c_is_64b
+from _kbio.utils import exception_brief
 
 #------------------------------------------------------------------------------#
 

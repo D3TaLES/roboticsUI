@@ -600,19 +600,11 @@ def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
             ChemStandardsDB(standards_type="MolProps", instance=instance)
 
 
-def test_calib():
-    """
-    Tests calibration database
-    """
-    for c in [1, 2, 3, 4]:
-        calib_instance = {
-            "_id": datetime.now().isoformat(),  # Date
-            "date": datetime.now().strftime('%Y_%m_%d'),  # Day
-            "calib_measured": 0.6*c+1,
-            "calib_true": c,
-            "temperature": "298K",
-        }
-        ChemStandardsDB(standards_type="CACalib", instance=calib_instance)
+def setup_status_db(wflow_name, experiments, reagents):
+    setup_formal_potentials()
+    reset_reagent_db(reagents, current_wflow_name=wflow_name)
+    reset_vial_db(experiments, current_wflow_name=wflow_name)
+    reset_station_db(current_wflow_name=wflow_name)
 
 
 if __name__ == "__main__":
@@ -621,3 +613,71 @@ if __name__ == "__main__":
     # setup_formal_potentials()
     print(ChemStandardsDB(standards_type="MolProps", _id="06TNKR").get_prop("formal_potential"))
     # test_calib()
+
+    setup_status_db("Cond3_all_TEMPO_",
+                    {
+                        "exp01": "A_01",
+                        "exp02": "A_02"
+                    },
+                    [{
+                        "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "description": "solvent",
+                        "location": "solvent_01",
+                        "name": "Acetonitrile",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": "CC#N",
+                        "source": "sigma_aldrich",
+                        "type": "solvent"
+                    }, {
+                        "_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                        "description": "supporting electrolyte",
+                        "location": "experiment_vial",
+                        "name": "TBAPF6",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC",
+                        "source": "sigma_aldrich",
+                        "type": "electrolyte"
+                    }, {
+                        "_id": "330391e4-855b-4a1d-851e-59445c65fad0",
+                        "description": "redox active molecule(s) (a.k.a. redox core)",
+                        "location": "experiment_vial",
+                        "name": "TEMPO",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": "CC1(C)CCCC(C)(C)N1[O]",
+                        "source": "uk_lab",
+                        "type": "redox_molecule"
+                    }, {
+                        "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                        "description": "solvent",
+                        "location": "solvent_01",
+                        "name": "Acetonitrile",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": "CC#N",
+                        "source": "sigma_aldrich",
+                        "type": "solvent"
+                    }, {
+                        "_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                        "description": "supporting electrolyte",
+                        "location": "experiment_vial",
+                        "name": "TBAPF6",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC",
+                        "source": "sigma_aldrich",
+                        "type": "electrolyte"
+                    }, {
+                        "_id": "330391e4-855b-4a1d-851e-59445c65fad0",
+                        "description": "redox active molecule(s) (a.k.a. redox core)",
+                        "location": "experiment_vial",
+                        "name": "TEMPO",
+                        "notes": "",
+                        "purity": "",
+                        "smiles": "CC1(C)CCCC(C)(C)N1[O]",
+                        "source": "uk_lab",
+                        "type": "redox_molecule"
+                    }]
+                    )

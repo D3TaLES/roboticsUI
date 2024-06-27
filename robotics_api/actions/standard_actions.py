@@ -722,8 +722,8 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 
 if __name__ == "__main__":
-    test_vial = VialMove(_id="A_01")
-    test_potent = PotentiostatStation("cv_potentiostat_A_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    test_vial = VialMove(_id="A_04")
+    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # vial_col_test("B")
@@ -735,15 +735,18 @@ if __name__ == "__main__":
     # print(PotentiostatStation("ca_potentiostat_B_01").get_temperature())
     # snapshot_move(SNAPSHOT_END_HOME)
 
+    # test_vial.retrieve()
     # test_vial.place_station(test_potent)
+    # test_potent.move_elevator(endpoint="down")
+    # test_potent.move_elevator(endpoint="up")
     # test_vial.place_home()
 
-    # test_potent.move_elevator(endpoint="down")
-    test_potent.move_elevator(endpoint="up")
     # print(test_potent.get_temperature())
 
     # LiquidStation(_id="solvent_01").dispense_only(8)
     # flush_solvent(8, vial_id="S_04", solv_id="solvent_01", go_home=True)
 
-    # snapshot_move(SNAPSHOT_HOME)
+    snapshot_move(SNAPSHOT_HOME)
+    snapshot_move(SNAPSHOT_END_HOME)
+
     # StirHeatStation("stir_01").perform_stir(test_vial, stir_time=30)

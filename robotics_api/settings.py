@@ -18,7 +18,7 @@ STIR = False
 DISPENSE = False
 RUN_ROBOT = False
 MOVE_ELEVATORS = False
-CALIB_DATE = None  # '2024_06_20'
+CALIB_DATE = '2024_06_25'  # '2024_06_20'
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True
@@ -38,6 +38,7 @@ TIME_UNIT = "s"
 MASS_UNIT = "mg"
 VOLUME_UNIT = "mL"
 TEMPERATURE_UNIT = "K"
+CONCENTRATION_UNIT = "M"
 
 # ---------  ROBOT SETTINGS -------------
 KINOVA_01_IP = "192.168.1.10"

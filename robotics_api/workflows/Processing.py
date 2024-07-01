@@ -1,17 +1,16 @@
 # FireTasks for individual experiment processing
 # Copyright 2024, University of Kentucky
-
 import traceback
 from six import add_metaclass
 from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
-from robotics_api.actions.kinova_utils import DeviceConnection
-from robotics_api.actions.processing_utils import *
-from robotics_api.actions.standard_actions import *
-from robotics_api.actions.db_manipulations import *
-from robotics_api.settings import *
+from d3tales_api.Calculators.calculators import *
+from d3tales_api.D3database.back2front import CV2Front
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
+from robotics_api.actions.standard_actions import *
+from robotics_api.actions.processing_utils import *
+from robotics_api.actions.kinova_utils import DeviceConnection
 
 # Copyright 2024, University of Kentucky
 TESTING = False
@@ -50,7 +49,6 @@ class InitializeStatusDB(FiretaskBase):
         print("REAGENTS: ", reagents)
         print("EXPS: ", experiments)
         # Setup standard_data databases
-        setup_formal_potentials()
         reset_reagent_db(reagents, current_wflow_name=wflow_name)
         reset_vial_db(experiments, current_wflow_name=wflow_name)
         reset_station_db(current_wflow_name=wflow_name)
@@ -154,9 +152,8 @@ class ProcessBase(FiretaskBase):
                 raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
-        processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
         p_data = processing_class(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_type),
-                                  metadata=metadata).data_dict
+                                  metadata=metadata, micro_electrodes=MICRO_ELECTRODES).data_dict
 
         # Insert data into database
         _id = p_data["_id"]
@@ -170,7 +167,8 @@ class ProcessBase(FiretaskBase):
         # Process solvent CV data
         solv_data = self.coll_dict.get("solv_cv", [])
         for d in solv_data:
-            p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False,
+                                           processing_class=ProcessChiCV)
             self.plot_cv(d.get("data_location"), p_data, plot_name="Solvent")
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
@@ -203,7 +201,7 @@ class ProcessCVBenchmarking(ProcessBase):
                 "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), self.rom_id, self.solv_id),
                 "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), self.elect_id, self.solv_id)
             })
-            p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
+            p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False, processing_class=ProcessChiCV)
             self.plot_cv(cv_loc, p_data, plot_name="Benchmark")
 
             # Calculate new voltage sequence
@@ -245,13 +243,13 @@ class ProcessCalibration(ProcessBase):
                 "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id),
                 "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
             })
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessChiCA)
             if p_data:
                 processed_ca_data.append(p_data)
 
             # Insert CA calibration
             calib_instance = {
-                "mol_id": self.mol_id,  # D3TaLES ID  TODO see if this works
+                "mol_id": self.mol_id,  # D3TaLES ID
                 "date_updated": datetime.now().strftime('%Y_%m_%d'),  # Day
                 "cond_measured": p_data.get("data", {}).get("measured_conductance"),
                 "res_measured": p_data.get("data", {}).get("measured_resistance"),
@@ -293,7 +291,7 @@ class DataProcessor(ProcessBase):
             elec_conc = get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
             self.metadata.update({"redox_mol_concentration": redox_conc, "electrolyte_concentration": elec_conc})
             m_data = self.metadata
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessChiCV)
             plot_name = f"{self.name}, {redox_conc} redox, {elec_conc} SE"
             self.plot_cv(d.get("data_location"), p_data, plot_name)
             if p_data:
@@ -334,7 +332,7 @@ class DataProcessor(ProcessBase):
             })
             m_data = self.metadata
             print("METADATA: ", self.metadata)
-            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
+            p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessChiCA)
             if p_data:
                 print("---------- CA CALCULATION RESULTS ----------")
                 print("Conductivity: ", p_data.get("data", {}).get("conductivity"))

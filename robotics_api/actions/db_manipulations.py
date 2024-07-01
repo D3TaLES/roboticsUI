@@ -5,7 +5,7 @@ from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
 from d3tales_api.Calculators.utils import unit_conversion
-from d3tales_api.D3database.d3database import RobotStatusDB, D3Database, FrontDB
+from d3tales_api.D3database.d3database import RobotStatusDB, D3Database
 
 
 class VialStatus(RobotStatusDB):

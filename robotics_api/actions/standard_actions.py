@@ -3,7 +3,7 @@ import time
 import pint
 import serial
 from serial.tools.list_ports import comports
-from d3tales_api.Processors.parser_cv import *
+from d3tales_api.Processors.parser_echem import *
 from robotics_api.actions.kinova_move import *
 from robotics_api.actions.db_manipulations import *
 
@@ -262,9 +262,10 @@ class VialMove(VialStatus):
 
         success = False
         if station.available:
-            self.place_snapshot(station.location_snapshot, action_type='place',
+            self.place_snapshot(station.location_snapshot, raise_error=raise_error,
                                 pre_position_file=station.pre_location_snapshot,
-                                raise_amount=station.raise_amount, raise_error=raise_error, **move_kwargs)
+                                raise_amount=station.raise_amount, **move_kwargs)
+            self.update_position(station.id)
 
         return success
 
@@ -688,7 +689,7 @@ class CVPotentiostatStation(PotentiostatStation):
             eis.run()
 
             # Load recently acquired data
-            data = ParseChiESI(os.path.join(out_folder, f_name + ".txt"))
+            data = ProcessChiESI(os.path.join(out_folder, f_name + ".txt"))
             time.sleep(TIME_AFTER_CV)
 
             print(data.resistance)

@@ -1,4 +1,6 @@
-from d3tales_api.Processors.d3tales_parser import *
+import pint
+from datetime import datetime
+from d3tales_api.Processors.parser_echem import *
 from robotics_api.settings import *
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
@@ -38,9 +40,11 @@ def get_concentration(vial_content, solute_id, solv_id, precision=3):
             raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
                             f"solv_id={solv_id}, solute_mass={solute_mass}, solv_vol={solv_vol}")
         return DEFAULT_CONCENTRATION
-    solute_mw = "{}g/mol".format(ReagentStatus(_id=solute_id).molecular_weight)
+    solute_mw = f"{ReagentStatus(_id=solute_id).molecular_weight}g/mol"
+    solute_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
     ureg = pint.UnitRegistry()
-    volume = ureg(solv_vol[0])   # TODO convert with density
+    volume_L = unit_conversion(solv_vol[0], default_unit="L", density=solute_density)
+    volume = ureg(f"{volume_L}L")
     mass = ureg(solute_mass[0])
     mw = ureg(solute_mw)
     concentration = mass / mw / volume
@@ -178,11 +182,11 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
         trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
         out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} \n".format(print_prop(trans_rate))
 
-    if run_anodic:
-        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="anodic")
-        out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
-        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="anodic")
-        out_txt += "Anodic Charge Transfer Rate: \t\t\t{}\n".format(print_prop(trans_rate))
+        if run_anodic:
+            diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="anodic")
+            out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
+            trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="anodic")
+            out_txt += "Anodic Charge Transfer Rate: \t\t\t{}\n".format(print_prop(trans_rate))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
     for d in multi_data:
@@ -250,24 +254,23 @@ def prop_by_order(prop_list, order=1, notes=None):
         return result_prop[0]
 
 
-def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robot_diffusion_2\\20230209\\",
+def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robot_diffusion_2\\20230209\\",
                     submission_info: dict = None, metadata: dict = None):
     """
     FOR TESTING ONLY
     Perform processing of cyclic voltammetry (CV) data.
 
     Args:
-        cv_dir (str, optional): Directory path containing CV data files. Defaults to specified directory.
+        cv_loc_dir (str, optional): Directory path containing CV data files. Defaults to specified directory.
         submission_info (dict, optional): Information about the submission. Defaults to None.
         metadata (dict, optional): Metadata for the CV analysis. Defaults to None.
     """
-    cv_locations = [os.path.join(cv_dir, f) for f in os.listdir(cv_dir) if f.endswith(".csv")]
+    cv_locations = [os.path.join(cv_loc_dir, f) for f in os.listdir(cv_loc_dir) if f.endswith(".csv")]
     processed_data = []
     for cv_location in cv_locations:
         # Process data file
         print("Data File: ", cv_location)
-        data = ProcessCV(cv_location, _id="test", submission_info=submission_info, metadata=metadata,
-                         parsing_class=ParseChiCV).data_dict
+        data = ProcessChiCV(cv_location, _id="test", submission_info=submission_info, metadata=metadata).data_dict
         processed_data.append(data)
 
         # Plot CV
@@ -277,7 +280,10 @@ def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robo
                                                                           xlabel=MULTI_PLOT_XLABEL,
                                                                           ylabel=MULTI_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
-    # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True, title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
+    # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"
+    #                      }).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True,
+    #                                         title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL,
+    #                                         ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
     # from d3tales_api.Processors.back2front import CV2Front
     # metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
     # p = print_cv_analysis(processed_data, metadata_dict)

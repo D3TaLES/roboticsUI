@@ -1,7 +1,7 @@
 import hardpotato as hp
 import softpotato as sp
 from robotics_api.settings import *
-from d3tales_api.Processors.parser_cv import *
+from d3tales_api.Processors.parser_echem import *
 
 
 # Initialization:
@@ -57,7 +57,7 @@ def ircomp_ex():
                               fileName=fileName, header=header)
     eis.run()
 
-    data = ParseChiESI(os.path.join(TEST_DATA_DIR, fileName+".txt"))
+    data = ProcessChiESI(os.path.join(TEST_DATA_DIR, fileName+".txt"))
     return data.resistance
 
 
@@ -82,7 +82,7 @@ def ca_ex():
     ca.run()
 
     # Load recently acquired data
-    data = ParseChiCA(os.path.join(TEST_DATA_DIR, fileName+".txt"))
+    data = ProcessChiCA(os.path.join(TEST_DATA_DIR, fileName+".txt"))
     print("Resistance (Ohm): ", data.measured_resistance)
 
     # Plot CV with softpotato

@@ -360,6 +360,8 @@ class ReagentStatus(RobotStatusDB):
         self.name = self.get_prop("name")
         self.notes = self.get_prop("notes")
         self.purity = self.get_prop("purity")
+        self.formal_potential = self.get_prop("formal_potential")
+        self.density = self.get_prop("density")
         self.smiles = self.get_prop("smiles")
         self.source = self.get_prop("source")
         self.type = self.get_prop("type")
@@ -452,13 +454,14 @@ def check_duplicates(test_list, exemptions=None):
         return ", ".join(duplicates)
 
 
-def reset_reagent_db(reagents_list, current_wflow_name=""):
+def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOLVENT_DENSITIES, potentials_dict=FORMAL_POTENTIALS):
     """
     Reset the reagent database with the provided list of reagents.
 
     Args:
         reagents_list (list): List of dictionaries representing reagents.
         current_wflow_name (str, optional): Name of the current workflow. Defaults to "".
+        solvent_densities (dict, optional): Dictionary with solvent SMILES and densities
     """
     # Check reagent locations 1-to-1 status
     reagent_locs = [r.get("location") for r in reagents_list]
@@ -468,7 +471,10 @@ def reset_reagent_db(reagents_list, current_wflow_name=""):
 
     ReagentStatus().coll.delete_many({})
     for r in reagents_list:
-        r.update({"current_wflow_name": current_wflow_name})
+        smiles = r.get("smiles", "")
+        r.update({"current_wflow_name": current_wflow_name,
+                  "density": unit_conversion(solvent_densities.get(smiles), default_unit=DENSITY_UNIT),
+                  "formal_potential": unit_conversion(potentials_dict.get(smiles), default_unit=POTENTIAL_UNIT)})
         ReagentStatus(instance=r)
 
 
@@ -580,28 +586,7 @@ def reset_test_db():
     reset_station_db(current_wflow_name=wflow_name)
 
 
-def setup_formal_potentials(potentials_dict=FORMAL_POTENTIALS):
-    """
-    Set up formal potentials for specified molecules.
-
-    Args:
-        potentials_dict (dict, optional): Dictionary mapping molecule IDs to formal potentials.
-            Defaults to FORMAL_POTENTIALS.
-    """
-    for mol_id, potent in potentials_dict.items():
-        query = FrontDB().make_query({"_id": mol_id}, {"mol_info.smiles": 1}, output='json')
-        if query:
-            smiles = query[0].get("mol_info", {}).get("smiles")
-            instance = {
-                "_id": mol_id,
-                "smiles": smiles,
-                "formal_potential": potent
-            }
-            ChemStandardsDB(standards_type="MolProps", instance=instance)
-
-
 def setup_status_db(wflow_name, experiments, reagents):
-    setup_formal_potentials()
     reset_reagent_db(reagents, current_wflow_name=wflow_name)
     reset_vial_db(experiments, current_wflow_name=wflow_name)
     reset_station_db(current_wflow_name=wflow_name)
@@ -611,7 +596,6 @@ if __name__ == "__main__":
     # reset_test_db()
     # StationStatus().get_first_available("cv", exp_name="exp01")
     # setup_formal_potentials()
-    print(ChemStandardsDB(standards_type="MolProps", _id="06TNKR").get_prop("formal_potential"))
     # test_calib()
 
     setup_status_db("Cond3_all_TEMPO_",

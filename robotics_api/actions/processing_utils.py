@@ -1,5 +1,4 @@
 from d3tales_api.Processors.d3tales_parser import *
-from d3tales_api.Processors.back2front import *
 from robotics_api.settings import *
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 
@@ -19,21 +18,19 @@ def collection_dict(coll_data: list):
     return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
 
 
-def get_concentration(vial_content, fw_spec, solute_spec="rom_id", precision=3):
+def get_concentration(vial_content, solute_id, solv_id, precision=3):
     """
    Calculate the concentration of a solute in a solvent based on the provided vial content and Fireworks specs.
 
    Args:
        vial_content (list): List of dictionaries representing the content of the vial.
-       fw_spec (dict): Fireworks specs containing information about the solute and solvent.
-       solute_spec (str, optional): Key specifying the solute in the fw_spec. Defaults to "rom_id".
+       solute_id (str, optional):
+       solv_id (str, optional):
        precision (int, optional):
 
    Returns:
        str: Concentration of the solute in the solvent, expressed in molarity.
    """
-    solute_id = fw_spec.get(solute_spec)
-    solv_id = fw_spec.get("solv_id")
     solute_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
     solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
     if not solute_mass or not solv_vol:
@@ -43,7 +40,7 @@ def get_concentration(vial_content, fw_spec, solute_spec="rom_id", precision=3):
         return DEFAULT_CONCENTRATION
     solute_mw = "{}g/mol".format(ReagentStatus(_id=solute_id).molecular_weight)
     ureg = pint.UnitRegistry()
-    volume = ureg(solv_vol[0])
+    volume = ureg(solv_vol[0])   # TODO convert with density
     mass = ureg(solute_mass[0])
     mw = ureg(solute_mw)
     concentration = mass / mw / volume
@@ -281,9 +278,10 @@ def processing_test(cv_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robo
                                                                           ylabel=MULTI_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
     # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"}).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True, title=f"Multi CV Plot for Test", xlabel=MULTI_PLOT_XLABEL, ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND)
-    metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
-    p = print_cv_analysis(processed_data, metadata_dict)
-    print(p)
+    # from d3tales_api.Processors.back2front import CV2Front
+    # metadata_dict = CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False).meta_dict
+    # p = print_cv_analysis(processed_data, metadata_dict)
+    # print(p)
 
 
 if __name__ == "__main__":

@@ -83,9 +83,20 @@ class DispenseLiquid(RoboticsBase):
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
         if solvent.location != "experiment_vial":
             solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
-            self.success += self.exp_vial.retrieve()
-            volume = solv_station.dispense(self.exp_vial, volume)
-        self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
+            if WEIGH_SOLVENTS:
+                bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+                # Get initial mass
+                initial_mass = bal_station.weigh(self.exp_vial)
+                # Dispense solvent
+                volume = solv_station.dispense(self.exp_vial, volume)
+                # Get final mass
+                final_mass = bal_station.weigh(self.exp_vial)
+
+                solv_mass = final_mass - initial_mass
+                self.exp_vial.add_reagent(solvent, amount=solv_mass, default_unit=MASS_UNIT)
+            else:
+                volume = solv_station.dispense(self.exp_vial, volume)
+                self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
 
         return FWAction(update_spec=self.updated_specs())
 

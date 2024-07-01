@@ -21,6 +21,7 @@ MOVE_ELEVATORS = False
 CALIB_DATE = '2024_06_25'  # '2024_06_20'
 
 # ---------  OPERATION SETTING -------------
+WEIGH_SOLVENTS = True
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_CONCENTRATION_FAILURE = False
 FIZZLE_DIRTY_ELECTRODE = False
@@ -37,6 +38,8 @@ DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allo
 TIME_UNIT = "s"
 MASS_UNIT = "mg"
 VOLUME_UNIT = "mL"
+DENSITY_UNIT = "g/L"
+POTENTIAL_UNIT = "V"
 TEMPERATURE_UNIT = "K"
 CONCENTRATION_UNIT = "M"
 
@@ -106,9 +109,11 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "Calib__03": 7,  # CA Calibration 3
 }
 FORMAL_POTENTIALS = {  # Formal potentials
-    "06TNKR": 0.30,  # TEMPO, V vs. Ag/Ag+
-    "05MYHH": 0,   # MEEPT
-    "11JNLU": 0,   # MEEPT
+    "CC1(C)CCCC(C)(C)N1[O]": "0.30 V",  # TEMPO, V vs. Ag/Ag+
+}
+SOLVENT_DENSITIES = {  # Formal potentials
+    "O": "0.997 g/mL",  # H2O
+    "CC#N": "0.786 g/mL",   # ACN
 }
 
 # ---------  ARDUINO ADDRESS -------------
@@ -116,7 +121,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
-MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01"]
+MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01", "balance_01"]
 ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

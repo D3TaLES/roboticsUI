@@ -65,6 +65,9 @@ class ProcessBase(FiretaskBase):
     collection_data: dict
     processing_data: dict
     mol_id: str
+    solv_id: str
+    rom_id: str
+    elect_id: str
     name: str
     processing_id: str
     coll_dict: dict
@@ -79,6 +82,9 @@ class ProcessBase(FiretaskBase):
         self.processing_data = fw_spec.get("processing_data") or {}
         self.processed_locs = self.processing_data.get("processed_locs") or []
         self.mol_id = fw_spec.get("mol_id") or self.get("mol_id")
+        self.solv_id = fw_spec.get("solv_id") or self.get("solv_id")
+        self.rom_id = fw_spec.get("rom_id") or self.get("rom_id")
+        self.elect_id = fw_spec.get("elect_id") or self.get("elect_id")
         self.name = fw_spec.get("full_name") or self.get("full_name")
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
 
@@ -142,10 +148,10 @@ class ProcessBase(FiretaskBase):
             warnings.warn("WARNING. File {} already processed. Further processing did not occur.".format(file_loc))
             return None
         file_type = file_loc.split('.')[-1]
-        e_ref = ChemStandardsDB(standards_type="MolProps", _id=self.mol_id).get_prop("formal_potential")
+        e_ref = ReagentStatus(_id=self.rom_id).formal_potential
         if self.mol_id and e_ref is None:
             if "Calib" not in self.mol_id:
-                raise KeyError(f"No formal potential exists in the standards database for {self.mol_id}")
+                raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})
         processing_class = processing_class or ProcessCVMicro if MICRO_ELECTRODES else ProcessCV
@@ -194,8 +200,8 @@ class ProcessCVBenchmarking(ProcessBase):
         try:
             # Process benchmarking data
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), fw_spec, "rom_id"),
-                "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), fw_spec, "elect_id")
+                "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), self.rom_id, self.solv_id),
+                "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), self.elect_id, self.solv_id)
             })
             p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False)
             self.plot_cv(cv_loc, p_data, plot_name="Benchmark")
@@ -236,8 +242,8 @@ class ProcessCalibration(ProcessBase):
         for d in ca_data:
             m_data = self.metadata
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
-                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
             })
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessCA)
             if p_data:
@@ -283,8 +289,8 @@ class DataProcessor(ProcessBase):
         # Process CV data for cycle
         processed_cv_data, plot_name = [], ""
         for d in cv_data:
-            redox_conc = get_concentration(d.get("vial_contents"), fw_spec, "rom_id")
-            elec_conc = get_concentration(d.get("vial_contents"), fw_spec, "elect_id")
+            redox_conc = get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id)
+            elec_conc = get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
             self.metadata.update({"redox_mol_concentration": redox_conc, "electrolyte_concentration": elec_conc})
             m_data = self.metadata
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data)
@@ -322,8 +328,8 @@ class DataProcessor(ProcessBase):
         processed_ca_data = []
         for d in ca_data:
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(d.get("vial_contents"), fw_spec, "rom_id"),
-                "electrolyte_concentration": get_concentration(d.get("vial_contents"), fw_spec, "elect_id"),
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id),
                 "cell_constant": get_cell_constant()
             })
             m_data = self.metadata

@@ -18,7 +18,7 @@ class InitializeExperiment(Firework):
     """
 
     def __init__(self, wflow_name='', parents=None, fw_specs=None, **kwargs):
-        spec = {'_category': 'processing'}
+        spec = {'_category': 'initialize'}
         spec.update(fw_specs) if fw_specs else None
         tasks = [
             InitializeRobot(),  # Initialize the robot

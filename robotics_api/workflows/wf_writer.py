@@ -55,5 +55,5 @@ def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
 if __name__ == "__main__":
     # run_ex_processing()
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'SE_Scan_TBAPF6_workflow.json')
+    expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
     run_expflow_wf(loadfn(expflow_file))

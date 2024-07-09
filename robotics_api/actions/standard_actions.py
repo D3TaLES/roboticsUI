@@ -8,7 +8,7 @@ from robotics_api.actions.kinova_move import *
 from robotics_api.actions.db_manipulations import *
 
 
-def perturbed_snapshot(snapshot_file, perturb_amount=RAISE_AMOUNT, axis="z"):
+def perturbed_snapshot(snapshot_file, perturb_amount=PERTURB_AMOUNT, axis="z"):
     with open(snapshot_file, 'r') as fn:
         master_data = json.load(fn)
 
@@ -20,7 +20,7 @@ def perturbed_snapshot(snapshot_file, perturb_amount=RAISE_AMOUNT, axis="z"):
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
-def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=RAISE_AMOUNT,
+def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=0.0,
                    release_vial=True, raise_error=False, go=True, leave=True):
     """
     Function that executes an action getting or placing
@@ -163,8 +163,10 @@ def write_test(file_path, test_type=""):
 
 
 class VialMove(VialStatus):
-    def __init__(self, **kwargs):
+
+    def __init__(self, raise_amount: float = 0.1, **kwargs):
         super().__init__(**kwargs)
+        self.raise_amount = raise_amount
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
 
@@ -191,7 +193,8 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-                success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error, **move_kwargs)
+                success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error,
+                                          raise_amount=self.raise_amount, **move_kwargs)
             elif "potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
@@ -202,7 +205,7 @@ class VialMove(VialStatus):
                 success += station.retrieve_vial(self)
             else:
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
-                                          **move_kwargs)
+                                          raise_amount=self.raise_amount, **move_kwargs)
             # success += snapshot_move(SNAPSHOT_HOME)
             if success:
                 self.update_position("robot_grip")
@@ -215,6 +218,7 @@ class VialMove(VialStatus):
     def go_to_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
         self.retrieve(raise_error=True)
         # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
         success = get_place_vial(target_location, action_type='place', release_vial=False,
                                  raise_error=raise_error, **move_kwargs)
 
@@ -226,6 +230,7 @@ class VialMove(VialStatus):
     def place_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
         self.retrieve(raise_error=True)
         success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
         success += get_place_vial(target_location, action_type='place',
                                   raise_error=raise_error, **move_kwargs)
         # success += snapshot_move(SNAPSHOT_HOME)
@@ -349,9 +354,9 @@ class LiquidStation(StationStatus):
         vial.leave_station(self, raise_error=raise_error)
         return f"{final_mass}g"
 
-    def dispense_only(self, volume, dispense=DISPENSE):
+    def dispense_only(self, volume, perform_dispense=DISPENSE):
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        if dispense:
+        if perform_dispense:
             send_arduino_cmd(self.arduino_name, arduino_vol)
         actual_volume = volume  # TODO get actual volume
         return actual_volume
@@ -412,8 +417,9 @@ class StirStation(StationStatus):
             success = False
             success += send_arduino_cmd(self.arduino_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
-            start_time, end_time = time.time(), time.time()
+            start_time = time.time()
             time.sleep(10)
+            end_time = time.time()
             while (end_time - start_time) < seconds:
                 # Move vial around stir plate center
                 snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="x"))
@@ -758,12 +764,12 @@ def check_usb():
 
 def vial_col_test(col):
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    get_place_vial(VialMove(_id=col + "_04").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='place', raise_error=True)
-    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='place', raise_error=True)
-    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='get', raise_error=True)
-    get_place_vial(VialMove(_id=col + "_01").home_snapshot, action_type='place', raise_error=True)
+    get_place_vial(VialMove(_id=col + "_04").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
+    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
+    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+    get_place_vial(VialMove(_id=col + "_01").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
 
 

@@ -88,7 +88,7 @@ class DispenseLiquid(RoboticsBase):
                 # Get initial mass
                 initial_mass = bal_station.weigh(self.exp_vial)
                 # Dispense solvent
-                volume = solv_station.dispense(self.exp_vial, volume)
+                solv_station.dispense(self.exp_vial, volume)
                 # Get final mass
                 final_mass = bal_station.weigh(self.exp_vial)
 

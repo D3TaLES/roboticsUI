@@ -66,6 +66,7 @@ class ProcessBase(FiretaskBase):
     solv_id: str
     rom_id: str
     elect_id: str
+    soln_density: str
     name: str
     processing_id: str
     coll_dict: dict
@@ -83,6 +84,7 @@ class ProcessBase(FiretaskBase):
         self.solv_id = fw_spec.get("solv_id") or self.get("solv_id")
         self.rom_id = fw_spec.get("rom_id") or self.get("rom_id")
         self.elect_id = fw_spec.get("elect_id") or self.get("elect_id")
+        self.soln_density = self.metadata.get("soln_density")
         self.name = fw_spec.get("full_name") or self.get("full_name")
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
 
@@ -198,8 +200,8 @@ class ProcessCVBenchmarking(ProcessBase):
         try:
             # Process benchmarking data
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), self.rom_id, self.solv_id),
-                "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), self.elect_id, self.solv_id)
+                "redox_mol_concentration": get_concentration(cv_data[0].get("vial_contents"), self.rom_id, self.solv_id, soln_density=self.soln_density),
+                "electrolyte_concentration": get_concentration(cv_data[0].get("vial_contents"), self.elect_id, self.solv_id, soln_density=self.soln_density)
             })
             p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False, processing_class=ProcessChiCV)
             self.plot_cv(cv_loc, p_data, plot_name="Benchmark")
@@ -240,8 +242,8 @@ class ProcessCalibration(ProcessBase):
         for d in ca_data:
             m_data = self.metadata
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id),
-                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id, soln_density=self.soln_density),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id, soln_density=self.soln_density)
             })
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessChiCA)
             if p_data:
@@ -287,8 +289,8 @@ class DataProcessor(ProcessBase):
         # Process CV data for cycle
         processed_cv_data, plot_name = [], ""
         for d in cv_data:
-            redox_conc = get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id)
-            elec_conc = get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id)
+            redox_conc = get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id, soln_density=self.soln_density)
+            elec_conc = get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id, soln_density=self.soln_density)
             self.metadata.update({"redox_mol_concentration": redox_conc, "electrolyte_concentration": elec_conc})
             m_data = self.metadata
             p_data = self.process_pot_data(d.get("data_location"), metadata=m_data, processing_class=ProcessChiCV)
@@ -326,8 +328,8 @@ class DataProcessor(ProcessBase):
         processed_ca_data = []
         for d in ca_data:
             self.metadata.update({
-                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id),
-                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id),
+                "redox_mol_concentration": get_concentration(d.get("vial_contents"), self.rom_id, self.solv_id, soln_density=self.soln_density),
+                "electrolyte_concentration": get_concentration(d.get("vial_contents"), self.elect_id, self.solv_id, soln_density=self.soln_density),
                 "cell_constant": get_cell_constant()
             })
             m_data = self.metadata

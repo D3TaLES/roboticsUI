@@ -20,7 +20,7 @@ def collection_dict(coll_data: list):
     return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
 
 
-def get_concentration(vial_content, solute_id, solv_id, precision=3):
+def get_concentration(vial_content, solute_id, solv_id, soln_density=None, precision=3):
     """
    Calculate the concentration of a solute in a solvent based on the provided vial content and Fireworks specs.
 
@@ -28,22 +28,25 @@ def get_concentration(vial_content, solute_id, solv_id, precision=3):
        vial_content (list): List of dictionaries representing the content of the vial.
        solute_id (str, optional):
        solv_id (str, optional):
+       soln_density (float, optional):
        precision (int, optional):
 
    Returns:
        str: Concentration of the solute in the solvent, expressed in molarity.
    """
     solute_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
-    solv_vol = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
-    if not solute_mass or not solv_vol:
+    solv_amt = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
+    if not solute_mass or not solv_amt:
         if FIZZLE_CONCENTRATION_FAILURE:
             raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
-                            f"solv_id={solv_id}, solute_mass={solute_mass}, solv_vol={solv_vol}")
+                            f"solv_id={solv_id}, solute_mass={solute_mass}, solv_vol={solv_amt}")
         return DEFAULT_CONCENTRATION
     solute_mw = f"{ReagentStatus(_id=solute_id).molecular_weight}g/mol"
-    solute_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
+    if not soln_density:
+        warnings.warn("No solution density provided. Using reagent density instead...this may not be accurate. ")
+        soln_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
     ureg = pint.UnitRegistry()
-    volume_L = unit_conversion(solv_vol[0], default_unit="L", density=solute_density)
+    volume_L = unit_conversion(solv_amt[0], default_unit="L", density=soln_density)
     volume = ureg(f"{volume_L}L")
     mass = ureg(solute_mass[0])
     mw = ureg(solute_mw)

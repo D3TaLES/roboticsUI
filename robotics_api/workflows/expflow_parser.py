@@ -243,7 +243,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "transfer_solid": [DispenseSolid],  # needs: MASS
             "heat": [Heat],  # needs: TEMPERATURE
             "stir": [Stir],  # needs: TIME
-            "process_working_electrode_area": [RecordWorkingElectrodeArea],  # needs: SIZE
+            "measure_density": [MeasureDensity],
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
@@ -258,6 +258,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "finish_ca": [FinishPotentiostat],
 
             # TODO Deprecated. Remove eventually
+            "process_working_electrode_area": [RecordWorkingElectrodeArea],  # needs: SIZE
             "heat_stir": [Stir],  # needs: TEMPERATURE, TIME
             "process_cv_benchmarking": [ProcessCVBenchmarking],
             "measure_working_electrode_area": [RecordWorkingElectrodeArea],

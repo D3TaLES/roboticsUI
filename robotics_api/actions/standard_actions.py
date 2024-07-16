@@ -358,7 +358,27 @@ class LiquidStation(StationStatus):
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
         if perform_dispense:
             send_arduino_cmd(self.arduino_name, arduino_vol)
+        return volume
+
+
+class PipetteStation(StationStatus):
+    def __init__(self, _id, raise_amount=-0.04, **kwargs):
+        super().__init__(_id=_id, **kwargs)
+        if not self.id:
+            raise Exception("To operate a pipette station, an id must be provided.")
+        if self.type != "pipette":
+            raise Exception(f"Station {self.id} is not a pipette.")
+        self.raise_amount = raise_amount
+        self.pre_location_snapshot = None
+        self.arduino_name = "P{:01d}".format(int(self.id.split("_")[-1]))
+
+    def place_vial(self, vial: VialMove, raise_error=True):
+        return vial.go_to_station(self, raise_error=raise_error)
+
+    def extract_vol(self, vial: VialMove, volume, raise_error=True):
+        self.place_vial(vial, raise_error=raise_error)
         actual_volume = volume  # TODO get actual volume
+        vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
 

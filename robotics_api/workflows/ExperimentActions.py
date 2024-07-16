@@ -119,19 +119,6 @@ class DispenseSolid(RoboticsBase):
 
 
 @explicit_serialize
-class RecordWorkingElectrodeArea(RoboticsBase):
-    # FireTask for recording size of working electrode
-
-    def run_task(self, fw_spec):
-        self.setup_task(fw_spec, get_exp_vial=False)
-        # working_electrode_area = self.get("size", DEFAULT_WORKING_ELECTRODE_AREA)
-        # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
-        self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
-                              "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
-        return FWAction(update_spec=self.updated_specs())
-
-
-@explicit_serialize
 class Heat(RoboticsBase):
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -156,6 +143,46 @@ class Stir(RoboticsBase):
         else:
             print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")
 
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class MeasureDensity(RoboticsBase):
+    # FireTask for measuring density
+
+    def run_task(self, fw_spec):
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        volume = self.get("volume", 0)
+        volume = unit_conversion(volume, default_unit=VOLUME_UNIT)
+
+        bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+        pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
+        # Get initial mass
+        initial_mass = bal_station.weigh(self.exp_vial)
+        # Dispense solvent
+        pipette_station.extract_vol(self.exp_vial, volume)
+        # Get final mass
+        final_mass = bal_station.weigh(self.exp_vial)
+
+        soln_mass = final_mass - initial_mass
+        raw_density = f"{soln_mass / volume} {VOLUME_UNIT}/{MASS_UNIT}"
+        soln_density = "{}{}".format(unit_conversion(raw_density, default_unit=DENSITY_UNIT), DENSITY_UNIT)
+        self.metadata.update({"soln_density": soln_density})
+
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class RecordWorkingElectrodeArea(RoboticsBase):
+    # FireTask for recording size of working electrode
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec, get_exp_vial=False)
+        # working_electrode_area = self.get("size", DEFAULT_WORKING_ELECTRODE_AREA)
+        # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
+        self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
+                              "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
         return FWAction(update_spec=self.updated_specs())
 
 

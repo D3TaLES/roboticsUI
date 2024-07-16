@@ -121,7 +121,7 @@ ARDUINO_ADDRESS = "COM4"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
-MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01", "balance_01"]
+MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01", "balance_01", "pipette_01"]
 ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

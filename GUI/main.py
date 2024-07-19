@@ -542,6 +542,17 @@ class RunBase(tk.Toplevel):
         subprocess.call('lpad -l {} webgui'.format(LAUNCHPAD))
 
 
+class RunInit(RunBase):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+        self.title('Initialize Workflow')
+        self.fireworker = INIT_FWORKER
+        self.category = "initialize"
+        self.design_frame()
+
+
 class RunRobot(RunBase):
     def __init__(self, parent):
         super().__init__(parent)
@@ -607,17 +618,20 @@ class RoboticsGUI(tk.Tk):
                                bg=d3blue, fg='white', height=1, width=15)
         push_to_db.grid(column=0, row=5, pady=5)
 
-        run_job = tk.Button(self, text="Run Robot", command=self.open_run, font=("Raleway", 14), bg=d3orange,
+        run_job = tk.Button(self, text="Initialize Workflow", command=self.open_run, font=("Raleway", 14), bg=d3blue,
                             fg='white', height=1, width=20)
         run_job.grid(column=1, row=2, pady=5)
+        run_robot = tk.Button(self, text="Run Robot", command=self.open_run_robot, font=("Raleway", 14), bg=d3orange,
+                              fg='white', height=1, width=20)
+        run_robot.grid(column=1, row=3, pady=5)
         run_process = tk.Button(self, text="Run Process", command=self.open_run_process, font=("Raleway", 14),
                                 bg=d3orange,
                                 fg='white', height=1, width=20)
-        run_process.grid(column=1, row=3, pady=5)
+        run_process.grid(column=1, row=4, pady=5)
         run_instrument = tk.Button(self, text="Run Instruments", command=self.open_run_instrument, font=("Raleway", 14),
                                    bg=d3orange,
                                    fg='white', height=1, width=20)
-        run_instrument.grid(column=1, row=4, pady=5)
+        run_instrument.grid(column=1, row=5, pady=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=2)
 
@@ -636,6 +650,10 @@ class RoboticsGUI(tk.Tk):
         window.grab_set()
 
     def open_run(self):
+        window = RunInit(self)
+        window.grab_set()
+
+    def open_run_robot(self):
         window = RunRobot(self)
         window.grab_set()
 

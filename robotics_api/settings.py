@@ -14,11 +14,11 @@ Copyright 2024, University of Kentucky
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
 POT_DELAY = 15  # seconds
-STIR = True
+STIR = False
 DISPENSE = False
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-WEIGH_SOLVENTS = False
+WEIGH_SOLVENTS = True
 CALIB_DATE = '2024_06_25'  # '2024_06_20'
 
 # ---------  OPERATION SETTING -------------
@@ -36,7 +36,7 @@ MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False
 DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allowed (A) for a clean electrode
 
 TIME_UNIT = "s"
-MASS_UNIT = "mg"
+MASS_UNIT = "g"
 VOLUME_UNIT = "mL"
 DENSITY_UNIT = "g/L"
 POTENTIAL_UNIT = "V"
@@ -139,7 +139,6 @@ TEST_DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "rob
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
 SNAPSHOT_DIR = os.path.join(ROBOTICS_API, "snapshots")
 SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
-SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
 SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 
 # ---------  FIREWORKS PATH VARIABLES -------------
@@ -147,6 +146,8 @@ HOME_DIR = os.path.dirname(os.path.realpath(__file__))
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 LAUNCHPAD = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\launchpad_robot.yaml')
+INIT_FWORKER = os.path.abspath(
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_initialize.yaml')
 ROBOT_FWORKER = os.path.abspath(
     'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(

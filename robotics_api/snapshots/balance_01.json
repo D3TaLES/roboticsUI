@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.413,
-            "y": -0.293,
-            "z": 0.065,
+            "x": 0.62,
+            "y": -0.415,
+            "z": 0.13,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 63
+            "thetaZ": 60
           },
           "constraint": {
             "speed": {
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "stir_01"
+        "name": "balance_01"
       }
     ]
   }

@@ -166,7 +166,7 @@ class MeasureDensity(RoboticsBase):
         final_mass = bal_station.weigh(self.exp_vial)
 
         soln_mass = final_mass - initial_mass
-        raw_density = f"{soln_mass / volume} {VOLUME_UNIT}/{MASS_UNIT}"
+        raw_density = f"{soln_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
         soln_density = "{}{}".format(unit_conversion(raw_density, default_unit=DENSITY_UNIT), DENSITY_UNIT)
         self.metadata.update({"soln_density": soln_density})
 

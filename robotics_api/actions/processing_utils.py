@@ -20,9 +20,9 @@ def collection_dict(coll_data: list):
     return {tag: [d for d in coll_data if d.get("collect_tag") == tag] for tag in tags}
 
 
-def get_concentration(vial_content, solute_id, solv_id, soln_density=None, precision=3):
+def get_concentration(vial_content, solute_id, solv_id, soln_density=None, precision=3, mol_fraction=False):
     """
-   Calculate the concentration of a solute in a solvent based on the provided vial content and Fireworks specs.
+   Calculate the concentration of a solute in a solvent based on the provided vial content.
 
    Args:
        vial_content (list): List of dictionaries representing the content of the vial.
@@ -30,28 +30,39 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
        solv_id (str, optional):
        soln_density (float, optional):
        precision (int, optional):
+       mol_fraction (bool, optional):
 
    Returns:
        str: Concentration of the solute in the solvent, expressed in molarity.
    """
-    solute_mass = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
-    solv_amt = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
-    if not solute_mass or not solv_amt:
+    solute_masses = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
+    solv_amounts = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
+    if not solute_masses or not solv_amounts:
         if FIZZLE_CONCENTRATION_FAILURE:
             raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
-                            f"solv_id={solv_id}, solute_mass={solute_mass}, solv_vol={solv_amt}")
+                            f"solv_id={solv_id}, solute_mass={solute_masses}, solv_vol={solv_amounts}")
         return DEFAULT_CONCENTRATION
-    solute_mw = f"{ReagentStatus(_id=solute_id).molecular_weight}g/mol"
     if not soln_density:
         warnings.warn("No solution density provided. Using reagent density instead...this may not be accurate. ")
         soln_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
     ureg = pint.UnitRegistry()
-    volume_L = unit_conversion(solv_amt[0], default_unit="L", density=soln_density)
-    volume = ureg(f"{volume_L}L")
-    mass = ureg(solute_mass[0])
-    mw = ureg(solute_mw)
-    concentration = mass / mw / volume
-    return "{}{}".format(round(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
+    solute_mass = sum([ureg(u) for u in solute_masses])
+    solv_amt = sum([ureg(u) for u in solv_amounts])
+    solute_mw = ureg(f"{ReagentStatus(_id=solute_id).molecular_weight}g/mol")
+    if mol_fraction:
+        solute_mols = solute_mass / solute_mw
+        total_mols = 0
+        for reagent in vial_content:
+            r_mw = ureg(f"{ReagentStatus(_id=reagent['reagent_uuid']).molecular_weight}g/mol")
+            r_mass = reagent.get["amount"]
+            total_mols += r_mass/r_mw
+        x = solute_mols / total_mols
+        return x.magnitude
+    else:
+        volume_L = unit_conversion(solv_amt, default_unit="L", density=soln_density)
+        volume = ureg(f"{volume_L}L")
+        concentration = solute_mass / solute_mw / volume
+        return "{}{}".format(round(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 
 def get_kcl_conductivity(temp):

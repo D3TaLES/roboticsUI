@@ -207,9 +207,9 @@ class StationStatus(RobotStatusDB):
             vial: The vial to place.
             **kwargs: Additional keyword arguments.
         """
-        return
+        raise NotImplementedError
 
-    def retrieve_vial(self, vial, **kwargs):
+    def _retrieve_vial(self, vial, **kwargs):
         """
         Placeholder method for retrieving a vial.
 
@@ -217,7 +217,7 @@ class StationStatus(RobotStatusDB):
             vial: The vial to retrieve.
             **kwargs: Additional keyword arguments.
         """
-        return
+        raise NotImplementedError
 
     def get_all_available(self, name_str: str, exp_name=None):
         """

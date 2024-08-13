@@ -75,7 +75,7 @@ class DispenseLiquid(RoboticsBase):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
-        if not unit_conversion(volume, default_unit=VOLUME_UNIT) and EXIT_ZERO_VOLUME:
+        if not volume and EXIT_ZERO_VOLUME:
             print(" \n \n!!!!!!!!! \n ATTENTION! This FW and all subsequent FWs will be exited. "
                   "DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. \n !!!!!!!!! \n \n")
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
@@ -84,16 +84,8 @@ class DispenseLiquid(RoboticsBase):
         if solvent.location != "experiment_vial":
             solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
             if WEIGH_SOLVENTS:
-                bal_station = BalanceStation(StationStatus().get_first_available("balance"))
-                # Get initial mass
-                initial_mass = bal_station.weigh(self.exp_vial)
-                # Dispense solvent
-                solv_station.dispense(self.exp_vial, volume)
-                # Get final mass
-                final_mass = bal_station.weigh(self.exp_vial)
-
-                solv_mass = final_mass - initial_mass
-                self.exp_vial.add_reagent(solvent, amount=solv_mass, default_unit=MASS_UNIT)
+                solv_mass = solv_station.dispense_mass(self.exp_vial, volume)
+                self.exp_vial.add_reagent(solvent, amount=unit_conversion(solv_mass, default_unit=MASS_UNIT),  default_unit=MASS_UNIT)
             else:
                 volume = solv_station.dispense(self.exp_vial, volume)
                 self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)

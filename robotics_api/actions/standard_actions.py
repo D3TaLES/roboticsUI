@@ -50,6 +50,7 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
 
         # Go to above target position before target
         success += snapshot_move(snapshot_file_above)
+        print("ABOVE: ", snapshot_file_above)
         if not success and raise_error:
             raise Exception(f"Failed to move robot arm to {raise_amount} above target before snapshot {snapshot_file}.")
 
@@ -109,7 +110,7 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
     return success
 
 
-def send_arduino_cmd(station, command, address=ARDUINO_ADDRESS, return_txt=False):
+def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
@@ -164,8 +165,8 @@ def write_test(file_path, test_type=""):
 
 class VialMove(VialStatus):
 
-    def __init__(self, raise_amount: float = 0.1, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
+        super().__init__(_id=_id, **kwargs)
         self.raise_amount = raise_amount
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
@@ -323,24 +324,18 @@ class LiquidStation(StationStatus):
         return actual_volume
 
     def dispense_mass(self, vial: VialMove, volume, raise_error=True):
-        if not DISPENSE:
-            return None
-
         # Pre dispense weighing
         balance = BalanceStation(StationStatus().get_first_available("balance"))
         pre_mass = balance.weigh(vial)
 
         # Dispense liquid
-        self.place_vial(vial, raise_error=raise_error)
-        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        send_arduino_cmd(self.serial_name, arduino_vol)
+        self.dispense(vial=vial, volume=volume, raise_error=raise_error)
 
         # Post dispense weighing
         balance = BalanceStation(StationStatus().get_first_available("balance"))
         post_mass = balance.weigh(vial)
 
         final_mass = post_mass - pre_mass
-        vial.leave_station(self, raise_error=raise_error)
         return f"{final_mass}g"
 
     def dispense_only(self, volume, perform_dispense=DISPENSE):
@@ -351,7 +346,7 @@ class LiquidStation(StationStatus):
 
 
 class PipetteStation(StationStatus):
-    def __init__(self, _id, raise_amount=-0.04, **kwargs):
+    def __init__(self, _id, raise_amount=-0.08, **kwargs):
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a pipette station, an id must be provided.")
@@ -364,11 +359,22 @@ class PipetteStation(StationStatus):
     def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def extract_vol(self, vial: VialMove, volume, raise_error=True):
-        self.place_vial(vial, raise_error=raise_error)
-        actual_volume = volume  # TODO get actual volume
-        vial.leave_station(self, raise_error=raise_error)
-        return actual_volume
+    def _operate_pipette(self, volume: float, command: int, vial: VialMove = None, raise_error=True):
+        if vial:
+            self.place_vial(vial, raise_error=raise_error)
+
+        if PIPETTE:
+            arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+            send_arduino_cmd(self.serial_name, "{}_{}".format(command, arduino_vol))
+
+        if vial:
+            vial.leave_station(self, raise_error=raise_error)
+
+    def extract_vol(self, volume, vial: VialMove = None, raise_error=True):
+        return self._operate_pipette(volume=volume, command=1, vial=vial, raise_error=raise_error)
+
+    def dispense_vol(self, volume, vial: VialMove = None, raise_error=True):
+        return self._operate_pipette(volume=volume, command=0, vial=vial, raise_error=raise_error)
 
 
 class BalanceStation(StationStatus):
@@ -381,6 +387,7 @@ class BalanceStation(StationStatus):
         self.raise_amount = raise_amount
         self.pre_location_snapshot = None
         self.serial_name = "B_{:02d}".format(int(self.id.split("_")[-1]))
+        self.p_address = BALANCE_PORT
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
         return vial.place_station(self, raise_error=raise_error, **move_kwargs)
@@ -403,10 +410,11 @@ class BalanceStation(StationStatus):
         self.place_vial(vial, raise_error=raise_error)
         mass = self.read_mass()
         time.sleep(1)
+        vial.leave_station(self)
         return mass
 
     def read_mass(self):
-        result_txt = self._send_command(write_txt="S", read_response=True)
+        result_txt = self._send_command(write_txt="S\n", read_response=True)
         result_list = result_txt.split(" ")
         response_status = result_list[1]
         if response_status == "S":
@@ -415,14 +423,17 @@ class BalanceStation(StationStatus):
             raise SystemError(f"Balance reading returned {result_txt}")
 
     def tare(self):
-        self._send_command(write_txt="T")
-        print(f"Balance {self} tared.")
+        response = self._send_command(write_txt="T\n", read_response=True)
+        if "S" in response:
+            print(f"Balance {self} tared.")
+            return True
+        return False
 
-    def _send_command(self, write_txt=None, read_response=False, address=None):
+    def _send_command(self, write_txt=None, read_response=False):
         try:
-            balance = serial.Serial(address, timeout=1)
-        except:
-            raise Exception("Warning! Balance {} is not connected".format(address))
+            balance = serial.Serial(self.p_address, timeout=1)
+        except serial.SerialException as e:
+            raise Exception("Warning! Balance {} is not connected to {} because: {}".format(self, self.p_address, e))
         time.sleep(1)  # give the connection a second to settle
         if write_txt:
             balance.write(bytes(write_txt, encoding='utf-8'))
@@ -839,8 +850,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
     vial = VialMove(_id=vial_id)
     solv_stat = LiquidStation(_id=solv_id)
 
-    solv_stat.place_vial(vial)
-    print("Actual Volume:  ", solv_stat.dispense_only(volume, dispense=True))
+    print("Actual Volume:  ", solv_stat.dispense(vial, volume))
 
     if go_home:
         vial.leave_station(solv_stat)
@@ -851,7 +861,9 @@ if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
-    test_solv = LiquidStation("solvent_01")
+    test_solv = LiquidStation("solvent_04")
+    test_pip = PipetteStation("pipette_01")
+    test_stir = StirStation("stir_01")
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # vial_col_test("B")
@@ -863,7 +875,7 @@ if __name__ == "__main__":
     # print(PotentiostatStation("ca_potentiostat_B_01").get_temperature())
     # snapshot_move(SNAPSHOT_END_HOME)
 
-    test_vial.retrieve()
+    # test_vial.retrieve()
     # test_vial.place_station(test_potent)
     # test_potent.move_elevator(endpoint="down")
     # test_potent.move_elevator(endpoint="up")
@@ -871,13 +883,16 @@ if __name__ == "__main__":
 
     # print(test_potent.get_temperature())
 
-    # LiquidStation(_id="solvent_01").dispense_only(8)
-    # flush_solvent(8, vial_id="S_04", solv_id="solvent_01", go_home=True)
+    # test_solv.dispense(test_vial, 0)
+    # flush_solvent(2, vial_id="A_01", solv_id="solvent_04", go_home=False)
 
     # snapshot_move(SNAPSHOT_HOME)
-    # snapshot_move(SNAPSHOT_END_HOME)
+    snapshot_move(SNAPSHOT_END_HOME)
 
-    # StirHeatStation("stir_01").perform_stir(test_vial, stir_time=30)
-
-    # test_bal.weigh(test_vial)
+    # mass = test_solv.dispense_mass(test_vial, 5)
     # test_solv.dispense(test_vial, 1)
+
+    # test_stir.perform_stir(test_vial, stir_time=30)
+    # test_pip.extract_vol(10, vial=test_vial)
+    # snapshot_move(SNAPSHOT_HOME)
+

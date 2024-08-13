@@ -15,7 +15,8 @@ Copyright 2024, University of Kentucky
 RUN_POTENT = False
 POT_DELAY = 15  # seconds
 STIR = False
-DISPENSE = False
+DISPENSE = True
+PIPETTE = False
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 WEIGH_SOLVENTS = True
@@ -116,8 +117,9 @@ SOLVENT_DENSITIES = {  # Formal potentials
     "CC#N": "0.786 g/mL",   # ACN
 }
 
-# ---------  ARDUINO ADDRESS -------------
-ARDUINO_ADDRESS = "COM4"
+# ---------  PORT ADDRESS -------------
+ARDUINO_PORT = "COM4"
+BALANCE_PORT = "COM5"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]

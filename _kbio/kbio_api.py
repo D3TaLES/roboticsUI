@@ -357,7 +357,7 @@ class KBIO_api :
 
     class DeviceInfo (KBIO.DeviceInfo) :
 
-        """DeviceInfo adds a few helper methods over the KBIO plain old data equivalent"""
+        """DeviceInfo adds a few helper methods over the KBIO plain snaps_20240813_orig data equivalent"""
 
         @property
         def model (self) :
@@ -393,7 +393,7 @@ class KBIO_api :
 
     class ChannelInfo (KBIO.ChannelInfo) :
 
-        """ChannelInfo adds a few helper methods over the KBIO plain old data equivalent"""
+        """ChannelInfo adds a few helper methods over the KBIO plain snaps_20240813_orig data equivalent"""
 
         @property
         def firmware (self) :
@@ -494,7 +494,7 @@ class KBIO_api :
 
     class HardwareConf (KBIO.HardwareConf) :
 
-        """HardwareConf adds a few helper methods over the KBIO plain old data equivalent"""
+        """HardwareConf adds a few helper methods over the KBIO plain snaps_20240813_orig data equivalent"""
 
         @property
         def mode (self) :

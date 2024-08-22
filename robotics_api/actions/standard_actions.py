@@ -120,7 +120,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
         except:
             raise Exception("Warning! {} is not connected".format(address))
     time.sleep(1)  # give the connection a second to settle
-    arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))
+    arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))  # EX: E1_0 or P1_1_500
     print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
     start_time = time.time()
     try:
@@ -207,7 +207,7 @@ class VialMove(VialStatus):
             else:
                 success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
                                           raise_amount=self.raise_amount, **move_kwargs)
-            # success += snapshot_move(SNAPSHOT_HOME)
+            success += snapshot_move(SNAPSHOT_HOME)
             if success:
                 self.update_position("robot_grip")
 
@@ -218,9 +218,9 @@ class VialMove(VialStatus):
 
     def go_to_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
         self.retrieve(raise_error=True)
-        # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
-        success = get_place_vial(target_location, action_type='place', release_vial=False,
+        success += get_place_vial(target_location, action_type='place', release_vial=False,
                                  raise_error=raise_error, **move_kwargs)
 
         if raise_error and not success:
@@ -230,11 +230,11 @@ class VialMove(VialStatus):
 
     def place_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
         self.retrieve(raise_error=True)
-        # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+        success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
-        success = get_place_vial(target_location, action_type='place',
-                                 raise_error=raise_error, **move_kwargs)
-        # success += snapshot_move(SNAPSHOT_HOME)
+        success += get_place_vial(target_location, action_type='place',
+                                  raise_error=raise_error, **move_kwargs)
+        success += snapshot_move(SNAPSHOT_HOME)
         self.update_position(target_location)
 
         if raise_error and not success:
@@ -249,7 +249,7 @@ class VialMove(VialStatus):
         print("TEST ", self.current_location, station)
         success = True if station.current_content == self.id else False
         if station.available:
-            # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             print("LOCATION: ", station.location_snapshot)
             success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                       raise_error=raise_error, leave=False, raise_amount=station.raise_amount)
@@ -359,22 +359,16 @@ class PipetteStation(StationStatus):
     def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def _operate_pipette(self, volume: float, command: int, vial: VialMove = None, raise_error=True):
+    def pipette(self, volume: float, vial: VialMove = None, raise_error=True):
         if vial:
             self.place_vial(vial, raise_error=raise_error)
 
         if PIPETTE:
             arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-            send_arduino_cmd(self.serial_name, "{}_{}".format(command, arduino_vol))
+            send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
             vial.leave_station(self, raise_error=raise_error)
-
-    def extract_vol(self, volume, vial: VialMove = None, raise_error=True):
-        return self._operate_pipette(volume=volume, command=1, vial=vial, raise_error=raise_error)
-
-    def dispense_vol(self, volume, vial: VialMove = None, raise_error=True):
-        return self._operate_pipette(volume=volume, command=0, vial=vial, raise_error=raise_error)
 
 
 class BalanceStation(StationStatus):
@@ -584,11 +578,11 @@ class PotentiostatStation(StationStatus):
             success = vial.retrieve(raise_error=True)
 
         if self.available:
-            # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
+            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             success += get_place_vial(self.location_snapshot, action_type='place',
                                       pre_position_file=self.pre_location_snapshot,
                                       raise_amount=self.raise_amount, raise_error=raise_error, **move_kwargs)
-            # success += snapshot_move(SNAPSHOT_HOME)
+            success += snapshot_move(SNAPSHOT_HOME)
             vial.update_position(self.id)
         else:
             success += False
@@ -635,7 +629,7 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_serial_name, "", return_txt=True)
         if arduino_result:
-            return {"value": float(arduino_result.split(":")[1].strip()) + 273.15, "unit": "K"}
+            return {"value": round(float(arduino_result.split(":")[1].strip()) + 273.15, 2), "unit": "K"}
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
@@ -866,33 +860,34 @@ if __name__ == "__main__":
     test_stir = StirStation("stir_01")
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
-    # vial_col_test("B")
-
-    # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
-
+    # RESET TESTING
     # reset_test_db()
     # reset_stations(end_home=False)
-    # print(PotentiostatStation("ca_potentiostat_B_01").get_temperature())
+    # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
 
+    # VIAL TESTING
+    # vial_col_test("B")
+    # test_vial.place_home()
     # test_vial.retrieve()
+    # get_place_vial(VialMove(_id="S_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+
+    # POTENTIOSTAT TESTING
     # test_vial.place_station(test_potent)
     # test_potent.move_elevator(endpoint="down")
     # test_potent.move_elevator(endpoint="up")
-    # test_vial.place_home()
+    # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
-    # print(test_potent.get_temperature())
-
-    # test_solv.dispense(test_vial, 0)
+    # SOLVENT TESTING
+    # vol = test_solv.dispense(test_vial, 0)
+    # mass = test_solv.dispense_mass(test_vial, 5)
     # flush_solvent(2, vial_id="A_01", solv_id="solvent_04", go_home=False)
 
-    # snapshot_move(SNAPSHOT_HOME)
-    snapshot_move(SNAPSHOT_END_HOME)
-
-    # mass = test_solv.dispense_mass(test_vial, 5)
-    # test_solv.dispense(test_vial, 1)
-
+    # OTHER STATION TESTING
+    # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
+    # print(test_potent.get_temperature())
+    # test_pip.pipette(volume=0.5)  # mL
+    # test_pip.pipette(volume=0)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
-    # test_pip.extract_vol(10, vial=test_vial)
-    # snapshot_move(SNAPSHOT_HOME)
+    # test_bal.weigh(test_vial)
 

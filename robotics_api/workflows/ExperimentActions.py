@@ -153,9 +153,12 @@ class MeasureDensity(RoboticsBase):
         # Get initial mass
         initial_mass = bal_station.weigh(self.exp_vial)
         # Dispense solvent
-        pipette_station.extract_vol(self.exp_vial, volume)
+        pipette_station.pipette(volume=volume, vial=self.exp_vial)
         # Get final mass
         final_mass = bal_station.weigh(self.exp_vial)
+
+        # Discard pipetted solution
+        pipette_station.pipette(volume=0)
 
         soln_mass = final_mass - initial_mass
         raw_density = f"{soln_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
@@ -171,10 +174,7 @@ class RecordWorkingElectrodeArea(RoboticsBase):
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, get_exp_vial=False)
-        # working_electrode_area = self.get("size", DEFAULT_WORKING_ELECTRODE_AREA)
-        # working_electrode_radius = self.get("size", DEFAULT_WORKING_ELECTRODE_RADIUS)
-        self.metadata.update({"working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
-                              "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
+        self.metadata.update({"working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -417,4 +417,19 @@ class RunCA(RoboticsBase):
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "temperature": temperature,
                                      "data_location": data_path})
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class CollectTemp(RoboticsBase):
+    def run_task(self, fw_spec):
+        if not self.setup_task(fw_spec):
+            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+
+        # Collect temperature
+        potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
+        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        print("RECORDED TEMPERATURE: ", temperature)
+
+        self.metadata.update({"temperature": temperature})
         return FWAction(update_spec=self.updated_specs())

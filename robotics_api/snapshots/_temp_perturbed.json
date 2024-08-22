@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.177,
-            "y": -0.378,
-            "z": 0.18,
+            "x": 0.546,
+            "y": 0.21700000000000003,
+            "z": 0.15000000000000002,
             "thetaX": 90,
-            "thetaY": 0,
-            "thetaZ": 20
+            "thetaY": 1.5,
+            "thetaZ": 90
           },
           "constraint": {
             "speed": {
-              "translation": 0,
+              "translation": 0.3,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10000,
+          "identifier": 10011,
           "permission": 7,
           "actionType": 6
         },
-        "name": "pipette_01"
+        "name": "VialHome_master"
       }
     ]
   }

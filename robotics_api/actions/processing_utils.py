@@ -306,7 +306,6 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
 
 if __name__ == "__main__":
     meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
-                 "working_electrode_surface_area": DEFAULT_WORKING_ELECTRODE_AREA,
                  "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS}
     cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
     processing_test(cv_dir, metadata=meta_data)

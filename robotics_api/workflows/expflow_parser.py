@@ -64,6 +64,8 @@ class EF2Experiment(ProcessExpFlowObj):
             analysis = "cv"
         elif "_ca_" in collect_task.name:
             analysis = "ca"
+        elif "_temp" in collect_task.name:
+            analysis = "ca"  # TODO change if independent temperature probe set up
         elif "_ir_" in collect_task.name:
             analysis = "ir"
         else:
@@ -248,6 +250,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
             "collect_ca_data": [RunCA],
+            "collect_temp": [CollectTemp],
             "process_calibration": [ProcessCalibration],
             "process_data": [RecordWorkingElectrodeArea, DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],

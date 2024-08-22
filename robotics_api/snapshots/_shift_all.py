@@ -4,32 +4,30 @@ import itertools
 from pathlib import Path
 
 shift_values = {
-    "x": 0.303,
-    "y": 0.200,
-    "z": 0.099,
+    "x": 0,
+    "y": 0.017,
+    "z": 0,
     "thetaX": 0,
-    "thetaY": 0,
+    "thetaY": 1.5,
     "thetaZ": 0
 }
 
-old_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "old"
+old_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240813_orig"
 new_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "new"
 os.makedirs(new_snapshots, exist_ok=True)
 
 for snapshot in os.listdir(old_snapshots):
     with open(old_snapshots / str(snapshot), 'r') as fn:
         master_data = json.load(fn)
+        if master_data.get("poses"):
+            for item, value in shift_values.items():
+                master_data["poses"]["pose"][0]["reachPose"]["targetPose"][item] += value
+            print("Updated snapshot ", snapshot)
+        else:
+            print(f"Snapshot '{snapshot}' not adjusted because it does not contain 'poses'.")
 
-    for item, value in shift_values.items():
-        master_data["poses"]["pose"][0]["reachPose"]["targetPose"][item] = value
+        # Generate VialHome files
+        with open(new_snapshots / str(snapshot), "w+") as fn:
+            json.dump(master_data, fn, indent=2)
 
-    # Generate VialHome files
-    with open(new_snapshots / str(snapshot), "w+") as fn:
-        json.dump(master_data, fn, indent=2)
-
-    print("Updated snapshot ", snapshot)
-
-print("Successfully updated snapshots in folder 'old'. New snapshots are in folder 'new'.")
-
-
-
+print("Successfully updated snapshots in folder 'snaps_20240813_orig'. New snapshots are in folder 'new'.")

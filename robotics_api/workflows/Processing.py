@@ -32,8 +32,7 @@ class InitializeRobot(FiretaskBase):
                 BaseClient(router)
                 BaseCyclicClient(router)
 
-        if MOVE_ELEVATORS:
-            reset_stations()
+        reset_stations()
 
         return FWAction(update_spec={"success": True})
 

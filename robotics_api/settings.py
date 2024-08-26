@@ -13,14 +13,14 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-POT_DELAY = 15  # seconds
+DISPENSE = False
 STIR = False
-DISPENSE = True
-PIPETTE = True
+PIPETTE = False
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 WEIGH_SOLVENTS = True
 CALIB_DATE = '2024_06_25'  # '2024_06_20'
+POT_DELAY = 1  # seconds
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True

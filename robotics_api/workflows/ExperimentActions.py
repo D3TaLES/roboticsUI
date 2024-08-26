@@ -193,7 +193,7 @@ class SetupRinsePotentiostat(RoboticsBase):
             warnings.warn(f"Station {potentiostat} not available. Fizzling rinse.")
             return self.self_fizzle()
 
-        self.success += action_vial.place_station(potentiostat)
+        self.success += potentiostat.place_vial(action_vial)
         self.metadata.update({"active_vial_id": action_vial.id})
 
         return FWAction(update_spec=self.updated_specs())
@@ -260,7 +260,7 @@ class SetupPotentiostat(RoboticsBase):
                 self.exp_vial.place_home()
                 return self.self_fizzle()
             potentiostat.update_experiment(self.exp_name)
-            self.success += self.exp_vial.place_station(potentiostat)
+            self.success += potentiostat.place_vial(self.exp_vial)
         print("POTENTIOSTAT: ", potentiostat)
 
         # Setup metadata

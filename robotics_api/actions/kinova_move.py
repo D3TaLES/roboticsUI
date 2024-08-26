@@ -181,7 +181,8 @@ def move_gripper(target_position=None):
     return finished
 
 
-def snapshot_move(snapshot_file=None, target_position=None):
+def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
+                  angle_error=0.2, position_error=0.1):
     """
 
     :param snapshot_file: str, path to snapshot file (JSON)
@@ -225,17 +226,46 @@ def snapshot_move(snapshot_file=None, target_position=None):
 
             # Move Robot
             if move_type == "angular":
-                finished += snapshot_move_angular(base, joint_angle_values)
+                finished = snapshot_move_angular(base, joint_angle_values)
             elif move_type == "cartesian":
-                finished += snapshot_move_cartesian(base, coordinate_values)
+                finished = snapshot_move_cartesian(base, coordinate_values)
             else:
-                finished += True
+                finished = True
                 if VERBOSE > 3:
                     print("... and nothing happened")
             snapshot_file.close()
 
+            if finished:
+                if move_type == "angular":
+                    current_joint_angles_raw = base.GetMeasuredJointAngles()  # Assuming this method exists
+                    def _angle(a):
+                        return a if a < 360 else a-360
+                    current_joint_angles = {i.joint_identifier: _angle(i.value) for i in current_joint_angles_raw.joint_angles}
+                    joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
+                    angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k in joint_angle_values_dict]
+                    if not all([d < angle_error for d in angle_diffs]):
+                        error_diffs = [d for d in angle_diffs if d > angle_error]
+                        if not all([abs(d-360) < angle_error for d in error_diffs]):
+                            finished = False
+                            if raise_error:
+                                raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
+                elif move_type == "cartesian":
+                    current_pose_raw = base.GetMeasuredCartesianPose()  # Assuming this method exists
+                    current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
+                                    "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y, "thetaZ": current_pose_raw.theta_z}
+                    pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
+                    if not all([d < position_error for d in pose_diffs]):
+                        if raise_error:
+                            raise SystemError("Error: Robot did not reach the desired Cartesian pose: ", pose_diffs)
+                        finished = False
+                else:
+
+                    if raise_error:
+                        raise SystemError("Error: Unknown move type for confirmation.")
+                    finished = False
+
     if target_position:
-        finished += move_gripper(target_position)
+        move_gripper(target_position)
 
     print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     return finished

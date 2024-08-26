@@ -250,7 +250,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
             "collect_ca_data": [RunCA],
-            "collect_temp": [CollectTemp],
+            "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
             "process_data": [RecordWorkingElectrodeArea, DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],

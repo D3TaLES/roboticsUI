@@ -235,7 +235,7 @@ class PotentiostatExperiment:
 
                 status = KBIO.PROG_STATE(current_values.State).name
 
-                print("> new messages :")
+                print("> snaps_20240828 messages :")
                 self.print_messages()
                 if status == 'STOP':
                     break

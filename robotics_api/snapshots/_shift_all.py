@@ -4,15 +4,15 @@ import itertools
 from pathlib import Path
 
 shift_values = {
-    "x": 0,
-    "y": 0.017,
+    "x": 0.003,
+    "y": 0.006,
     "z": 0,
     "thetaX": 0,
     "thetaY": 1.5,
     "thetaZ": 0
 }
 
-old_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240813_orig"
+old_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240822"
 new_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "new"
 os.makedirs(new_snapshots, exist_ok=True)
 
@@ -30,4 +30,4 @@ for snapshot in os.listdir(old_snapshots):
         with open(new_snapshots / str(snapshot), "w+") as fn:
             json.dump(master_data, fn, indent=2)
 
-print("Successfully updated snapshots in folder 'snaps_20240813_orig'. New snapshots are in folder 'new'.")
+print("Successfully updated snapshots in folder 'snaps_20240813_orig'. New snapshots are in folder 'snaps_20240828'.")

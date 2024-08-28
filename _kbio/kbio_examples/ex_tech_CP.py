@@ -195,7 +195,7 @@ try :
         data = api.GetData(id_, channel)
         status = print_experiment_data(api, data)
 
-        print("> new messages :")
+        print("> snaps_20240828 messages :")
         print_messages(channel)
 
         if status == 'STOP' :

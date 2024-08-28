@@ -83,7 +83,7 @@ class VialStatus(RobotStatusDB):
         Update the vial location or station vial status.
 
         Args:
-            new_location (str): The new vial location.
+            new_location (str): The snaps_20240828 vial location.
         """
         self.update_status(new_location, "location")
 
@@ -92,7 +92,7 @@ class VialStatus(RobotStatusDB):
         Update the vial content.
 
         Args:
-            new_content (dict): The new vial content.
+            new_content (dict): The snaps_20240828 vial content.
         """
         self.vial_content.append(new_content)
         self.insert(self.id, override_lists=True, instance={"vial_content": self.vial_content})
@@ -131,6 +131,37 @@ class VialStatus(RobotStatusDB):
         self.insert(self.id, override_lists=True, instance={
             "vial_content": other_reagents + new_vial_content
         })
+
+    def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT):
+        """
+        Add a reagent to the vial content.
+
+        Args:
+            extracted_mass (str or obj): Mass extracted from solution
+            default_mass_unit (str): The default mass unit for the reagent amount.
+
+        Raises:
+            NameError: If the reagent does not exist in the reagent database.
+        """
+        original_mass = sum([unit_conversion(r["amount"], default_unit=default_mass_unit) for r in self.vial_content])
+        if original_mass > 0:
+            extract_perc = extracted_mass / original_mass
+            new_vial_content = []
+            for r_dict in self.vial_content:
+                reagent = ReagentStatus(_id=r_dict.get("reagent_uuid"))
+                if not reagent:
+                    raise NameError("No reagent {} exists in the reagent database.".format(reagent))
+                old_amount = unit_conversion(r_dict.get("amount"), default_unit=default_mass_unit)
+                new_amount = old_amount * (1-extract_perc)
+                new_vial_content.append({
+                    "reagent_uuid": reagent.id,
+                    "name": reagent.name,
+                    "amount": f"{new_amount}{default_mass_unit}"
+                })
+            self.insert(self.id, override_lists=True, instance={
+                "vial_content": new_vial_content
+            })
+            print(f"Successfully extracted {extract_perc*100:.2f}% of the mass from vial {self}.")
 
 
 class StationStatus(RobotStatusDB):
@@ -296,7 +327,7 @@ class StationStatus(RobotStatusDB):
         Update the availability status.
 
         Args:
-            value (bool): The new availability status.
+            value (bool): The snaps_20240828 availability status.
 
         Returns:
             prop: The updated availability status.
@@ -308,7 +339,7 @@ class StationStatus(RobotStatusDB):
         Update the station state.
 
         Args:
-            new_state (str): The new state for the station.
+            new_state (str): The snaps_20240828 state for the station.
         """
         self.coll.update_one({"_id": self.id}, {"$set": {"state": new_state}})
 
@@ -317,7 +348,7 @@ class StationStatus(RobotStatusDB):
         Update the station content.
 
         Args:
-            new_content: The new content in the station.
+            new_content: The snaps_20240828 content in the station.
         """
         self.update_status(new_content, "content")
 

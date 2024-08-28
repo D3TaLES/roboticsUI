@@ -160,10 +160,16 @@ class MeasureDensity(RoboticsBase):
         # Discard pipetted solution
         pipette_station.pipette(volume=0)
 
-        soln_mass = final_mass - initial_mass
-        raw_density = f"{soln_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
-        soln_density = "{}{}".format(unit_conversion(raw_density, default_unit=DENSITY_UNIT), DENSITY_UNIT)
+        # Calculate solution density
+        extracted_mass = initial_mass - final_mass
+        raw_density = f"{extracted_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
+        soln_density = "{:.3f}{}".format(unit_conversion(raw_density, default_unit=DENSITY_UNIT), DENSITY_UNIT)
+        print(f"Raw Density: {extracted_mass:.3f} / {volume:.3f} {MASS_UNIT}/{VOLUME_UNIT}")
+        print("--> SOLUTION DENSITY: ", soln_density)
         self.metadata.update({"soln_density": soln_density})
+
+        # Update vial contents
+        self.exp_vial.extract_soln(extracted_mass=extracted_mass)
 
         return FWAction(update_spec=self.updated_specs())
 

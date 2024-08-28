@@ -142,7 +142,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
             data = arduino.readline()
             print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
             if data:
-                result_txt = data.decode().strip()  # strip out the new lines
+                result_txt = data.decode().strip()  # strip out the snaps_20240828 lines
                 print("ARDUINO RESULT: ", result_txt)
                 if "success" in result_txt:
                     return result_txt if return_txt else True
@@ -155,7 +155,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
             print("Aborted arduino. Trying to read abort message...")
             data = arduino.readline()
             if data:
-                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the new lines
+                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the snaps_20240828 lines
                 raise KeyboardInterrupt
             time.sleep(1)
 
@@ -267,7 +267,8 @@ class VialMove(VialStatus):
             # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
             print("LOCATION: ", station.location_snapshot)
             success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
-                                      raise_error=raise_error, leave=False, raise_amount=station.raise_amount)
+                                      raise_error=raise_error, leave=False, raise_amount=station.raise_amount,
+                                      pre_position_file=station.pre_location_snapshot)
             station.update_available(False)
             station.update_content(self.id)
 
@@ -355,6 +356,7 @@ class PipetteStation(StationStatus):
         if self.type != "pipette":
             raise Exception(f"Station {self.id} is not a pipette.")
         self.raise_amount = raise_amount
+        # self.pre_location_snapshot = None
         self.serial_name = "P{:01d}".format(int(self.id.split("_")[-1]))
 
     def place_vial(self, vial: VialMove, raise_error=True):
@@ -453,7 +455,7 @@ class BalanceStation(StationStatus):
                 data = balance.readline()
                 print("waiting for {} balance results for {:.1f} seconds...".format(self, time.time() - start_time))
                 if data:
-                    result_txt = data.decode().strip()  # strip out the new lines
+                    result_txt = data.decode().strip()  # strip out the snaps_20240828 lines
                     print("BALANCE RESULT: ", result_txt)
                     balance.close()
                     return result_txt
@@ -875,7 +877,7 @@ if __name__ == "__main__":
     test_vial = VialMove(_id="A_01")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
-    test_solv = LiquidStation("solvent_04")
+    test_solv = LiquidStation("solvent_01")
     test_pip = PipetteStation("pipette_01")
     test_stir = StirStation("stir_01")
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
@@ -883,14 +885,16 @@ if __name__ == "__main__":
     # RESET TESTING
     # reset_test_db()
     # reset_stations(end_home=False)
-    snapshot_move(SNAPSHOT_HOME)
+    # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
+    # snapshot_move(target_position=40)
 
     # VIAL TESTING
     # vial_col_test("B")
     # test_vial.place_home()
     # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+    # test_vial.extract_soln(extracted_mass=0.506)
 
     # POTENTIOSTAT TESTING
     # test_potent.place_vial(test_vial)
@@ -907,6 +911,7 @@ if __name__ == "__main__":
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
+    test_pip.pipette(volume=0.5)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)

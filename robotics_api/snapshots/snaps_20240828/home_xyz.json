@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.585,
-            "y": 0.12200000000000001,
-            "z": 0.096,
+            "x": 0.453,
+            "y": 0.12300000000000001,
+            "z": 0.22,
             "thetaX": 90,
             "thetaY": 3.0,
-            "thetaZ": 90
+            "thetaZ": 105
           },
           "constraint": {
             "speed": {
-              "translation": 0.3,
+              "translation": 0,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VialHome_master"
+        "name": "Home"
       }
     ]
   }

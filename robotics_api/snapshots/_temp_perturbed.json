@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.497,
-            "y": 0.363,
-            "z": 0.063,
-            "thetaX": 90.6,
-            "thetaY": 1.5,
-            "thetaZ": 129.7
+            "x": 0.633,
+            "y": -0.4,
+            "z": 0.178,
+            "thetaX": 90,
+            "thetaY": 3.0,
+            "thetaZ": 60
           },
           "constraint": {
             "speed": {
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "Potentiostat Elevator 1"
+        "name": "balance_01"
       }
     ]
   }

@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.585,
-            "y": 0.12200000000000001,
-            "z": 0.096,
+            "x": 0.4356,
+            "y": 0.2983,
+            "z": 0.067,
             "thetaX": 90,
-            "thetaY": 3.0,
-            "thetaZ": 90
+            "thetaY": 1.5,
+            "thetaZ": 126.7
           },
           "constraint": {
             "speed": {
@@ -20,11 +20,11 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VialHome_master"
+        "name": "Pre-Potentiostat Elevator 1"
       }
     ]
   }

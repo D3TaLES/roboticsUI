@@ -194,7 +194,7 @@ try :
         # BL_GetHardConf
         hw_conf = api.GetHardwareConf(id_, channel)
         hw_conf = {'cnx': hw_conf.connection, 'mode': hw_conf.mode}
-        print("> new hardware configuration :")
+        print("> snaps_20240828 hardware configuration :")
         print(hw_conf)
         newline()
 

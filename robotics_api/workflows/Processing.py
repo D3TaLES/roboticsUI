@@ -214,7 +214,7 @@ class ProcessCVBenchmarking(ProcessBase):
             p_data = self.process_pot_data(cv_loc, metadata=self.metadata, insert=False, processing_class=ProcessChiCV)
             self.plot_cv(cv_loc, p_data, plot_name="Benchmark")
 
-            # Calculate new voltage sequence
+            # Calculate snaps_20240828 voltage sequence
             if MICRO_ELECTRODES:
                 e_half = p_data.get("data", {}).get("e_half")[0]
                 forward_peak, reverse_peak = e_half + ADD_MICRO_BUFFER, e_half - ADD_MICRO_BUFFER

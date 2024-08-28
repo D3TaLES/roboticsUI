@@ -669,7 +669,7 @@ class KBIO_api :
             KBIO.FIND_ERROR.NM_FORMAT          : "invalid format of netmask address",
             KBIO.FIND_ERROR.GW_FORMAT          : "invalid format of gateway address",
             KBIO.FIND_ERROR.IP_NOT_FOUND       : "instrument to modify not found",
-            KBIO.FIND_ERROR.IP_ALREADYEXIST    : "new IP address in TCP/IP parameters",
+            KBIO.FIND_ERROR.IP_ALREADYEXIST    : "snaps_20240828 IP address in TCP/IP parameters",
         }
 
     #==========================================================================#

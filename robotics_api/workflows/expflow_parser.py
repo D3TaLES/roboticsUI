@@ -140,13 +140,13 @@ class EF2Experiment(ProcessExpFlowObj):
 
             # Set up task clusters based on task types
             if "process" in task.name or "rinse" in task.name:
-                # Make new Fireworks for processing or rinse jobs
+                # Make snaps_20240828 Fireworks for processing or rinse jobs
                 all_tasks.extend([task_cluster, [task]]) if task_cluster else all_tasks.append([task])
                 task_cluster = []
                 if "process" in next_name:
                     continue
             elif self.is_inst_task(task) and not self.is_inst_task(previous_name):
-                # Make new Firework for collect jobs
+                # Make snaps_20240828 Firework for collect jobs
                 all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = [task]
             else:

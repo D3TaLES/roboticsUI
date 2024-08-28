@@ -1,30 +1,36 @@
 {
-  "poses": {
-    "pose": [
+  "jointAnglesGroup":
+  {
+    "jointAngles":
+    [
       {
-        "reachPose": {
-          "targetPose": {
-            "x": 0.4356,
-            "y": 0.2983,
-            "z": 0.067,
-            "thetaX": 90,
-            "thetaY": 1.5,
-            "thetaZ": 126.7
+        "applicationData":"{\"kinova\":{\"color\":0}}",
+        "handle":
+        {
+          "identifier":10040,
+          "permission":7,
+          "actionType":7
+        },
+        "reachJointAngles":
+        {
+          "jointAngles":
+          {
+            "jointAngles":
+            [
+              {"value":323,"jointIdentifier":0},
+              {"value":75,"jointIdentifier":1},
+              {"value":250,"jointIdentifier":2},
+              {"value":0,"jointIdentifier":3},
+              {"value":95,"jointIdentifier":4},
+              {"value":90,"jointIdentifier":5}
+            ]
           },
-          "constraint": {
-            "speed": {
-              "translation": 0.3,
-              "orientation": 0
-            }
+          "constraint":
+          {
+            "type":0,"value":0
           }
         },
-        "applicationData": "{\"kinova\":{\"color\":0}}",
-        "handle": {
-          "identifier": 10003,
-          "permission": 7,
-          "actionType": 6
-        },
-        "name": "Pre-Potentiostat Elevator 1"
+        "name":"Pre CV Elevator"
       }
     ]
   }

@@ -15,7 +15,7 @@ PRINT_FW_YAML: False
 SUBMIT_SCRIPT_NAME: FW_submit.sh
 # format for loggers (this String will be passed to logging.Formatter())
 FW_LOGGING_FORMAT: "%(asctime)s %(levelname)s %(message)s"
-# set True if you want the Queue Launcher to always create a new block directory every time it is called,
+# set True if you want the Queue Launcher to always create a snaps_20240828 block directory every time it is called,
 # False if you want to re-use previous blocks
 ALWAYS_CREATE_NEW_BLOCK: False
 # where to store templates if you are using the TemplateWriterTask.

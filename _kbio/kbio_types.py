@@ -551,6 +551,6 @@ class FIND_ERROR (Enum) :
     NM_FORMAT          = -34 # invalid format of netmask address
     GW_FORMAT          = -35 # invalid format of gateway address
     IP_NOT_FOUND       = -38 # instrument to modify not found
-    IP_ALREADYEXIST    = -39 # new IP address in TCP/IP parameters
+    IP_ALREADYEXIST    = -39 # snaps_20240828 IP address in TCP/IP parameters
 
 #==============================================================================#

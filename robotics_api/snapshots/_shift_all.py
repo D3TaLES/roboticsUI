@@ -30,4 +30,4 @@ for snapshot in os.listdir(old_snapshots):
         with open(new_snapshots / str(snapshot), "w+") as fn:
             json.dump(master_data, fn, indent=2)
 
-print("Successfully updated snapshots in folder 'snaps_20240813_orig'. New snapshots are in folder 'snaps_20240828'.")
+print("Successfully updated snapshots in folder 'snaps_20240813_orig'. New snapshots are in folder 'old'.")

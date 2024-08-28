@@ -84,11 +84,9 @@ class DispenseLiquid(RoboticsBase):
         if solvent.location != "experiment_vial":
             solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
             if WEIGH_SOLVENTS:
-                solv_mass = solv_station.dispense_mass(self.exp_vial, volume)
-                self.exp_vial.add_reagent(solvent, amount=unit_conversion(solv_mass, default_unit=MASS_UNIT),  default_unit=MASS_UNIT)
+                solv_station.dispense_mass(self.exp_vial, volume)
             else:
-                volume = solv_station.dispense(self.exp_vial, volume)
-                self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT)
+                solv_station.dispense(self.exp_vial, volume)
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -151,7 +149,7 @@ class MeasureDensity(RoboticsBase):
         bal_station = BalanceStation(StationStatus().get_first_available("balance"))
         pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
         # Get initial mass
-        initial_mass = bal_station.weigh(self.exp_vial)
+        initial_mass = bal_station.existing_weight(self.exp_vial)
         # Dispense solvent
         pipette_station.pipette(volume=volume, vial=self.exp_vial)
         # Get final mass

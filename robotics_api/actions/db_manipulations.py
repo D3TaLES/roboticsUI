@@ -49,6 +49,16 @@ class VialStatus(RobotStatusDB):
         return self.get_prop("vial_content") or []
 
     @property
+    def current_weight(self):
+        """
+        Get the current weight.
+
+        Returns:
+            str: The current weight.
+        """
+        return self.get_prop("current_weight")
+
+    @property
     def current_location(self):
         """
         Get the current location.
@@ -78,12 +88,21 @@ class VialStatus(RobotStatusDB):
         """
         return StationStatus(_id=self.current_location)
 
+    def update_weight(self, new_weight: float):
+        """
+        Update the vial location or station vial status.
+
+        Args:
+            new_weight (str): weight
+        """
+        self.update_status(new_weight, "weight")
+
     def update_location(self, new_location: str):
         """
         Update the vial location or station vial status.
 
         Args:
-            new_location (str): The snaps_20240828 vial location.
+            new_location (str): The new vial location.
         """
         self.update_status(new_location, "location")
 
@@ -92,7 +111,7 @@ class VialStatus(RobotStatusDB):
         Update the vial content.
 
         Args:
-            new_content (dict): The snaps_20240828 vial content.
+            new_content (dict): The new vial content.
         """
         self.vial_content.append(new_content)
         self.insert(self.id, override_lists=True, instance={"vial_content": self.vial_content})
@@ -129,8 +148,9 @@ class VialStatus(RobotStatusDB):
             "amount": f"{new_amount}{default_unit}"
         }]
         self.insert(self.id, override_lists=True, instance={
-            "vial_content": other_reagents + new_vial_content
+            "vial_content": other_reagents + new_vial_content,
         })
+        self.update_status(None, "weight")
 
     def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT):
         """
@@ -159,8 +179,9 @@ class VialStatus(RobotStatusDB):
                     "amount": f"{new_amount}{default_mass_unit}"
                 })
             self.insert(self.id, override_lists=True, instance={
-                "vial_content": new_vial_content
+                "vial_content": new_vial_content,
             })
+            self.update_status(None, "weight")
             print(f"Successfully extracted {extract_perc*100:.2f}% of the mass from vial {self}.")
 
 
@@ -327,7 +348,7 @@ class StationStatus(RobotStatusDB):
         Update the availability status.
 
         Args:
-            value (bool): The snaps_20240828 availability status.
+            value (bool): The new availability status.
 
         Returns:
             prop: The updated availability status.
@@ -339,7 +360,7 @@ class StationStatus(RobotStatusDB):
         Update the station state.
 
         Args:
-            new_state (str): The snaps_20240828 state for the station.
+            new_state (str): The new state for the station.
         """
         self.coll.update_one({"_id": self.id}, {"$set": {"state": new_state}})
 
@@ -348,7 +369,7 @@ class StationStatus(RobotStatusDB):
         Update the station content.
 
         Args:
-            new_content: The snaps_20240828 content in the station.
+            new_content: The new content in the station.
         """
         self.update_status(new_content, "content")
 
@@ -553,7 +574,9 @@ def reset_vial_db(experiment_locs: dict, current_wflow_name=""):
             "current_wflow_name": current_wflow_name,
             "experiment_name": exp_dict.get(vial, ""),
             "vial_content": [],
+            "current_weight": None,
             "current_location": "home",
+            "weight_history": [],
             "location_history": [],
         })
 

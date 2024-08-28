@@ -142,7 +142,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
             data = arduino.readline()
             print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
             if data:
-                result_txt = data.decode().strip()  # strip out the snaps_20240828 lines
+                result_txt = data.decode().strip()  # strip out the old lines
                 print("ARDUINO RESULT: ", result_txt)
                 if "success" in result_txt:
                     return result_txt if return_txt else True
@@ -155,7 +155,7 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
             print("Aborted arduino. Trying to read abort message...")
             data = arduino.readline()
             if data:
-                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the snaps_20240828 lines
+                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the old lines
                 raise KeyboardInterrupt
             time.sleep(1)
 
@@ -324,12 +324,16 @@ class LiquidStation(StationStatus):
         self.place_vial(vial, raise_error=raise_error)
         actual_volume = self.dispense_only(volume)
         vial.leave_station(self, raise_error=raise_error)
+
+        # Update vial contents
+        vial.add_reagent(self, amount=volume, default_unit=VOLUME_UNIT)
+
         return actual_volume
 
     def dispense_mass(self, vial: VialMove, volume, raise_error=True):
         # Pre dispense weighing
-        balance = BalanceStation(StationStatus().get_first_available("balance"))
-        pre_mass = balance.weigh(vial)
+        balance = vial.current_location if "balance" in vial.current_location else BalanceStation(StationStatus().get_first_available("balance"))
+        pre_mass = balance.existing_weight(vial)
 
         # Dispense liquid
         self.dispense(vial=vial, volume=volume, raise_error=raise_error)
@@ -339,6 +343,11 @@ class LiquidStation(StationStatus):
         post_mass = balance.weigh(vial)
 
         final_mass = post_mass - pre_mass
+
+        # Update vial contents
+        vial.add_reagent(self, amount=unit_conversion(final_mass, default_unit=MASS_UNIT),  default_unit=MASS_UNIT)
+        vial.update_weight(post_mass)
+
         return f"{final_mass}g"
 
     def dispense_only(self, volume, perform_dispense=DISPENSE):
@@ -369,7 +378,6 @@ class PipetteStation(StationStatus):
         if PIPETTE:
             arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
             send_arduino_cmd(self.serial_name, arduino_vol)
-            time.sleep(5)  # TODO remove wait once Arduino messaging is better
 
         if vial:
             vial.leave_station(self, raise_error=raise_error)
@@ -414,6 +422,12 @@ class BalanceStation(StationStatus):
         self.empty()
         return success
 
+    def existing_weight(self, vial: VialMove, raise_error=True):
+        if vial.current_weight:
+            print("CURRENT WEIGHT: ", vial.current_weight)
+            return vial.current_weight
+        return self.weigh(vial, raise_error=raise_error)
+
     def weigh(self, vial: VialMove, raise_error=True):
         if self.current_content == vial.id:
             vial.retrieve()
@@ -422,6 +436,7 @@ class BalanceStation(StationStatus):
         mass = self.read_mass()
         time.sleep(1)
         self._retrieve_vial(vial)
+        vial.update_status(mass, "weight")
         return mass
 
     def read_mass(self):
@@ -455,7 +470,7 @@ class BalanceStation(StationStatus):
                 data = balance.readline()
                 print("waiting for {} balance results for {:.1f} seconds...".format(self, time.time() - start_time))
                 if data:
-                    result_txt = data.decode().strip()  # strip out the snaps_20240828 lines
+                    result_txt = data.decode().strip()  # strip out the old lines
                     print("BALANCE RESULT: ", result_txt)
                     balance.close()
                     return result_txt
@@ -911,8 +926,10 @@ if __name__ == "__main__":
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    test_pip.pipette(volume=0.5)  # mL
-    # test_pip.pipette(volume=0)  # mL
+    # test_pip.pipette(volume=0.5)  # mL
+    # test_pip.pipette(volume=0.5)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)
+    test_vial.update_weight(14.0)
+    test_bal.existing_weight(test_vial)
 

@@ -86,7 +86,7 @@ class DispenseLiquid(RoboticsBase):
             if WEIGH_SOLVENTS:
                 solv_station.dispense_mass(self.exp_vial, volume)
             else:
-                solv_station.dispense(self.exp_vial, volume)
+                solv_station.dispense_volume(self.exp_vial, volume)
 
         return FWAction(update_spec=self.updated_specs())
 

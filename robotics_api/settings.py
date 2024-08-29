@@ -19,14 +19,15 @@ PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 WEIGH_SOLVENTS = True
-CALIB_DATE = '2024_06_25'  # '2024_06_20'
-POT_DELAY = 1  # seconds
+CALIB_DATE = '2024_06_25'  # '2024_06_25'  (should be blank for a real run)
+POT_DELAY = 10  # seconds
 
 # ---------  OPERATION SETTING -------------
 RERUN_FIZZLED_ROBOT = True
 FIZZLE_CONCENTRATION_FAILURE = False
 FIZZLE_DIRTY_ELECTRODE = False
 EXIT_ZERO_VOLUME = True
+WAIT_FOR_BALANCE = True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"

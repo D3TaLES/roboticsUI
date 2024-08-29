@@ -248,7 +248,7 @@ class VialMove(VialStatus):
         # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
         success = get_place_vial(target_location, action_type='place',
-                                  raise_error=raise_error, **move_kwargs)
+                                 raise_error=raise_error, **move_kwargs)
         # success += snapshot_move(SNAPSHOT_HOME)
         self.update_position(target_location)
 
@@ -317,26 +317,44 @@ class LiquidStation(StationStatus):
         self.pre_location_snapshot = None
         self.serial_name = "L{:01d}".format(int(self.id.split("_")[-1]))
 
+    @property
+    def solvent_id(self):
+        all_solvents = list(D3Database(database="robotics", collection_name='status_reagents').coll.find())
+        potential_solvents = [s for s in all_solvents if s["location"] == self.id]
+        if len(potential_solvents) > 1:
+            raise ValueError(f"More than one reagents are listed as located at station {self}: {potential_solvents}.")
+        elif len(potential_solvents) < 1:
+            raise ValueError(f"No reagents are listed as located at station {self}.")
+        return potential_solvents[0]["_id"]
+
     def place_vial(self, vial: VialMove, raise_error=True):
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def dispense(self, vial: VialMove, volume, raise_error=True):
+    def dispense_only(self, volume, perform_dispense=DISPENSE):
+        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+        if perform_dispense:
+            send_arduino_cmd(self.serial_name, arduino_vol)
+        return volume
+
+    def _dispense_to_vial(self, vial: VialMove, volume, raise_error=True):
         self.place_vial(vial, raise_error=raise_error)
         actual_volume = self.dispense_only(volume)
         vial.leave_station(self, raise_error=raise_error)
+        return actual_volume
 
-        # Update vial contents
-        vial.add_reagent(self, amount=volume, default_unit=VOLUME_UNIT)
-
+    def dispense_volume(self, vial: VialMove, volume, raise_error=True):
+        actual_volume = self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
+        vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT)
         return actual_volume
 
     def dispense_mass(self, vial: VialMove, volume, raise_error=True):
         # Pre dispense weighing
-        balance = vial.current_location if "balance" in vial.current_location else BalanceStation(StationStatus().get_first_available("balance"))
+        balance = vial.current_location if "balance" in vial.current_location else BalanceStation(
+            StationStatus().get_first_available("balance"))
         pre_mass = balance.existing_weight(vial)
 
         # Dispense liquid
-        self.dispense(vial=vial, volume=volume, raise_error=raise_error)
+        self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
 
         # Post dispense weighing
         balance = BalanceStation(StationStatus().get_first_available("balance"))
@@ -345,16 +363,10 @@ class LiquidStation(StationStatus):
         final_mass = post_mass - pre_mass
 
         # Update vial contents
-        vial.add_reagent(self, amount=unit_conversion(final_mass, default_unit=MASS_UNIT),  default_unit=MASS_UNIT)
+        vial.add_reagent(self.solvent_id, amount=final_mass, default_unit=MASS_UNIT)
         vial.update_weight(post_mass)
 
-        return f"{final_mass}g"
-
-    def dispense_only(self, volume, perform_dispense=DISPENSE):
-        arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
-        if perform_dispense:
-            send_arduino_cmd(self.serial_name, arduino_vol)
-        return volume
+        return f"{final_mass}{MASS_UNIT}"
 
 
 class PipetteStation(StationStatus):
@@ -449,12 +461,15 @@ class BalanceStation(StationStatus):
             raise SystemError(f"Balance reading returned {result_txt}")
 
     def tare(self):
-        response = self._send_command(write_txt="T\n", read_response=True)
-        if "S" in response:
-            print(f"Balance {self} tared.")
-            return True
-        else:
-            raise SystemError(f"Balance reading returned {response}")
+        while True:
+            response = self._send_command(write_txt="T\n", read_response=True)
+            if "S" in response:
+                print(f"Balance {self} tared.")
+                return True
+            elif not WAIT_FOR_BALANCE:
+                raise SystemError(f"Balance reading returned {response}")
+            print(f"WARNING! Balance returned {response}! Trying again...")
+            time.sleep(1)
 
     def _send_command(self, write_txt=None, read_response=False):
         try:
@@ -881,7 +896,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
     vial = VialMove(_id=vial_id)
     solv_stat = LiquidStation(_id=solv_id)
 
-    print("Actual Volume:  ", solv_stat.dispense(vial, volume))
+    print("Actual Volume:  ", solv_stat._dispense_to_vial(vial, volume))
 
     if go_home:
         vial.leave_station(solv_stat)
@@ -889,7 +904,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 
 if __name__ == "__main__":
-    test_vial = VialMove(_id="A_01")
+    test_vial = VialMove(_id="S_01")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
@@ -899,7 +914,7 @@ if __name__ == "__main__":
 
     # RESET TESTING
     # reset_test_db()
-    # reset_stations(end_home=False)
+    # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
     # snapshot_move(target_position=40)
@@ -927,9 +942,10 @@ if __name__ == "__main__":
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_pip.pipette(volume=0.5)  # mL
+    # test_pip.pipette(volume=0)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)
-    test_vial.update_weight(14.0)
-    test_bal.existing_weight(test_vial)
+    # test_vial.update_weight(14.0)
+    # test_bal.existing_weight(test_vial)
+
 

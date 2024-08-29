@@ -147,12 +147,12 @@ SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 LAUNCHPAD = os.path.abspath(
-    '/robotics_api/workflows/fw_management\\config\\launchpad_robot.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\fw_management\\config\\launchpad_robot.yaml')
 INIT_FWORKER = os.path.abspath(
-    '/robotics_api/workflows/fw_management\\config\\fireworker_initialize.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\fw_management\\config\\fireworker_initialize.yaml')
 ROBOT_FWORKER = os.path.abspath(
-    '/robotics_api/workflows/fw_management\\config\\fireworker_robot.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\fw_management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
-    '/robotics_api/workflows/fw_management\\config\\fireworker_process.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\fw_management\\config\\fireworker_process.yaml')
 INSTRUMENT_FWORKER = os.path.abspath(
-    '/robotics_api/workflows/fw_management\\config\\fireworker_instrument.yaml')
+    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\workflows\\fw_management\\config\\fireworker_instrument.yaml')

@@ -1,11 +1,12 @@
 # Workflows for running full experiments
 # Copyright 2024, University of Kentucky
 
-from fireworks import Workflow
 import copy
 from functools import reduce
 from operator import iconcat
+from fireworks import Workflow
 from d3tales_api.Processors.expflow_parser import *
+
 from robotics_api.workflows.Fireworks import *
 from robotics_api.workflows.Firetasks_Actions import *
 
@@ -326,7 +327,7 @@ if __name__ == "__main__":
     # run_ex_processing()
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
     expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
-    # run_expflow_wf(loadfn(expflow_file))
     expflow_exp = loadfn(expflow_file)
     experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
     tc = experiment.task_clusters
+    # run_expflow_wf(expflow_exp)

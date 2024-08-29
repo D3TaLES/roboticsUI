@@ -19,7 +19,7 @@ if __name__ == "__main__":
     try:
         expflow_file = argv[1]
     except IndexError:
-        expflow_file = os.path.join(BASE_DIR, 'fw_management', '../../../../downloaded_wfs/example_expflows', param_tag + 'new_wf_ex.json')
+        expflow_file = os.path.join(BASE_DIR, 'workflows', '../../../../downloaded_wfs/example_expflows', param_tag + 'new_wf_ex.json')
 
     if END_WF_JOB:
         wf = Workflow([EndWorkflowProcess()], name="EndWorkflow")

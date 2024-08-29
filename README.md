@@ -1,8 +1,8 @@
 # RoboticsUI
-This is the repo for robotics user interface. Uses Tkinter.
+This repo contains a user interface for the RiskoRobot at CAER.
 
-## Environment
-### Install
+## Installations
+### Create Environment
 The primary package this repo requires is the [D<sup>3</sup>TaLES API](https://github.com/D3TaLES/d3tales_api). 
 It is recommended that you create an environment to host the required packages. 
 ```bash
@@ -12,7 +12,7 @@ conda install -c conda-forge fireworks
 pip install git+https://github.com/d3tales/d3tales_api.git
 ```
 
-### Activate
+### Activate Environment
 Note that you must set the `DB_INFO_FILE` environment variable as stipulated in the
 [D<sup>3</sup>TaLES API Docs](https://github.com/D3TaLES/d3tales_api).You will also
 need to set the fireworks variable `FW_CONFIG_FILE` and a `PYTHONPATH`. For robotics PC (WINDOWS), 
@@ -25,26 +25,5 @@ $env:DB_INFO_FILE='C:\Users\Lab\D3talesRobotics\roboticsUI\db_infos.json'
 cd C:\Users\Lab\D3talesRobotics\launch_dir
 ```
 
-## Running and Viewing Jobs
-
-To view jobs: 
-```bash
-lpad webgui
-```
-
-To run the test job: 
-```bash
-lpad rerun_fws -i 223 
-rlaunch singleshot
-```
-
-# When you are finished...
-When you are finished, run this job to return the robot to its resting position.  
-```bash
-lpad rerun_fws -i 1 
-rlaunch singleshot
-```
-
-[//]: # (export PYTHONPATH=/mnt/external_drive/D3TaLES/robotics/roboticsUI)
-[//]: # (export FW_CONFIG_FILE=/mnt/external_drive/D3TaLES/robotics/roboticsUI/robotics_api/management/config/FW_config.yaml)
-[//]: # (export DB_INFO_FILE=/mnt/research/D3TaLES/database/db_infos.json)
+## QuickStart
+The robotic workflows are managed via [FireWorks](https://materialsproject.github.io/fireworks/)

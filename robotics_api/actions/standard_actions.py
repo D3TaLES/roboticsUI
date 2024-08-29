@@ -939,7 +939,7 @@ if __name__ == "__main__":
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    # print(test_potent.get_temperature())
+    print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0.5)  # mL
     # test_pip.pipette(volume=0)  # mL

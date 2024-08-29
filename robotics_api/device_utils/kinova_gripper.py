@@ -180,7 +180,7 @@ if __name__ == "__main__":
     import argparse
 
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
-    import robotics_api.actions.kinova_utils as utilities
+    import robotics_api.device_utils.kinova_utils as utilities
 
     # Parse arguments
     parser = argparse.ArgumentParser()

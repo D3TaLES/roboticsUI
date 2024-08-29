@@ -9,8 +9,8 @@ from d3tales_api.D3database.back2front import CV2Front
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 from robotics_api.actions.standard_actions import *
-from robotics_api.actions.processing_utils import *
-from robotics_api.actions.kinova_utils import DeviceConnection
+from robotics_api.device_utils.processing_utils import *
+from robotics_api.device_utils.kinova_utils import DeviceConnection
 
 # Copyright 2024, University of Kentucky
 TESTING = False

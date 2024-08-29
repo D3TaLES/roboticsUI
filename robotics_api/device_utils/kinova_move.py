@@ -7,8 +7,8 @@ from argparse import Namespace
 
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
-from robotics_api.actions import kinova_utils as utilities
-from robotics_api.actions.kinova_gripper import GripperMove
+from robotics_api.device_utils import kinova_utils as utilities
+from robotics_api.device_utils.kinova_gripper import GripperMove
 from d3tales_api.Calculators.utils import dict2obj
 from robotics_api.settings import *
 

@@ -1,10 +1,8 @@
-import time
-
 import pint
 import serial
 from serial.tools.list_ports import comports
 from d3tales_api.Processors.parser_echem import *
-from robotics_api.actions.kinova_move import *
+from robotics_api.device_utils.kinova_move import *
 from robotics_api.actions.db_manipulations import *
 
 
@@ -162,9 +160,9 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
 
 def write_test(file_path, test_type=""):
     test_files = {
-        "cv": os.path.join(ROBOTICS_API, "actions", "standard_data", "CV.txt"),
-        "ca": os.path.join(ROBOTICS_API, "actions", "standard_data", "CA.txt"),
-        "ircomp": os.path.join(ROBOTICS_API, "actions", "standard_data", "iRComp.txt"),
+        "cv": os.path.join(ROBOTICS_API, "actions", "../../test_data/standard_data", "CV.txt"),
+        "ca": os.path.join(ROBOTICS_API, "actions", "../../test_data/standard_data", "CA.txt"),
+        "ircomp": os.path.join(ROBOTICS_API, "actions", "../../test_data/standard_data", "iRComp.txt"),
     }
     test_fn = test_files.get(test_type.lower())
     if os.path.isfile(test_fn):
@@ -733,7 +731,7 @@ class CVPotentiostatStation(PotentiostatStation):
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
-            from potentiostat_kbio import CvExperiment, voltage_step
+            from robotics_api.device_utils.potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,
@@ -904,7 +902,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
 
 
 if __name__ == "__main__":
-    test_vial = VialMove(_id="S_01")
+    test_vial = VialMove(_id="A_02")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
@@ -935,14 +933,15 @@ if __name__ == "__main__":
     # SOLVENT TESTING
     # vol = test_solv.dispense(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(2, vial_id="A_01", solv_id="solvent_04", go_home=False)
+    # flush_solvent(8, vial_id="C_04", solv_id="solvent_02", go_home=False)
+    # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    # print(test_potent.get_temperature())
+    print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    # test_pip.pipette(volume=0.5)  # mL
     # test_pip.pipette(volume=0)  # mL
+    # test_pip.pipette(volume=0.5)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)

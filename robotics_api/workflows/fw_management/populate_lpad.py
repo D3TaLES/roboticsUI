@@ -1,6 +1,6 @@
 from sys import argv
-from robotics_api.workflows.wf_writer import *
-from robotics_api.workflows.Robotics_FW import *
+from robotics_api.workflows.Workflow_Writer import *
+from robotics_api.workflows.Fireworks import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 END_WF_JOB = True  # If True, this script will add a job to end the workflow by moving the robotic arm to home.
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     try:
         expflow_file = argv[1]
     except IndexError:
-        expflow_file = os.path.join(BASE_DIR, 'fw_management', '../../../downloaded_wfs/example_expflows', param_tag + 'new_wf_ex.json')
+        expflow_file = os.path.join(BASE_DIR, 'fw_management', '../../../../downloaded_wfs/example_expflows', param_tag + 'new_wf_ex.json')
 
     if END_WF_JOB:
         wf = Workflow([EndWorkflowProcess()], name="EndWorkflow")

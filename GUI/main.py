@@ -7,7 +7,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfile
 from GUI.app_processing import *
-from robotics_api.workflows.wf_writer import *
+from robotics_api.workflows.Workflow_Writer import *
 
 d3orange = "#FF9004"
 d3blue = "#4590B8"

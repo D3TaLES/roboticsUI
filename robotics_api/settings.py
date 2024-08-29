@@ -12,14 +12,14 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
-STIR = False
+RUN_POTENT = True
+DISPENSE = True
+STIR = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 WEIGH_SOLVENTS = True
-CALIB_DATE = '2024_06_25'  # '2024_06_25'  (should be blank for a real run)
+CALIB_DATE = ''  # '2024_06_25'  (should be blank for a real run)
 POT_DELAY = 10  # seconds
 
 # ---------  OPERATION SETTING -------------
@@ -147,12 +147,12 @@ SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 HOME_DIR = os.path.dirname(os.path.realpath(__file__))
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
 LAUNCHPAD = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\launchpad_robot.yaml')
+    '/robotics_api/workflows/fw_management\\config\\launchpad_robot.yaml')
 INIT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_initialize.yaml')
+    '/robotics_api/workflows/fw_management\\config\\fireworker_initialize.yaml')
 ROBOT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_robot.yaml')
+    '/robotics_api/workflows/fw_management\\config\\fireworker_robot.yaml')
 PROCESS_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_process.yaml')
+    '/robotics_api/workflows/fw_management\\config\\fireworker_process.yaml')
 INSTRUMENT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fw_management\\config\\fireworker_instrument.yaml')
+    '/robotics_api/workflows/fw_management\\config\\fireworker_instrument.yaml')

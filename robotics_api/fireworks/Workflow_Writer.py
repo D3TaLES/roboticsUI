@@ -7,8 +7,8 @@ from operator import iconcat
 from fireworks import Workflow
 from d3tales_api.Processors.expflow_parser import *
 
-from robotics_api.workflows.Fireworks import *
-from robotics_api.workflows.Firetasks_Actions import *
+from robotics_api.fireworks.Fireworks import *
+from robotics_api.fireworks.Firetasks_Actions import *
 
 
 class EF2Experiment(ProcessExpFlowObj):

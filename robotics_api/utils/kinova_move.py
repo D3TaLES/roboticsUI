@@ -7,15 +7,15 @@ from argparse import Namespace
 
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
-from robotics_api.device_utils import kinova_utils as utilities
-from robotics_api.device_utils.kinova_gripper import GripperMove
+from robotics_api.utils import kinova_utils as utilities
+from robotics_api.utils.kinova_gripper import GripperMove
 from d3tales_api.Calculators.utils import dict2obj
 from robotics_api.settings import *
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
 VERBOSE = 1
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
 
 
 # Create closure to set an event after an END or an ABORT
@@ -151,7 +151,7 @@ def move_gripper(target_position=None):
     :return: bool, True if action a success
     """
     # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     finished = True
 
     # Create connection to the device and get the router
@@ -194,7 +194,7 @@ def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
         return True
 
     # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     finished = True
 
     # Create connection to the device and get the router
@@ -273,7 +273,7 @@ def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
 
 def sequence_move(sequence_file):
     # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     finished = True
 
     # Create connection to the device and get the router
@@ -340,7 +340,7 @@ def sequence_move(sequence_file):
 def twist_hand(linear_x=0, linear_y=0, linear_z=0,
                angular_x=0, angular_y=0, angular_z=0):
     # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:

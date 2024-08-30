@@ -179,8 +179,8 @@ if __name__ == "__main__":
     # Import the utilities helper module
     import argparse
 
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../workflows"))
-    import robotics_api.device_utils.kinova_utils as utilities
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
+    import robotics_api.utils.kinova_utils as utilities
 
     # Parse arguments
     parser = argparse.ArgumentParser()

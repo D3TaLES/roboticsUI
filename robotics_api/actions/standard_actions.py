@@ -2,7 +2,7 @@ import pint
 import serial
 from serial.tools.list_ports import comports
 from d3tales_api.Processors.parser_echem import *
-from robotics_api.device_utils.kinova_move import *
+from robotics_api.utils.kinova_move import *
 from robotics_api.actions.db_manipulations import *
 
 
@@ -731,7 +731,7 @@ class CVPotentiostatStation(PotentiostatStation):
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
-            from robotics_api.device_utils.potentiostat_kbio import CvExperiment, voltage_step
+            from robotics_api.utils.potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,

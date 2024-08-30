@@ -3,7 +3,7 @@
 
 # Import necessary modules
 from fireworks import Firework, ScriptTask
-from robotics_api.workflows.Firetasks_Processing import *
+from robotics_api.fireworks.Firetasks_Processing import *
 
 
 class InitializeExperiment(Firework):

@@ -435,7 +435,7 @@ class ReagentStatus(RobotStatusDB):
 
 class ChemStandardsDB(D3Database):
     """
-    Class for accessing the Chem Standards database for robotic workflows 
+    Class for accessing the Chem Standards database for robotic fireworks
     Copyright 2024, University of Kentucky
     """
 

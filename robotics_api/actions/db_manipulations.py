@@ -1,11 +1,10 @@
 import time
 import uuid
-from datetime import datetime
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
-from d3tales_api.Calculators.utils import unit_conversion
-from d3tales_api.D3database.d3database import RobotStatusDB, D3Database
+from robotics_api.utils.processing_utils import unit_conversion
+from robotics_api.utils.mongo_dbs import RobotStatusDB, MongoDatabase
 
 
 class VialStatus(RobotStatusDB):
@@ -433,7 +432,7 @@ class ReagentStatus(RobotStatusDB):
         return CalcExactMolWt(rdkmol)
 
 
-class ChemStandardsDB(D3Database):
+class ChemStandardsDB(MongoDatabase):
     """
     Class for accessing the Chem Standards database for robotic fireworks
     Copyright 2024, University of Kentucky

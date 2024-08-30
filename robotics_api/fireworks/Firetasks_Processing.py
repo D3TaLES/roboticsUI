@@ -8,6 +8,7 @@ from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.back2front import CV2Front
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
+from robotics_api.actions.system_tests import reset_stations
 from robotics_api.actions.standard_actions import *
 from robotics_api.utils.processing_utils import *
 from robotics_api.utils.kinova_utils import DeviceConnection
@@ -171,8 +172,8 @@ class ProcessBase(FiretaskBase):
         # Insert data into database
         _id = p_data["_id"]
         if self.mol_id and insert:
-            D3Database(database="robotics", collection_name="experimentation",
-                       instance=p_data, validate_schema=False).insert(_id)
+            MongoDatabase(database="robotics", collection_name="experimentation",
+                          instance=p_data, validate_schema=False).insert(_id)
         self.processed_locs.append(file_loc)
         return p_data
 
@@ -352,8 +353,8 @@ class DataProcessor(ProcessBase):
                 fn.write(print_ca_analysis(processed_ca_data, verbose=VERBOSE))
 
         metadata_id = str(uuid.uuid4())
-        D3Database(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
-                   validate_schema=False).insert(metadata_id)
+        MongoDatabase(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
+                      validate_schema=False).insert(metadata_id)
         self.processing_data.update({'processed_data': processed_cv_data, "metadata_id": metadata_id,
                                      'processing_ids': [d.get("_id") for d in processed_cv_data],
                                      'processed_locs': self.processed_locs})

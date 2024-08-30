@@ -13,7 +13,7 @@ d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("media/D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
@@ -322,10 +322,10 @@ class PushToDB_Exp(tk.Toplevel):
             p_ids = launch.get("action", {}).get("update_spec", {}).get("processing_ids")
             print(p_ids)
             m_id = launch.get("action", {}).get("update_spec", {}).get("metadata_id")
-            meta_dict = D3Database(database="robotics", collection_name="metadata").coll.find_one({"_id": m_id}).get(
+            meta_dict = MongoDatabase(database="robotics", collection_name="metadata").coll.find_one({"_id": m_id}).get(
                 "metadata")
             for p_id in p_ids:
-                p_data = D3Database(database="robotics", collection_name="experimentation").coll.find_one({"_id": p_id})
+                p_data = MongoDatabase(database="robotics", collection_name="experimentation").coll.find_one({"_id": p_id})
                 BackDB(collection_name="experimentation", instance=p_data)
             CV2Front(id_list=p_ids, metadata_dict=meta_dict, run_processing=False, insert=True)
 

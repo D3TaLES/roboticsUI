@@ -3,7 +3,7 @@ from pathlib import Path
 
 desktop = Path(winshell.desktop())
 miniconda_base = Path(winshell.folder('profile')) / "miniconda3"
-icon = str(Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "GUI" / "media" / "D3TaLES_logo_transparent_robotics.ico")
+icon = str(Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "docs" / "media" / "D3TaLES_logo_transparent_robotics.ico")
 
 link_filepath = str(desktop / "d3tales_robotics.lnk")
 

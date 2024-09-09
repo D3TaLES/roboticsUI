@@ -3,7 +3,7 @@ import uuid
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
-from robotics_api.utils.processing_utils import unit_conversion
+from robotics_api.utils.base_utils import unit_conversion
 from robotics_api.utils.mongo_dbs import RobotStatusDB, MongoDatabase
 
 

@@ -150,7 +150,7 @@ class MeasureDensity(RoboticsBase):
         pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
         # Get initial mass
         initial_mass = bal_station.existing_weight(self.exp_vial)
-        # Dispense solvent
+        # Extract solution
         pipette_station.pipette(volume=volume, vial=self.exp_vial)
         # Get final mass
         final_mass = bal_station.weigh(self.exp_vial)

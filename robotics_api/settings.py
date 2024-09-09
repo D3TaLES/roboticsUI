@@ -11,12 +11,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
-STIR = True
+RUN_POTENT = False
+DISPENSE = False
+STIR = False
 PIPETTE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 WEIGH_SOLVENTS = True
 CALIB_DATE = ''  # '2024_06_25'  (should be blank for a real run)
 POT_DELAY = 10  # seconds

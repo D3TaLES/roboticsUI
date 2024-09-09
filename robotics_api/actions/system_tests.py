@@ -1,9 +1,9 @@
-from serial.tools.list_ports import comports
 from robotics_api.actions.standard_actions import *
 
 
 def check_usb():
     # list connection ports
+    from serial.tools.list_ports import comports
     for port, desc, hw_id in sorted(comports()):
         print("{}: {} [{}]".format(port, desc, hw_id))
 
@@ -87,13 +87,14 @@ if __name__ == "__main__":
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    print(test_potent.get_temperature())
+    # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    # test_pip.pipette(volume=0)  # mL
-    # test_pip.pipette(volume=0.5)  # mL
+    test_pip.pipette(volume=0)  # mL
+    #test_pip.pipette(volume=0.5)  # mL
     # test_stir.perform_stir(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)
+    # check_usb()
 
 

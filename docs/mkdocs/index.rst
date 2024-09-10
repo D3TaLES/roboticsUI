@@ -24,12 +24,15 @@ This repository contains several directories:
 Robotics API
 ============
 
-The RoboticsAPI consists of four modules:
+The RoboticsAPI consists of three modules, each of increasing abstraction:
 
+- ``utils``: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction. 
 - ``actions``: Classes for managing status, position, and content for vials, stations, or standards. These
    data are stored in MongoDB databases.
-- ``fireworks``: Classes and functions for FireWorks Workflows, FireWorks, and FireTasks.
-- ``utils``: Utility functions for robot movements, instrument interactions, processing, database interactions, etc.
+- ``fireworks``: With the highest level of abstraction, this module contains classes and functions for FireWorks Workflows, FireWorks, and FireTasks.
+
+The RoboticsAPI 
+- ``settings.py``: A single file with all adjustable settings for robotics operations. **Always review this file before operating the robotic system!**
 - ``snapshots``: A directory containing Kinova snapshots (JSON files) for positions
   for the robot. Files named ``<station_name>.json`` give the position of the robot where
   the vial sits directly in the station. Files named ``pre_<station_name>.json`` give the position

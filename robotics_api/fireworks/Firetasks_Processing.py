@@ -74,6 +74,7 @@ class ProcessBase(FiretaskBase):
     lpad: LaunchPad
     data_path: str
     processed_locs: list
+    wflow_name: list
 
     def setup_task(self, fw_spec, data_len_error=True):
         self.metadata = fw_spec.get("metadata", {})
@@ -87,6 +88,7 @@ class ProcessBase(FiretaskBase):
         self.soln_density = self.metadata.get("soln_density")
         self.name = fw_spec.get("full_name") or self.get("full_name")
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
+        self.wflow_name = str(fw_spec.get("wflow_name") or self.get("wflow_name"))
 
         self.coll_dict = collection_dict(self.collection_data)
         self.collect_tag = self.metadata.get("collect_tag", f"UnknownCycle")
@@ -162,7 +164,7 @@ class ProcessBase(FiretaskBase):
         file_type = file_loc.split('.')[-1]
         e_ref = ReagentStatus(_id=self.rom_id).formal_potential
         if self.mol_id and e_ref is None:
-            if "Calib" not in self.mol_id:
+            if "calib" not in self.wflow_name.lower():
                 raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
         metadata.update({"instrument": f"robotics_{self.metadata.get('potentiostat')}",
                          "e_ref": e_ref})

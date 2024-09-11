@@ -20,8 +20,10 @@
   * Flush liquid dispensing tubes with 8 mL solution 
   * Set all electrodes
   * Set temperature probe
-  * Set all vials
+  * Set all vials (make sure they are uncapped)
 * Prepare Software
+  * Ensure any necessary calibration workflows have been completed. 
+  * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or desktop app)
   * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run. 
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally 

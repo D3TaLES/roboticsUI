@@ -13,7 +13,7 @@ d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("../docs/media/D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("../docs_src/media/D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 

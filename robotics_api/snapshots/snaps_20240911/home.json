@@ -4,7 +4,7 @@
       {
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10040,
+          "identifier": 10019,
           "permission": 7,
           "actionType": 7
         },
@@ -12,27 +12,27 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 303,
+                "value": 349.597900390625,
                 "jointIdentifier": 0
               },
               {
-                "value": 75,
+                "value": 51.88328170776367,
                 "jointIdentifier": 1
               },
               {
-                "value": 242,
+                "value": 226.94183349609375,
                 "jointIdentifier": 2
               },
               {
-                "value": 0,
+                "value": 3.7881195545196533,
                 "jointIdentifier": 3
               },
               {
-                "value": 106,
+                "value": 95.31611633300781,
                 "jointIdentifier": 4
               },
               {
-                "value": 90,
+                "value": 88.61930847167969,
                 "jointIdentifier": 5
               }
             ]
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "Pre CA Elevator"
+        "name": "Home_angular"
       }
     ]
   }

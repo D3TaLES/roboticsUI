@@ -337,7 +337,7 @@ class BenchmarkCV(RoboticsBase):
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
-        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
+        # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
@@ -374,7 +374,7 @@ class RunCV(RoboticsBase):
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
-        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
+        # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({"cv_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
@@ -411,7 +411,7 @@ class RunCA(RoboticsBase):
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
-        [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
+        # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         temperature = potent.get_temperature() or self.metadata.get("temperature")
         print("RECORDED TEMPERATURE: ", temperature)

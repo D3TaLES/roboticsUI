@@ -11,12 +11,12 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
-STIR = False
+RUN_POTENT = True
+DISPENSE = True
+STIR = True
 PIPETTE = True
 RUN_ROBOT = False
-MOVE_ELEVATORS = False
+MOVE_ELEVATORS = True
 WEIGH_SOLVENTS = True
 CALIB_DATE = ''  # '2024_06_25'  (should be blank for a real run)
 POT_DELAY = 10  # seconds
@@ -110,6 +110,7 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
 }
 FORMAL_POTENTIALS = {  # Formal potentials
     "CC1(C)CCCC(C)(C)N1[O]": "0.30 V",  # TEMPO, V vs. Ag/Ag+
+    "[Cl-].[K+]": "0 V",  # KCl, NOT REAL, just a stand in!
 }
 SOLVENT_DENSITIES = {  # Formal potentials
     "O": "0.997 g/mL",  # H2O

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to the D3TaLES Robotics API documentation! &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to the D<sup>3</sup>TaLES Robotics API documentation!</a></li>
+<li><a class="reference internal" href="#robotics-api">Robotics API</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Welcome to the D<sup>3</sup>TaLES Robotics API documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-the-d3tales-robotics-api-documentation">
+<h1>Welcome to the D<sup>3</sup>TaLES Robotics API documentation!<a class="headerlink" href="#welcome-to-the-d3tales-robotics-api-documentation" title="Permalink to this heading"></a></h1>
+<a class="reference external image-reference" href="D3TaLES_api_logo.png"><img alt="D3TaLES Robotics logo" src="media/D3TalES_logo_transparent_robotics.png" /></a>
+</section>
+<section id="robotics-api">
+<h1>Robotics API<a class="headerlink" href="#robotics-api" title="Permalink to this heading"></a></h1>
+<p>The RoboticsAPI is designed to manage the D<sup>3</sup>TaLES robotics system. It consists of three modules, each of increasing abstraction:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fireworks</span></code>: With the highest level of abstraction, this module contains classes and functions for FireWorks Workflows, FireWorks, and FireTasks.</p></li>
+</ul>
+<p>The RoboticsAPI also contains the following items:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code>: A single file with all adjustable settings for robotics operations. <strong>Always review this file before operating the robotic system!</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">snapshots</span></code>: A directory containing Kinova snapshots (JSON files) for positions
+for the robot. Files named <code class="docutils literal notranslate"><span class="pre">&lt;station_name&gt;.json</span></code> give the position of the robot where
+the vial sits directly in the station. Files named <code class="docutils literal notranslate"><span class="pre">pre_&lt;station_name&gt;.json</span></code> give the position
+the robot should be before/after moving to the station. Note that some snapshots give Cartesian
+coordinates while others give actuator angles.</p></li>
+</ul>
+<img alt="docs/media/robotics_api_scheme.png" src="docs/media/robotics_api_scheme.png" />
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

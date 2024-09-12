@@ -19,8 +19,8 @@ cd $BASE_DIR/_temp
 make clean
 make html
 
+cd $BASE_DIR
 cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
 rm -rf  $BASE_DIR/_temp/
-cd $BASE_DIR
 
 

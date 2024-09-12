@@ -102,7 +102,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="robot-run-checklist">
+  <p>(Robot_Run_Checklist)=</p>
+<section id="robot-run-checklist">
 <h1>Robot Run Checklist<a class="headerlink" href="#robot-run-checklist" title="Link to this heading"></a></h1>
 <section id="before-running-a-workflow">
 <h2>Before Running a Workflow<a class="headerlink" href="#before-running-a-workflow" title="Link to this heading"></a></h2>
@@ -131,7 +132,8 @@ on a day when you run conductivity experiments.</p>
 </li>
 <li><p>Prepare materials:</p>
 <ul class="simple">
-<li><p>Measure and dispense solids</p></li>
+<li><p>Measure and dispense solids into experiment vials</p></li>
+<li><p>Place stir bars in experiment vials.</p></li>
 <li><p>Bubble argon in solvent</p></li>
 <li><p>Fill rinsing vials</p></li>
 </ul>
@@ -154,7 +156,11 @@ on a day when you run conductivity experiments.</p>
 <ul>
 <li><p>Ensure any necessary calibration workflows have been completed.</p></li>
 <li><p>Check your settings in settings.py!</p></li>
-<li><p>Launch Fireworks WebGUI (through command line or desktop app)</p></li>
+<li><p>Launch Fireworks WebGUI (through command line or desktop app)</p>
+<blockquote>
+<div><p>If managing workflows through the command line, be sure to <a class="reference external" href="activate_environment">activate the environment</a> in any new terminal.</p>
+</div></blockquote>
+</li>
 <li><p>Ensure there is <em>only one</em> READY firework: the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework for the workflow you’d like to run.</p>
 <blockquote>
 <div><p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally

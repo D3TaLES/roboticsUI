@@ -3,26 +3,24 @@
 $env:version=0.2
 $env:author='Duke, Rebekah'
 $env:projectname='D<sup>3</sup>TaLES Robotics UI'
-$env:MKDOCS_DIR="C:\Users\Lab\D3talesRobotics\roboticsUI\docs_src"
+$env:BASE_DIR="C:\Users\Lab\D3talesRobotics\roboticsUI"
 
-cd $env:MKDOCS_DIR
-cd ../
-rm -r docs/
-mkdir $env:MKDOCS_DIR/_temp
+cd $env:BASE_DIR
+rm -r docs/ _temp/
+mkdir $env:BASE_DIR/_temp
+mkdir $env:BASE_DIR/docs
 
-sphinx-apidoc -H "$env:projectname" -A "$env:author" -V $env:version --full -o $env:MKDOCS_DIR/_temp ./robotics_api
-cp $env:MKDOCS_DIR/conf.py $env:MKDOCS_DIR/_temp
-cp $env:MKDOCS_DIR/index.rst $env:MKDOCS_DIR/_temp
-cp $env:MKDOCS_DIR/*.md $env:MKDOCS_DIR/_temp
-cp $env:MKDOCS_DIR/*.png $env:MKDOCS_DIR/_temp
+sphinx-apidoc -H "$env:projectname" -A "$env:author" -V $env:version --full -o $env:BASE_DIR/_temp $env:BASE_DIR/robotics_api
+cp $env:BASE_DIR/src/conf.py $env:BASE_DIR/_temp/
+cp $env:BASE_DIR/src/index.rst $env:BASE_DIR/_temp/
+cp $env:BASE_DIR/src/*.md $env:BASE_DIR/_temp/
+cp -r $env:BASE_DIR/src/media $env:BASE_DIR/_temp/
 
-cd $env:MKDOCS_DIR/_temp
+
+cd $env:BASE_DIR/_temp
 make clean
 make html
 
-mkdir docs
-cp -r
-touch _build/html/.nojekyll
-cd $env:MKDOCS_DIR
-
-
+cp -r $env:BASE_DIR/_temp/_build/html/* $env:BASE_DIR/docs
+type nul > $env:BASE_DIR/docs/.nojekyll
+cd $env:BASE_DIR

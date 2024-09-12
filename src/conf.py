@@ -28,7 +28,7 @@ version = __version__
 # The full version, including alpha/beta/rc tags
 release = __version__
 
-html_favicon = "media/D3TaLES_logo_transparent_robotics.ico"
+html_favicon = "_static/D3TaLES_logo_transparent_robotics.ico"
 
 
 

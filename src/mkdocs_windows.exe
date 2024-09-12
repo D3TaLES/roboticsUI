@@ -17,5 +17,10 @@ make clean
 make html
 
 cp -r $env:BASE_DIR/_temp/_build/html/* $env:BASE_DIR/docs
+cp $env:BASE_DIR/src/.nojekyll $env:BASE_DIR/docs
 cd $env:BASE_DIR
 rm -r $env:BASE_DIR/_temp
+
+git add docs/
+git commit -m "Update documentation from GitHub Actions" || echo "No changes to commit"
+git push

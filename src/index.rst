@@ -29,7 +29,7 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>` contains sev
    :caption: Overview
 
    Installation
-   TeminologySetup
+   TerminologySetup
    Quickstart
    RobotRunChecklist
    CommonErrors

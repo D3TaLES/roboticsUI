@@ -1,4 +1,4 @@
-export BASE_DIR="/mnt/e/research/D3TaLES/robotics/roboticsUI"
+export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd $BASE_DIR
 rm -r docs/ _temp/

@@ -35,13 +35,18 @@ The RoboticsAPI also contains the following items:
 
 .. toctree::
    :maxdepth: 1
-   :caption: Robotics API
+   :caption: Modules and More
 
    Settings
    Fireworks
    Actions
    Databases
    Utils and Snapshots
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Detailed Code Docs
+
    robotics_api
 
 

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Actions &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=938c9ccc"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Robotics Databases" href="Databases.html" />
+    <link rel="prev" title="Fireworks" href="Fireworks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Common%20Errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Actions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-level-workflow">High-Level Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#db-manipulations">1. DB Manipulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-components">Core Components:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#standard-actions">2. Standard Actions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Core Components:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage">Example Usage:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#system-tests">3. System Tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Actions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Actions.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="actions">
+<h1>Actions<a class="headerlink" href="#actions" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <code class="docutils literal notranslate"><span class="pre">utils</span></code> and <code class="docutils literal notranslate"><span class="pre">fireworks</span></code> modules.</p>
+<p>The module consists of three files:</p>
+<ol class="simple">
+<li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>
+<li><p><strong>standard_actions.py</strong>: Provides a set of classes for managing the real-time operations (e.g., movement, positioning) of vials and stations.</p></li>
+<li><p><strong>system_tests.py</strong>: Contains several tests for the robotic system software and hardware.</p></li>
+</ol>
+<p>The classes defined in <code class="docutils literal notranslate"><span class="pre">db_manipulations.py</span></code> and <code class="docutils literal notranslate"><span class="pre">standard_actions.py</span></code> work together to manage both the <strong>status and physical handling</strong> of vials and stations, integrating with the robotic systems in use. The MongoDB-based database keeps track of real-time information, ensuring data persistence for vial status, position, and any experimental or standard data tied to those items. Ultimately, it abstracts complex interactions with hardware and databases, allowing higher-level systems and users to focus on overarching goals, such as experiment design and execution, without needing to worry about the underlying mechanics of status updates, position tracking, or data integrity.</p>
+<section id="high-level-workflow">
+<h3>High-Level Workflow<a class="headerlink" href="#high-level-workflow" title="Link to this heading"></a></h3>
+<p>The strength of the actions module lies in how the two components (db_manipulations and standard_actions) work together. While db_manipulations ensures that data is accurately reflected in the database, standard_actions ensures that physical operations are seamlessly executed and tracked. This integration ensures real-time synchronization between the physical world and the database, a critical aspect of robotics and lab automation.</p>
+<ol class="simple">
+<li><p><strong>Database Interaction</strong>:
+Use classes in <code class="docutils literal notranslate"><span class="pre">db_manipulations.py</span></code> to create, update, and retrieve information about vials and stations from the MongoDB database.</p></li>
+<li><p><strong>Physical Manipulation</strong>:
+Use classes in <code class="docutils literal notranslate"><span class="pre">standard_actions.py</span></code> to control the real-time robotic actions, such as moving vials between stations or adjusting their positions within stations.</p></li>
+<li><p><strong>System Testing</strong>:
+The <code class="docutils literal notranslate"><span class="pre">system_tests.py</span></code> file provides a way to validate these actions, ensuring that both the database interactions and the robotic movements are working as expected.</p></li>
+</ol>
+<p>For each vial, station, or standard object, there exists a base class in db_manipulations for interacting with the database and an action class in standard_actions for performing actions. For instance, consider solvent is dispensed into a vial at a liquid dispensing station. The <code class="docutils literal notranslate"><span class="pre">VialMove</span></code> class from standard_actions ensures the vial is located at the desired liquid dispensing station and <code class="docutils literal notranslate"><span class="pre">VialStatus</span></code> from db_manipulations updates the vial contents with the dispensed solvent. At the same time, the standard_actions class <code class="docutils literal notranslate"><span class="pre">LiquidStation</span></code> handles the actual movement, while the db_manipulations base class <code class="docutils literal notranslate"><span class="pre">StationStatus</span></code> updates the MongoDB database with the station’s new position and the db_manipulations base class <code class="docutils literal notranslate"><span class="pre">ReagentStatus</span></code> provides information about the solvent. More information</p>
+<blockquote>
+<div><p><strong>Note</strong>: Database interaction classes from db_manipulations serve as base classes for all standard_action classes, and standard_action methods use the db_manipulation base methods to update databases when needed. As a result, <strong>db_manipulations classes are rarely called independently.</strong> Rather, when methods from standard_action classes are used for actions, the database update methods should be initiated automatically.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="db-manipulations">
+<h2>1. DB Manipulations<a class="headerlink" href="#db-manipulations" title="Link to this heading"></a></h2>
+<section id="purpose">
+<h3>Purpose:<a class="headerlink" href="#purpose" title="Link to this heading"></a></h3>
+<p>This file contains classes that manage the <strong>database interactions</strong> related to vials, stations, and standards. The primary goal is to <strong>store and retrieve vial and station information</strong> about the status and properties of these objects, ensuring data persistence and facilitating operations within the robotics system. The db_manipulations classes are invoked when the system needs to log the status of a new vial or station, update the position of an entity, or retrieve detailed information on a particular standard or item. However, as noted above, db_manipulation classes are rarely called independently because they serve as base classes for the standard_action classes.</p>
+</section>
+<section id="core-components">
+<h3>Core Components:<a class="headerlink" href="#core-components" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>VialStatus</strong>: This class is responsible for accessing the database and managing vial-related data, such as its ID, experiment name, and other metadata. It extends from <code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code>, which provides database access methods tailored for robotic status information.</p></li>
+<li><p><strong>StationStatus</strong>: Similar to <code class="docutils literal notranslate"><span class="pre">VialStatus</span></code>, but focused on the stations where vials are stored or processed. This class also extends <code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code> and helps track information such as which vials are at which station and what actions have been performed on them.</p></li>
+</ul>
+<p>These classes provide the foundational data structures to <strong>store and retrieve vial and station information</strong> from MongoDB. They ensure that when a robotic operation occurs, the system knows the current status and position of vials and stations, allowing for accurate operations.</p>
+</section>
+</section>
+<section id="standard-actions">
+<h2>2. Standard Actions<a class="headerlink" href="#standard-actions" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Purpose:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>This file contains the operational logic to manage the <strong>real-time status and positioning</strong> of vials and stations. It builds on the foundation set by <code class="docutils literal notranslate"><span class="pre">db_manipulations.py</span></code> to execute the robotic operations required to manipulate these objects. These classes abstract away the complexities involved in controlling hardware, tracking vial positions, or updating the status of stations and standards. In practical terms, standard_actions is used whenever the system needs to perform an action on a physical entity such as a vial or station. For example, if a vial needs to be moved to a new position or its contents processed in a station, this file would handle those operations while keeping the database updated with the latest state information.</p>
+</section>
+<section id="id2">
+<h3>Core Components:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>VialMove</strong>: A class designed to handle the physical movement of vials between positions in the robotic system.</p></li>
+<li><p><strong>LiquidStation</strong>: A class designed to handle the status, content, and operation of a liquid dispensing station.</p></li>
+<li><p><strong>BalanceStation</strong>: A class designed to handle the status, content, and operation of a balance station.</p></li>
+<li><p><strong>PotentiostatStation</strong>: A <strong>base</strong> class designed to handle the status, content, and operation of a potentiostat station, including its vial elevator. Usable classes using <code class="docutils literal notranslate"><span class="pre">PotentiostatStation</span></code> as a base include <code class="docutils literal notranslate"><span class="pre">CVPotentiostatStation</span></code> and <code class="docutils literal notranslate"><span class="pre">CAPotentiostatStation</span></code>.</p></li>
+<li><p><strong>Perturbed Snapshot</strong>: A method for adjusting positions based on perturbations, which may be used in calibration or experimental testing.</p></li>
+<li><p>etc.</p></li>
+</ul>
+<p>This module interfaces with the robotics system to <strong>physically manage vial or station operations</strong>, ensuring that robotic movements are tracked and that the current state is accurately reflected in the database.</p>
+<blockquote>
+<div><p><strong>Note</strong>: No standard_action class (or db_manipulations class for that matter) refers to a specific vial or station. When a standard_action class is initiated, the <code class="docutils literal notranslate"><span class="pre">_id</span></code> argument specifies the specific item. For example, <code class="docutils literal notranslate"><span class="pre">LiquidStation</span></code> is a class for handling any liquid dispensing station, while <code class="docutils literal notranslate"><span class="pre">Liquidstation(_id=&quot;solvent_01&quot;)</span></code> handles dispensing station 1.</p>
+</div></blockquote>
+</section>
+<section id="example-usage">
+<h3>Example Usage:<a class="headerlink" href="#example-usage" title="Link to this heading"></a></h3>
+<p>Here’s an example of how <code class="docutils literal notranslate"><span class="pre">VialMove</span></code> could be used to move a vial from one location to another:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">robotics_api.actions.standard_actions</span> <span class="kn">import</span> <span class="n">VialMove</span>
+
+<span class="c1"># Initialize a VialMove object for a specific vial</span>
+<span class="n">test_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="s2">&quot;A_01&quot;</span><span class="p">)</span>
+
+<span class="c1"># Retrieve the vial so it is held by the robotic arm</span>
+<span class="n">test_vial</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
+
+<span class="c1"># Home the vial to its home position</span>
+<span class="n">test_vial</span><span class="o">.</span><span class="n">place_home</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The next example moves the vial <code class="docutils literal notranslate"><span class="pre">A_01</span></code> to potentiostat <code class="docutils literal notranslate"><span class="pre">cv_potentiostat_A_01</span></code> and moves the vial elevator up.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">robotics_api.actions.standard_actions</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Initialize vial and potentiostat objects</span>
+<span class="n">test_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="s2">&quot;A_01&quot;</span><span class="p">)</span>
+<span class="n">test_potent</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="s2">&quot;ca_potentiostat_B_01&quot;</span><span class="p">)</span>  
+
+<span class="c1"># Retrieve the vial and place it at the potentiostat </span>
+<span class="n">test_potent</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">test_vial</span><span class="p">)</span>
+
+<span class="c1"># Move potentiostat elevator up  </span>
+<span class="n">test_potent</span><span class="o">.</span><span class="n">move_elevator</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="system-tests">
+<h2>3. System Tests<a class="headerlink" href="#system-tests" title="Link to this heading"></a></h2>
+<p>Many more example usages can be found in <strong>system_test.py</strong>. Under the <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> portion of the file contains many tests that are commented out. To run one of these tests, simply uncomment that line and run the files by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">system_test.py</span></code> in your terminal while located in the <code class="docutils literal notranslate"><span class="pre">actions</span></code> directory.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Fireworks.html" class="btn btn-neutral float-left" title="Fireworks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Databases.html" class="btn btn-neutral float-right" title="Robotics Databases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

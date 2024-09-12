@@ -21,6 +21,13 @@ make html
 
 cd $BASE_DIR
 cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
+touch $BASE_DIR/docs/.nojekyll
 rm -rf  $BASE_DIR/_temp/
+
+git config --global user.name "github-actions[bot]"
+git config --global user.email "github-actions[bot]@users.noreply.github.com"
+git add docs/
+git commit -m "Update documentation from GitHub Actions" || echo "No changes to commit"
+git push origin reb_dev
 
 

@@ -1,5 +1,5 @@
 
-Welcome to the |D3TaLES| Robotics API documentation!
+Welcome to the D\ :sup:`3`\ TaLES Robotics API documentation!
 ====================================================
 
 .. |D3TaLES| replace:: D\ :sup:`3`\ TaLES

@@ -20,30 +20,29 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
 
 # Create closure to set an event after an END or an ABORT
 def check_for_end_or_abort(e):
-    """Return a closure checking for END or ABORT notifications
+    """
+    Return a closure checking for END or ABORT notifications
 
     Arguments:
-    e -- event to signal when the action is completed
-        (will be set when an END or ABORT occurs)
+        e: event to signal when the action is completed (will be set when an END or ABORT occurs)
+
     """
 
     def check(notification, e=e):
         if VERBOSE > 3:
-            print("EVENT : " + \
-                  Base_pb2.ActionEvent.Name(notification.action_event))
-        if notification.action_event == Base_pb2.ACTION_END \
-                or notification.action_event == Base_pb2.ACTION_ABORT:
+            print("EVENT : " + Base_pb2.ActionEvent.Name(notification.action_event))
+        if notification.action_event == Base_pb2.ACTION_END or notification.action_event == Base_pb2.ACTION_ABORT:
             e.set()
 
     return check
 
 
 def check_for_sequence_end_or_abort(e):
-    """Return a closure checking for END or ABORT notifications on a sequence
+    """
+    Return a closure checking for END or ABORT notifications on a sequence
 
     Arguments:
-    e -- event to signal when the action is completed
-        (will be set when an END or ABORT occurs)
+        e:  event to signal when the action is completed (will be set when an END or ABORT occurs)
     """
 
     def check(notification, e=e):

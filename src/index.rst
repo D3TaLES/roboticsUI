@@ -2,6 +2,7 @@
 Welcome to the |D3TaLES| Robotics API documentation!
 ====================================================
 
+.. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
 
 The RoboticsAPI is designed to manage the D\ :sup:`3`\ TaLES robotics system. It consists of three modules, each of increasing abstraction:
 

@@ -48,19 +48,21 @@ This loop modulates the speed sent to the gripper.
 class GripperMove:
     def __init__(self, router, router_real_time, proportional_gain=2.0, verbose=0):
         """
-            GripperMove class constructor.
+        GripperMove class constructor.
 
-            Inputs:
-                kortex_api.RouterClient router:            TCP router
-                kortex_api.RouterClient router_real_time:  Real-time UDP router
-                float proportional_gain: Proportional gain used in control loop (default value is 2.0)
+        Inputs:
+            kortex_api.RouterClient router:            TCP router
+            kortex_api.RouterClient router_real_time:  Real-time UDP router
+            float proportional_gain: Proportional gain used in control loop (default value is 2.0)
 
-            Outputs:
-                None
-            Notes:
-                - Actuators and gripper initial position are retrieved to set initial positions
-                - Actuator and gripper cyclic command objects are created in constructor. Their
-                  references are used to update position and speed.
+        Outputs:
+            None
+
+        Notes:
+            - Actuators and gripper initial position are retrieved to set initial positions
+            - Actuator and gripper cyclic command objects are created in constructor. Their
+              references are used to update position and speed.
+
         """
 
         self.proportional_gain = proportional_gain
@@ -115,15 +117,8 @@ class GripperMove:
 
     def cleanup(self):
         """
-            Restore arm's servoing mode to the one that
-            was effective before running the example.
-
-            Inputs:
-                None
-            Outputs:
-                None
-            Notes:
-                None
+        Restore arm's servoing mode to the one that
+        was effective before running the example.
 
         """
         # Restore servoing mode to the one that was in use before running the example
@@ -131,19 +126,22 @@ class GripperMove:
 
     def gripper_move(self, target_position):
         """
-            Position gripper to a requested target position using a simple
-            proportional feedback loop which changes speed according to error
-            between target position and current gripper position
+        Position gripper to a requested target position using a simple
+        proportional feedback loop which changes speed according to error
+        between target position and current gripper position
 
-            Inputs:
-                float target_position: position (0% - 100%) to send gripper to.
-            Outputs:
-                Returns True if gripper was positioned successfully, returns False
-                otherwise.
-            Notes:
-                - This function blocks until position is reached.
-                - If target position exceeds 100.0, its value is changed to 100.0.
-                - If target position is below 0.0, its value is set to 0.0.
+        Inputs:
+            float target_position: position (0% - 100%) to send gripper to.
+
+        Outputs:
+            Returns True if gripper was positioned successfully, returns False
+            otherwise.
+
+        Notes:
+            - This function blocks until position is reached.
+            - If target position exceeds 100.0, its value is changed to 100.0.
+            - If target position is below 0.0, its value is set to 0.0.
+
         """
         if target_position > 100.0:
             target_position = 100.0

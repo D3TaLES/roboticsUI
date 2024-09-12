@@ -34,6 +34,7 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
                    release_vial=True, raise_error=True, go=True, leave=True):
     """
     Function that executes an action getting or placing
+
     Args:
         snapshot_file: str, path to snapshot file
         action_type: str, 'get' if the action is getting a vail, 'place' if action is placing the vial
@@ -44,7 +45,9 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
         raise_error: bool,
         go: bool, go to snapshot file location if True
         leave: bool, leave from snapshot file location if True
+
     Returns: bool, success of action
+
     """
     snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
@@ -506,6 +509,7 @@ class StirStation(StationStatus):
     def stir(self, stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
         """
         Operate CV elevator
+
         Args:
             stir_time: int, time (seconds) for stir plate to be on
             stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be
@@ -514,6 +518,7 @@ class StirStation(StationStatus):
             move_sleep: float, time (seconds) for robot to sleep between stirring moves
 
         Returns: bool, True if stir action was a success
+
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5

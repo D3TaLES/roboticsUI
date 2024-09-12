@@ -49,6 +49,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
@@ -121,6 +122,7 @@
 <span class="sd">        metadata (dict): Metadata related to the experiment.</span>
 <span class="sd">        fw_specs (dict): Specifications for the Firework.</span>
 <span class="sd">        workflow (list): List of tasks in the experiment workflow.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EF2Experiment.__init__"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expflow_obj</span><span class="p">,</span> <span class="n">source_group</span><span class="p">,</span> <span class="n">fw_parents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exp_name</span><span class="o">=</span><span class="s1">&#39;exp&#39;</span><span class="p">,</span>
@@ -364,6 +366,7 @@
 <div class="viewcode-block" id="run_expflow_wf"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.run_expflow_wf">[docs]</a><span class="k">def</span> <span class="nf">run_expflow_wf</span><span class="p">(</span><span class="n">expflow_wf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>  <span class="n">name_tag</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">exp_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        expflow_wf (dict): experiment dictionary from an ExpFlow instance</span>
 <span class="sd">        name_tag (str): name tag for workflow</span>

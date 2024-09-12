@@ -52,6 +52,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
@@ -136,9 +137,10 @@
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -148,9 +150,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -167,9 +168,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -179,9 +181,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -198,9 +199,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -210,9 +212,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -229,9 +230,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -241,9 +243,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -260,9 +261,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -272,9 +274,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -291,9 +292,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -303,9 +305,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -322,9 +323,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -334,9 +336,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -353,9 +354,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -365,9 +367,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -384,9 +385,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -396,9 +398,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -415,9 +416,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -427,9 +429,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -522,9 +523,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -534,9 +536,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -553,9 +554,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -565,9 +567,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -611,9 +612,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -623,9 +625,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -642,9 +643,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -654,9 +656,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -673,9 +674,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -685,9 +687,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -707,9 +708,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -719,9 +721,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -738,9 +739,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -750,9 +752,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -769,9 +770,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -781,9 +783,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -800,9 +801,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -812,9 +814,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -952,9 +953,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -964,9 +966,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -983,9 +984,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -995,9 +997,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1014,9 +1015,10 @@ these multiple resources.</p>
 <dd><p>This method gets called when the Firetask is run. It can take in a
 Firework spec, perform some task using that data, and then return an
 output in the form of a FWAction.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>fw_spec (dict): A Firework spec. This comes from the master spec.</dt><dd><p>In addition, this spec contains a special “_fw_env” key that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fw_spec</strong> (<em>dict</em>) – A Firework spec. This comes from the master spec.
+In addition, this spec contains a special “_fw_env” key that
 contains the env settings of the FWorker calling this method.
 This provides for abstracting out certain commands or
 settings. For example, “foo” may be named “foo1” in resource
@@ -1026,9 +1028,8 @@ relevant “foo1” or “foo2”. You can then write a task that
 uses fw_spec[“_fw_env”][“foo”] that will work across all
 these multiple resources.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>(FWAction)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(FWAction)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1043,29 +1044,35 @@ these multiple resources.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">AnalysisFirework</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#AnalysisFirework"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.AnalysisFirework" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework related to analysis tasks.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>f_tasks (list): List of tasks for the Firework.
-name (str): Name of the Firework.
-wflow_name (str): Name of the workflow.
-priority (int): Priority of the Firework.
-parents (list): List of parent Fireworks.
-fw_specs (dict): Specifications for the Firework.
-<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_tasks</strong> (<em>list</em>) – List of tasks for the Firework.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Firework.</p></li>
+<li><p><strong>wflow_name</strong> (<em>str</em>) – Name of the workflow.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority of the Firework.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>fw_specs</strong> (<em>dict</em>) – Specifications for the Firework.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.AnalysisFirework.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#AnalysisFirework.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.AnalysisFirework.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1077,29 +1084,35 @@ updated_on (datetime): last time the STATE was updated.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">CVProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cv_process'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#CVProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.CVProcessing" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework for CV processing.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>f_tasks (list): List of tasks for the Firework.
-name (str): Name of the Firework.
-mol_id: Identifier for the molecule.
-priority (int): Priority of the Firework.
-parents (list): List of parent Fireworks.
-fw_specs (dict): Specifications for the Firework.
-<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_tasks</strong> (<em>list</em>) – List of tasks for the Firework.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Firework.</p></li>
+<li><p><strong>mol_id</strong> – Identifier for the molecule.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority of the Firework.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>fw_specs</strong> (<em>dict</em>) – Specifications for the Firework.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.CVProcessing.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cv_process'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#CVProcessing.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.CVProcessing.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1111,25 +1124,31 @@ updated_on (datetime): last time the STATE was updated.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">EndWorkflowProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#EndWorkflowProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.EndWorkflowProcess" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework responsible for ending an experimental workflow.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>name (str): Name of the Firework.
-parents (list): List of parent Fireworks.
-<a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Firework.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.EndWorkflowProcess.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#EndWorkflowProcess.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.EndWorkflowProcess.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1141,26 +1160,32 @@ updated_on (datetime): last time the STATE was updated.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">InitializeExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#InitializeExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.InitializeExperiment" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework responsible for initializing an experiment workflow.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>wflow_name (str): Name of the workflow.
-parents (list): List of parent Fireworks.
-fw_specs (dict): Specifications for the Firework.
-<a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wflow_name</strong> (<em>str</em>) – Name of the workflow.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>fw_specs</strong> (<em>dict</em>) – Specifications for the Firework.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.InitializeExperiment.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#InitializeExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.InitializeExperiment.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1172,30 +1197,36 @@ updated_on (datetime): last time the STATE was updated.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">InstrumentPrepFirework</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#InstrumentPrepFirework"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.InstrumentPrepFirework" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework related to instrument preparation tasks.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>f_tasks (list): List of tasks for the Firework.
-analysis (str): Analysis type.
-name (str): Name of the Firework.
-wflow_name (str): Name of the workflow.
-priority (int): Priority of the Firework.
-parents (list): List of parent Fireworks.
-fw_specs (dict): Specifications for the Firework.
-<a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_tasks</strong> (<em>list</em>) – List of tasks for the Firework.</p></li>
+<li><p><strong>analysis</strong> (<em>str</em>) – Analysis type.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Firework.</p></li>
+<li><p><strong>wflow_name</strong> (<em>str</em>) – Name of the workflow.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority of the Firework.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>fw_specs</strong> (<em>dict</em>) – Specifications for the Firework.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.InstrumentPrepFirework.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#InstrumentPrepFirework.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.InstrumentPrepFirework.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1207,29 +1238,35 @@ updated_on (datetime): last time the STATE was updated.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Fireworks.</span></span><span class="sig-name descname"><span class="pre">RobotFirework</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#RobotFirework"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.RobotFirework" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Firework</span></code></p>
 <p>Represents a Firework related to robotics tasks.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>f_tasks (list): List of tasks for the Firework.
-name (str): Name of the Firework.
-wflow_name (str): Name of the workflow.
-priority (int): Priority of the Firework.
-parents (list): List of parent Fireworks.
-fw_specs (dict): Specifications for the Firework.
-<a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_tasks</strong> (<em>list</em>) – List of tasks for the Firework.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Firework.</p></li>
+<li><p><strong>wflow_name</strong> (<em>str</em>) – Name of the workflow.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority of the Firework.</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>fw_specs</strong> (<em>dict</em>) – Specifications for the Firework.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Fireworks.RobotFirework.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Fireworks.html#RobotFirework.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Fireworks.RobotFirework.__init__" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Args:</dt><dd><p>tasks (Firetask or [Firetask]): a list of Firetasks to run in sequence.
-spec (dict): specification of the job to run. Used by the Firetask.
-launches ([Launch]): a list of Launch objects of this Firework.
-archived_launches ([Launch]): a list of archived Launch objects of this Firework.
-state (str): the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)
-created_on (datetime): time of creation
-fw_id (int): an identification number for this Firework.
-parents (Firework or [Firework]): list of parent FWs this FW depends on.
-updated_on (datetime): last time the STATE was updated.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>Firetask</em><em> or </em><em>[</em><em>Firetask</em><em>]</em>) – a list of Firetasks to run in sequence.</p></li>
+<li><p><strong>spec</strong> (<em>dict</em>) – specification of the job to run. Used by the Firetask.</p></li>
+<li><p><strong>launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of Launch objects of this Firework.</p></li>
+<li><p><strong>archived_launches</strong> (<em>[</em><em>Launch</em><em>]</em>) – a list of archived Launch objects of this Firework.</p></li>
+<li><p><strong>state</strong> (<em>str</em>) – the state of the FW (e.g. WAITING, RUNNING, COMPLETED, ARCHIVED)</p></li>
+<li><p><strong>created_on</strong> (<em>datetime</em>) – time of creation</p></li>
+<li><p><strong>fw_id</strong> (<em>int</em>) – an identification number for this Firework.</p></li>
+<li><p><strong>parents</strong> (<em>Firework</em><em> or </em><em>[</em><em>Firework</em><em>]</em>) – list of parent FWs this FW depends on.</p></li>
+<li><p><strong>updated_on</strong> (<em>datetime</em>) – last time the STATE was updated.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1245,28 +1282,130 @@ updated_on (datetime): last time the STATE was updated.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessExpFlowObj</span></code></p>
 <p>Class for converting an ExpFlow robotics workflow into a Fireworks Workflow that
 can be run on the robotic setup.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>expflow_obj: The ExpFlow object (often parsed from a JSON).
-source_group (str): Source group for the experiment.
-fw_parents (list): List of parent Fireworks.
-priority (int): Priority of the Firework.
-data_type (str): Type of experiment data.
-exp_name (str): Name of the experiment.
-wflow_name (str): Name of the workflow.
-<a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs: Additional keyword arguments.</p>
-</dd>
-<dt>Attributes:</dt><dd><p>fw_parents (list): List of parent Fireworks.
-priority (int): Priority of the Firework.
-full_name (str): Full name of the experiment.
-wflow_name (str): Name of the workflow.
-rom_id (str): Redox molecule ID.
-rom_name (str): Redox molecule name.
-solv_id (str): Solvent ID.
-metadata (dict): Metadata related to the experiment.
-fw_specs (dict): Specifications for the Firework.
-workflow (list): List of tasks in the experiment workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expflow_obj</strong> – The ExpFlow object (often parsed from a JSON).</p></li>
+<li><p><strong>source_group</strong> (<em>str</em>) – Source group for the experiment.</p></li>
+<li><p><strong>fw_parents</strong> (<em>list</em>) – List of parent Fireworks.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority of the Firework.</p></li>
+<li><p><strong>data_type</strong> (<em>str</em>) – Type of experiment data.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em>) – Name of the experiment.</p></li>
+<li><p><strong>wflow_name</strong> (<em>str</em>) – Name of the workflow.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_parents">
+<span class="sig-name descname"><span class="pre">fw_parents</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_parents" title="Permalink to this definition"></a></dt>
+<dd><p>List of parent Fireworks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.priority" title="Permalink to this definition"></a></dt>
+<dd><p>Priority of the Firework.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.full_name">
+<span class="sig-name descname"><span class="pre">full_name</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Full name of the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.wflow_name">
+<span class="sig-name descname"><span class="pre">wflow_name</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.wflow_name" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_id">
+<span class="sig-name descname"><span class="pre">rom_id</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_id" title="Permalink to this definition"></a></dt>
+<dd><p>Redox molecule ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_name">
+<span class="sig-name descname"><span class="pre">rom_name</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_name" title="Permalink to this definition"></a></dt>
+<dd><p>Redox molecule name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.solv_id">
+<span class="sig-name descname"><span class="pre">solv_id</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.solv_id" title="Permalink to this definition"></a></dt>
+<dd><p>Solvent ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata related to the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_specs">
+<span class="sig-name descname"><span class="pre">fw_specs</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_specs" title="Permalink to this definition"></a></dt>
+<dd><p>Specifications for the Firework.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.workflow">
+<span class="sig-name descname"><span class="pre">workflow</span></span><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.workflow" title="Permalink to this definition"></a></dt>
+<dd><p>List of tasks in the experiment workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.EF2Experiment.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expflow_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'exp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'robotic_wflow'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Workflow_Writer.html#EF2Experiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.EF2Experiment.__init__" title="Permalink to this definition"></a></dt>
@@ -1342,28 +1481,30 @@ workflow (list): List of tasks in the experiment workflow.</p>
 <span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Workflow_Writer.</span></span><span class="sig-name descname"><span class="pre">run_ex_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecule_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'test'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Workflow_Writer.html#run_ex_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.run_ex_processing" title="Permalink to this definition"></a></dt>
 <dd><p>FOR TESTING ONLY
 Establishes Fireworks workflow for running an example basic CV processing job.
-Args:</p>
-<blockquote>
-<div><p>cv_dir (str): path the directory containing experimental CV files
-molecule_id (str): D3TaLES ID for redox active molecule
-name_tag (str): tame tag for workflow
-<a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: Additional keyword arguments.</p>
-</div></blockquote>
+:param cv_dir: path the directory containing experimental CV files
+:type cv_dir: str
+:param molecule_id: D3TaLES ID for redox active molecule
+:type molecule_id: str
+:param name_tag: tame tag for workflow
+:type name_tag: str
+:param **kwargs: Additional keyword arguments.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.fireworks.Workflow_Writer.run_expflow_wf">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.fireworks.Workflow_Writer.</span></span><span class="sig-name descname"><span class="pre">run_expflow_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expflow_wf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/fireworks/Workflow_Writer.html#run_expflow_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.fireworks.Workflow_Writer.run_expflow_wf" title="Permalink to this definition"></a></dt>
-<dd><p>Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules
-Args:</p>
-<blockquote>
-<div><p>expflow_wf (dict): experiment dictionary from an ExpFlow instance
-name_tag (str): name tag for workflow
-exp_params (dict): experimental parameters that will be passed to the Fireworks specs
-<a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs: Additional keyword arguments.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>Fireworks Workflow object</p>
+<dd><p>Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expflow_wf</strong> (<em>dict</em>) – experiment dictionary from an ExpFlow instance</p></li>
+<li><p><strong>name_tag</strong> (<em>str</em>) – name tag for workflow</p></li>
+<li><p><strong>exp_params</strong> (<em>dict</em>) – experimental parameters that will be passed to the Fireworks specs</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Fireworks Workflow object</p>
 </dd>
 </dl>
 </dd></dl>

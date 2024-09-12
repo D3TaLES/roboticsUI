@@ -52,6 +52,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
@@ -121,11 +122,14 @@ Copyright 2024, University of Kentucky</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standards_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ChemStandardsDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>standards_type (str): The type of chemistry standard.
-_id (str, optional): The ID of the standard. Defaults to None.
-instance (dict, optional): The instance to insert or validate. Defaults to None.
-override_lists (bool, optional): Whether to override existing lists. Defaults to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>standards_type</strong> (<em>str</em>) – The type of chemistry standard.</p></li>
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID of the standard. Defaults to None.</p></li>
+<li><p><strong>instance</strong> (<em>dict</em><em>, </em><em>optional</em>) – The instance to insert or validate. Defaults to None.</p></li>
+<li><p><strong>override_lists</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to override existing lists. Defaults to True.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -134,8 +138,12 @@ override_lists (bool, optional): Whether to override existing lists. Defaults to
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.exists">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.exists" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the standard exists in the database.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>bool: True if the standard exists, False otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the standard exists, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -144,10 +152,15 @@ override_lists (bool, optional): Whether to override existing lists. Defaults to
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.get_prop">
 <span class="sig-name descname"><span class="pre">get_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ChemStandardsDB.get_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.get_prop" title="Permalink to this definition"></a></dt>
 <dd><p>Get a property of the standard from the database.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>prop (str): The property to retrieve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>str</em>) – The property to retrieve.</p>
 </dd>
-<dt>Returns:</dt><dd><p>Any: The value of the property.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value of the property.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
 </dd>
 </dl>
 </dd></dl>
@@ -164,10 +177,13 @@ Copyright 2024, University of Kentucky</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ReagentStatus.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ReagentStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ReagentStatus.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>r_name (str, optional): The name of the reagent. Defaults to None.
-r_smiles (str, optional): The SMILES representation of the reagent. Defaults to None.
-<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the reagent. Defaults to None.</p></li>
+<li><p><strong>r_smiles</strong> (<em>str</em><em>, </em><em>optional</em>) – The SMILES representation of the reagent. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -176,8 +192,12 @@ r_smiles (str, optional): The SMILES representation of the reagent. Defaults to 
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ReagentStatus.molecular_weight">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">molecular_weight</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.ReagentStatus.molecular_weight" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the molecular weight of the reagent.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>float: The molecular weight of the reagent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The molecular weight of the reagent.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -194,10 +214,13 @@ Copyright 2024, University of Kentucky</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -206,8 +229,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.available">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.available" title="Permalink to this definition"></a></dt>
 <dd><p>Get the availability status.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>bool: The availability status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The availability status.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,8 +243,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.content_history">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.content_history" title="Permalink to this definition"></a></dt>
 <dd><p>Get the content history.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>list: The content history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The content history.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -226,8 +257,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.current_content">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_content</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.current_content" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current content.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: The current content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current content.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -242,11 +277,18 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.get_all_available">
 <span class="sig-name descname"><span class="pre">get_all_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_all_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_all_available" title="Permalink to this definition"></a></dt>
 <dd><p>Get all available stations with a specified name string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>name_str (str): The name string to search for.
-exp_name (str, optional): The experiment name. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_str</strong> (<em>str</em>) – The name string to search for.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>list: List of available station IDs.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of available station IDs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -255,14 +297,21 @@ exp_name (str, optional): The experiment name. Defaults to None.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.get_first_available">
 <span class="sig-name descname"><span class="pre">get_first_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_first_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_first_available" title="Permalink to this definition"></a></dt>
 <dd><p>Get the first available station with a specified name string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>name_str (str): The name string to search for.
-wait (bool, optional): Whether to wait for an available station. Defaults to True.
-max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
-wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.
-<a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_str</strong> (<em>str</em>) – The name string to search for.</p></li>
+<li><p><strong>wait</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to wait for an available station. Defaults to True.</p></li>
+<li><p><strong>max_time</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</p></li>
+<li><p><strong>wait_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval between wait checks in seconds. Defaults to 2.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>str: The ID of the first available station.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The ID of the first available station.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -271,9 +320,12 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -282,8 +334,12 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.state">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.state" title="Permalink to this definition"></a></dt>
 <dd><p>Get the state.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: The state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The state.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -292,10 +348,15 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_available">
 <span class="sig-name descname"><span class="pre">update_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_available" title="Permalink to this definition"></a></dt>
 <dd><p>Update the availability status.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>value (bool): The new availability status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em>) – The new availability status.</p>
 </dd>
-<dt>Returns:</dt><dd><p>prop: The updated availability status.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated availability status.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>prop</p>
 </dd>
 </dl>
 </dd></dl>
@@ -304,8 +365,9 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_content">
 <span class="sig-name descname"><span class="pre">update_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_content" title="Permalink to this definition"></a></dt>
 <dd><p>Update the station content.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>new_content: The new content in the station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_content</strong> – The new content in the station.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -314,8 +376,9 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_state">
 <span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_state" title="Permalink to this definition"></a></dt>
 <dd><p>Update the station state.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>new_state (str): The new state for the station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_state</strong> (<em>str</em>) – The new state for the station.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -324,11 +387,18 @@ wait_interval (int, optional): The interval between wait checks in seconds. Defa
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.wait_till_available">
 <span class="sig-name descname"><span class="pre">wait_till_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.wait_till_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.wait_till_available" title="Permalink to this definition"></a></dt>
 <dd><p>Wait until the station is available.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
-wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_time</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</p></li>
+<li><p><strong>wait_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval between wait checks in seconds. Defaults to 2.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>bool: True if the station becomes available, False otherwise.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the station becomes available, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -345,10 +415,13 @@ Copyright 2024, University of Kentucky</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-exp_name (str, optional): The experiment name. Defaults to None.
-<a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -357,12 +430,16 @@ exp_name (str, optional): The experiment name. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.add_reagent">
 <span class="sig-name descname"><span class="pre">add_reagent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.add_reagent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.add_reagent" title="Permalink to this definition"></a></dt>
 <dd><p>Add a reagent to the vial content.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>reagent (str or obj): The reagent ID or instance.
-amount (str or float or dict): The amount of the reagent.
-default_unit (str): The default unit for the reagent amount.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagent</strong> (<em>str</em><em> or </em><em>obj</em>) – The reagent ID or instance.</p></li>
+<li><p><strong>amount</strong> (<em>str</em><em> or </em><em>float</em><em> or </em><em>dict</em>) – The amount of the reagent.</p></li>
+<li><p><strong>default_unit</strong> (<em>str</em>) – The default unit for the reagent amount.</p></li>
+</ul>
 </dd>
-<dt>Raises:</dt><dd><p>NameError: If the reagent does not exist in the reagent database.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NameError</strong> – If the reagent does not exist in the reagent database.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -377,8 +454,12 @@ default_unit (str): The default unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_location">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_location</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_location" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current location.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: The current location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current location.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -387,8 +468,12 @@ default_unit (str): The default unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_station">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_station</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_station" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current station.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>StationStatus: The current station status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current station status.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#robotics_api.actions.db_manipulations.StationStatus" title="robotics_api.actions.db_manipulations.StationStatus">StationStatus</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -397,8 +482,12 @@ default_unit (str): The default unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_weight">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_weight</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_weight" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current weight.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: The current weight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current weight.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -407,11 +496,15 @@ default_unit (str): The default unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.extract_soln">
 <span class="sig-name descname"><span class="pre">extract_soln</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_mass_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.extract_soln"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.extract_soln" title="Permalink to this definition"></a></dt>
 <dd><p>Add a reagent to the vial content.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>extracted_mass (str or obj): Mass extracted from solution
-default_mass_unit (str): The default mass unit for the reagent amount.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extracted_mass</strong> (<em>str</em><em> or </em><em>obj</em>) – Mass extracted from solution</p></li>
+<li><p><strong>default_mass_unit</strong> (<em>str</em>) – The default mass unit for the reagent amount.</p></li>
+</ul>
 </dd>
-<dt>Raises:</dt><dd><p>NameError: If the reagent does not exist in the reagent database.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NameError</strong> – If the reagent does not exist in the reagent database.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -420,8 +513,12 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.location_history">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">location_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.location_history" title="Permalink to this definition"></a></dt>
 <dd><p>Get the location history.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>list: The location history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The location history.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -430,8 +527,9 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_location">
 <span class="sig-name descname"><span class="pre">update_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_location" title="Permalink to this definition"></a></dt>
 <dd><p>Update the vial location or station vial status.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>new_location (str): The new vial location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_location</strong> (<em>str</em>) – The new vial location.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -440,8 +538,9 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_vial_content">
 <span class="sig-name descname"><span class="pre">update_vial_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_vial_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_vial_content" title="Permalink to this definition"></a></dt>
 <dd><p>Update the vial content.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>new_content (dict): The new vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_content</strong> (<em>dict</em>) – The new vial content.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -450,8 +549,9 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_weight">
 <span class="sig-name descname"><span class="pre">update_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_weight" title="Permalink to this definition"></a></dt>
 <dd><p>Update the vial location or station vial status.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>new_weight (str): weight</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_weight</strong> (<em>str</em>) – weight</p>
 </dd>
 </dl>
 </dd></dl>
@@ -460,8 +560,12 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.vial_content">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vial_content</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.vial_content" title="Permalink to this definition"></a></dt>
 <dd><p>Get the vial content.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>list: The vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The vial content.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -472,11 +576,18 @@ default_mass_unit (str): The default mass unit for the reagent amount.</p>
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.check_duplicates">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">check_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exemptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#check_duplicates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.check_duplicates" title="Permalink to this definition"></a></dt>
 <dd><p>Check for duplicates in a list, excluding specified exemptions.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>test_list (list): The list to check for duplicates.
-exemptions (list, optional): Items to exclude from duplicate checking. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>test_list</strong> (<em>list</em>) – The list to check for duplicates.</p></li>
+<li><p><strong>exemptions</strong> (<em>list</em><em>, </em><em>optional</em>) – Items to exclude from duplicate checking. Defaults to None.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>str: A comma-separated string of duplicate items, or None if no duplicates are found.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A comma-separated string of duplicate items, or None if no duplicates are found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -485,10 +596,13 @@ exemptions (list, optional): Items to exclude from duplicate checking. Defaults 
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_reagent_db">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_reagent_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_densities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC#N':</span> <span class="pre">'0.786</span> <span class="pre">g/mL',</span> <span class="pre">'O':</span> <span class="pre">'0.997</span> <span class="pre">g/mL'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentials_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC1(C)CCCC(C)(C)N1[O]':</span> <span class="pre">'0.30</span> <span class="pre">V',</span> <span class="pre">'[Cl-].[K+]':</span> <span class="pre">'0</span> <span class="pre">V'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_reagent_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_reagent_db" title="Permalink to this definition"></a></dt>
 <dd><p>Reset the reagent database with the provided list of reagents.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>reagents_list (list): List of dictionaries representing reagents.
-current_wflow_name (str, optional): Name of the current workflow. Defaults to “”.
-solvent_densities (dict, optional): Dictionary with solvent SMILES and densities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagents_list</strong> (<em>list</em>) – List of dictionaries representing reagents.</p></li>
+<li><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p></li>
+<li><p><strong>solvent_densities</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary with solvent SMILES and densities</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -497,8 +611,9 @@ solvent_densities (dict, optional): Dictionary with solvent SMILES and densities
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_station_db">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_station_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_station_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_station_db" title="Permalink to this definition"></a></dt>
 <dd><p>Reset the station database.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>current_wflow_name (str, optional): Name of the current workflow. Defaults to “”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -513,9 +628,12 @@ solvent_densities (dict, optional): Dictionary with solvent SMILES and densities
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_vial_db">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_vial_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_locs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_vial_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_vial_db" title="Permalink to this definition"></a></dt>
 <dd><p>Reset the vial database with the provided experiment locations.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>experiment_locs (dict): Dictionary mapping vial IDs to experiment names.
-current_wflow_name (str, optional): Name of the current workflow. Defaults to “”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment_locs</strong> (<em>dict</em>) – Dictionary mapping vial IDs to experiment names.</p></li>
+<li><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -536,10 +654,13 @@ current_wflow_name (str, optional): Name of the current workflow. Defaults to �
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.BalanceStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#BalanceStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.BalanceStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -553,9 +674,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.BalanceStation.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#robotics_api.actions.standard_actions.VialMove" title="robotics_api.actions.standard_actions.VialMove"><span class="pre">VialMove</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">move_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#BalanceStation.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.BalanceStation.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -585,10 +709,13 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.CAPotentiostatStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.028</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#CAPotentiostatStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.CAPotentiostatStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -597,18 +724,15 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.CAPotentiostatStation.run_ca">
 <span class="sig-name descname"><span class="pre">run_ca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volt_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volt_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#CAPotentiostatStation.run_ca"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.CAPotentiostatStation.run_ca" title="Permalink to this definition"></a></dt>
 <dd><p>Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
-Args:</p>
-<blockquote>
-<div><p>data_path: str, output data file path
-voltage_sequence: str, comma-seperated list of voltage points
-si: float, sample interval (sec)
-pw: float, pulse width (sec)
-sens: float, current sensitivity (A/V)
-steps: float, number of steps
-volt_min: float, minimum acceptable voltage for CA experiment
-volt_max: float, maximum acceptable voltage for CA experiment
-run_delay: float, time to wait before running CA experiment (s)</p>
-</div></blockquote>
+:param data_path: str, output data file path
+:param voltage_sequence: str, comma-seperated list of voltage points
+:param si: float, sample interval (sec)
+:param pw: float, pulse width (sec)
+:param sens: float, current sensitivity (A/V)
+:param steps: float, number of steps
+:param volt_min: float, minimum acceptable voltage for CA experiment
+:param volt_max: float, maximum acceptable voltage for CA experiment
+:param run_delay: float, time to wait before running CA experiment (s)</p>
 <p>Returns: bool, success</p>
 </dd></dl>
 
@@ -622,10 +746,13 @@ run_delay: float, time to wait before running CA experiment (s)</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.CVPotentiostatStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.028</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#CVPotentiostatStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.CVPotentiostatStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -634,15 +761,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.CVPotentiostatStation.run_cv">
 <span class="sig-name descname"><span class="pre">run_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#CVPotentiostatStation.run_cv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.CVPotentiostatStation.run_cv" title="Permalink to this definition"></a></dt>
 <dd><p>Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
-Args:</p>
-<blockquote>
-<div><p>data_path: str, output data file path
-voltage_sequence: str, comma-seperated list of voltage points
-scan_rate: str, scan rate
-resistance: float, solution resistance for iR compensation (A)
-sample_interval: float, potential increment (V)
-sens: float, current sensitivity (A/V)</p>
-</div></blockquote>
+:param data_path: str, output data file path
+:param voltage_sequence: str, comma-seperated list of voltage points
+:param scan_rate: str, scan rate
+:param resistance: float, solution resistance for iR compensation (A)
+:param sample_interval: float, potential increment (V)
+:param sens: float, current sensitivity (A/V)</p>
 <p>Returns: bool, success</p>
 </dd></dl>
 
@@ -650,15 +774,12 @@ sens: float, current sensitivity (A/V)</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.CVPotentiostatStation.run_ircomp_test">
 <span class="sig-name descname"><span class="pre">run_ircomp_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_ini</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#CVPotentiostatStation.run_ircomp_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.CVPotentiostatStation.run_ircomp_test" title="Permalink to this definition"></a></dt>
 <dd><p>Run iR comp test to determine resistance
-Args:</p>
-<blockquote>
-<div><p>data_path: str, output data file path
-e_ini: float, V, initial voltage
-low_freq: float, Hz, low frequency
-high_freq: float, Hz, high frequency
-amplitude: float, V, ac amplitude (half peak-to-peak)
-sens: float, current sensitivity (A/V)</p>
-</div></blockquote>
+:param data_path: str, output data file path
+:param e_ini: float, V, initial voltage
+:param low_freq: float, Hz, low frequency
+:param high_freq: float, Hz, high frequency
+:param amplitude: float, V, ac amplitude (half peak-to-peak)
+:param sens: float, current sensitivity (A/V)</p>
 <p>Returns: bool, success</p>
 </dd></dl>
 
@@ -672,10 +793,13 @@ sens: float, current sensitivity (A/V)</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.LiquidStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.04</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#LiquidStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.LiquidStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -699,9 +823,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.LiquidStation.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#robotics_api.actions.standard_actions.VialMove" title="robotics_api.actions.standard_actions.VialMove"><span class="pre">VialMove</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#LiquidStation.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.LiquidStation.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id21"><span class="problematic" id="id22">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -721,10 +848,13 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.PipetteStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#PipetteStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.PipetteStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id23"><span class="problematic" id="id24">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -738,9 +868,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.PipetteStation.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#robotics_api.actions.standard_actions.VialMove" title="robotics_api.actions.standard_actions.VialMove"><span class="pre">VialMove</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#PipetteStation.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.PipetteStation.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id25"><span class="problematic" id="id26">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -755,10 +888,13 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.PotentiostatStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.028</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#PotentiostatStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.PotentiostatStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id27"><span class="problematic" id="id28">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -794,11 +930,8 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.PotentiostatStation.move_elevator">
 <span class="sig-name descname"><span class="pre">move_elevator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'down'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#PotentiostatStation.move_elevator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.PotentiostatStation.move_elevator" title="Permalink to this definition"></a></dt>
 <dd><p>Operate CV elevator
-Args:</p>
-<blockquote>
-<div><p>endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be ‘up’ or ‘down’.
-raise_error: bool, raise error if not successful and True</p>
-</div></blockquote>
+:param endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be ‘up’ or ‘down’.
+:param raise_error: bool, raise error if not successful and True</p>
 <p>Returns: bool, True if elevator action was a success</p>
 </dd></dl>
 
@@ -806,9 +939,12 @@ raise_error: bool, raise error if not successful and True</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.PotentiostatStation.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#robotics_api.actions.standard_actions.VialMove" title="robotics_api.actions.standard_actions.VialMove"><span class="pre">VialMove</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">move_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#PotentiostatStation.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.PotentiostatStation.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id29"><span class="problematic" id="id30">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -831,10 +967,13 @@ raise_error: bool, raise error if not successful and True</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.StirStation.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#StirStation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.StirStation.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-state_id (str, optional): The state ID. Defaults to None.
-<a href="#id31"><span class="problematic" id="id32">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -848,9 +987,12 @@ state_id (str, optional): The state ID. Defaults to None.
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.StirStation.place_vial">
 <span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#robotics_api.actions.standard_actions.VialMove" title="robotics_api.actions.standard_actions.VialMove"><span class="pre">VialMove</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#StirStation.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.StirStation.place_vial" title="Permalink to this definition"></a></dt>
 <dd><p>Placeholder method for placing a vial.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>vial: The vial to place.
-<a href="#id33"><span class="problematic" id="id34">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -858,17 +1000,18 @@ state_id (str, optional): The state ID. Defaults to None.
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.StirStation.stir">
 <span class="sig-name descname"><span class="pre">stir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stir_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stir_cmd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'off'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturb_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_sleep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#StirStation.stir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.StirStation.stir" title="Permalink to this definition"></a></dt>
-<dd><p>Operate CV elevator
-Args:</p>
-<blockquote>
-<div><p>stir_time: int, time (seconds) for stir plate to be on
-stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be</p>
-<blockquote>
-<div><p>‘on’ or ‘off’.</p>
-</div></blockquote>
-<p>perturb_amount: float, amount to perturb vial during stirring
-move_sleep: float, time (seconds) for robot to sleep between stirring moves</p>
-</div></blockquote>
+<dd><p>Operate CV elevator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stir_time</strong> – int, time (seconds) for stir plate to be on</p></li>
+<li><p><strong>stir_cmd</strong> – command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be
+‘on’ or ‘off’.</p></li>
+<li><p><strong>perturb_amount</strong> – float, amount to perturb vial during stirring</p></li>
+<li><p><strong>move_sleep</strong> – float, time (seconds) for robot to sleep between stirring moves</p></li>
+</ul>
+</dd>
+</dl>
 <p>Returns: bool, True if stir action was a success</p>
 </dd></dl>
 
@@ -882,10 +1025,13 @@ move_sleep: float, time (seconds) for robot to sleep between stirring moves</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.VialMove.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#VialMove.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.VialMove.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize class instance.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>_id (str, optional): The ID. Defaults to None.
-exp_name (str, optional): The experiment name. Defaults to None.
-<a href="#id35"><span class="problematic" id="id36">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -935,21 +1081,22 @@ exp_name (str, optional): The experiment name. Defaults to None.
 <dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.get_place_vial">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.standard_actions.</span></span><span class="sig-name descname"><span class="pre">get_place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'get'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_position_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release_vial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">go</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#get_place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.get_place_vial" title="Permalink to this definition"></a></dt>
-<dd><p>Function that executes an action getting or placing
-Args:</p>
-<blockquote>
-<div><p>snapshot_file: str, path to snapshot file
-action_type: str, ‘get’ if the action is getting a vail, ‘place’ if action is placing the vial
-pre_position_file: str, path to snapshot file for teh position that should be touched before and after</p>
-<blockquote>
-<div><p>placing/retrieving the vial</p>
-</div></blockquote>
-<p>raise_amount: float,
-release_vial: bool,
-raise_error: bool,
-go: bool, go to snapshot file location if True
-leave: bool, leave from snapshot file location if True</p>
-</div></blockquote>
+<dd><p>Function that executes an action getting or placing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_file</strong> – str, path to snapshot file</p></li>
+<li><p><strong>action_type</strong> – str, ‘get’ if the action is getting a vail, ‘place’ if action is placing the vial</p></li>
+<li><p><strong>pre_position_file</strong> – str, path to snapshot file for teh position that should be touched before and after
+placing/retrieving the vial</p></li>
+<li><p><strong>raise_amount</strong> – float,</p></li>
+<li><p><strong>release_vial</strong> – bool,</p></li>
+<li><p><strong>raise_error</strong> – bool,</p></li>
+<li><p><strong>go</strong> – bool, go to snapshot file location if True</p></li>
+<li><p><strong>leave</strong> – bool, leave from snapshot file location if True</p></li>
+</ul>
+</dd>
+</dl>
 <p>Returns: bool, success of action</p>
 </dd></dl>
 
@@ -962,13 +1109,10 @@ leave: bool, leave from snapshot file location if True</p>
 <dt class="sig sig-object py" id="robotics_api.actions.standard_actions.screw_lid">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.actions.standard_actions.</span></span><span class="sig-name descname"><span class="pre">screw_lid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vial-screw_test.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/standard_actions.html#screw_lid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.standard_actions.screw_lid" title="Permalink to this definition"></a></dt>
 <dd><p>Function that executes an action getting or placing
-Args:</p>
-<blockquote>
-<div><p>screw: bool, screw lid if True, unscrew if false
-starting_position: str, filepath to snapshot of starting location
-linear_z: float,
-angular_z: float, rotation increment in degree</p>
-</div></blockquote>
+:param screw: bool, screw lid if True, unscrew if false
+:param starting_position: str, filepath to snapshot of starting location
+:param linear_z: float,
+:param angular_z: float, rotation increment in degree</p>
 <p>Returns: bool, success of action</p>
 </dd></dl>
 

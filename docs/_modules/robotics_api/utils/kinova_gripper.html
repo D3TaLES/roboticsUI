@@ -49,6 +49,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
@@ -132,19 +133,21 @@
 <div class="viewcode-block" id="GripperMove"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove">[docs]</a><span class="k">class</span> <span class="nc">GripperMove</span><span class="p">:</span>
 <div class="viewcode-block" id="GripperMove.__init__"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">router</span><span class="p">,</span> <span class="n">router_real_time</span><span class="p">,</span> <span class="n">proportional_gain</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            GripperMove class constructor.</span>
+<span class="sd">        GripperMove class constructor.</span>
 
-<span class="sd">            Inputs:</span>
-<span class="sd">                kortex_api.RouterClient router:            TCP router</span>
-<span class="sd">                kortex_api.RouterClient router_real_time:  Real-time UDP router</span>
-<span class="sd">                float proportional_gain: Proportional gain used in control loop (default value is 2.0)</span>
+<span class="sd">        Inputs:</span>
+<span class="sd">            kortex_api.RouterClient router:            TCP router</span>
+<span class="sd">            kortex_api.RouterClient router_real_time:  Real-time UDP router</span>
+<span class="sd">            float proportional_gain: Proportional gain used in control loop (default value is 2.0)</span>
 
-<span class="sd">            Outputs:</span>
-<span class="sd">                None</span>
-<span class="sd">            Notes:</span>
-<span class="sd">                - Actuators and gripper initial position are retrieved to set initial positions</span>
-<span class="sd">                - Actuator and gripper cyclic command objects are created in constructor. Their</span>
-<span class="sd">                  references are used to update position and speed.</span>
+<span class="sd">        Outputs:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            - Actuators and gripper initial position are retrieved to set initial positions</span>
+<span class="sd">            - Actuator and gripper cyclic command objects are created in constructor. Their</span>
+<span class="sd">              references are used to update position and speed.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">proportional_gain</span> <span class="o">=</span> <span class="n">proportional_gain</span>
@@ -199,15 +202,8 @@
 
 <div class="viewcode-block" id="GripperMove.cleanup"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Restore arm&#39;s servoing mode to the one that</span>
-<span class="sd">            was effective before running the example.</span>
-
-<span class="sd">            Inputs:</span>
-<span class="sd">                None</span>
-<span class="sd">            Outputs:</span>
-<span class="sd">                None</span>
-<span class="sd">            Notes:</span>
-<span class="sd">                None</span>
+<span class="sd">        Restore arm&#39;s servoing mode to the one that</span>
+<span class="sd">        was effective before running the example.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Restore servoing mode to the one that was in use before running the example</span>
@@ -215,19 +211,22 @@
 
 <div class="viewcode-block" id="GripperMove.gripper_move"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.gripper_move">[docs]</a>    <span class="k">def</span> <span class="nf">gripper_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_position</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Position gripper to a requested target position using a simple</span>
-<span class="sd">            proportional feedback loop which changes speed according to error</span>
-<span class="sd">            between target position and current gripper position</span>
+<span class="sd">        Position gripper to a requested target position using a simple</span>
+<span class="sd">        proportional feedback loop which changes speed according to error</span>
+<span class="sd">        between target position and current gripper position</span>
 
-<span class="sd">            Inputs:</span>
-<span class="sd">                float target_position: position (0% - 100%) to send gripper to.</span>
-<span class="sd">            Outputs:</span>
-<span class="sd">                Returns True if gripper was positioned successfully, returns False</span>
-<span class="sd">                otherwise.</span>
-<span class="sd">            Notes:</span>
-<span class="sd">                - This function blocks until position is reached.</span>
-<span class="sd">                - If target position exceeds 100.0, its value is changed to 100.0.</span>
-<span class="sd">                - If target position is below 0.0, its value is set to 0.0.</span>
+<span class="sd">        Inputs:</span>
+<span class="sd">            float target_position: position (0% - 100%) to send gripper to.</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">            Returns True if gripper was positioned successfully, returns False</span>
+<span class="sd">            otherwise.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            - This function blocks until position is reached.</span>
+<span class="sd">            - If target position exceeds 100.0, its value is changed to 100.0.</span>
+<span class="sd">            - If target position is below 0.0, its value is set to 0.0.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">target_position</span> <span class="o">&gt;</span> <span class="mf">100.0</span><span class="p">:</span>
             <span class="n">target_position</span> <span class="o">=</span> <span class="mf">100.0</span>

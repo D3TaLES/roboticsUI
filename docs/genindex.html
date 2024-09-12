@@ -49,6 +49,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
@@ -392,13 +393,21 @@
 </li>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.FinishPotentiostat">FinishPotentiostat (class in robotics_api.fireworks.Firetasks_Actions)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.fireworks">fireworks (robotics_api.fireworks.Workflow_Writer.EF2Experiment property)</a>
 </li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.system_tests.flush_solvent">flush_solvent() (in module robotics_api.actions.system_tests)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase.full_name">full_name (robotics_api.fireworks.Firetasks_Actions.RoboticsBase attribute)</a>
+
+      <ul>
+        <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.full_name">(robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_parents">fw_parents (robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
+</li>
+      <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.fw_specs">fw_specs (robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -526,6 +535,8 @@
 
       <ul>
         <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.metadata">(robotics_api.fireworks.Firetasks_Processing.ProcessBase attribute)</a>
+</li>
+        <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.metadata">(robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
 </li>
       </ul></li>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupCAPotentiostat.method">method (robotics_api.fireworks.Firetasks_Actions.SetupCAPotentiostat attribute)</a>
@@ -686,6 +697,8 @@
       <li><a href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages">print_messages() (robotics_api.utils.potentiostat_kbio.PotentiostatExperiment method)</a>
 </li>
       <li><a href="robotics_api.utils.html#robotics_api.utils.processing_utils.print_prop">print_prop() (in module robotics_api.utils.processing_utils)</a>
+</li>
+      <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.priority">priority (robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
 </li>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.process_pot_data">process_pot_data() (robotics_api.fireworks.Firetasks_Processing.ProcessBase method)</a>
 </li>
@@ -862,8 +875,6 @@
         <li><a href="robotics_api.utils.html#module-robotics_api.utils.kinova_gripper">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     robotics_api.utils.kinova_move
 
@@ -871,6 +882,8 @@
         <li><a href="robotics_api.utils.html#module-robotics_api.utils.kinova_move">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     robotics_api.utils.kinova_utils
 
@@ -911,6 +924,12 @@
       <li><a href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.RobotStatusDB">RobotStatusDB (class in robotics_api.utils.mongo_dbs)</a>
 </li>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.rom_id">rom_id (robotics_api.fireworks.Firetasks_Processing.ProcessBase attribute)</a>
+
+      <ul>
+        <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_id">(robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.rom_name">rom_name (robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
 </li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.standard_actions.CAPotentiostatStation.run_ca">run_ca() (robotics_api.actions.standard_actions.CAPotentiostatStation method)</a>
 </li>
@@ -1029,7 +1048,11 @@
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.soln_density">soln_density (robotics_api.fireworks.Firetasks_Processing.ProcessBase attribute)</a>
 </li>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.solv_id">solv_id (robotics_api.fireworks.Firetasks_Processing.ProcessBase attribute)</a>
+
+      <ul>
+        <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.solv_id">(robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
 </li>
+      </ul></li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.solvent_id">solvent_id (robotics_api.actions.standard_actions.LiquidStation property)</a>
 </li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.state">state (robotics_api.actions.db_manipulations.StationStatus property)</a>
@@ -1156,14 +1179,18 @@
 </li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.weigh">weigh() (robotics_api.actions.standard_actions.BalanceStation method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase.wflow_name">wflow_name (robotics_api.fireworks.Firetasks_Actions.RoboticsBase attribute)</a>
 
       <ul>
         <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Processing.ProcessBase.wflow_name">(robotics_api.fireworks.Firetasks_Processing.ProcessBase attribute)</a>
 </li>
+        <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.wflow_name">(robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="robotics_api.fireworks.html#robotics_api.fireworks.Workflow_Writer.EF2Experiment.workflow">workflow (robotics_api.fireworks.Workflow_Writer.EF2Experiment attribute)</a>
+</li>
       <li><a href="robotics_api.actions.html#robotics_api.actions.standard_actions.write_test">write_test() (in module robotics_api.actions.standard_actions)</a>
 </li>
   </ul></td>

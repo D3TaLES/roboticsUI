@@ -37,6 +37,7 @@ class EF2Experiment(ProcessExpFlowObj):
         metadata (dict): Metadata related to the experiment.
         fw_specs (dict): Specifications for the Firework.
         workflow (list): List of tasks in the experiment workflow.
+
     """
 
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
@@ -280,6 +281,7 @@ class EF2Experiment(ProcessExpFlowObj):
 def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
     """
     Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules
+
     Args:
         expflow_wf (dict): experiment dictionary from an ExpFlow instance
         name_tag (str): name tag for workflow

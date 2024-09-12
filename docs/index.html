@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to the D3TaLES Robotics User Interface and API documentation! &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>D3TaLES Robotics User Interface and API Documentation! &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -54,7 +54,12 @@
 <li class="toctree-l1"><a class="reference internal" href="RobotRunChecklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ExpFlow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DesktopApp.html">Desktop App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
@@ -82,7 +87,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to the D<sup>3</sup>TaLES Robotics User Interface and API documentation!</li>
+      <li class="breadcrumb-item active">D<sup>3</sup>TaLES Robotics User Interface and API Documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,12 +97,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-the-d3tales-robotics-user-interface-and-api-documentation">
-<h1>Welcome to the D<sup>3</sup>TaLES Robotics User Interface and API documentation!<a class="headerlink" href="#welcome-to-the-d3tales-robotics-user-interface-and-api-documentation" title="Link to this heading"></a></h1>
+  <section id="d3tales-robotics-user-interface-and-api-documentation">
+<h1>D<sup>3</sup>TaLES Robotics User Interface and API Documentation!<a class="headerlink" href="#d3tales-robotics-user-interface-and-api-documentation" title="Link to this heading"></a></h1>
+<p>Here you will find complete documentation for the D<sup>3</sup>TaLES robotics Python software
+hosted in the <cite>roboticsUI repository &lt;https://github.com/D3TaLES/roboticsUI&gt;</cite> GitHub
+repository. This includes documentation ExpFlow and Robotics Desktop App user
+interfaces as well as the Robotics API for interacting with the robotics
+hardware directly.</p>
 </section>
 <section id="roboticsui-contents">
 <h1>RoboticsUI Contents<a class="headerlink" href="#roboticsui-contents" title="Link to this heading"></a></h1>
-<p>This repository contains several directories:</p>
+<p>The <cite>roboticsUI repository &lt;https://github.com/D3TaLES/roboticsUI&gt;</cite> contains several directories:</p>
 <ul class="simple">
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">_kbio</span></code>: Python API for the Kinova robot. These files are taken directly from the commercial</dt><dd><p><a class="reference external" href="https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L">Kinova Python API</a>. They should not be edited.</p>
@@ -151,7 +161,31 @@ coordinates while others give actuator angles.</p></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ExpFlow.html">ExpFlow Robotic Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ExpFlow.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ExpFlow.html#building-a-template">Building a Template</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ExpFlow.html#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ExpFlow.html#add-actions">Add actions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ExpFlow.html#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ExpFlow.html#set-default-parameters">Set default parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ExpFlow.html#establish-variable-parameters">Establish variable parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DesktopApp.html">Desktop App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DesktopApp.html#monitoring-workflows-with-fireworks-webgui">Monitoring workflows with FireWorks WebGUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DesktopApp.html#loading-a-workflow">Loading a workflow</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>

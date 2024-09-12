@@ -55,7 +55,12 @@
 <li class="toctree-l1"><a class="reference internal" href="RobotRunChecklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ExpFlow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DesktopApp.html">Desktop App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
@@ -115,7 +120,7 @@
 <h1>Actions<a class="headerlink" href="#actions" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <code class="docutils literal notranslate"><span class="pre">utils</span></code> and <code class="docutils literal notranslate"><span class="pre">fireworks</span></code> modules.</p>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see {ref}<code class="docutils literal notranslate"><span class="pre">robotics-databases</span></code>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the {ref}<code class="docutils literal notranslate"><span class="pre">utils</span></code> and {ref}<code class="docutils literal notranslate"><span class="pre">fireworks</span></code> modules.</p>
 <p>The module consists of three files:</p>
 <ol class="simple">
 <li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>
@@ -198,7 +203,7 @@ The <code class="docutils literal notranslate"><span class="pre">system_tests.py
 <span class="n">test_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="s2">&quot;A_01&quot;</span><span class="p">)</span>
 <span class="n">test_potent</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="s2">&quot;ca_potentiostat_B_01&quot;</span><span class="p">)</span>  
 
-<span class="c1"># Retrieve the vial and place it at the potentiostat </span>
+<span class="c1"># Retrieve the vial and place it at the potentiostat</span>
 <span class="n">test_potent</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">test_vial</span><span class="p">)</span>
 
 <span class="c1"># Move potentiostat elevator up  </span>

@@ -1,13 +1,20 @@
 
-Welcome to the D\ :sup:`3`\ TaLES Robotics User Interface and API documentation!
-================================================================================
+D\ :sup:`3`\ TaLES Robotics User Interface and API Documentation!
+=================================================================
 
 .. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
 
-RoboticsUI Contents
-==================
+Here you will find complete documentation for the |D3TaLES| robotics Python software
+hosted in the `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>` GitHub
+repository. This includes documentation ExpFlow and Robotics Desktop App user
+interfaces as well as the Robotics API for interacting with the robotics
+hardware directly.
 
-This repository contains several directories:
+
+RoboticsUI Contents
+===================
+
+The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>` contains several directories:
 
 - ``_kbio``: Python API for the Kinova robot. These files are taken directly from the commercial
    `Kinova Python API <https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L>`_. They should not be edited.
@@ -50,7 +57,14 @@ The RoboticsAPI also contains the following items:
 
 .. toctree::
    :maxdepth: 3
-   :caption: Modules and More
+   :caption: User Interfaces
+
+   ExpFlow
+   DesktopApp
+
+.. toctree::
+   :maxdepth: 3
+   :caption: API Modules and More
 
    Settings
    Fireworks

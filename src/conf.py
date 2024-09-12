@@ -45,7 +45,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'recommonmark',
     'sphinx.ext.napoleon',
-    'myst_parser'
+    # 'myst_parser'
 ]
 
 def skip(app, what, name, obj, would_skip, options):

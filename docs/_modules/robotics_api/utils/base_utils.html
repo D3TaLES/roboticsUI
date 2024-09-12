@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.utils.base_utils &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robotics_api.utils.base_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robotics_api.utils.base_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pint</span>
+
+
+<div class="viewcode-block" id="unit_conversion"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.base_utils.unit_conversion">[docs]</a><span class="k">def</span> <span class="nf">unit_conversion</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a measurement into a default unit using pint.</span>
+
+<span class="sd">    :param measurement: Measurements can be pint object, int or float(in which case it will be assumed to already be in the default unit), string of magnitude and unit, or a measurement dictionary (EX: {&quot;value&quot;: 0.5, &quot;unit&quot;: &quot;eV&quot;}</span>
+<span class="sd">    :param default_unit: default unit / unit to be converted to</span>
+<span class="sd">    :param return_dict:</span>
+<span class="sd">    :param density: molecular density (in case needed for conversion)</span>
+<span class="sd">    :return: float magnitude for the converted measurement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">measurement</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># Set context in case conversion include mass--&gt;volume or volume--&gt;mass</span>
+    <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="s1">&#39;mol_density&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">density</span><span class="p">:</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="s1">&#39;[mass]&#39;</span><span class="p">,</span> <span class="s1">&#39;[volume]&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">ureg_c</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="n">ureg_c</span><span class="p">(</span><span class="n">density</span><span class="p">))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="s1">&#39;[volume]&#39;</span><span class="p">,</span> <span class="s1">&#39;[mass]&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">ureg_c</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg_c</span><span class="p">(</span><span class="n">density</span><span class="p">))</span>
+    <span class="n">ureg</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="c1"># Get measurement value and unit</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">measurement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">measurement</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="n">measurement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">measurement</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">default_unit</span>
+    <span class="c1"># Convert measurement to default unit</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">default_unit</span> <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;dimensionless&quot;</span> <span class="k">else</span> <span class="n">unit</span>
+    <span class="n">pint_unit</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">return_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">pint_unit</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">default_unit</span><span class="p">,</span> <span class="s1">&#39;mol_density&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">default_unit</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">pint_unit</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">default_unit</span><span class="p">,</span> <span class="s1">&#39;mol_density&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

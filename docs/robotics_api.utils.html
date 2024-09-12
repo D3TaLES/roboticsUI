@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.utils package &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">robotics_api.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.base_utils.unit_conversion"><code class="docutils literal notranslate"><span class="pre">unit_conversion()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.kinova_gripper">robotics_api.utils.kinova_gripper module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove"><code class="docutils literal notranslate"><span class="pre">GripperMove</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.__init__"><code class="docutils literal notranslate"><span class="pre">GripperMove.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.cleanup"><code class="docutils literal notranslate"><span class="pre">GripperMove.cleanup()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.gripper_move"><code class="docutils literal notranslate"><span class="pre">GripperMove.gripper_move()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.kinova_move">robotics_api.utils.kinova_move module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.check_for_end_or_abort"><code class="docutils literal notranslate"><span class="pre">check_for_end_or_abort()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.check_for_sequence_end_or_abort"><code class="docutils literal notranslate"><span class="pre">check_for_sequence_end_or_abort()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.move_gripper"><code class="docutils literal notranslate"><span class="pre">move_gripper()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.sequence_move"><code class="docutils literal notranslate"><span class="pre">sequence_move()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move"><code class="docutils literal notranslate"><span class="pre">snapshot_move()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move_angular"><code class="docutils literal notranslate"><span class="pre">snapshot_move_angular()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move_cartesian"><code class="docutils literal notranslate"><span class="pre">snapshot_move_cartesian()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_move.twist_hand"><code class="docutils literal notranslate"><span class="pre">twist_hand()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.kinova_utils">robotics_api.utils.kinova_utils module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.TCP_PORT</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.UDP_PORT</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.__init__"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createTcpConnection()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createUdpConnection()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.parseConnectionArguments"><code class="docutils literal notranslate"><span class="pre">parseConnectionArguments()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.get_collection"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_collection()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.get_database"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_database()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase"><code class="docutils literal notranslate"><span class="pre">MongoDatabase</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.__init__"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.array_checker"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.array_checker()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.dot2dict()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.field_checker"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.field_checker()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.insert"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.insert()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.make_query"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.make_query()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.path_insert"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.path_insert()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.__init__"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.check_wflow_name()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.exists"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.exists</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.get_prop()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.update_status"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.update_status()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.Schema2Class"><code class="docutils literal notranslate"><span class="pre">Schema2Class</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.Schema2Class.__init__"><code class="docutils literal notranslate"><span class="pre">Schema2Class.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.potentiostat_hp">robotics_api.utils.potentiostat_hp module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.ca_ex"><code class="docutils literal notranslate"><span class="pre">ca_ex()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.cv_ex"><code class="docutils literal notranslate"><span class="pre">cv_ex()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.ircomp_ex"><code class="docutils literal notranslate"><span class="pre">ircomp_ex()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.potentiostat_kbio">robotics_api.utils.potentiostat_kbio module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment"><code class="docutils literal notranslate"><span class="pre">CaExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CaExperiment.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CaExperiment.experiment_print()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parameterize()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parsed_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CaExperiment.tech_file</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment"><code class="docutils literal notranslate"><span class="pre">CpExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CpExperiment.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CpExperiment.experiment_print()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parameterize()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parsed_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CpExperiment.tech_file</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment"><code class="docutils literal notranslate"><span class="pre">CvExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CvExperiment.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CvExperiment.experiment_print()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parameterize()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parsed_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.plot"><code class="docutils literal notranslate"><span class="pre">CvExperiment.plot()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CvExperiment.tech_file</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment"><code class="docutils literal notranslate"><span class="pre">EisExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">EisExperiment.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">EisExperiment.experiment_print()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parameterize()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parsed_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">EisExperiment.tech_file</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">EisExperiment.to_txt()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_connection"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_connection()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_kernel"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_kernel()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.cv_row_parser"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.cv_row_parser()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.experiment_print()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.iR_comp_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.iR_comp_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.load_firmware"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.load_firmware()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.normalize_steps"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.normalize_steps()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.parsed_data</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.print_messages()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_experiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_experiment()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_iR_comp"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_iR_comp()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_data_records"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_data_records()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_parsed_data()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.tech_file</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.to_txt()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.trimmed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.trimmed_data</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.ca_exp"><code class="docutils literal notranslate"><span class="pre">ca_exp()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.cp_ex"><code class="docutils literal notranslate"><span class="pre">cp_ex()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step"><code class="docutils literal notranslate"><span class="pre">current_step</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.__init__"><code class="docutils literal notranslate"><span class="pre">current_step.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.current"><code class="docutils literal notranslate"><span class="pre">current_step.current</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.duration"><code class="docutils literal notranslate"><span class="pre">current_step.duration</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.vs_init"><code class="docutils literal notranslate"><span class="pre">current_step.vs_init</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.cv_ex"><code class="docutils literal notranslate"><span class="pre">cv_ex()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step"><code class="docutils literal notranslate"><span class="pre">voltage_step</span></code></a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.__init__"><code class="docutils literal notranslate"><span class="pre">voltage_step.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.scan_rate"><code class="docutils literal notranslate"><span class="pre">voltage_step.scan_rate</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.voltage"><code class="docutils literal notranslate"><span class="pre">voltage_step.voltage</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.vs_init"><code class="docutils literal notranslate"><span class="pre">voltage_step.vs_init</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils.processing_utils">robotics_api.utils.processing_utils module</a><ul>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.all_cvs_data"><code class="docutils literal notranslate"><span class="pre">all_cvs_data()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.collection_dict"><code class="docutils literal notranslate"><span class="pre">collection_dict()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_cell_constant"><code class="docutils literal notranslate"><span class="pre">get_cell_constant()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_concentration"><code class="docutils literal notranslate"><span class="pre">get_concentration()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_kcl_conductivity"><code class="docutils literal notranslate"><span class="pre">get_kcl_conductivity()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.kcl_cell_constant"><code class="docutils literal notranslate"><span class="pre">kcl_cell_constant()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_ca_analysis"><code class="docutils literal notranslate"><span class="pre">print_ca_analysis()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_cv_analysis"><code class="docutils literal notranslate"><span class="pre">print_cv_analysis()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_prop"><code class="docutils literal notranslate"><span class="pre">print_prop()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.processing_test"><code class="docutils literal notranslate"><span class="pre">processing_test()</span></code></a></li>
+<li><a class="reference internal" href="#robotics_api.utils.processing_utils.prop_by_order"><code class="docutils literal notranslate"><span class="pre">prop_by_order()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-robotics_api.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">robotics_api.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/robotics_api.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robotics-api-utils-package">
+<h1>robotics_api.utils package<a class="headerlink" href="#robotics-api-utils-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-robotics_api.utils.base_utils">
+<span id="robotics-api-utils-base-utils-module"></span><h2>robotics_api.utils.base_utils module<a class="headerlink" href="#module-robotics_api.utils.base_utils" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.base_utils.unit_conversion">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.base_utils.</span></span><span class="sig-name descname"><span class="pre">unit_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/base_utils.html#unit_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.base_utils.unit_conversion" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a measurement into a default unit using pint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement</strong> – Measurements can be pint object, int or float(in which case it will be assumed to already be in the default unit), string of magnitude and unit, or a measurement dictionary (EX: {“value”: 0.5, “unit”: “eV”}</p></li>
+<li><p><strong>default_unit</strong> – default unit / unit to be converted to</p></li>
+<li><p><strong>return_dict</strong> – </p></li>
+<li><p><strong>density</strong> – molecular density (in case needed for conversion)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float magnitude for the converted measurement</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_gripper">
+<span id="robotics-api-utils-kinova-gripper-module"></span><h2>robotics_api.utils.kinova_gripper module<a class="headerlink" href="#module-robotics_api.utils.kinova_gripper" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_gripper.</span></span><span class="sig-name descname"><span class="pre">GripperMove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_real_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_real_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>GripperMove class constructor.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>kortex_api.RouterClient router:            TCP router
+kortex_api.RouterClient router_real_time:  Real-time UDP router
+float proportional_gain: Proportional gain used in control loop (default value is 2.0)</p>
+</dd>
+<dt>Outputs:</dt><dd><p>None</p>
+</dd>
+<dt>Notes:</dt><dd><ul class="simple">
+<li><p>Actuators and gripper initial position are retrieved to set initial positions</p></li>
+<li><p>Actuator and gripper cyclic command objects are created in constructor. Their
+references are used to update position and speed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.cleanup" title="Permalink to this definition"></a></dt>
+<dd><p>Restore arm’s servoing mode to the one that
+was effective before running the example.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>None</p>
+</dd>
+<dt>Outputs:</dt><dd><p>None</p>
+</dd>
+<dt>Notes:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.gripper_move">
+<span class="sig-name descname"><span class="pre">gripper_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.gripper_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.gripper_move" title="Permalink to this definition"></a></dt>
+<dd><p>Position gripper to a requested target position using a simple
+proportional feedback loop which changes speed according to error
+between target position and current gripper position</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>float target_position: position (0% - 100%) to send gripper to.</p>
+</dd>
+<dt>Outputs:</dt><dd><p>Returns True if gripper was positioned successfully, returns False
+otherwise.</p>
+</dd>
+<dt>Notes:</dt><dd><ul class="simple">
+<li><p>This function blocks until position is reached.</p></li>
+<li><p>If target position exceeds 100.0, its value is changed to 100.0.</p></li>
+<li><p>If target position is below 0.0, its value is set to 0.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_move">
+<span id="robotics-api-utils-kinova-move-module"></span><h2>robotics_api.utils.kinova_move module<a class="headerlink" href="#module-robotics_api.utils.kinova_move" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.check_for_end_or_abort">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">check_for_end_or_abort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#check_for_end_or_abort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.check_for_end_or_abort" title="Permalink to this definition"></a></dt>
+<dd><p>Return a closure checking for END or ABORT notifications</p>
+<p>Arguments:
+e – event to signal when the action is completed</p>
+<blockquote>
+<div><p>(will be set when an END or ABORT occurs)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.check_for_sequence_end_or_abort">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">check_for_sequence_end_or_abort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#check_for_sequence_end_or_abort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.check_for_sequence_end_or_abort" title="Permalink to this definition"></a></dt>
+<dd><p>Return a closure checking for END or ABORT notifications on a sequence</p>
+<p>Arguments:
+e – event to signal when the action is completed</p>
+<blockquote>
+<div><p>(will be set when an END or ABORT occurs)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.move_gripper">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">move_gripper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#move_gripper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.move_gripper" title="Permalink to this definition"></a></dt>
+<dd><p>Move gripper
+:param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
+:return: bool, True if action a success</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.sequence_move">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">sequence_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#sequence_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.sequence_move" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_file</strong> – str, path to snapshot file (JSON)</p></li>
+<li><p><strong>target_position</strong> – target position for the gripper: open, closed, or percentage closed (e.g., 90)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool, True if movement was a success</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move_angular">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move_angular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_angle_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move_angular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move_angular" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move_cartesian">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move_cartesian" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.twist_hand">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">twist_hand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#twist_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.twist_hand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_utils">
+<span id="robotics-api-utils-kinova-utils-module"></span><h2>robotics_api.utils.kinova_utils module<a class="headerlink" href="#module-robotics_api.utils.kinova_utils" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_utils.</span></span><span class="sig-name descname"><span class="pre">DeviceConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ipAddress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('',</span> <span class="pre">'')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT">
+<span class="sig-name descname"><span class="pre">TCP_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10000</span></em><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT">
+<span class="sig-name descname"><span class="pre">UDP_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10001</span></em><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ipAddress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('',</span> <span class="pre">'')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createTcpConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.createTcpConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection" title="Permalink to this definition"></a></dt>
+<dd><p>returns RouterClient required to create services and send requests to device or sub-devices,</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createUdpConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.createUdpConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection" title="Permalink to this definition"></a></dt>
+<dd><p>returns RouterClient that allows to create services and send requests to a device or its sub-devices &#64; 1khz.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.parseConnectionArguments">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_utils.</span></span><span class="sig-name descname"><span class="pre">parseConnectionArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser=ArgumentParser(prog='sphinx-build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter_class=&lt;class</span> <span class="pre">'argparse.HelpFormatter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conflict_handler='error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help=True)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#parseConnectionArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.parseConnectionArguments" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.mongo_dbs">
+<span id="robotics-api-utils-mongo-dbs-module"></span><h2>robotics_api.utils.mongo_dbs module<a class="headerlink" href="#module-robotics_api.utils.mongo_dbs" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">DBconnector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to retrieve a collection from a database and insert new entry.
+Requires a db_infos.json file with credentials
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db_information</strong> – dictionary of database info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.get_collection">
+<span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coll_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.get_collection" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a collection from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coll_name</strong> – name of collection</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>db.collection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.get_database">
+<span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.get_database" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a database object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a database object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">MongoDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for connecting to a database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database</strong> – str, name of database (should be a key in the DB_INFO_FILE)</p></li>
+<li><p><strong>collection_name</strong> – str, name of collection</p></li>
+<li><p><strong>instance</strong> – dict, instance to insert or validate</p></li>
+<li><p><strong>schema_layer</strong> – str, schema layer</p></li>
+<li><p><strong>schema_directory</strong> – str, schema directory</p></li>
+<li><p><strong>public</strong> – bool, instance is marked as public if True</p></li>
+<li><p><strong>schema_db</strong> – str, database containing schema</p></li>
+<li><p><strong>default_id</strong> – str, default instance ID</p></li>
+<li><p><strong>validate_schema</strong> – bool, validate schema if True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.array_checker">
+<span class="sig-name descname"><span class="pre">array_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.array_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.array_checker" title="Permalink to this definition"></a></dt>
+<dd><p>Create empty array in filed if this field does not already exists. Prepare for set insertion (avoid duplicates)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_path</strong> – str, path to check</p></li>
+<li><p><strong>_id</strong> – str, instance ID</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dot2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.dot2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a dotted dictionary to a nested dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dot_dict</strong> – dotted dictionary</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nested final dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.field_checker">
+<span class="sig-name descname"><span class="pre">field_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.field_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.field_checker" title="Permalink to this definition"></a></dt>
+<dd><p>Check if field exists and return result or {}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> – value</p></li>
+<li><p><strong>field</strong> – field name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>{} or the match</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.insert" title="Permalink to this definition"></a></dt>
+<dd><p>Upserts a dictionary into a collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> – str, _id for insertion</p></li>
+<li><p><strong>nested</strong> – bool, insert nested attributes if True</p></li>
+<li><p><strong>update_public</strong> – bool, update the public status if true</p></li>
+<li><p><strong>instance</strong> – dict, instance to be inserted</p></li>
+<li><p><strong>override_lists</strong> – bool, override existing lists in insertion if True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.make_query">
+<span class="sig-name descname"><span class="pre">make_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pandas'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.make_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.make_query" title="Permalink to this definition"></a></dt>
+<dd><p>Make MongoDB database query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – dict, query</p></li>
+<li><p><strong>projection</strong> – dict, projection</p></li>
+<li><p><strong>output</strong> – str, output type</p></li>
+<li><p><strong>multi</strong> – bool, return multiple query responses if True</p></li>
+<li><p><strong>limit</strong> – int, limit to the number of responses the query will return</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ol class="arabic simple">
+<li><p>A dataframe if output=”pandas”</p></li>
+<li><p>A list if multi=False and a pymongo dursor if multi=True; output != “pandas</p></li>
+</ol>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.path_insert">
+<span class="sig-name descname"><span class="pre">path_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.path_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.path_insert" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a piece of data to a specific path, updating array if the path leads to an array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> – str, instance ID</p></li>
+<li><p><strong>path</strong> – str, path to insertion</p></li>
+<li><p><strong>value</strong> – value to insert</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">RobotStatusDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase" title="robotics_api.utils.mongo_dbs.MongoDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoDatabase</span></code></a></p>
+<p>Class for accessing the Robot Status database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initiate class
+:param apparatus_type: str, name of apparatus
+:param _id: str, _id
+:param instance: dict, instance to insert or validate
+:param override_lists: bool,
+:param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name">
+<span class="sig-name descname"><span class="pre">check_wflow_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.check_wflow_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.exists">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.exists" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop">
+<span class="sig-name descname"><span class="pre">get_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.get_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop" title="Permalink to this definition"></a></dt>
+<dd><p>Get database prop for instance with _id
+:param prop: str, property name
+:return: prop</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.update_status">
+<span class="sig-name descname"><span class="pre">update_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'location'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.update_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.update_status" title="Permalink to this definition"></a></dt>
+<dd><p>Update status for a vial location or station vial
+:param new_status: str, new vial location or new vial in station
+:param status_name: str, name for status properties</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.Schema2Class">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">Schema2Class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#Schema2Class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.Schema2Class" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Get D3TaLES schema from GitHub and load it to a class
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.Schema2Class.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#Schema2Class.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.Schema2Class.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database</strong> – str, database name</p></li>
+<li><p><strong>schema_name</strong> – str, schema name</p></li>
+<li><p><strong>schema_directory</strong> – str, schema directory</p></li>
+<li><p><strong>named_only</strong> – If true, only properties with an actual title attribute will be included in the resulting namespace</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.db_info_generator">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.db_info_generator" title="Permalink to this definition"></a></dt>
+<dd><p>Get information about database connections. This function requires either a db_file argument
+or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
+to a JSON file containing connection information for the databases. The keys should be the database
+names such as <cite>frontend</cite>, <cite>backend</cite>, <cite>expflow</cite>, and <cite>fireworks</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db_file</strong> – str, path to database info JSON file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON object containing information about database connections</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.potentiostat_hp">
+<span id="robotics-api-utils-potentiostat-hp-module"></span><h2>robotics_api.utils.potentiostat_hp module<a class="headerlink" href="#module-robotics_api.utils.potentiostat_hp" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_hp.ca_ex">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_hp.</span></span><span class="sig-name descname"><span class="pre">ca_ex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_hp.html#ca_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_hp.ca_ex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_hp.cv_ex">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_hp.</span></span><span class="sig-name descname"><span class="pre">cv_ex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resistance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_hp.html#cv_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_hp.cv_ex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_hp.ircomp_ex">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_hp.</span></span><span class="sig-name descname"><span class="pre">ircomp_ex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_hp.html#ircomp_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_hp.ircomp_ex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.potentiostat_kbio">
+<span id="robotics-api-utils-potentiostat-kbio-module"></span><h2>robotics_api.utils.potentiostat_kbio module<a class="headerlink" href="#module-robotics_api.utils.potentiostat_kbio" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">CaExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(True,</span> <span class="pre">False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0024000000000000002</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">98</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.4e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_di</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CaExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment" title="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025,</span> <span class="pre">0.025,</span> <span class="pre">-0.025)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(True,</span> <span class="pre">False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0024000000000000002</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">98</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.4e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_di</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CaExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>steps</strong> – </p></li>
+<li><p><strong>vs_initial</strong> – </p></li>
+<li><p><strong>duration_step</strong> – </p></li>
+<li><p><strong>step_number</strong> – </p></li>
+<li><p><strong>record_every_dt</strong> – </p></li>
+<li><p><strong>record_every_di</strong> – </p></li>
+<li><p><strong>n_cycles</strong> – </p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment.experiment_print">
+<span class="sig-name descname"><span class="pre">experiment_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CaExperiment.experiment_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.experiment_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment.parameterize">
+<span class="sig-name descname"><span class="pre">parameterize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CaExperiment.parameterize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parameterize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment.parsed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CaExperiment.tech_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tech_file</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.tech_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">CpExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_de</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'I_RANGE_10mA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CpExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment" title="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_de</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'I_RANGE_10mA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CpExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Class to run Chrono-Potentiometry technique experiments</dt><dd><p>:param n_cycles : Number of cycle, integer ≥ 0
+:param record_every_dt : recording on dt (s), float ≥ 0
+:param record_every_de : recording on dE (V), float ≥ 0
+:param i_range : _kbio I_RANGE keyword, str
+:param repeat_count :</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment.experiment_print">
+<span class="sig-name descname"><span class="pre">experiment_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CpExperiment.experiment_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.experiment_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment.parameterize">
+<span class="sig-name descname"><span class="pre">parameterize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CpExperiment.parameterize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parameterize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment.parsed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CpExperiment.tech_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tech_file</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.tech_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">CvExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_de</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_over_de</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CvExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment" title="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_every_de</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_over_de</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CvExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Class to run cyclic voltammetry experiments</dt><dd><dl class="field-list simple">
+<dt class="field-odd">param steps</dt>
+<dd class="field-odd"><p>list of lists OR current_step objects: voltage (V), scan_rate (mV/s))</p>
+</dd>
+<dt class="field-even">param vs_initial</dt>
+<dd class="field-even"><p>Current step vs initial one, bool</p>
+</dd>
+<dt class="field-odd">param n_cycles</dt>
+<dd class="field-odd"><p>Number of cycle, integer ≥ 0</p>
+</dd>
+<dt class="field-even">param scan_number</dt>
+<dd class="field-even"><p>Scan number, integer = 2</p>
+</dd>
+<dt class="field-odd">param record_every_de</dt>
+<dd class="field-odd"><p>recording on dE (V), float ≥ 0</p>
+</dd>
+<dt class="field-even">param average_over_de</dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param min_steps</dt>
+<dd class="field-odd"><p>recording on dE (V), float ≥ 0</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.experiment_print">
+<span class="sig-name descname"><span class="pre">experiment_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CvExperiment.experiment_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.experiment_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.parameterize">
+<span class="sig-name descname"><span class="pre">parameterize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CvExperiment.parameterize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parameterize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.parsed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#CvExperiment.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.CvExperiment.tech_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tech_file</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.tech_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">EisExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Initial_Voltage_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Final_Voltage_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Duration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">41</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Record_every_dT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Record_every_dI</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Final_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Initial_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Amplitude_Voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Frequency_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Average_N_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wait_for_steady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#EisExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment" title="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vs_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Initial_Voltage_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Final_Voltage_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Duration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">41</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Record_every_dT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Record_every_dI</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Final_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Initial_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Amplitude_Voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Frequency_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Average_N_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wait_for_steady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#EisExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for operating a BioLogic potentiostat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nb_words</strong> – int, number of rows for parsing</p></li>
+<li><p><strong>time_out</strong> – int, k_api connect timeout in seconds</p></li>
+<li><p><strong>load_firm</strong> – bool, load firmware if True</p></li>
+<li><p><strong>cut_beginning</strong> – float, decimal representing the percentage of the beginning of the data to cut off</p></li>
+<li><p><strong>cut_end</strong> – float, decimal representing the percentage of the end of the data to cut off</p></li>
+<li><p><strong>run_iR</strong> – bool, run iR compensation if True</p></li>
+<li><p><strong>potentiostat_address</strong> – str, potentiostat connection address</p></li>
+<li><p><strong>potentiostat_channel</strong> – int, potentiostat channel  number</p></li>
+<li><p><strong>exe_path</strong> – str, potentiostat executable path</p></li>
+<li><p><strong>iR_kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.experiment_print">
+<span class="sig-name descname"><span class="pre">experiment_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#EisExperiment.experiment_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.experiment_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.parameterize">
+<span class="sig-name descname"><span class="pre">parameterize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#EisExperiment.parameterize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parameterize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.parsed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.tech_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tech_file</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.tech_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.EisExperiment.to_txt">
+<span class="sig-name descname"><span class="pre">to_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#EisExperiment.to_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.to_txt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">PotentiostatExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_firm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_beginning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_iR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'COM6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exe_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\EC-Lab</span> <span class="pre">Development</span> <span class="pre">Package\\EC-Lab</span> <span class="pre">Development</span> <span class="pre">Package\\\\EClib64.dll'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">iR_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_firm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_beginning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_iR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'COM6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exe_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\EC-Lab</span> <span class="pre">Development</span> <span class="pre">Package\\EC-Lab</span> <span class="pre">Development</span> <span class="pre">Package\\\\EClib64.dll'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">iR_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for operating a BioLogic potentiostat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nb_words</strong> – int, number of rows for parsing</p></li>
+<li><p><strong>time_out</strong> – int, k_api connect timeout in seconds</p></li>
+<li><p><strong>load_firm</strong> – bool, load firmware if True</p></li>
+<li><p><strong>cut_beginning</strong> – float, decimal representing the percentage of the beginning of the data to cut off</p></li>
+<li><p><strong>cut_end</strong> – float, decimal representing the percentage of the end of the data to cut off</p></li>
+<li><p><strong>run_iR</strong> – bool, run iR compensation if True</p></li>
+<li><p><strong>potentiostat_address</strong> – str, potentiostat connection address</p></li>
+<li><p><strong>potentiostat_channel</strong> – int, potentiostat channel  number</p></li>
+<li><p><strong>exe_path</strong> – str, potentiostat executable path</p></li>
+<li><p><strong>iR_kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_connection">
+<span class="sig-name descname"><span class="pre">check_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.check_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_connection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_kernel">
+<span class="sig-name descname"><span class="pre">check_kernel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.check_kernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_kernel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.cv_row_parser">
+<span class="sig-name descname"><span class="pre">cv_row_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.cv_row_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.cv_row_parser" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.experiment_print">
+<span class="sig-name descname"><span class="pre">experiment_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.experiment_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.experiment_print" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.iR_comp_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iR_comp_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.iR_comp_data" title="Permalink to this definition"></a></dt>
+<dd><p>Parses iR compensation data if run_iR is True and iR compensation has been run.
+:return: tuple, (real resistence, imaginary resistence). All units in Ohm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.load_firmware">
+<span class="sig-name descname"><span class="pre">load_firmware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.load_firmware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.load_firmware" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.normalize_steps">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.normalize_steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.normalize_steps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.parsed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages">
+<span class="sig-name descname"><span class="pre">print_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.print_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_experiment">
+<span class="sig-name descname"><span class="pre">run_experiment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.run_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_experiment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_iR_comp">
+<span class="sig-name descname"><span class="pre">run_iR_comp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplitude_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_n_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_steady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcomp_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.85</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.run_iR_comp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_iR_comp" title="Permalink to this definition"></a></dt>
+<dd><p>Run iR compensation before an experiment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>amplitude_voltage</strong> – </p></li>
+<li><p><strong>final_frequency</strong> – </p></li>
+<li><p><strong>initial_frequency</strong> – </p></li>
+<li><p><strong>average_n_times</strong> – </p></li>
+<li><p><strong>wait_for_steady</strong> – </p></li>
+<li><p><strong>sweep</strong> – </p></li>
+<li><p><strong>rcomp_level</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_data_records">
+<span class="sig-name descname"><span class="pre">save_data_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.save_data_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_data_records" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_parsed_data">
+<span class="sig-name descname"><span class="pre">save_parsed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.save_parsed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_parsed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.tech_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tech_file</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.tech_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.to_txt">
+<span class="sig-name descname"><span class="pre">to_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#PotentiostatExperiment.to_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.to_txt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.trimmed_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trimmed_data</span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.trimmed_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.ca_exp">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">ca_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potentiostat_address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'COM6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#ca_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.ca_exp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.cp_ex">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">cp_ex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#cp_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.cp_ex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.current_step">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">current_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#current_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.current_step" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.current_step.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.current_step.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.current_step.current">
+<span class="sig-name descname"><span class="pre">current</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.current_step.current" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.current_step.duration">
+<span class="sig-name descname"><span class="pre">duration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.current_step.duration" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.current_step.vs_init">
+<span class="sig-name descname"><span class="pre">vs_init</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.current_step.vs_init" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.cv_ex">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">cv_ex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentiostat_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#cv_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.cv_ex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.voltage_step">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.potentiostat_kbio.</span></span><span class="sig-name descname"><span class="pre">voltage_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/potentiostat_kbio.html#voltage_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.voltage_step" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.voltage_step.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vs_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.voltage_step.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.voltage_step.scan_rate">
+<span class="sig-name descname"><span class="pre">scan_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.voltage_step.scan_rate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.voltage_step.voltage">
+<span class="sig-name descname"><span class="pre">voltage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.voltage_step.voltage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.potentiostat_kbio.voltage_step.vs_init">
+<span class="sig-name descname"><span class="pre">vs_init</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#robotics_api.utils.potentiostat_kbio.voltage_step.vs_init" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.processing_utils">
+<span id="robotics-api-utils-processing-utils-module"></span><h2>robotics_api.utils.processing_utils module<a class="headerlink" href="#module-robotics_api.utils.processing_utils" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.all_cvs_data">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">all_cvs_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#all_cvs_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.all_cvs_data" title="Permalink to this definition"></a></dt>
+<dd><p>Get data from all single CVs and calculate additional properties.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>multi_data (list): List of dictionaries representing data from multiple CVs.
+verbose (int, optional): Verbosity level. Defaults to 1.</p>
+</dd>
+<dt>Returns:</dt><dd><p>list: List containing strings of data from all single CVs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.collection_dict">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">collection_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coll_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#collection_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.collection_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Create a dictionary from a list of dictionaries based on a common key.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>coll_data (list): List of dictionaries.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>dict: A dictionary with keys as unique values from the ‘collect_tag’ field and values as lists of dictionaries</dt><dd><p>having the same ‘collect_tag’ value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.get_cell_constant">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">get_cell_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#get_cell_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.get_cell_constant" title="Permalink to this definition"></a></dt>
+<dd><p>Get cell constant from conductivity calibration data for the current day.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>raise_error (bool, optional): Whether to raise an error if calibration data is not found. Defaults to True.</p>
+</dd>
+<dt>Returns:</dt><dd><p>tuple: Tuple containing lists of measured and true conductivity calibration values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.get_concentration">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">get_concentration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solute_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solv_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soln_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#get_concentration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.get_concentration" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the concentration of a solute in a solvent based on the provided vial content.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>vial_content (list): List of dictionaries representing the content of the vial.
+solute_id (str, optional):
+solv_id (str, optional):
+soln_density (float, optional):
+precision (int, optional):
+mol_fraction (bool, optional):</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Concentration of the solute in the solvent, expressed in molarity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.get_kcl_conductivity">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">get_kcl_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#get_kcl_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.get_kcl_conductivity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.kcl_cell_constant">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">kcl_cell_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conductance_measured</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">di_water_conductivity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#kcl_cell_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.kcl_cell_constant" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.print_ca_analysis">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">print_ca_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#print_ca_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.print_ca_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Generate text analysis of CA data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>multi_data (list): List of dictionaries representing data from multiple CA experiments.
+verbose (int, optional): Verbosity level. Defaults to 1.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Text analysis of the CA data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.print_cv_analysis">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">print_cv_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_anodic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#print_cv_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.print_cv_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Generate text analysis of CV data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>multi_data (list): List of dictionaries representing data from multiple CVs.
+metadata (dict): Metadata for the CV analysis.
+run_anodic (bool, optional): Whether to run anodic analysis. Defaults to RUN_ANODIC.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Text analysis of the CV data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.print_prop">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">print_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#print_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.print_prop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.processing_test">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">processing_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_loc_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_robot_diffusion_2\\20230209\\'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#processing_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.processing_test" title="Permalink to this definition"></a></dt>
+<dd><p>FOR TESTING ONLY
+Perform processing of cyclic voltammetry (CV) data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cv_loc_dir (str, optional): Directory path containing CV data files. Defaults to specified directory.
+submission_info (dict, optional): Information about the submission. Defaults to None.
+metadata (dict, optional): Metadata for the CV analysis. Defaults to None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.processing_utils.prop_by_order">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.processing_utils.</span></span><span class="sig-name descname"><span class="pre">prop_by_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/processing_utils.html#prop_by_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.processing_utils.prop_by_order" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve a property from a list based on order and optional notes.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>prop_list (list): List of property dictionaries.
+order (int, optional): Order of the property. Defaults to 1.
+notes (str, optional): Notes associated with the property. Defaults to None.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: Property dictionary matching the specified order and notes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-robotics_api.utils" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

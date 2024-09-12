@@ -2,9 +2,11 @@ export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export PYTHONPATH=$BASE_DIR
 
 cd $BASE_DIR
-rm -rf docs/ _temp/
+rm -rf _temp/
 mkdir $BASE_DIR/_temp
-mkdir $BASE_DIR/docs
+shopt -s extglob
+rm -rf  $BASE_DIR/docs/*!(.nojekyll)
+
 
 sphinx-apidoc --full -o $BASE_DIR/_temp $BASE_DIR/robotics_api
 cp $BASE_DIR/src/conf.py $BASE_DIR/_temp/

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.utils.potentiostat_hp &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Common%20Errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robotics_api.utils.potentiostat_hp</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robotics_api.utils.potentiostat_hp</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hardpotato</span> <span class="k">as</span> <span class="nn">hp</span>
+<span class="kn">import</span> <span class="nn">softpotato</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">robotics_api.settings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_echem</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c1"># Initialization:</span>
+<span class="n">pot_model</span> <span class="o">=</span> <span class="n">POTENTIOSTAT_B_EXE_PATH</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">Setup</span><span class="p">(</span><span class="n">pot_model</span><span class="p">,</span> <span class="n">POTENTIOSTAT_B_EXE_PATH</span><span class="p">,</span> <span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">POTENTIOSTAT_B_ADDRESS</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="cv_ex"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.potentiostat_hp.cv_ex">[docs]</a><span class="k">def</span> <span class="nf">cv_ex</span><span class="p">(</span><span class="n">resistance</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="c1"># Experimental parameters:</span>
+    <span class="n">Eini</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># V, initial potential</span>
+    <span class="n">Ev1</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># V, first vertex potential</span>
+    <span class="n">Ev2</span> <span class="o">=</span> <span class="mf">0.8</span>  <span class="c1"># V, second vertex potential</span>
+    <span class="n">Efin</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># V, final potential</span>
+    <span class="n">sr</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># V/s, scan rate</span>
+    <span class="n">dE</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># V, potential increment</span>
+    <span class="n">nSweeps</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># number of sweeps</span>
+    <span class="n">sens</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># A/V, current sensitivity</span>
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s1">&#39;CV&#39;</span>  <span class="c1"># base file name for data file</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;CV&#39;</span>  <span class="c1"># header for data file</span>
+
+    <span class="c1"># Initialize experiment:</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="n">Eini</span><span class="p">,</span> <span class="n">Ev1</span><span class="o">=</span><span class="n">Ev1</span><span class="p">,</span> <span class="n">Ev2</span><span class="o">=</span><span class="n">Ev2</span><span class="p">,</span> <span class="n">Efin</span><span class="o">=</span><span class="n">Efin</span><span class="p">,</span> <span class="n">sr</span><span class="o">=</span><span class="n">sr</span><span class="p">,</span> <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span>
+                            <span class="n">dE</span><span class="o">=</span><span class="n">dE</span> <span class="ow">or</span> <span class="n">CV_SAMPLE_INTERVAL</span><span class="p">,</span>
+                            <span class="n">nSweeps</span><span class="o">=</span><span class="n">nSweeps</span> <span class="ow">or</span> <span class="n">CA_STEPS</span><span class="p">,</span>
+                            <span class="n">sens</span><span class="o">=</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CV_SENSITIVITY</span><span class="p">,</span>
+                            <span class="n">fileName</span><span class="o">=</span><span class="n">fileName</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+    <span class="c1"># Run experiment:</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Load recently acquired data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">load_data</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">fileName</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span><span class="p">,</span> <span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="n">pot_model</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">i</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">E</span>
+
+    <span class="c1"># Plot CV with softpotato</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ircomp_ex"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.potentiostat_hp.ircomp_ex">[docs]</a><span class="k">def</span> <span class="nf">ircomp_ex</span><span class="p">():</span>
+    <span class="c1"># Experimental parameters:</span>
+    <span class="n">Eini</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># V, initial potential</span>
+    <span class="n">low_freq</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Hz, low frequency</span>
+    <span class="n">high_freq</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Hz, high frequency</span>
+    <span class="n">amplitude</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># V, ac amplitude (half peak-to-peak)</span>
+    <span class="n">sens</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># A/V, current sensitivity</span>
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s1">&#39;iRComp&#39;</span>  <span class="c1"># base file name for data file</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;iRComp&#39;</span>  <span class="c1"># header for data file</span>
+
+    <span class="n">eis</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">EIS</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="n">Eini</span><span class="p">,</span>
+                              <span class="n">low_freq</span><span class="o">=</span><span class="n">low_freq</span> <span class="ow">or</span> <span class="n">INITIAL_FREQUENCY</span><span class="p">,</span> <span class="n">high_freq</span><span class="o">=</span><span class="n">high_freq</span> <span class="ow">or</span> <span class="n">FINAL_FREQUENCY</span><span class="p">,</span>
+                              <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span> <span class="ow">or</span> <span class="n">AMPLITUDE</span><span class="p">,</span>
+                              <span class="n">sens</span><span class="o">=</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CV_SENSITIVITY</span><span class="p">,</span>
+                              <span class="n">fileName</span><span class="o">=</span><span class="n">fileName</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">eis</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessChiESI</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="n">fileName</span><span class="o">+</span><span class="s2">&quot;.txt&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">resistance</span></div>
+
+
+<div class="viewcode-block" id="ca_ex"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.potentiostat_hp.ca_ex">[docs]</a><span class="k">def</span> <span class="nf">ca_ex</span><span class="p">():</span>
+    <span class="c1"># Experimental parameters. (None means use robotics default)</span>
+    <span class="n">Eini</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># V, initial potential</span>
+    <span class="n">Ev1</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># V, first vertex potential</span>
+    <span class="n">Ev2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>  <span class="c1"># V, second vertex potential</span>
+    <span class="n">pw</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 1e-4  # s, pulse width</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 1e-6  # V, potential increment</span>
+    <span class="n">nSweeps</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 200  # number of sweeps</span>
+    <span class="n">sens</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 1e-4  # A/V, current sensitivity</span>
+    <span class="n">fileName</span> <span class="o">=</span> <span class="s1">&#39;CA&#39;</span>  <span class="c1"># base file name for data file</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;CA&#39;</span>  <span class="c1"># header for data file</span>
+
+    <span class="n">ca</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">CA</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="n">Eini</span><span class="p">,</span> <span class="n">Ev1</span><span class="o">=</span><span class="n">Ev1</span><span class="p">,</span> <span class="n">Ev2</span><span class="o">=</span><span class="n">Ev2</span><span class="p">,</span>
+                            <span class="n">dE</span><span class="o">=</span><span class="n">si</span> <span class="ow">or</span> <span class="n">CA_SAMPLE_INTERVAL</span><span class="p">,</span>
+                            <span class="n">nSweeps</span><span class="o">=</span><span class="n">nSweeps</span> <span class="ow">or</span> <span class="n">CA_STEPS</span><span class="p">,</span>
+                            <span class="n">pw</span><span class="o">=</span><span class="n">pw</span> <span class="ow">or</span> <span class="n">CA_PULSE_WIDTH</span><span class="p">,</span>
+                            <span class="n">sens</span><span class="o">=</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CA_SENSITIVITY</span><span class="p">,</span>
+                            <span class="n">fileName</span><span class="o">=</span><span class="n">fileName</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">ca</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Load recently acquired data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessChiCA</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="n">fileName</span><span class="o">+</span><span class="s2">&quot;.txt&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Resistance (Ohm): &quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">measured_resistance</span><span class="p">)</span></div>
+
+    <span class="c1"># Plot CV with softpotato</span>
+    <span class="c1"># sp.plotting.plot(data.t, data.i, xlab=&#39;$t$ / s&#39;, fig=1, show=1)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># resist = ircomp_ex()</span>
+    <span class="c1"># print(resist)</span>
+    <span class="c1"># cv_ex(resistance=resist)</span>
+    <span class="n">ca_ex</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

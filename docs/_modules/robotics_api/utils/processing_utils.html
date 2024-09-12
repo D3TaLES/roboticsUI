@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>robotics_api.utils.processing_utils &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
-
-  
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,18 +26,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../../index.html" class="icon icon-home">
-            D<sup>3</sup>TaLES Robotics
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
           </a>
               <div class="version">
                 0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -74,7 +69,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">robotics_api.utils.processing_utils</li>
       <li class="wy-breadcrumbs-aside">
@@ -93,10 +88,8 @@
 <span class="kn">from</span> <span class="nn">robotics_api.actions.db_manipulations</span> <span class="kn">import</span> <span class="n">ReagentStatus</span><span class="p">,</span> <span class="n">ChemStandardsDB</span>
 
 
-<div class="viewcode-block" id="collection_dict">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.collection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">collection_dict</span><span class="p">(</span><span class="n">coll_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="collection_dict"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.collection_dict">[docs]</a><span class="k">def</span> <span class="nf">collection_dict</span><span class="p">(</span><span class="n">coll_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dictionary from a list of dictionaries based on a common key.</span>
 
 <span class="sd">    Args:</span>
@@ -110,11 +103,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">tag</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">coll_data</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">tag</span><span class="p">]</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">}</span></div>
 
 
-
-<div class="viewcode-block" id="get_concentration">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_concentration">[docs]</a>
-<span class="k">def</span> <span class="nf">get_concentration</span><span class="p">(</span><span class="n">vial_content</span><span class="p">,</span> <span class="n">solute_id</span><span class="p">,</span> <span class="n">solv_id</span><span class="p">,</span> <span class="n">soln_density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mol_fraction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_concentration"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_concentration">[docs]</a><span class="k">def</span> <span class="nf">get_concentration</span><span class="p">(</span><span class="n">vial_content</span><span class="p">,</span> <span class="n">solute_id</span><span class="p">,</span> <span class="n">solv_id</span><span class="p">,</span> <span class="n">soln_density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mol_fraction</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   Calculate the concentration of a solute in a solvent based on the provided vial content.</span>
 
 <span class="sd">   Args:</span>
@@ -158,10 +148,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">concentration</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">CONCENTRATION_UNIT</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">precision</span><span class="p">),</span> <span class="n">CONCENTRATION_UNIT</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="get_kcl_conductivity">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_kcl_conductivity">[docs]</a>
-<span class="k">def</span> <span class="nf">get_kcl_conductivity</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+<div class="viewcode-block" id="get_kcl_conductivity"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_kcl_conductivity">[docs]</a><span class="k">def</span> <span class="nf">get_kcl_conductivity</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
     <span class="n">temp_k</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">unit_conversion</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="mi">15</span><span class="p">:</span> <span class="mf">1141.5</span><span class="p">,</span>
@@ -183,21 +170,15 @@
     <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">temp_k</span> <span class="o">-</span> <span class="mi">273</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="kcl_cell_constant">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.kcl_cell_constant">[docs]</a>
-<span class="k">def</span> <span class="nf">kcl_cell_constant</span><span class="p">(</span><span class="n">conductance_measured</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">di_water_conductivity</span><span class="o">=</span><span class="n">DI_WATER_COND</span><span class="p">):</span>
+<div class="viewcode-block" id="kcl_cell_constant"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.kcl_cell_constant">[docs]</a><span class="k">def</span> <span class="nf">kcl_cell_constant</span><span class="p">(</span><span class="n">conductance_measured</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">di_water_conductivity</span><span class="o">=</span><span class="n">DI_WATER_COND</span><span class="p">):</span>
     <span class="n">cond</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">conductance_measured</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;uS&#39;</span><span class="p">)</span>
     <span class="n">di_cond</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">di_water_conductivity</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;uS&#39;</span><span class="p">)</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">get_kcl_conductivity</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="o">+</span> <span class="n">di_cond</span><span class="p">)</span> <span class="o">/</span> <span class="n">cond</span></div>
 
 
-
-<div class="viewcode-block" id="get_cell_constant">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_cell_constant">[docs]</a>
-<span class="k">def</span> <span class="nf">get_cell_constant</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_cell_constant"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.get_cell_constant">[docs]</a><span class="k">def</span> <span class="nf">get_cell_constant</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get cell constant from conductivity calibration data for the current day.</span>
 
 <span class="sd">    Args:</span>
@@ -229,20 +210,14 @@
                      <span class="sa">f</span><span class="s2">&quot;workflow today before preceding with CA experiments.&quot;</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="print_prop">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_prop">[docs]</a>
-<span class="k">def</span> <span class="nf">print_prop</span><span class="p">(</span><span class="n">prop_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="print_prop"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_prop">[docs]</a><span class="k">def</span> <span class="nf">print_prop</span><span class="p">(</span><span class="n">prop_dict</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">prop_dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prop_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">prop_dict</span><span class="p">),</span> <span class="n">prop_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-
-<div class="viewcode-block" id="all_cvs_data">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.all_cvs_data">[docs]</a>
-<span class="k">def</span> <span class="nf">all_cvs_data</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="all_cvs_data"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.all_cvs_data">[docs]</a><span class="k">def</span> <span class="nf">all_cvs_data</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get data from all single CVs and calculate additional properties.</span>
 
 <span class="sd">    Args:</span>
@@ -275,11 +250,8 @@
     <span class="k">return</span> <span class="n">single_cvs</span></div>
 
 
-
-<div class="viewcode-block" id="print_cv_analysis">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_cv_analysis">[docs]</a>
-<span class="k">def</span> <span class="nf">print_cv_analysis</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">run_anodic</span><span class="o">=</span><span class="n">RUN_ANODIC</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="print_cv_analysis"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_cv_analysis">[docs]</a><span class="k">def</span> <span class="nf">print_cv_analysis</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">run_anodic</span><span class="o">=</span><span class="n">RUN_ANODIC</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate text analysis of CV data.</span>
 
 <span class="sd">    Args:</span>
@@ -324,11 +296,8 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_txt</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="print_ca_analysis">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_ca_analysis">[docs]</a>
-<span class="k">def</span> <span class="nf">print_ca_analysis</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="print_ca_analysis"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.print_ca_analysis">[docs]</a><span class="k">def</span> <span class="nf">print_ca_analysis</span><span class="p">(</span><span class="n">multi_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate text analysis of CA data.</span>
 
 <span class="sd">    Args:</span>
@@ -361,11 +330,8 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_txt</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="prop_by_order">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.prop_by_order">[docs]</a>
-<span class="k">def</span> <span class="nf">prop_by_order</span><span class="p">(</span><span class="n">prop_list</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="prop_by_order"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.prop_by_order">[docs]</a><span class="k">def</span> <span class="nf">prop_by_order</span><span class="p">(</span><span class="n">prop_list</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve a property from a list based on order and optional notes.</span>
 
 <span class="sd">    Args:</span>
@@ -385,12 +351,9 @@
         <span class="k">return</span> <span class="n">result_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-
-<div class="viewcode-block" id="processing_test">
-<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.processing_test">[docs]</a>
-<span class="k">def</span> <span class="nf">processing_test</span><span class="p">(</span><span class="n">cv_loc_dir</span><span class="o">=</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Users</span><span class="se">\\</span><span class="s2">Lab</span><span class="se">\\</span><span class="s2">D3talesRobotics</span><span class="se">\\</span><span class="s2">data</span><span class="se">\\</span><span class="s2">cv_exp01_robot_diffusion_2</span><span class="se">\\</span><span class="s2">20230209</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="processing_test"><a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.processing_utils.processing_test">[docs]</a><span class="k">def</span> <span class="nf">processing_test</span><span class="p">(</span><span class="n">cv_loc_dir</span><span class="o">=</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Users</span><span class="se">\\</span><span class="s2">Lab</span><span class="se">\\</span><span class="s2">D3talesRobotics</span><span class="se">\\</span><span class="s2">data</span><span class="se">\\</span><span class="s2">cv_exp01_robot_diffusion_2</span><span class="se">\\</span><span class="s2">20230209</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">submission_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    FOR TESTING ONLY</span>
 <span class="sd">    Perform processing of cyclic voltammetry (CV) data.</span>
 
@@ -413,7 +376,6 @@
                                                                           <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CV Plot for Test&quot;</span><span class="p">,</span>
                                                                           <span class="n">xlabel</span><span class="o">=</span><span class="n">MULTI_PLOT_XLABEL</span><span class="p">,</span>
                                                                           <span class="n">ylabel</span><span class="o">=</span><span class="n">MULTI_PLOT_YLABEL</span><span class="p">)</span></div>
-
     <span class="c1"># multi_path = os.path.join(&quot;\\&quot;.join(cv_locations[0].split(&quot;\\&quot;)[:-1]), &quot;multi_cv_plot.png&quot;)</span>
     <span class="c1"># CVPlotter(connector={&quot;scan_data&quot;: &quot;data.middle_sweep&quot;, &quot;variable_prop&quot;: &quot;data.conditions.scan_rate.value&quot;</span>
     <span class="c1">#                      }).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True,</span>

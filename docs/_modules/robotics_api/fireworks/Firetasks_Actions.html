@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.fireworks.Firetasks_Actions &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Common%20Errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robotics_api.fireworks.Firetasks_Actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robotics_api.fireworks.Firetasks_Actions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2024, University of Kentucky</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">add_metaclass</span>
+<span class="kn">from</span> <span class="nn">fireworks</span> <span class="kn">import</span> <span class="n">LaunchPad</span>
+<span class="kn">from</span> <span class="nn">fireworks</span> <span class="kn">import</span> <span class="n">FiretaskBase</span><span class="p">,</span> <span class="n">explicit_serialize</span><span class="p">,</span> <span class="n">FWAction</span>
+<span class="kn">from</span> <span class="nn">robotics_api.actions.standard_actions</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robotics_api.actions.db_manipulations</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="RoboticsBase"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase">[docs]</a><span class="nd">@add_metaclass</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RoboticsBase</span><span class="p">(</span><span class="n">FiretaskBase</span><span class="p">):</span>
+    <span class="n">wflow_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">lpad</span><span class="p">:</span> <span class="n">LaunchPad</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">collection_data</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">processing_data</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">exp_vial</span><span class="p">:</span> <span class="n">VialMove</span>
+    <span class="n">end_experiment</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">exit</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">_fw_name</span> <span class="o">=</span> <span class="s2">&quot;RoboticsBase&quot;</span>
+
+<div class="viewcode-block" id="RoboticsBase.setup_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase.setup_task">[docs]</a>    <span class="k">def</span> <span class="nf">setup_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">,</span> <span class="n">get_exp_vial</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wflow_name&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wflow_name&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exp_name&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exp_name&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;full_name&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;full_name&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_experiment</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;end_experiment&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;end_experiment&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WORKFLOW: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EXPERIMENT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lpad</span> <span class="o">=</span> <span class="n">LaunchPad</span><span class="p">()</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">LAUNCHPAD</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;collection_data&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processing_data</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;processing_data&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="k">if</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EXITING WORKFLOW SEQUENCE&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">get_exp_vial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">exp_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">,</span> <span class="n">wflow_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VIAL: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RoboticsBase.updated_specs"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase.updated_specs">[docs]</a>    <span class="k">def</span> <span class="nf">updated_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># When updating specs, check for fizzled robot jobs and rerun</span>
+        <span class="k">if</span> <span class="n">RERUN_FIZZLED_ROBOT</span><span class="p">:</span>
+            <span class="n">fizzled_fws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lpad</span><span class="o">.</span><span class="n">fireworks</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;FIZZLED&quot;</span><span class="p">,</span> <span class="s2">&quot;$or&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="s2">&quot;_setup_&quot;</span><span class="p">}},</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="s2">&quot;robot&quot;</span><span class="p">}}</span>
+            <span class="p">]})</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;fw_id&quot;</span><span class="p">)</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lpad</span><span class="o">.</span><span class="n">rerun_fw</span><span class="p">(</span><span class="n">fw</span><span class="p">)</span> <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">fizzled_fws</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fireworks </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">fizzled_fws</span><span class="p">)</span><span class="si">}</span><span class="s2"> released from fizzled state.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Update main spec categories: success, metadata, collection_data, and processing_data</span>
+        <span class="n">specs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="s2">&quot;collection_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_data</span><span class="p">,</span>
+                 <span class="s2">&quot;processing_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing_data</span><span class="p">}</span>
+        <span class="n">specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">specs</span></div>
+
+<div class="viewcode-block" id="RoboticsBase.self_fizzle"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RoboticsBase.self_fizzle">[docs]</a>    <span class="k">def</span> <span class="nf">self_fizzle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Self defusing Firetask </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fw_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DispenseLiquid"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.DispenseLiquid">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">DispenseLiquid</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for dispensing liquid</span>
+
+<div class="viewcode-block" id="DispenseLiquid.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.DispenseLiquid.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">solvent</span> <span class="o">=</span> <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_uuid&quot;</span><span class="p">))</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">volume</span> <span class="ow">and</span> <span class="n">EXIT_ZERO_VOLUME</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2">!!!!!!!!! </span><span class="se">\n</span><span class="s2"> ATTENTION! This FW and all subsequent FWs will be exited. &quot;</span>
+                  <span class="s2">&quot;DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. </span><span class="se">\n</span><span class="s2"> !!!!!!!!! </span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solvent</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;solvent&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DispenseLiquid task requires a solvent start_uuid. The start_uuid is type </span><span class="si">{</span><span class="n">solvent</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solvent</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">:</span>
+            <span class="n">solv_station</span> <span class="o">=</span> <span class="n">LiquidStation</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">solvent</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">wflow_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">WEIGH_SOLVENTS</span><span class="p">:</span>
+                <span class="n">solv_station</span><span class="o">.</span><span class="n">dispense_mass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">,</span> <span class="n">volume</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">solv_station</span><span class="o">.</span><span class="n">dispense_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">,</span> <span class="n">volume</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="DispenseSolid"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.DispenseSolid">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">DispenseSolid</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for dispensing solid</span>
+
+<div class="viewcode-block" id="DispenseSolid.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.DispenseSolid.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mass&quot;</span><span class="p">)</span>
+
+        <span class="n">reagent</span> <span class="o">=</span> <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_uuid&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">reagent</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># TODO Dispense solid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">add_reagent</span><span class="p">(</span><span class="n">reagent</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">MASS_UNIT</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="Heat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.Heat">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">Heat</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+<div class="viewcode-block" id="Heat.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.Heat.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># temperature = self.get(&quot;temperature&quot;)</span>
+        <span class="c1"># heat_time = self.get(&quot;time&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">DEFAULT_TEMPERATURE</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="Stir"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.Stir">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">Stir</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+<div class="viewcode-block" id="Stir.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.Stir.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">stir_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">stir_time</span><span class="p">:</span>
+            <span class="n">stir_station</span> <span class="o">=</span> <span class="n">StirStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="s2">&quot;stir&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">stir_station</span><span class="o">.</span><span class="n">perform_stir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">,</span> <span class="n">stir_time</span><span class="o">=</span><span class="n">stir_time</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING. HEAT_STIR action skipped because stir time was </span><span class="si">{</span><span class="n">stir_time</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="MeasureDensity"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.MeasureDensity">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">MeasureDensity</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for measuring density</span>
+
+<div class="viewcode-block" id="MeasureDensity.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.MeasureDensity.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">VOLUME_UNIT</span><span class="p">)</span>
+
+        <span class="n">bal_station</span> <span class="o">=</span> <span class="n">BalanceStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="s2">&quot;balance&quot;</span><span class="p">))</span>
+        <span class="n">pipette_station</span> <span class="o">=</span> <span class="n">PipetteStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="s2">&quot;pipette&quot;</span><span class="p">))</span>
+        <span class="c1"># Get initial mass</span>
+        <span class="n">initial_mass</span> <span class="o">=</span> <span class="n">bal_station</span><span class="o">.</span><span class="n">existing_weight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">)</span>
+        <span class="c1"># Extract solution</span>
+        <span class="n">pipette_station</span><span class="o">.</span><span class="n">pipette</span><span class="p">(</span><span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">vial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">)</span>
+        <span class="c1"># Get final mass</span>
+        <span class="n">final_mass</span> <span class="o">=</span> <span class="n">bal_station</span><span class="o">.</span><span class="n">weigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">)</span>
+
+        <span class="c1"># Discard pipetted solution</span>
+        <span class="n">pipette_station</span><span class="o">.</span><span class="n">pipette</span><span class="p">(</span><span class="n">volume</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Calculate solution density</span>
+        <span class="n">extracted_mass</span> <span class="o">=</span> <span class="n">initial_mass</span> <span class="o">-</span> <span class="n">final_mass</span>
+        <span class="n">raw_density</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">extracted_mass</span> <span class="o">/</span> <span class="n">volume</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">MASS_UNIT</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">VOLUME_UNIT</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">soln_density</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:.3f}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit_conversion</span><span class="p">(</span><span class="n">raw_density</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">DENSITY_UNIT</span><span class="p">),</span> <span class="n">DENSITY_UNIT</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw Density: </span><span class="si">{</span><span class="n">extracted_mass</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">MASS_UNIT</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">VOLUME_UNIT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&gt; SOLUTION DENSITY: &quot;</span><span class="p">,</span> <span class="n">soln_density</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;soln_density&quot;</span><span class="p">:</span> <span class="n">soln_density</span><span class="p">})</span>
+
+        <span class="c1"># Update vial contents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">extract_soln</span><span class="p">(</span><span class="n">extracted_mass</span><span class="o">=</span><span class="n">extracted_mass</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="RecordWorkingElectrodeArea"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RecordWorkingElectrodeArea">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">RecordWorkingElectrodeArea</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for recording size of working electrode</span>
+
+<div class="viewcode-block" id="RecordWorkingElectrodeArea.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RecordWorkingElectrodeArea.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">,</span> <span class="n">get_exp_vial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;working_electrode_radius&quot;</span><span class="p">:</span> <span class="n">DEFAULT_WORKING_ELECTRODE_RADIUS</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="SetupRinsePotentiostat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupRinsePotentiostat">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">SetupRinsePotentiostat</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SetupRinsePotentiostat.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupRinsePotentiostat.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">potentiostat</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active_method&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">action_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">RINSE_VIALS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+        <span class="c1"># If potentiostat not available, return current vial home and fizzle.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">wait_till_available</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2"> not available. Fizzling rinse.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">self_fizzle</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">action_vial</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">:</span> <span class="n">action_vial</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="RinseElectrode"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RinseElectrode">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">RinseElectrode</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for dispensing solvent</span>
+
+<div class="viewcode-block" id="RinseElectrode.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RinseElectrode.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">rinse_time</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_method&quot;</span><span class="p">)</span>
+
+        <span class="n">potentiostat</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">potentiostat</span><span class="o">.</span><span class="n">initiate_pot</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="n">RINSE_VIALS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RINSING POTENTIOSTAT </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2"> FOR </span><span class="si">{</span><span class="n">rinse_time</span><span class="si">}</span><span class="s2"> SECONDS.&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rinse_time</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="CleanElectrode"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.CleanElectrode">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">CleanElectrode</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for dispensing solvent</span>
+
+<div class="viewcode-block" id="CleanElectrode.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.CleanElectrode.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># time = self.get(&quot;time&quot;)</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="SetupPotentiostat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupPotentiostat">[docs]</a><span class="nd">@add_metaclass</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SetupPotentiostat</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="SetupPotentiostat.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupPotentiostat.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_method&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Move vial to potentiostat elevator</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">current_station</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+            <span class="n">potentiostat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">current_station</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="o">!=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="n">potentiostat</span><span class="p">)</span><span class="o">.</span><span class="n">current_experiment</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">self_fizzle</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use the same potentiostat as previous actions in this experiment if applicable</span>
+            <span class="n">pot_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_potentiostat&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pot_type</span><span class="p">):</span>
+                <span class="n">potentiostat</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pot_type</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This experiment already uses instrument </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">wait_till_available</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WAITING &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">available_pot</span> <span class="o">=</span> <span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="n">pot_type</span><span class="p">)</span>
+                <span class="n">potentiostat</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="n">available_pot</span><span class="p">)</span> <span class="k">if</span> <span class="n">available_pot</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SUCCESS, POTENT: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">potentiostat</span><span class="p">)</span>
+            <span class="c1"># If potentiostat not available, return current vial home and fizzle.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="n">potentiostat</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2"> not available. Moving vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="si">}</span><span class="s2"> back home.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">place_home</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">self_fizzle</span><span class="p">()</span>
+            <span class="n">potentiostat</span><span class="o">.</span><span class="n">update_experiment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;POTENTIOSTAT: &quot;</span><span class="p">,</span> <span class="n">potentiostat</span><span class="p">)</span>
+
+        <span class="c1"># Setup metadata</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cycle&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;cycle</span><span class="si">{</span><span class="n">cycle</span> <span class="o">+</span> <span class="mi">1</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;cycle&quot;</span><span class="p">:</span> <span class="n">cycle</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_idx&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_idx&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_potentiostat&quot;</span><span class="p">:</span> <span class="n">potentiostat</span><span class="p">,</span> <span class="s2">&quot;active_vial_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_vial</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                              <span class="s2">&quot;active_method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="SetupCVPotentiostat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupCVPotentiostat">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">SetupCVPotentiostat</span><span class="p">(</span><span class="n">SetupPotentiostat</span><span class="p">):</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;cv&quot;</span></div>
+
+
+<div class="viewcode-block" id="SetupCAPotentiostat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.SetupCAPotentiostat">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">SetupCAPotentiostat</span><span class="p">(</span><span class="n">SetupPotentiostat</span><span class="p">):</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;ca&quot;</span></div>
+
+
+<div class="viewcode-block" id="FinishPotentiostat"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.FinishPotentiostat">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">FinishPotentiostat</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+<div class="viewcode-block" id="FinishPotentiostat.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.FinishPotentiostat.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_method&quot;</span><span class="p">)</span>
+        <span class="n">potentiostat</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">vial_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">current_content</span>
+
+        <span class="k">if</span> <span class="n">vial_id</span><span class="p">:</span>
+            <span class="c1"># Get vial</span>
+            <span class="n">active_vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">vial_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">active_vial</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="n">potentiostat</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;COLLECTING VIAL </span><span class="si">{</span><span class="n">active_vial</span><span class="si">}</span><span class="s2"> FROM </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">active_vial</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Active vial </span><span class="si">{</span><span class="n">active_vial</span><span class="si">}</span><span class="s2"> has already been collected from </span><span class="si">{</span><span class="n">potentiostat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_experiment</span><span class="p">:</span>
+            <span class="n">potentiostat</span><span class="o">.</span><span class="n">update_experiment</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="BenchmarkCV"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.BenchmarkCV">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">BenchmarkCV</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for testing electrode cleanliness</span>
+
+<div class="viewcode-block" id="BenchmarkCV.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.BenchmarkCV.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># CV parameters and keywords</span>
+        <span class="n">voltage_sequence</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">scan_rate</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scan_rate&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scan_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">sens</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sens&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sens&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Prep output file info</span>
+        <span class="n">active_vial_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">)</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span> <span class="o">/</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;benchmark_%H_%M_%S.txt&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Run CV experiment</span>
+        <span class="n">potent</span> <span class="o">=</span> <span class="n">CVPotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cv_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">potent</span><span class="o">.</span><span class="n">initiate_pot</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">))</span>
+        <span class="n">resistance</span> <span class="o">=</span> <span class="n">potent</span><span class="o">.</span><span class="n">run_ircomp_test</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;benchmark_&quot;</span><span class="p">,</span> <span class="s2">&quot;iRComp_&quot;</span><span class="p">))</span> <span class="k">if</span> <span class="n">IR_COMP</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">potent</span><span class="o">.</span><span class="n">run_cv</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">scan_rate</span><span class="o">=</span><span class="n">scan_rate</span><span class="p">,</span>
+                                      <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span> <span class="n">sample_interval</span><span class="o">=</span><span class="n">sample_interval</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="n">sens</span><span class="p">)</span>
+        <span class="c1"># [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(&quot;.bin&quot;)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;benchmark_cv&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;vial_contents&quot;</span><span class="p">:</span> <span class="n">VialStatus</span><span class="p">(</span><span class="n">active_vial_id</span><span class="p">)</span><span class="o">.</span><span class="n">vial_content</span><span class="p">,</span>
+                                     <span class="s2">&quot;data_location&quot;</span><span class="p">:</span> <span class="n">data_path</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;resistance&quot;</span><span class="p">:</span> <span class="n">resistance</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="RunCV"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RunCV">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">RunCV</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for running CV</span>
+
+<div class="viewcode-block" id="RunCV.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RunCV.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># CV parameters and keywords</span>
+        <span class="n">voltage_sequence</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">scan_rate</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scan_rate&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scan_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">resistance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resistance&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">sens</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sensitivity&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sensitivity&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Prep output data file info</span>
+        <span class="n">collect_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">)</span>
+        <span class="n">active_vial_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">)</span>
+        <span class="n">cv_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cv_idx&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span> <span class="o">/</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collect_tag</span><span class="si">}{</span><span class="n">cv_idx</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">_%H_%M_%S.txt&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Run CV experiment</span>
+        <span class="n">potent</span> <span class="o">=</span> <span class="n">CVPotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cv_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">potent</span><span class="o">.</span><span class="n">initiate_pot</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">potent</span><span class="o">.</span><span class="n">run_cv</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">scan_rate</span><span class="o">=</span><span class="n">scan_rate</span><span class="p">,</span>
+                                      <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span><span class="p">,</span> <span class="n">sample_interval</span><span class="o">=</span><span class="n">sample_interval</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="n">sens</span><span class="p">)</span>
+        <span class="c1"># [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(&quot;.bin&quot;)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;cv_idx&quot;</span><span class="p">:</span> <span class="n">cv_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">:</span> <span class="n">collect_tag</span><span class="p">,</span>
+                                     <span class="s2">&quot;vial_contents&quot;</span><span class="p">:</span> <span class="n">VialStatus</span><span class="p">(</span><span class="n">active_vial_id</span><span class="p">)</span><span class="o">.</span><span class="n">vial_content</span><span class="p">,</span>
+                                     <span class="s2">&quot;data_location&quot;</span><span class="p">:</span> <span class="n">data_path</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">))</span>  <span class="c1"># TODO figure out if we want to propogate voltage sequence</span></div></div>
+
+
+<div class="viewcode-block" id="RunCA"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RunCA">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">RunCA</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+    <span class="c1"># FireTask for running CA</span>
+
+<div class="viewcode-block" id="RunCA.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.RunCA.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># CA parameters and keywords</span>
+        <span class="n">voltage_sequence</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voltage_sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_interval&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">pulse_width</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pulse_width&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pulse_width&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">sens</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sens&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sens&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">fw_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;steps&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Prep output data file info</span>
+        <span class="n">collect_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">)</span>
+        <span class="n">active_vial_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">)</span>
+        <span class="n">ca_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ca_idx&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">wflow_name</span> <span class="o">/</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collect_tag</span><span class="si">}{</span><span class="n">ca_idx</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">_%H_%M_%S.txt&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Run CA experiment</span>
+        <span class="n">potent</span> <span class="o">=</span> <span class="n">CAPotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ca_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">potent</span><span class="o">.</span><span class="n">initiate_pot</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_vial_id&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">+=</span> <span class="n">potent</span><span class="o">.</span><span class="n">run_ca</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">si</span><span class="o">=</span><span class="n">sample_interval</span><span class="p">,</span>
+                                      <span class="n">pw</span><span class="o">=</span><span class="n">pulse_width</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="n">sens</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+        <span class="c1"># [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(&quot;.bin&quot;)]</span>
+
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">potent</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RECORDED TEMPERATURE: &quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;ca_idx&quot;</span><span class="p">:</span> <span class="n">ca_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;collect_tag&quot;</span><span class="p">:</span> <span class="n">collect_tag</span><span class="p">,</span>
+                                     <span class="s2">&quot;vial_contents&quot;</span><span class="p">:</span> <span class="n">VialStatus</span><span class="p">(</span><span class="n">active_vial_id</span><span class="p">)</span><span class="o">.</span><span class="n">vial_content</span><span class="p">,</span>
+                                     <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+                                     <span class="s2">&quot;data_location&quot;</span><span class="p">:</span> <span class="n">data_path</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="CollectTemp"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.CollectTemp">[docs]</a><span class="nd">@explicit_serialize</span>
+<span class="k">class</span> <span class="nc">CollectTemp</span><span class="p">(</span><span class="n">RoboticsBase</span><span class="p">):</span>
+<div class="viewcode-block" id="CollectTemp.run_task"><a class="viewcode-back" href="../../../robotics_api.fireworks.html#robotics_api.fireworks.Firetasks_Actions.CollectTemp.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fw_spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_task</span><span class="p">(</span><span class="n">fw_spec</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">(</span><span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Collect temperature</span>
+        <span class="n">potent</span> <span class="o">=</span> <span class="n">CAPotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ca_potentiostat&quot;</span><span class="p">))</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">potent</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RECORDED TEMPERATURE: &quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">FWAction</span><span class="p">(</span><span class="n">update_spec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updated_specs</span><span class="p">())</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

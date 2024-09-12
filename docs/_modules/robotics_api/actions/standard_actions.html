@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.actions.standard_actions &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Common%20Errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robotics_api.actions.standard_actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robotics_api.actions.standard_actions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">from</span> <span class="nn">d3tales_api.Processors.parser_echem</span> <span class="kn">import</span> <span class="n">ProcessChiESI</span>
+<span class="kn">from</span> <span class="nn">robotics_api.utils.kinova_move</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robotics_api.actions.db_manipulations</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="perturbed_snapshot"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.perturbed_snapshot">[docs]</a><span class="k">def</span> <span class="nf">perturbed_snapshot</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="n">PERTURB_AMOUNT</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+        <span class="n">master_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+    <span class="c1"># Generate temporary perturbed file</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="n">master_data</span><span class="p">[</span><span class="s2">&quot;poses&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachPose&quot;</span><span class="p">][</span><span class="s2">&quot;targetPose&quot;</span><span class="p">][</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">perturb_amount</span>
+    <span class="n">master_data</span><span class="p">[</span><span class="s2">&quot;poses&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachPose&quot;</span><span class="p">][</span><span class="s2">&quot;targetPose&quot;</span><span class="p">][</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_height</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="s2">&quot;_temp_perturbed.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">master_data</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="s2">&quot;_temp_perturbed.json&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_try_movement</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">target_position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">error_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">target_position</span><span class="o">=</span><span class="n">target_position</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SNAPSHOT: &quot;</span><span class="p">,</span> <span class="n">snapshot_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+        <span class="c1"># If movement fails the first time, move to home then try again</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving to snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2"> failed the first time...trying to move to home...&quot;</span><span class="p">)</span>
+        <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">success</span>
+
+
+<div class="viewcode-block" id="get_place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.get_place_vial">[docs]</a><span class="k">def</span> <span class="nf">get_place_vial</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">pre_position_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                   <span class="n">release_vial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">go</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that executes an action getting or placing</span>
+<span class="sd">    Args:</span>
+<span class="sd">        snapshot_file: str, path to snapshot file</span>
+<span class="sd">        action_type: str, &#39;get&#39; if the action is getting a vail, &#39;place&#39; if action is placing the vial</span>
+<span class="sd">        pre_position_file: str, path to snapshot file for teh position that should be touched before and after</span>
+<span class="sd">            placing/retrieving the vial</span>
+<span class="sd">        raise_amount: float,</span>
+<span class="sd">        release_vial: bool,</span>
+<span class="sd">        raise_error: bool,</span>
+<span class="sd">        go: bool, go to snapshot file location if True</span>
+<span class="sd">        leave: bool, leave from snapshot file location if True</span>
+<span class="sd">    Returns: bool, success of action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">snapshot_file_above</span> <span class="o">=</span> <span class="n">perturbed_snapshot</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="n">raise_amount</span><span class="p">)</span>
+
+    <span class="c1"># Start open if getting a vial</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">action_type</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span> <span class="k">else</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">go</span><span class="p">:</span>
+        <span class="c1"># If pre-position, go there</span>
+        <span class="k">if</span> <span class="n">pre_position_file</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">pre_position_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm pre-position snapshot </span><span class="si">{</span><span class="n">pre_position_file</span><span class="si">}</span><span class="s2"> before target.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Go to above target position before target</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file_above</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ABOVE: &quot;</span><span class="p">,</span> <span class="n">snapshot_file_above</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to </span><span class="si">{</span><span class="n">raise_amount</span><span class="si">}</span><span class="s2"> above target before snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Go to target position</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">VIAL_GRIP_TARGET</span> <span class="k">if</span> <span class="n">action_type</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span> <span class="k">else</span> <span class="s1">&#39;open&#39;</span> <span class="k">if</span> <span class="n">release_vial</span> <span class="k">else</span> <span class="n">VIAL_GRIP_TARGET</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">target_position</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">leave</span><span class="p">:</span>
+        <span class="c1"># Go to above target position after target</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file_above</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to </span><span class="si">{</span><span class="n">raise_amount</span><span class="si">}</span><span class="s2"> above target after snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If pre-position, go there</span>
+        <span class="k">if</span> <span class="n">pre_position_file</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">pre_position_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm pre-position snapshot </span><span class="si">{</span><span class="n">pre_position_file</span><span class="si">}</span><span class="s2"> after target.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">success</span></div>
+
+
+<div class="viewcode-block" id="screw_lid"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.screw_lid">[docs]</a><span class="k">def</span> <span class="nf">screw_lid</span><span class="p">(</span><span class="n">screw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">starting_position</span><span class="o">=</span><span class="s2">&quot;vial-screw_test.json&quot;</span><span class="p">,</span> <span class="n">linear_z</span><span class="o">=</span><span class="mf">0.00003</span><span class="p">,</span> <span class="n">angular_z</span><span class="o">=</span><span class="mi">120</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that executes an action getting or placing</span>
+<span class="sd">    Args:</span>
+<span class="sd">        screw: bool, screw lid if True, unscrew if false</span>
+<span class="sd">        starting_position: str, filepath to snapshot of starting location</span>
+<span class="sd">        linear_z: float,</span>
+<span class="sd">        angular_z: float, rotation increment in degree</span>
+
+<span class="sd">    Returns: bool, success of action</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">snapshot_start</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="n">starting_position</span><span class="p">)</span>
+    <span class="n">snapshot_top</span> <span class="o">=</span> <span class="n">perturbed_snapshot</span><span class="p">(</span><span class="n">snapshot_start</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">screw</span><span class="p">:</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_top</span><span class="p">)</span>
+        <span class="n">snapshot_start</span> <span class="o">=</span> <span class="n">perturbed_snapshot</span><span class="p">(</span><span class="n">snapshot_start</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_start</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="n">VIAL_GRIP_TARGET</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">rotation_increment</span> <span class="o">=</span> <span class="p">(</span><span class="n">angular_z</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="k">if</span> <span class="n">screw</span> <span class="k">else</span> <span class="p">(</span><span class="o">-</span><span class="n">angular_z</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">raise_height</span> <span class="o">=</span> <span class="n">linear_z</span> <span class="k">if</span> <span class="n">screw</span> <span class="k">else</span> <span class="o">-</span><span class="n">linear_z</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">twist_hand</span><span class="p">(</span><span class="n">linear_z</span><span class="o">=</span><span class="n">raise_height</span><span class="p">,</span> <span class="n">angular_z</span><span class="o">=</span><span class="n">rotation_increment</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">screw</span><span class="p">:</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done unscrewing. &quot;</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_top</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">success</span></div>
+
+
+<div class="viewcode-block" id="send_arduino_cmd"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.send_arduino_cmd">[docs]</a><span class="k">def</span> <span class="nf">send_arduino_cmd</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">ARDUINO_PORT</span><span class="p">,</span> <span class="n">return_txt</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">arduino</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="mi">115200</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">.1</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+            <span class="n">arduino</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="mi">115200</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">.1</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Warning! </span><span class="si">{}</span><span class="s2"> is not connected&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># give the connection a second to settle</span>
+    <span class="n">arduino</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">station</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>  <span class="c1"># EX: E1_0 or P1_1_500</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Command </span><span class="si">{}</span><span class="s2"> given to station </span><span class="si">{}</span><span class="s2"> at </span><span class="si">{}</span><span class="s2"> via Arduino.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">address</span><span class="p">))</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;trying to read...&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">arduino</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;waiting for </span><span class="si">{}</span><span class="s2"> arduino results for </span><span class="si">{:.1f}</span><span class="s2"> seconds...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">result_txt</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># strip out the old lines</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ARDUINO RESULT: &quot;</span><span class="p">,</span> <span class="n">result_txt</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;success&quot;</span> <span class="ow">in</span> <span class="n">result_txt</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">result_txt</span> <span class="k">if</span> <span class="n">return_txt</span> <span class="k">else</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="s2">&quot;failure&quot;</span> <span class="ow">in</span> <span class="n">result_txt</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">arduino</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ABORT_</span><span class="si">{</span><span class="n">station</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborted arduino. Trying to read abort message...&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">arduino</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ARDUINO ABORT MESSAGE: &quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># strip out the old lines</span>
+                <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_test"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.write_test">[docs]</a><span class="k">def</span> <span class="nf">write_test</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">test_type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">test_files</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;CV.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;ca&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;CA.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;ircomp&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;iRComp.txt&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">test_fn</span> <span class="o">=</span> <span class="n">test_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">test_type</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">test_fn</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">test_fn</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+            <span class="n">test_text</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_text</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+        <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">test_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VialMove"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove">[docs]</a><span class="k">class</span> <span class="nc">VialMove</span><span class="p">(</span><span class="n">VialStatus</span><span class="p">):</span>
+
+<div class="viewcode-block" id="VialMove.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To move a vial, a vial ID or reagent UUID or experiment name must be provided.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VialMove.retrieve"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="s2">&quot;robot_grip&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">StationStatus</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> location is listed as robot_grip, but robot grip current_content is &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;listed as </span><span class="si">{</span><span class="n">StationStatus</span><span class="p">(</span><span class="s1">&#39;robot_grip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">current_content</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_available</span><span class="p">():</span>
+            <span class="n">robot_content</span> <span class="o">=</span> <span class="n">StationStatus</span><span class="p">(</span><span class="s1">&#39;robot_grip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">current_content</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to place </span><span class="si">{</span><span class="n">robot_content</span><span class="si">}</span><span class="s2"> home. &quot;</span><span class="p">)</span>
+                <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">robot_content</span><span class="p">)</span><span class="o">.</span><span class="n">place_home</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Robot cannot retrieve </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> vial because robot is unavailable. The robot &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;currently contains </span><span class="si">{</span><span class="n">robot_content</span><span class="si">}</span><span class="s2">. Tried to Place </span><span class="si">{</span><span class="n">robot_content</span><span class="si">}</span><span class="s2"> home. &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Failed with exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_available</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Robot is available&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="s2">&quot;home&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Retrieving vial from home...&quot;</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>  <span class="c1"># Start at home</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span>
+                                          <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;potentiostat&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrieving vial from potentiostat station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                <span class="n">station</span> <span class="o">=</span> <span class="n">PotentiostatStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">station</span><span class="o">.</span><span class="n">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;balance&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrieving vial from balance station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                <span class="n">station</span> <span class="o">=</span> <span class="n">BalanceStation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">station</span><span class="o">.</span><span class="n">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span>
+                                          <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> was not successfully retrieved. Vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is located &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="si">}</span><span class="s2">. &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.go_to_snapshot"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.go_to_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_location</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># success = snapshot_move(SNAPSHOT_HOME)  # Start at home</span>
+        <span class="n">move_kwargs</span><span class="p">[</span><span class="s2">&quot;raise_amount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">move_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;raise_amount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="n">release_vial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                 <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> was not successfully moved to </span><span class="si">{</span><span class="n">target_location</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.place_snapshot"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.place_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">place_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_location</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># success = snapshot_move(SNAPSHOT_HOME)  # Start at home</span>
+        <span class="n">move_kwargs</span><span class="p">[</span><span class="s2">&quot;raise_amount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">move_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;raise_amount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span>
+                                 <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+        <span class="c1"># success += snapshot_move(SNAPSHOT_HOME)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">target_location</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> was not successfully moved to </span><span class="si">{</span><span class="n">target_location</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">StationStatus</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.go_to_station"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.go_to_station">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">StationStatus</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TEST &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">,</span> <span class="n">station</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">station</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">station</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="c1"># success = snapshot_move(SNAPSHOT_HOME)  # Start at home</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LOCATION: &quot;</span><span class="p">,</span> <span class="n">station</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="n">station</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="n">release_vial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                      <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="n">station</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span>
+                                      <span class="n">pre_position_file</span><span class="o">=</span><span class="n">station</span><span class="o">.</span><span class="n">pre_location_snapshot</span><span class="p">)</span>
+            <span class="n">station</span><span class="o">.</span><span class="n">update_available</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">station</span><span class="o">.</span><span class="n">update_content</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> was not successfully moved to </span><span class="si">{</span><span class="n">station</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.leave_station"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.leave_station">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">leave_station</span><span class="p">(</span><span class="n">station</span><span class="p">:</span> <span class="n">StationStatus</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="n">station</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="n">release_vial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                 <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span> <span class="n">go</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="n">station</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">)</span>
+        <span class="n">station</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.place_home"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.place_home">[docs]</a>    <span class="k">def</span> <span class="nf">place_home</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="s2">&quot;home&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is already at home.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">place_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_snapshot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="VialMove.update_position"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.update_position">[docs]</a>    <span class="k">def</span> <span class="nf">update_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_location</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="n">StationStatus</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">station</span><span class="o">.</span><span class="n">exists</span><span class="p">:</span>
+            <span class="n">station</span><span class="o">.</span><span class="n">update_content</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">station</span><span class="o">.</span><span class="n">update_available</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully updated vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> to position </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VialMove.robot_available"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.VialMove.robot_available">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">robot_available</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">StationStatus</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">available</span></div></div>
+
+
+<div class="viewcode-block" id="LiquidStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation">[docs]</a><span class="k">class</span> <span class="nc">LiquidStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="LiquidStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=-</span><span class="mf">0.04</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To operate a solvent station, a solvent name must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;solvent&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not a liquid.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span> <span class="o">=</span> <span class="s2">&quot;L</span><span class="si">{:01d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">solvent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_solvents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">MongoDatabase</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s2">&quot;robotics&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="s1">&#39;status_reagents&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
+        <span class="n">potential_solvents</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">all_solvents</span> <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">potential_solvents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;More than one reagents are listed as located at station </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">potential_solvents</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">potential_solvents</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No reagents are listed as located at station </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">potential_solvents</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="LiquidStation.place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.place_vial">[docs]</a>    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">vial</span><span class="o">.</span><span class="n">go_to_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LiquidStation.dispense_only"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.dispense_only">[docs]</a>    <span class="k">def</span> <span class="nf">dispense_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">perform_dispense</span><span class="o">=</span><span class="n">DISPENSE</span><span class="p">):</span>
+        <span class="n">arduino_vol</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;mL&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># send volume in micro liter</span>
+        <span class="k">if</span> <span class="n">perform_dispense</span><span class="p">:</span>
+            <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="n">arduino_vol</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">volume</span></div>
+
+    <span class="k">def</span> <span class="nf">_dispense_to_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+        <span class="n">actual_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispense_only</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">leave_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">actual_volume</span>
+
+<div class="viewcode-block" id="LiquidStation.dispense_volume"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.dispense_volume">[docs]</a>    <span class="k">def</span> <span class="nf">dispense_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">actual_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispense_to_vial</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="n">vial</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">add_reagent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solvent_id</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">VOLUME_UNIT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">actual_volume</span></div>
+
+<div class="viewcode-block" id="LiquidStation.dispense_mass"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.LiquidStation.dispense_mass">[docs]</a>    <span class="k">def</span> <span class="nf">dispense_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Pre dispense weighing</span>
+        <span class="n">balance</span> <span class="o">=</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="k">if</span> <span class="s2">&quot;balance&quot;</span> <span class="ow">in</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="k">else</span> <span class="n">BalanceStation</span><span class="p">(</span>
+            <span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="s2">&quot;balance&quot;</span><span class="p">))</span>
+        <span class="n">pre_mass</span> <span class="o">=</span> <span class="n">balance</span><span class="o">.</span><span class="n">existing_weight</span><span class="p">(</span><span class="n">vial</span><span class="p">)</span>
+
+        <span class="c1"># Dispense liquid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dispense_to_vial</span><span class="p">(</span><span class="n">vial</span><span class="o">=</span><span class="n">vial</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+
+        <span class="c1"># Post dispense weighing</span>
+        <span class="n">balance</span> <span class="o">=</span> <span class="n">BalanceStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get_first_available</span><span class="p">(</span><span class="s2">&quot;balance&quot;</span><span class="p">))</span>
+        <span class="n">post_mass</span> <span class="o">=</span> <span class="n">balance</span><span class="o">.</span><span class="n">weigh</span><span class="p">(</span><span class="n">vial</span><span class="p">)</span>
+
+        <span class="n">final_mass</span> <span class="o">=</span> <span class="n">post_mass</span> <span class="o">-</span> <span class="n">pre_mass</span>
+
+        <span class="c1"># Update vial contents</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">add_reagent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solvent_id</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">final_mass</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">MASS_UNIT</span><span class="p">)</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">update_weight</span><span class="p">(</span><span class="n">post_mass</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">final_mass</span><span class="si">}{</span><span class="n">MASS_UNIT</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="PipetteStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PipetteStation">[docs]</a><span class="k">class</span> <span class="nc">PipetteStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="PipetteStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PipetteStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=-</span><span class="mf">0.08</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To operate a pipette station, an id must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;pipette&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not a pipette.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span>
+        <span class="c1"># self.pre_location_snapshot = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span> <span class="o">=</span> <span class="s2">&quot;P</span><span class="si">{:01d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="PipetteStation.place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PipetteStation.place_vial">[docs]</a>    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">vial</span><span class="o">.</span><span class="n">go_to_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PipetteStation.pipette"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PipetteStation.pipette">[docs]</a>    <span class="k">def</span> <span class="nf">pipette</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">vial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">PIPETTE</span><span class="p">:</span>
+            <span class="n">arduino_vol</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;mL&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># send volume in micro liter</span>
+            <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="n">arduino_vol</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">vial</span><span class="p">:</span>
+            <span class="n">vial</span><span class="o">.</span><span class="n">leave_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BalanceStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation">[docs]</a><span class="k">class</span> <span class="nc">BalanceStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="BalanceStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To operate a balance station, a balance name must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;balance&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not a balance.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span> <span class="o">=</span> <span class="s2">&quot;B_</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_address</span> <span class="o">=</span> <span class="n">BALANCE_PORT</span></div>
+
+<div class="viewcode-block" id="BalanceStation.place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.place_vial">[docs]</a>    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="n">vial_id</span> <span class="o">=</span> <span class="n">vial</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="n">vial_id</span> <span class="ow">and</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="n">vial</span><span class="o">.</span><span class="n">place_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span>
+                                <span class="n">pre_position_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span><span class="p">,</span>
+                                <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+            <span class="n">vial</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="n">vial_id</span> <span class="o">=</span> <span class="n">vial</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">!=</span> <span class="n">vial_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot retrieve vial </span><span class="si">{</span><span class="n">vial_id</span><span class="si">}</span><span class="s2"> from potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;because vial </span><span class="si">{</span><span class="n">vial_id</span><span class="si">}</span><span class="s2"> is not located in this potentiostat&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vial</span><span class="o">.</span><span class="n">robot_available</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot retrieve vial </span><span class="si">{</span><span class="n">vial_id</span><span class="si">}</span><span class="s2"> from potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;because vial robot arm is not available.&quot;</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
+                                 <span class="n">pre_position_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span><span class="p">,</span>
+                                 <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+<div class="viewcode-block" id="BalanceStation.existing_weight"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.existing_weight">[docs]</a>    <span class="k">def</span> <span class="nf">existing_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_weight</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CURRENT WEIGHT: &quot;</span><span class="p">,</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_weight</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_weight</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weigh</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BalanceStation.weigh"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.weigh">[docs]</a>    <span class="k">def</span> <span class="nf">weigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="n">vial</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tare</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">place_vial</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_mass</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_vial</span><span class="p">(</span><span class="n">vial</span><span class="p">)</span>
+        <span class="n">vial</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mass</span></div>
+
+<div class="viewcode-block" id="BalanceStation.read_mass"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.read_mass">[docs]</a>    <span class="k">def</span> <span class="nf">read_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result_txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_command</span><span class="p">(</span><span class="n">write_txt</span><span class="o">=</span><span class="s2">&quot;S</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">read_response</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">result_list</span> <span class="o">=</span> <span class="n">result_txt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">response_status</span> <span class="o">=</span> <span class="n">result_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">response_status</span> <span class="o">==</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">result_list</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balance reading returned </span><span class="si">{</span><span class="n">result_txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BalanceStation.tare"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.BalanceStation.tare">[docs]</a>    <span class="k">def</span> <span class="nf">tare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_command</span><span class="p">(</span><span class="n">write_txt</span><span class="o">=</span><span class="s2">&quot;T</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">read_response</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;S&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balance </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> tared.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">WAIT_FOR_BALANCE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balance reading returned </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING! Balance returned </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">! Trying again...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write_txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_response</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">balance</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">serial</span><span class="o">.</span><span class="n">SerialException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Warning! Balance </span><span class="si">{}</span><span class="s2"> is not connected to </span><span class="si">{}</span><span class="s2"> because: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># give the connection a second to settle</span>
+        <span class="k">if</span> <span class="n">write_txt</span><span class="p">:</span>
+            <span class="n">balance</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">write_txt</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">read_response</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">balance</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;waiting for </span><span class="si">{}</span><span class="s2"> balance results for </span><span class="si">{:.1f}</span><span class="s2"> seconds...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">result_txt</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># strip out the old lines</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BALANCE RESULT: &quot;</span><span class="p">,</span> <span class="n">result_txt</span><span class="p">)</span>
+                    <span class="n">balance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">result_txt</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StirStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.StirStation">[docs]</a><span class="k">class</span> <span class="nc">StirStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="StirStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.StirStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To operate the Stir-Heat station, a Stir-Heat name must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;stir&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not a potentiostat.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span> <span class="o">=</span> <span class="s2">&quot;S</span><span class="si">{:1d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span></div>
+
+<div class="viewcode-block" id="StirStation.place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.StirStation.place_vial">[docs]</a>    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">vial</span><span class="o">.</span><span class="n">go_to_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StirStation.stir"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.StirStation.stir">[docs]</a>    <span class="k">def</span> <span class="nf">stir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stir_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stir_cmd</span><span class="o">=</span><span class="s2">&quot;off&quot;</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="n">STIR_PERTURB</span><span class="p">,</span> <span class="n">move_sleep</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operate CV elevator</span>
+<span class="sd">        Args:</span>
+<span class="sd">            stir_time: int, time (seconds) for stir plate to be on</span>
+<span class="sd">            stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be</span>
+<span class="sd">                &#39;on&#39; or &#39;off&#39;.</span>
+<span class="sd">            perturb_amount: float, amount to perturb vial during stirring</span>
+<span class="sd">            move_sleep: float, time (seconds) for robot to sleep between stirring moves</span>
+
+<span class="sd">        Returns: bool, True if stir action was a success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">stir_time</span><span class="p">:</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">stir_time</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">STIR</span> <span class="k">else</span> <span class="mi">5</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">STIR</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stirring for </span><span class="si">{</span><span class="n">seconds</span><span class="si">}</span><span class="s2"> seconds...&quot;</span><span class="p">)</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">seconds</span><span class="p">:</span>
+                <span class="c1"># Move vial around stir plate center</span>
+                <span class="n">snapshot_move</span><span class="p">(</span><span class="n">perturbed_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="n">perturb_amount</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">))</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">move_sleep</span><span class="p">)</span>
+                <span class="n">snapshot_move</span><span class="p">(</span><span class="n">perturbed_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=</span><span class="n">perturb_amount</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">))</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">move_sleep</span><span class="p">)</span>
+                <span class="n">snapshot_move</span><span class="p">(</span><span class="n">perturbed_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=-</span><span class="n">perturb_amount</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">))</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">move_sleep</span><span class="p">)</span>
+                <span class="n">snapshot_move</span><span class="p">(</span><span class="n">perturbed_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">perturb_amount</span><span class="o">=-</span><span class="n">perturb_amount</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">))</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">move_sleep</span><span class="p">)</span>
+                <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">STIR</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="n">success</span>
+
+        <span class="c1"># If stir_time not provided, default to implementing stir_cmd</span>
+        <span class="n">stir_cmd</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">stir_cmd</span> <span class="o">==</span> <span class="s2">&quot;off&quot;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">stir_cmd</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span> <span class="k">else</span> <span class="n">stir_cmd</span>
+        <span class="n">stir_cmd</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">stir_cmd</span> <span class="o">==</span> <span class="s2">&quot;on&quot;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">stir_cmd</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="k">else</span> <span class="n">stir_cmd</span>
+        <span class="k">if</span> <span class="n">stir_cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arg &#39;stir&#39; must be 11 or 10, OR it must be &#39;up&#39; or &#39;down&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="n">stir_cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StirStation.perform_stir"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.StirStation.perform_stir">[docs]</a>    <span class="k">def</span> <span class="nf">perform_stir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">stir_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">vial</span><span class="o">.</span><span class="n">go_to_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stir</span><span class="p">(</span><span class="n">stir_time</span><span class="o">=</span><span class="n">stir_time</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">vial</span><span class="o">.</span><span class="n">leave_station</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span></div></div>
+
+
+<div class="viewcode-block" id="PotentiostatStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation">[docs]</a><span class="k">class</span> <span class="nc">PotentiostatStation</span><span class="p">(</span><span class="n">StationStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="PotentiostatStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.028</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_experiment&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;To operate a potentiostat, a potentiostat name must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;potentiostat&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not a potentiostat.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_address</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;POTENTIOSTAT_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pot</span><span class="si">}</span><span class="s2">_ADDRESS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;POTENTIOSTAT_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pot</span><span class="si">}</span><span class="s2">_EXE_PATH&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">elevator</span> <span class="o">=</span> <span class="n">ELEVATOR_DICT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pot</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">p_channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;E</span><span class="si">{</span><span class="n">elevator</span><span class="si">:</span><span class="s2">1d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_serial_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;T</span><span class="si">{</span><span class="n">elevator</span><span class="si">:</span><span class="s2">1d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="n">raise_amount</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.update_experiment"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.update_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">update_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="nb">str</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get current experiment for instance with _id</span>
+<span class="sd">        :param experiment: str or None, current experiment</span>
+<span class="sd">        :return: experiment name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;current_experiment&quot;</span><span class="p">:</span> <span class="n">experiment</span><span class="p">}})</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.initiate_pot"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.initiate_pot">[docs]</a>    <span class="k">def</span> <span class="nf">initiate_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span> <span class="ow">or</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">vial</span><span class="p">:</span>
+            <span class="n">vial</span> <span class="o">=</span> <span class="n">VialMove</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">vial</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">vial</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="n">vial</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is not currently located in potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;It is located at </span><span class="si">{</span><span class="n">vial</span><span class="o">.</span><span class="n">current_location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> does not currently contain vial </span><span class="si">{</span><span class="n">vial</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;It contains </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_elevator</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">):</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.end_pot"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.end_pot">[docs]</a>    <span class="k">def</span> <span class="nf">end_pot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_elevator</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="n">vial_id</span> <span class="o">=</span> <span class="n">vial</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">!=</span> <span class="n">vial_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot retrieve vial </span><span class="si">{</span><span class="n">vial_id</span><span class="si">}</span><span class="s2"> from potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;because vial </span><span class="si">{</span><span class="n">vial_id</span><span class="si">}</span><span class="s2"> is not located in this potentiostat&quot;</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_pot</span><span class="p">()</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">+=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
+                                  <span class="n">pre_position_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span><span class="p">,</span>
+                                  <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+<div class="viewcode-block" id="PotentiostatStation.place_vial"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.place_vial">[docs]</a>    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">:</span> <span class="n">VialMove</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">):</span>
+        <span class="n">vial_id</span> <span class="o">=</span> <span class="n">vial</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">vial</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_content</span> <span class="o">==</span> <span class="n">vial_id</span> <span class="ow">and</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vial</span><span class="o">.</span><span class="n">current_location</span> <span class="o">==</span> <span class="s2">&quot;robot_grip&quot;</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">vial</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>  <span class="c1"># Start at home</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">get_place_vial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span>
+                                      <span class="n">pre_position_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span><span class="p">,</span>
+                                      <span class="n">raise_amount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="n">raise_error</span><span class="p">,</span> <span class="o">**</span><span class="n">move_kwargs</span><span class="p">)</span>
+            <span class="n">vial</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">SNAPSHOT_HOME</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="kc">False</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> not available.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vial </span><span class="si">{</span><span class="n">vial</span><span class="si">}</span><span class="s2"> was not successfully moved to </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">StationStatus</span><span class="p">(</span><span class="s2">&quot;robot_grip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.move_elevator"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.move_elevator">[docs]</a>    <span class="k">def</span> <span class="nf">move_elevator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operate CV elevator</span>
+<span class="sd">        Args:</span>
+<span class="sd">            endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be &#39;up&#39; or &#39;down&#39;.</span>
+<span class="sd">            raise_error: bool, raise error if not successful and True</span>
+
+<span class="sd">        Returns: bool, True if elevator action was a success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">MOVE_ELEVATORS</span><span class="p">:</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span> <span class="k">else</span> <span class="n">endpoint</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="k">else</span> <span class="n">endpoint</span>
+            <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arg &#39;endpoint&#39; must be 1 or 0, OR it must be &#39;up&#39; or &#39;down&#39;.&quot;</span><span class="p">)</span>
+
+            <span class="n">success</span> <span class="o">=</span> <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serial_name</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Elevators NOT moving because MOVE_ELEVATORS is False&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> elevator not successfully raised&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.get_temperature"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.get_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">get_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get temperature associated with this potentiostat station</span>
+
+<span class="sd">        Returns: float, temperature (K)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">arduino_result</span> <span class="o">=</span> <span class="n">send_arduino_cmd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_serial_name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">return_txt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">arduino_result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">arduino_result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;K&quot;</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.generate_volts"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.generate_volts">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_volts</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">volt_unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">):</span>
+        <span class="c1"># Get voltages with appropriate units</span>
+        <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+        <span class="n">voltages</span> <span class="o">=</span> <span class="n">voltage_sequence</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">voltage_units</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">voltages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">units</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">voltages</span><span class="p">):</span>
+            <span class="n">v_unit</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">voltage_units</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">else</span> <span class="n">v</span>
+            <span class="n">v_unit</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">v_unit</span><span class="p">)</span>
+            <span class="n">voltages</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_unit</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+
+        <span class="k">return</span> <span class="n">voltages</span></div>
+
+<div class="viewcode-block" id="PotentiostatStation.generate_col_params"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.PotentiostatStation.generate_col_params">[docs]</a>    <span class="k">def</span> <span class="nf">generate_col_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scan_rate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">volt_unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">scan_unit</span><span class="o">=</span><span class="s2">&quot;V/s&quot;</span><span class="p">):</span>
+        <span class="c1"># Get voltages with appropriate units</span>
+        <span class="n">voltages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_volts</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">volt_unit</span><span class="o">=</span><span class="n">volt_unit</span><span class="p">)</span>
+
+        <span class="c1"># Get scan rate with appropriate units</span>
+        <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+        <span class="n">scan_rate</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">scan_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">scan_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">voltage</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">scan_rate</span><span class="o">=</span><span class="n">scan_rate</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">voltages</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="CVPotentiostatStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CVPotentiostatStation">[docs]</a><span class="k">class</span> <span class="nc">CVPotentiostatStation</span><span class="p">(</span><span class="n">PotentiostatStation</span><span class="p">):</span>
+<div class="viewcode-block" id="CVPotentiostatStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CVPotentiostatStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.028</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CVPotentiostatStation.run_cv"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CVPotentiostatStation.run_cv">[docs]</a>    <span class="k">def</span> <span class="nf">run_cv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resistance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">sample_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path: str, output data file path</span>
+<span class="sd">            voltage_sequence: str, comma-seperated list of voltage points</span>
+<span class="sd">            scan_rate: str, scan rate</span>
+<span class="sd">            resistance: float, solution resistance for iR compensation (A)</span>
+<span class="sd">            sample_interval: float, potential increment (V)</span>
+<span class="sd">            sens: float, current sensitivity (A/V)</span>
+
+<span class="sd">        Returns: bool, success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">sample_interval</span> <span class="ow">or</span> <span class="n">CV_SAMPLE_INTERVAL</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+        <span class="n">sens</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CV_SENSITIVITY</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;A/V&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">RUN_POTENT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;CV is NOT running because RUN_POTENT is set to False. Observing the </span><span class="si">{</span><span class="n">POT_DELAY</span> <span class="o">*</span> <span class="mi">5</span><span class="si">}</span><span class="s2"> second CV_DELAY.&quot;</span><span class="p">)</span>
+            <span class="n">write_test</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">test_type</span><span class="o">=</span><span class="s2">&quot;cv&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">POT_DELAY</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Benchmark CV for voltage range</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RUN CV WITH </span><span class="si">{</span><span class="n">voltage_sequence</span><span class="si">}</span><span class="s2"> VOLTAGES AT </span><span class="si">{</span><span class="n">scan_rate</span><span class="si">}</span><span class="s2"> SCAN RATE WITH </span><span class="si">{</span><span class="n">resistance</span><span class="si">}</span><span class="s2"> SOLN RESISTANCE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;EC&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">robotics_api.utils.potentiostat_kbio</span> <span class="kn">import</span> <span class="n">CvExperiment</span><span class="p">,</span> <span class="n">voltage_step</span>
+            <span class="c1"># Set up CV parameters and KBIO CVExperiment object</span>
+            <span class="n">collect_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_col_params</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">scan_rate</span><span class="p">)</span>
+            <span class="n">expt</span> <span class="o">=</span> <span class="n">CvExperiment</span><span class="p">([</span><span class="n">voltage_step</span><span class="p">(</span><span class="o">**</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">collect_params</span><span class="p">],</span> <span class="n">record_every_de</span><span class="o">=</span><span class="n">sample_interval</span><span class="p">,</span>
+                                <span class="n">potentiostat_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">,</span> <span class="n">potentiostat_channel</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_channel</span><span class="p">),</span>
+                                <span class="n">exe_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span><span class="p">,</span> <span class="n">run_iR</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># Run CV and save data</span>
+            <span class="n">expt</span><span class="o">.</span><span class="n">run_experiment</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">TIME_AFTER_CV</span><span class="p">)</span>
+            <span class="n">expt</span><span class="o">.</span><span class="n">to_txt</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;chi&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">resistance</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning. Resistance is 0 so IR compensation is not in use.&quot;</span><span class="p">)</span>
+            <span class="kn">import</span> <span class="nn">hardpotato</span> <span class="k">as</span> <span class="nn">hp</span>
+            <span class="c1"># Set CV parameters</span>
+            <span class="n">out_folder</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">f_name</span> <span class="o">=</span> <span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">volts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_volts</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">volt_unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+            <span class="n">nSweeps</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">volts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;N_SWEEPS: &quot;</span><span class="p">,</span> <span class="n">nSweeps</span><span class="p">)</span>
+            <span class="n">sr</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">scan_rate</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;V/s&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Install potentiostat and run CV</span>
+            <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">Setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">)</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="n">volts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ev1</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">volts</span><span class="p">),</span> <span class="n">Ev2</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">volts</span><span class="p">),</span> <span class="n">Efin</span><span class="o">=</span><span class="n">volts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sr</span><span class="o">=</span><span class="n">sr</span><span class="p">,</span>
+                                    <span class="n">nSweeps</span><span class="o">=</span><span class="n">nSweeps</span><span class="p">,</span> <span class="n">dE</span><span class="o">=</span><span class="n">sample_interval</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="n">sens</span><span class="p">,</span>
+                                    <span class="n">fileName</span><span class="o">=</span><span class="n">f_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot;CV &quot;</span> <span class="o">+</span> <span class="n">f_name</span><span class="p">,</span> <span class="n">resistance</span><span class="o">=</span><span class="n">resistance</span> <span class="o">*</span> <span class="n">RCOMP_LEVEL</span><span class="p">)</span>
+            <span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">TIME_AFTER_CV</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CV not performed. No procedure for running a CV on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="si">}</span><span class="s2"> model.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CVPotentiostatStation.run_ircomp_test"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CVPotentiostatStation.run_ircomp_test">[docs]</a>    <span class="k">def</span> <span class="nf">run_ircomp_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">e_ini</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">low_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">amplitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run iR comp test to determine resistance</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path: str, output data file path</span>
+<span class="sd">            e_ini: float, V, initial voltage</span>
+<span class="sd">            low_freq: float, Hz, low frequency</span>
+<span class="sd">            high_freq: float, Hz, high frequency</span>
+<span class="sd">            amplitude: float, V, ac amplitude (half peak-to-peak)</span>
+<span class="sd">            sens: float, current sensitivity (A/V)</span>
+
+<span class="sd">        Returns: bool, success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">RUN_POTENT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iR Comp Test is NOT running because RUN_POTENT is set to False. &quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;Observing the </span><span class="si">{</span><span class="n">POT_DELAY</span><span class="si">}</span><span class="s2"> second CV_DELAY.&quot;</span><span class="p">)</span>
+            <span class="n">write_test</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">test_type</span><span class="o">=</span><span class="s2">&quot;iRComp&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">POT_DELAY</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Benchmark CV for voltage range</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RUN IR COMP TEST&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;chi&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">hardpotato</span> <span class="k">as</span> <span class="nn">hp</span>
+            <span class="c1"># Set CV parameters</span>
+            <span class="n">out_folder</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">f_name</span> <span class="o">=</span> <span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Install potentiostat and run CV</span>
+            <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">Setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">)</span>
+            <span class="n">eis</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">EIS</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="n">e_ini</span><span class="p">,</span> <span class="n">low_freq</span><span class="o">=</span><span class="n">low_freq</span> <span class="ow">or</span> <span class="n">INITIAL_FREQUENCY</span><span class="p">,</span>
+                                      <span class="n">high_freq</span><span class="o">=</span><span class="n">high_freq</span> <span class="ow">or</span> <span class="n">FINAL_FREQUENCY</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span> <span class="ow">or</span> <span class="n">AMPLITUDE</span><span class="p">,</span>
+                                      <span class="n">sens</span><span class="o">=</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CV_SENSITIVITY</span><span class="p">,</span> <span class="n">fileName</span><span class="o">=</span><span class="n">f_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot;iRComp &quot;</span> <span class="o">+</span> <span class="n">f_name</span><span class="p">)</span>
+            <span class="n">eis</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+            <span class="c1"># Load recently acquired data</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ProcessChiESI</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder</span><span class="p">,</span> <span class="n">f_name</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">))</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">TIME_AFTER_CV</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">resistance</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">resistance</span></div></div>
+
+
+<div class="viewcode-block" id="CAPotentiostatStation"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CAPotentiostatStation">[docs]</a><span class="k">class</span> <span class="nc">CAPotentiostatStation</span><span class="p">(</span><span class="n">PotentiostatStation</span><span class="p">):</span>
+<div class="viewcode-block" id="CAPotentiostatStation.__init__"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CAPotentiostatStation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="mf">0.028</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">raise_amount</span><span class="o">=</span><span class="n">raise_amount</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CAPotentiostatStation.run_ca"><a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.standard_actions.CAPotentiostatStation.run_ca">[docs]</a>    <span class="k">def</span> <span class="nf">run_ca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">voltage_sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">si</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">volt_min</span><span class="o">=</span><span class="n">MIN_CA_VOLT</span><span class="p">,</span> <span class="n">volt_max</span><span class="o">=</span><span class="n">MAX_CA_VOLT</span><span class="p">,</span> <span class="n">run_delay</span><span class="o">=</span><span class="n">CA_RUN_DELAY</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path: str, output data file path</span>
+<span class="sd">            voltage_sequence: str, comma-seperated list of voltage points</span>
+<span class="sd">            si: float, sample interval (sec)</span>
+<span class="sd">            pw: float, pulse width (sec)</span>
+<span class="sd">            sens: float, current sensitivity (A/V)</span>
+<span class="sd">            steps: float, number of steps</span>
+<span class="sd">            volt_min: float, minimum acceptable voltage for CA experiment</span>
+<span class="sd">            volt_max: float, maximum acceptable voltage for CA experiment</span>
+<span class="sd">            run_delay: float, time to wait before running CA experiment (s)</span>
+
+<span class="sd">        Returns: bool, success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">si</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">si</span> <span class="ow">or</span> <span class="n">CA_SAMPLE_INTERVAL</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+        <span class="n">sens</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">sens</span> <span class="ow">or</span> <span class="n">CA_SENSITIVITY</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;A/V&quot;</span><span class="p">)</span>
+        <span class="n">pw</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">pw</span> <span class="ow">or</span> <span class="n">CA_PULSE_WIDTH</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">steps</span> <span class="ow">or</span> <span class="n">CA_STEPS</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">RUN_POTENT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CV is NOT running because RUN_POTENT is set to False. Observing the </span><span class="si">{</span><span class="n">POT_DELAY</span><span class="si">}</span><span class="s2"> second CV_DELAY.&quot;</span><span class="p">)</span>
+            <span class="n">write_test</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">test_type</span><span class="o">=</span><span class="s2">&quot;ca&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">POT_DELAY</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Benchmark CV for voltage range</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RUN CA WITH </span><span class="si">{</span><span class="n">voltage_sequence</span><span class="si">}</span><span class="s2"> VOLTAGES. Waiting </span><span class="si">{</span><span class="n">run_delay</span><span class="si">}</span><span class="s2"> sec before performing experiment...&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">run_delay</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;chi&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">hardpotato</span> <span class="k">as</span> <span class="nn">hp</span>
+            <span class="c1"># Set CV parameters</span>
+            <span class="n">f_name</span> <span class="o">=</span> <span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">out_folder</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">volts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_volts</span><span class="p">(</span><span class="n">voltage_sequence</span><span class="o">=</span><span class="n">voltage_sequence</span><span class="p">,</span> <span class="n">volt_unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+            <span class="n">max_volt</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">volts</span><span class="p">),</span> <span class="n">volt_max</span><span class="p">))</span> <span class="k">if</span> <span class="n">volt_max</span> <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="n">volts</span><span class="p">)</span>
+            <span class="n">min_volt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">min</span><span class="p">(</span><span class="n">volts</span><span class="p">),</span> <span class="n">volt_min</span><span class="p">))</span> <span class="k">if</span> <span class="n">volt_min</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">volts</span><span class="p">)</span>
+
+            <span class="c1"># Install potentiostat and run CA</span>
+            <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">Setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_exe_path</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_address</span><span class="p">)</span>
+            <span class="n">ca</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">potentiostat</span><span class="o">.</span><span class="n">CA</span><span class="p">(</span><span class="n">Eini</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Ev1</span><span class="o">=</span><span class="n">max_volt</span><span class="p">,</span> <span class="n">Ev2</span><span class="o">=</span><span class="n">min_volt</span><span class="p">,</span> <span class="n">dE</span><span class="o">=</span><span class="n">si</span><span class="p">,</span> <span class="n">nSweeps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">pw</span><span class="o">=</span><span class="n">pw</span><span class="p">,</span>
+                                    <span class="n">sens</span><span class="o">=</span><span class="n">sens</span><span class="p">,</span> <span class="n">fileName</span><span class="o">=</span><span class="n">f_name</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot;CA &quot;</span> <span class="o">+</span> <span class="n">f_name</span><span class="p">)</span>
+            <span class="n">ca</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">TIME_AFTER_CV</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CV not performed. No procedure for running a CV on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pot_model</span><span class="si">}</span><span class="s2"> model.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

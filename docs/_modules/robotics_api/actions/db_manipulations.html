@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.actions.db_manipulations &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/D3TaLES_logo_transparent_robotics.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../RobotRunChecklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CommonErrors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../ExpFlow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../DesktopApp.html">Desktop App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Settings.html">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Fireworks.html">Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../UtilsSnapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../UtilsSnapshots.html#snapshots">Snapshots</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robotics_api.actions.db_manipulations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robotics_api.actions.db_manipulations</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem.rdMolDescriptors</span> <span class="kn">import</span> <span class="n">CalcExactMolWt</span>
+<span class="kn">from</span> <span class="nn">robotics_api.settings</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robotics_api.utils.base_utils</span> <span class="kn">import</span> <span class="n">unit_conversion</span>
+<span class="kn">from</span> <span class="nn">robotics_api.utils.mongo_dbs</span> <span class="kn">import</span> <span class="n">RobotStatusDB</span><span class="p">,</span> <span class="n">MongoDatabase</span>
+
+
+<div class="viewcode-block" id="VialStatus">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">VialStatus</span><span class="p">(</span><span class="n">RobotStatusDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for accessing the Robot Vial Status database</span>
+<span class="sd">    Copyright 2024, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VialStatus.__init__">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            _id (str, optional): The ID. Defaults to None.</span>
+<span class="sd">            exp_name (str, optional): The experiment name. Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">apparatus_type</span><span class="o">=</span><span class="s1">&#39;vials&#39;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exp_name</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exp_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;experiment_name&quot;</span><span class="p">:</span> <span class="n">exp_name</span><span class="p">})</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No vial is associated with experiment name </span><span class="si">{</span><span class="n">exp_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wflow_name&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">check_wflow_name</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;experiment_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_wflow_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;VialHome_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">home_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">home_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vial_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the vial content.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The vial content.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;vial_content&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current weight.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The current weight.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_weight&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current location.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The current location.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_location&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">location_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the location history.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The location history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;location_history&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_station</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current station.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StationStatus: The current station status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">StationStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_location</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VialStatus.update_weight">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.update_weight">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the vial location or station vial status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_weight (str): weight</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">new_weight</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.update_location">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.update_location">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the vial location or station vial status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_location (str): The new vial location.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">new_location</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.update_vial_content">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.update_vial_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_vial_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the vial content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_content (dict): The new vial content.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.clear_vial_content">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.clear_vial_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear_vial_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the vial content.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="p">[]})</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.add_reagent">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.add_reagent">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_reagent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reagent</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a reagent to the vial content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reagent (str or obj): The reagent ID or instance.</span>
+<span class="sd">            amount (str or float or dict): The amount of the reagent.</span>
+<span class="sd">            default_unit (str): The default unit for the reagent amount.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NameError: If the reagent does not exist in the reagent database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reagent</span> <span class="o">=</span> <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">reagent</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagent</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">reagent</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reagent</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;No reagent </span><span class="si">{}</span><span class="s2"> exists in the reagent database.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reagent</span><span class="p">))</span>
+        <span class="n">existing_reagent</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reagent_uuid&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="n">other_reagents</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reagent_uuid&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">existing_reagent</span><span class="p">:</span>
+            <span class="n">old_amount</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">existing_reagent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amount&quot;</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">default_unit</span><span class="p">)</span>
+            <span class="n">new_amount</span> <span class="o">=</span> <span class="n">old_amount</span> <span class="o">+</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">default_unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_amount</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">default_unit</span><span class="p">)</span>
+        <span class="n">new_vial_content</span> <span class="o">=</span> <span class="p">[{</span>
+            <span class="s2">&quot;reagent_uuid&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_amount</span><span class="si">}{</span><span class="n">default_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">}]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="n">other_reagents</span> <span class="o">+</span> <span class="n">new_vial_content</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.extract_soln">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.extract_soln">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_soln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extracted_mass</span><span class="p">,</span> <span class="n">default_mass_unit</span><span class="o">=</span><span class="n">MASS_UNIT</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a reagent to the vial content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            extracted_mass (str or obj): Mass extracted from solution</span>
+<span class="sd">            default_mass_unit (str): The default mass unit for the reagent amount.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NameError: If the reagent does not exist in the reagent database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">original_mass</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">unit_conversion</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;amount&quot;</span><span class="p">],</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">default_mass_unit</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">original_mass</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">extract_perc</span> <span class="o">=</span> <span class="n">extracted_mass</span> <span class="o">/</span> <span class="n">original_mass</span>
+            <span class="n">new_vial_content</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span><span class="p">:</span>
+                <span class="n">reagent</span> <span class="o">=</span> <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">r_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reagent_uuid&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">reagent</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;No reagent </span><span class="si">{}</span><span class="s2"> exists in the reagent database.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reagent</span><span class="p">))</span>
+                <span class="n">old_amount</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">r_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amount&quot;</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">default_mass_unit</span><span class="p">)</span>
+                <span class="n">new_amount</span> <span class="o">=</span> <span class="n">old_amount</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">extract_perc</span><span class="p">)</span>
+                <span class="n">new_vial_content</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;reagent_uuid&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_amount</span><span class="si">}{</span><span class="n">default_mass_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="n">new_vial_content</span><span class="p">,</span>
+            <span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully extracted </span><span class="si">{</span><span class="n">extract_perc</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% of the mass from vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="StationStatus">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">StationStatus</span><span class="p">(</span><span class="n">RobotStatusDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for accessing the Robot Vial Status database</span>
+<span class="sd">    Copyright 2024, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StationStatus.__init__">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            _id (str, optional): The ID. Defaults to None.</span>
+<span class="sd">            state_id (str, optional): The state ID. Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">apparatus_type</span><span class="o">=</span><span class="s1">&#39;stations&#39;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_id</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wflow_name&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">check_wflow_name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_wflow_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pre_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">available</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the availability status.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: The availability status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;available&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current content.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The current content.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_content&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">content_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the content history.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The content history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;content_history&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StationStatus.place_vial">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.place_vial">[docs]</a>
+    <span class="k">def</span> <span class="nf">place_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Placeholder method for placing a vial.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vial: The vial to place.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Placeholder method for retrieving a vial.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vial: The vial to retrieve.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="StationStatus.get_all_available">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.get_all_available">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exp_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all available stations with a specified name string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name_str (str): The name string to search for.</span>
+<span class="sd">            exp_name (str, optional): The experiment name. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of available station IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exp_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span>
+                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">name_str</span><span class="p">},</span>
+                <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="c1"># &quot;$or&quot;: [</span>
+                <span class="c1">#     {&quot;current_experiment&quot;: exp_name},</span>
+                <span class="c1">#     {&quot;current_experiment&quot;: None},</span>
+                <span class="c1"># ]</span>
+            <span class="p">})</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">name_str</span><span class="p">},</span> <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.get_first_available">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.get_first_available">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_first_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the first available station with a specified name string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name_str (str): The name string to search for.</span>
+<span class="sd">            wait (bool, optional): Whether to wait for an available station. Defaults to True.</span>
+<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</span>
+<span class="sd">            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The ID of the first available station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">available_stations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_available</span><span class="p">(</span><span class="n">name_str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">available_stations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">available_stations</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">available_stations</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waited for </span><span class="si">{</span><span class="n">total_time</span><span class="si">}</span><span class="s2"> seconds, and a </span><span class="si">{</span><span class="n">name_str</span><span class="si">}</span><span class="s2"> station is still not available.&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_interval</span><span class="p">)</span>
+            <span class="n">total_time</span> <span class="o">+=</span> <span class="n">wait_interval</span>
+            <span class="k">if</span> <span class="n">max_time</span> <span class="ow">and</span> <span class="p">(</span><span class="n">total_time</span> <span class="o">&gt;=</span> <span class="n">max_time</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">available_stations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_available</span><span class="p">(</span><span class="n">name_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">available_stations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.wait_till_available">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.wait_till_available">[docs]</a>
+    <span class="k">def</span> <span class="nf">wait_till_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait until the station is available.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</span>
+<span class="sd">            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the station becomes available, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waited for </span><span class="si">{</span><span class="n">total_time</span><span class="si">}</span><span class="s2"> seconds and </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> station is still not available.&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_interval</span><span class="p">)</span>
+            <span class="n">total_time</span> <span class="o">+=</span> <span class="n">wait_interval</span>
+            <span class="k">if</span> <span class="n">max_time</span> <span class="ow">and</span> <span class="p">(</span><span class="n">total_time</span> <span class="o">&gt;=</span> <span class="n">max_time</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not available. &quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is available!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.update_available">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.update_available">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the availability status.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (bool): The new availability status.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            prop: The updated availability status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}})</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.update_state">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.update_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the station state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_state (str): The new state for the station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">new_state</span><span class="p">}})</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.update_content">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.update_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the station content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_content: The new content in the station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="n">new_content</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.empty">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty the station content and update availability.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_available</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully emptied station </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReagentStatus">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.ReagentStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">ReagentStatus</span><span class="p">(</span><span class="n">RobotStatusDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for accessing the Robot Reagent Status database</span>
+<span class="sd">    Copyright 2024, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ReagentStatus.__init__">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.ReagentStatus.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_smiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r_name (str, optional): The name of the reagent. Defaults to None.</span>
+<span class="sd">            r_smiles (str, optional): The SMILES representation of the reagent. Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">apparatus_type</span><span class="o">=</span><span class="s1">&#39;reagents&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">r_name</span><span class="p">})</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No reagent is associated with name </span><span class="si">{</span><span class="n">r_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">r_smiles</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="n">r_smiles</span><span class="p">})</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No reagent is associated with smiles </span><span class="si">{</span><span class="n">r_smiles</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wflow_name&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_wflow_name</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">purity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;purity&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formal_potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;formal_potential&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;density&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;smiles&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_wflow_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">molecular_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the molecular weight of the reagent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The molecular weight of the reagent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot calculate molecular weight because no SMILES is associated with </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">rdkmol</span> <span class="o">=</span> <span class="n">MolFromSmiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CalcExactMolWt</span><span class="p">(</span><span class="n">rdkmol</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ChemStandardsDB">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.ChemStandardsDB">[docs]</a>
+<span class="k">class</span> <span class="nc">ChemStandardsDB</span><span class="p">(</span><span class="n">MongoDatabase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for accessing the Chem Standards database for robotic fireworks</span>
+<span class="sd">    Copyright 2024, University of Kentucky</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ChemStandardsDB.__init__">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.ChemStandardsDB.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">standards_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override_lists</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            standards_type (str): The type of chemistry standard.</span>
+<span class="sd">            _id (str, optional): The ID of the standard. Defaults to None.</span>
+<span class="sd">            instance (dict, optional): The instance to insert or validate. Defaults to None.</span>
+<span class="sd">            override_lists (bool, optional): Whether to override existing lists. Defaults to True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span> <span class="o">=</span> <span class="s1">&#39;standards_&#39;</span> <span class="o">+</span> <span class="n">standards_type</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s2">&quot;robotics&quot;</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">validate_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="n">instance</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="n">override_lists</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation of the ChemStandardsDB instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A string representation of the instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the standard exists in the database.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the standard exists, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span> <span class="k">else</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ChemStandardsDB.get_prop">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.ChemStandardsDB.get_prop">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a property of the standard from the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prop (str): The property to retrieve.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The value of the property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">})</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="check_duplicates">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.check_duplicates">[docs]</a>
+<span class="k">def</span> <span class="nf">check_duplicates</span><span class="p">(</span><span class="n">test_list</span><span class="p">,</span> <span class="n">exemptions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for duplicates in a list, excluding specified exemptions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_list (list): The list to check for duplicates.</span>
+<span class="sd">        exemptions (list, optional): Items to exclude from duplicate checking. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A comma-separated string of duplicate items, or None if no duplicates are found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exemptions</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]:</span>
+        <span class="n">test_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_list</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">test_list</span><span class="p">)):</span>
+        <span class="n">duplicates</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">test_list</span> <span class="k">if</span> <span class="n">test_list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">duplicates</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_reagent_db">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.reset_reagent_db">[docs]</a>
+<span class="k">def</span> <span class="nf">reset_reagent_db</span><span class="p">(</span><span class="n">reagents_list</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">solvent_densities</span><span class="o">=</span><span class="n">SOLVENT_DENSITIES</span><span class="p">,</span> <span class="n">potentials_dict</span><span class="o">=</span><span class="n">FORMAL_POTENTIALS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the reagent database with the provided list of reagents.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reagents_list (list): List of dictionaries representing reagents.</span>
+<span class="sd">        current_wflow_name (str, optional): Name of the current workflow. Defaults to &quot;&quot;.</span>
+<span class="sd">        solvent_densities (dict, optional): Dictionary with solvent SMILES and densities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check reagent locations 1-to-1 status</span>
+    <span class="n">reagent_locs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reagents_list</span><span class="p">]</span>
+    <span class="n">duplicate_reagents</span> <span class="o">=</span> <span class="n">check_duplicates</span><span class="p">(</span><span class="n">reagent_locs</span><span class="p">,</span> <span class="n">exemptions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;experiment_vial&quot;</span><span class="p">,</span> <span class="s2">&quot;solvent&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">duplicate_reagents</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than one reagent is assigned the same station: &quot;</span> <span class="o">+</span> <span class="n">duplicate_reagents</span><span class="p">)</span>
+
+    <span class="n">ReagentStatus</span><span class="p">()</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({})</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reagents_list</span><span class="p">:</span>
+        <span class="n">smiles</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;smiles&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">:</span> <span class="n">current_wflow_name</span><span class="p">,</span>
+                  <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">solvent_densities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">smiles</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">DENSITY_UNIT</span><span class="p">),</span>
+                  <span class="s2">&quot;formal_potential&quot;</span><span class="p">:</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">potentials_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">smiles</span><span class="p">),</span> <span class="n">default_unit</span><span class="o">=</span><span class="n">POTENTIAL_UNIT</span><span class="p">)})</span>
+        <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">r</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_station_db">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.reset_station_db">[docs]</a>
+<span class="k">def</span> <span class="nf">reset_station_db</span><span class="p">(</span><span class="n">current_wflow_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the station database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        current_wflow_name (str, optional): Name of the current workflow. Defaults to &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">StationStatus</span><span class="p">()</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({})</span>
+    <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">STATIONS</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;down&quot;</span> <span class="k">if</span> <span class="s2">&quot;potentiostat&quot;</span> <span class="ow">in</span> <span class="n">station</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">StationStatus</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">station</span><span class="p">,</span>
+            <span class="s2">&quot;current_wflow_name&quot;</span><span class="p">:</span> <span class="n">current_wflow_name</span><span class="p">,</span>
+            <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;current_content&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;content_history&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="reset_vial_db">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.reset_vial_db">[docs]</a>
+<span class="k">def</span> <span class="nf">reset_vial_db</span><span class="p">(</span><span class="n">experiment_locs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the vial database with the provided experiment locations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment_locs (dict): Dictionary mapping vial IDs to experiment names.</span>
+<span class="sd">        current_wflow_name (str, optional): Name of the current workflow. Defaults to &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check experiment locations 1-to-1 status</span>
+    <span class="n">experiment_locs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">RINSE_VIALS</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check_duplicates</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">experiment_locs</span><span class="o">.</span><span class="n">values</span><span class="p">())):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;More than one experiment is assigned same vial(s): &quot;</span> <span class="o">+</span> <span class="n">check_duplicates</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">experiment_locs</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+    <span class="n">exp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">r</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">experiment_locs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EXPERIMENT DICT: &quot;</span><span class="p">,</span> <span class="n">exp_dict</span><span class="p">)</span>
+
+    <span class="c1"># Set up vial locations DB</span>
+    <span class="n">VialStatus</span><span class="p">()</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({})</span>
+    <span class="k">for</span> <span class="n">vial</span> <span class="ow">in</span> <span class="n">VIALS</span><span class="p">:</span>
+        <span class="n">VialStatus</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">vial</span><span class="p">,</span>
+            <span class="s2">&quot;current_wflow_name&quot;</span><span class="p">:</span> <span class="n">current_wflow_name</span><span class="p">,</span>
+            <span class="s2">&quot;experiment_name&quot;</span><span class="p">:</span> <span class="n">exp_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vial</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;current_weight&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;current_location&quot;</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;weight_history&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;location_history&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="reset_test_db">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.reset_test_db">[docs]</a>
+<span class="k">def</span> <span class="nf">reset_test_db</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the test database with default configurations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wflow_name</span> <span class="o">=</span> <span class="s2">&quot;test_workflow&quot;</span>
+    <span class="n">reagents</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;3d5f63fd-a6b0-4cc0-922c-befbeeb3577a&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;10-[2-(2-methoxyethoxy)ethyl]phenothiazine&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;COCCOCCN1C2=C(C=CC=C2)SC3=C1C=CC=C3&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;sigma_aldrich&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;redox_molecule&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;redox active molecule(s) (a.k.a. redox core)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;purity&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="s1">&#39;experiment_vial&#39;</span><span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;29690ed4-bf85-4945-9c2d-907eb942515d&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Acetonitrile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;CC#N&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;sigma_aldrich&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;with 0.25M TEABF4 supporting electrolyte&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;purity&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent_01&#39;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;c1727c49-8cb3-4b83-a672-7b218a51d845&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;1,4-ditert-butyl-2,5-bis(2-methoxyethoxy)benzene&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;CC(C)(C)C1=C(OCCOC)C=C(C(C)(C)C)C(OCCOC)=C1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;sigma_aldrich&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;redox_molecule&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;redox active molecule(s) (a.k.a. redox core)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;purity&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="s1">&#39;experiment_vial&#39;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;29690ed4-bf85-4945-9c2d-907eb942515d&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Acetonitrile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;CC#N&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;sigma_aldrich&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;with 0.25M TEABF4 supporting electrolyte&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;purity&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="s1">&#39;solvent_01&#39;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;exp01&#39;</span><span class="p">:</span> <span class="s1">&#39;A_01&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;exp02&#39;</span><span class="p">:</span> <span class="s1">&#39;A_02&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;exp03&#39;</span><span class="p">:</span> <span class="s1">&#39;A_03&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;exp04&#39;</span><span class="p">:</span> <span class="s1">&#39;A_04&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reset_reagent_db</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span>
+    <span class="n">reset_vial_db</span><span class="p">(</span><span class="n">experiments</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span>
+    <span class="n">reset_station_db</span><span class="p">(</span><span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="setup_status_db">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.setup_status_db">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_status_db</span><span class="p">(</span><span class="n">wflow_name</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">reagents</span><span class="p">):</span>
+    <span class="n">reset_reagent_db</span><span class="p">(</span><span class="n">reagents</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span>
+    <span class="n">reset_vial_db</span><span class="p">(</span><span class="n">experiments</span><span class="p">,</span> <span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span>
+    <span class="n">reset_station_db</span><span class="p">(</span><span class="n">current_wflow_name</span><span class="o">=</span><span class="n">wflow_name</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># reset_test_db()</span>
+    <span class="c1"># StationStatus().get_first_available(&quot;cv&quot;, exp_name=&quot;exp01&quot;)</span>
+    <span class="c1"># setup_formal_potentials()</span>
+    <span class="c1"># test_calib()</span>
+
+    <span class="n">setup_status_db</span><span class="p">(</span><span class="s2">&quot;Cond3_all_TEMPO_&quot;</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;exp01&quot;</span><span class="p">:</span> <span class="s2">&quot;A_01&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;exp02&quot;</span><span class="p">:</span> <span class="s2">&quot;A_02&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">[{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;29690ed4-bf85-4945-9c2d-907eb942515d&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent_01&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Acetonitrile&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot;CC#N&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;sigma_aldrich&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent&quot;</span>
+                    <span class="p">},</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;f12e7ae7-e893-44b9-8fee-51787f23fbdb&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;supporting electrolyte&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TBAPF6&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot; F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;sigma_aldrich&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;electrolyte&quot;</span>
+                    <span class="p">},</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;330391e4-855b-4a1d-851e-59445c65fad0&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;redox active molecule(s) (a.k.a. redox core)&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TEMPO&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot;CC1(C)CCCC(C)(C)N1[O]&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;uk_lab&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;redox_molecule&quot;</span>
+                    <span class="p">},</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;29690ed4-bf85-4945-9c2d-907eb942515d&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent_01&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Acetonitrile&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot;CC#N&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;sigma_aldrich&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent&quot;</span>
+                    <span class="p">},</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;f12e7ae7-e893-44b9-8fee-51787f23fbdb&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;supporting electrolyte&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TBAPF6&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot; F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;sigma_aldrich&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;electrolyte&quot;</span>
+                    <span class="p">},</span> <span class="p">{</span>
+                        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;330391e4-855b-4a1d-851e-59445c65fad0&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;redox active molecule(s) (a.k.a. redox core)&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_vial&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TEMPO&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;purity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="s2">&quot;CC1(C)CCCC(C)(C)N1[O]&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;uk_lab&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;redox_molecule&quot;</span>
+                    <span class="p">}]</span>
+                    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

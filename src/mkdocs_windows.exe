@@ -17,6 +17,5 @@ make clean
 make html
 
 cp -r $env:BASE_DIR/_temp/_build/html/* $env:BASE_DIR/docs
-type nul > $env:BASE_DIR/docs/.nojekyll
 rm -r $env:BASE_DIR/_temp
 cd $env:BASE_DIR

@@ -19,7 +19,7 @@ The RoboticsAPI also contains the following items:
   the robot should be before/after moving to the station. Note that some snapshots give Cartesian
   coordinates while others give actuator angles.
 
-.. image:: _static/robotics_api_scheme.png
+.. image:: media/robotics_api_scheme.png
 
 
 

@@ -1,7 +1,7 @@
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd $BASE_DIR
-rm -r docs/ _temp/
+rm -rf docs/ _temp/
 mkdir $BASE_DIR/_temp
 mkdir $BASE_DIR/docs
 
@@ -18,7 +18,7 @@ make html
 
 cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
 touch $BASE_DIR/docs/.
-rm -r  $BASE_DIR/_temp/
+rm -rf  $BASE_DIR/_temp/
 cd $BASE_DIR
 
 

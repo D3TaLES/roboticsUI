@@ -1,6 +1,6 @@
 
 Welcome to the D\ :sup:`3`\ TaLES Robotics API documentation!
-====================================================
+=============================================================
 
 .. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
 
@@ -19,7 +19,7 @@ The RoboticsAPI also contains the following items:
   the robot should be before/after moving to the station. Note that some snapshots give Cartesian
   coordinates while others give actuator angles.
 
-.. image:: media/robotics_api_scheme.png
+.. image:: _static/robotics_api_scheme.png
 
 
 

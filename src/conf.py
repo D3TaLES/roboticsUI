@@ -45,7 +45,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'recommonmark',
     'sphinx.ext.napoleon',
-    # 'myst_parser'
+    'myst_parser',
+    "sphinx.ext.autosectionlabel"
 ]
 
 def skip(app, what, name, obj, would_skip, options):
@@ -58,6 +59,9 @@ def skip(app, what, name, obj, would_skip, options):
 def setup(app):
     app.connect("autodoc-skip-member", skip)
 
+
+# Make sure the target is unique
+autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

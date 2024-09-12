@@ -1,5 +1,5 @@
 
-D\ :sup:`3`\ TaLES Robotics User Interface and API Documentation!
+D\ :sup:`3`\ TaLES Robotics UI and API Documentation!
 =================================================================
 
 .. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
@@ -23,6 +23,8 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>` contains sev
 - ``test_data``: Example, standard, and test experimental data.
 
 
+.. image:: media/software_setup.png
+   :alt: General software setup
 
 .. toctree::
    :maxdepth: 3

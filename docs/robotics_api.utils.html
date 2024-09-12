@@ -19,7 +19,8 @@
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="robotics_api.snapshots package" href="robotics_api.snapshots.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,177 +41,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">robotics_api.utils package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.base_utils.unit_conversion"><code class="docutils literal notranslate"><span class="pre">unit_conversion()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.kinova_gripper">robotics_api.utils.kinova_gripper module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove"><code class="docutils literal notranslate"><span class="pre">GripperMove</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.__init__"><code class="docutils literal notranslate"><span class="pre">GripperMove.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.cleanup"><code class="docutils literal notranslate"><span class="pre">GripperMove.cleanup()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_gripper.GripperMove.gripper_move"><code class="docutils literal notranslate"><span class="pre">GripperMove.gripper_move()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.kinova_move">robotics_api.utils.kinova_move module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.check_for_end_or_abort"><code class="docutils literal notranslate"><span class="pre">check_for_end_or_abort()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.check_for_sequence_end_or_abort"><code class="docutils literal notranslate"><span class="pre">check_for_sequence_end_or_abort()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.move_gripper"><code class="docutils literal notranslate"><span class="pre">move_gripper()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.sequence_move"><code class="docutils literal notranslate"><span class="pre">sequence_move()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move"><code class="docutils literal notranslate"><span class="pre">snapshot_move()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move_angular"><code class="docutils literal notranslate"><span class="pre">snapshot_move_angular()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.snapshot_move_cartesian"><code class="docutils literal notranslate"><span class="pre">snapshot_move_cartesian()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_move.twist_hand"><code class="docutils literal notranslate"><span class="pre">twist_hand()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.kinova_utils">robotics_api.utils.kinova_utils module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.TCP_PORT</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.UDP_PORT</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.__init__"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createTcpConnection()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createUdpConnection()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.kinova_utils.parseConnectionArguments"><code class="docutils literal notranslate"><span class="pre">parseConnectionArguments()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.get_collection"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_collection()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.DBconnector.get_database"><code class="docutils literal notranslate"><span class="pre">DBconnector.get_database()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase"><code class="docutils literal notranslate"><span class="pre">MongoDatabase</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.__init__"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.array_checker"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.array_checker()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.dot2dict()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.field_checker"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.field_checker()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.insert"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.insert()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.make_query"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.make_query()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase.path_insert"><code class="docutils literal notranslate"><span class="pre">MongoDatabase.path_insert()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.__init__"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.check_wflow_name()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.exists"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.exists</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.get_prop()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.update_status"><code class="docutils literal notranslate"><span class="pre">RobotStatusDB.update_status()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.Schema2Class"><code class="docutils literal notranslate"><span class="pre">Schema2Class</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.Schema2Class.__init__"><code class="docutils literal notranslate"><span class="pre">Schema2Class.__init__()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.mongo_dbs.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.potentiostat_hp">robotics_api.utils.potentiostat_hp module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.ca_ex"><code class="docutils literal notranslate"><span class="pre">ca_ex()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.cv_ex"><code class="docutils literal notranslate"><span class="pre">cv_ex()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_hp.ircomp_ex"><code class="docutils literal notranslate"><span class="pre">ircomp_ex()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils.potentiostat_kbio">robotics_api.utils.potentiostat_kbio module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment"><code class="docutils literal notranslate"><span class="pre">CaExperiment</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CaExperiment.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CaExperiment.experiment_print()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parameterize()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parsed_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CaExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CaExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment"><code class="docutils literal notranslate"><span class="pre">CpExperiment</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CpExperiment.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CpExperiment.experiment_print()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parameterize()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parsed_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CpExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CpExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment"><code class="docutils literal notranslate"><span class="pre">CvExperiment</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CvExperiment.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CvExperiment.experiment_print()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parameterize()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parsed_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.plot"><code class="docutils literal notranslate"><span class="pre">CvExperiment.plot()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.CvExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CvExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment"><code class="docutils literal notranslate"><span class="pre">EisExperiment</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">EisExperiment.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">EisExperiment.experiment_print()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parameterize()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parsed_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">EisExperiment.tech_file</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.EisExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">EisExperiment.to_txt()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_connection"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_connection()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_kernel"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_kernel()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.cv_row_parser"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.cv_row_parser()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.experiment_print()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.iR_comp_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.iR_comp_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.load_firmware"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.load_firmware()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.normalize_steps"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.normalize_steps()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.parsed_data</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.print_messages()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_experiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_experiment()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_iR_comp"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_iR_comp()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_data_records"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_data_records()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_parsed_data()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.tech_file</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.to_txt()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.trimmed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.trimmed_data</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.ca_exp"><code class="docutils literal notranslate"><span class="pre">ca_exp()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.cp_ex"><code class="docutils literal notranslate"><span class="pre">cp_ex()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step"><code class="docutils literal notranslate"><span class="pre">current_step</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.__init__"><code class="docutils literal notranslate"><span class="pre">current_step.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.current"><code class="docutils literal notranslate"><span class="pre">current_step.current</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.duration"><code class="docutils literal notranslate"><span class="pre">current_step.duration</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.current_step.vs_init"><code class="docutils literal notranslate"><span class="pre">current_step.vs_init</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.cv_ex"><code class="docutils literal notranslate"><span class="pre">cv_ex()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step"><code class="docutils literal notranslate"><span class="pre">voltage_step</span></code></a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.__init__"><code class="docutils literal notranslate"><span class="pre">voltage_step.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.scan_rate"><code class="docutils literal notranslate"><span class="pre">voltage_step.scan_rate</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.voltage"><code class="docutils literal notranslate"><span class="pre">voltage_step.voltage</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.potentiostat_kbio.voltage_step.vs_init"><code class="docutils literal notranslate"><span class="pre">voltage_step.vs_init</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="robotics_api.html">robotics_api package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="robotics_api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.actions.html">robotics_api.actions package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">robotics_api.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_gripper">robotics_api.utils.kinova_gripper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_move">robotics_api.utils.kinova_move module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_utils">robotics_api.utils.kinova_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.potentiostat_hp">robotics_api.utils.potentiostat_hp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.potentiostat_kbio">robotics_api.utils.potentiostat_kbio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.processing_utils">robotics_api.utils.processing_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-robotics_api.utils.processing_utils">robotics_api.utils.processing_utils module</a><ul>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.all_cvs_data"><code class="docutils literal notranslate"><span class="pre">all_cvs_data()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.collection_dict"><code class="docutils literal notranslate"><span class="pre">collection_dict()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_cell_constant"><code class="docutils literal notranslate"><span class="pre">get_cell_constant()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_concentration"><code class="docutils literal notranslate"><span class="pre">get_concentration()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.get_kcl_conductivity"><code class="docutils literal notranslate"><span class="pre">get_kcl_conductivity()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.kcl_cell_constant"><code class="docutils literal notranslate"><span class="pre">kcl_cell_constant()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_ca_analysis"><code class="docutils literal notranslate"><span class="pre">print_ca_analysis()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_cv_analysis"><code class="docutils literal notranslate"><span class="pre">print_cv_analysis()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.print_prop"><code class="docutils literal notranslate"><span class="pre">print_prop()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.processing_test"><code class="docutils literal notranslate"><span class="pre">processing_test()</span></code></a></li>
-<li><a class="reference internal" href="#robotics_api.utils.processing_utils.prop_by_order"><code class="docutils literal notranslate"><span class="pre">prop_by_order()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-robotics_api.utils">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api.settings">robotics_api.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -225,6 +84,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="robotics_api.html">robotics_api package</a></li>
       <li class="breadcrumb-item active">robotics_api.utils package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/robotics_api.utils.rst.txt" rel="nofollow"> View page source</a>
@@ -1248,7 +1108,9 @@ notes (str, optional): Notes associated with the property. Defaults to None.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="robotics_api.snapshots.html" class="btn btn-neutral float-left" title="robotics_api.snapshots package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

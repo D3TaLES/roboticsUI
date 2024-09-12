@@ -6,7 +6,8 @@ $env:projectname='D<sup>3</sup>TaLES Robotics UI'
 $env:BASE_DIR="C:\Users\Lab\D3talesRobotics\roboticsUI"
 
 cd $env:BASE_DIR
-rm -r docs/ _temp/
+rm -r docs/
+rm -r _temp/
 mkdir $env:BASE_DIR/_temp
 mkdir $env:BASE_DIR/docs
 

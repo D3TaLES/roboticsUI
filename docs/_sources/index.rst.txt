@@ -29,8 +29,10 @@ The RoboticsAPI also contains the following items:
 .. image:: media/robotics_api_scheme.png
 
 
+
+
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Overview
 
    Installation
@@ -47,6 +49,7 @@ The RoboticsAPI also contains the following items:
    Actions
    Databases
    Utils and Snapshots
+   robotics_api
 
 
 

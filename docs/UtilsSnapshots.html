@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Common Errors &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>Utils &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Settings" href="Settings.html" />
-    <link rel="prev" title="Robot Run Checklist" href="Robot%20Run%20Checklist.html" /> 
+    <link rel="next" title="robotics_api package" href="robotics_api.html" />
+    <link rel="prev" title="Robotics Databases" href="Databases.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,20 +49,20 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Quickstart.html">QuickStart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Common Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RobotRunChecklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
 <ul>
@@ -83,9 +83,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Common Errors</li>
+      <li class="breadcrumb-item active">Utils</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/Common Errors.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/UtilsSnapshots.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -93,28 +93,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="common-errors">
-<h1>Common Errors<a class="headerlink" href="#common-errors" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">NameError:</span> <span class="pre">Argument</span> <span class="pre">wflow_name</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">match</span> <span class="pre">instance</span> <span class="pre">current_wflow_name</span></code>: You are trying to run a
-workflow that is not initiated. You are likely trying to run two workflows at once. Ensure all other
-workflows are COMPLETED, PAUSED, or DEFUSED, then rerun the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework from the workflow you
-are trying to run.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Conductivity</span> <span class="pre">calibration</span> <span class="pre">for</span> <span class="pre">today</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">exist.</span></code>: You are trying to measure conductivity
-(processing CA experiment files so trying to get the cell constant) when you have not run a CA
-calibration that day. Run a CA calibration every day you perform CA experiments.</p></li>
-<li></li>
-<li><p>In general, <strong>read error messages</strong>! Error messages should explain what went wrong. You can
-also use the traceback to find where in the code the error occurred.</p></li>
-</ul>
+  <section id="utils">
+<h1>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h1>
+</section>
+<section id="snapshots">
+<h1>Snapshots<a class="headerlink" href="#snapshots" title="Link to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Robot%20Run%20Checklist.html" class="btn btn-neutral float-left" title="Robot Run Checklist" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Settings.html" class="btn btn-neutral float-right" title="Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Databases.html" class="btn btn-neutral float-left" title="Robotics Databases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="robotics_api.html" class="btn btn-neutral float-right" title="robotics_api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,10 +1,25 @@
 
-Welcome to the D\ :sup:`3`\ TaLES Robotics API documentation!
-=============================================================
+Welcome to the D\ :sup:`3`\ TaLES Robotics User Interface and API documentation!
+================================================================================
 
 .. |D3TaLES| replace:: D\ :sup:`3`\ TaLES
 
-The RoboticsAPI is designed to manage the D\ :sup:`3`\ TaLES robotics system. It consists of three modules, each of increasing abstraction:
+RoboticsUI Contents
+==================
+
+This repository contains several directories:
+
+- ``_kbio``: Python API for the Kinova robot. These files are taken directly from the commercial
+   `Kinova Python API <https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L>`_. They should not be edited.
+- ``GUI``: Code for the robotics desktop app. Used Tkinter.
+- ``robotics_api``: Robotics API that manages robotic workflows. (More discussion below.)
+- ``test_data``: Example, standard, and test experimental data.
+
+
+Robotics API
+============
+
+The Robotics API is designed to manage the D\ :sup:`3`\ TaLES robotics system. It consists of three modules, each of increasing abstraction:
 
 - ``utils``: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.
 - ``actions``: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.
@@ -30,18 +45,18 @@ The RoboticsAPI also contains the following items:
 
    Installation
    Quickstart
-   Robot Run Checklist
-   Common Errors
+   RobotRunChecklist
+   CommonErrors
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Modules and More
 
    Settings
    Fireworks
    Actions
    Databases
-   Utils and Snapshots
+   UtilsSnapshots
 
 .. toctree::
    :maxdepth: 1

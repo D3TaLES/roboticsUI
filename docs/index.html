@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to the D3TaLES Robotics API documentation! &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>Welcome to the D3TaLES Robotics User Interface and API documentation! &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -51,8 +51,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Quickstart.html">QuickStart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Common%20Errors.html">Common Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RobotRunChecklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
 <ul>
@@ -60,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html#snapshots">Snapshots</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
 <ul>
@@ -82,7 +82,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to the D<sup>3</sup>TaLES Robotics API documentation!</li>
+      <li class="breadcrumb-item active">Welcome to the D<sup>3</sup>TaLES Robotics User Interface and API documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,9 +92,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-the-d3tales-robotics-api-documentation">
-<h1>Welcome to the D<sup>3</sup>TaLES Robotics API documentation!<a class="headerlink" href="#welcome-to-the-d3tales-robotics-api-documentation" title="Link to this heading"></a></h1>
-<p>The RoboticsAPI is designed to manage the D<sup>3</sup>TaLES robotics system. It consists of three modules, each of increasing abstraction:</p>
+  <section id="welcome-to-the-d3tales-robotics-user-interface-and-api-documentation">
+<h1>Welcome to the D<sup>3</sup>TaLES Robotics User Interface and API documentation!<a class="headerlink" href="#welcome-to-the-d3tales-robotics-user-interface-and-api-documentation" title="Link to this heading"></a></h1>
+</section>
+<section id="roboticsui-contents">
+<h1>RoboticsUI Contents<a class="headerlink" href="#roboticsui-contents" title="Link to this heading"></a></h1>
+<p>This repository contains several directories:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_kbio</span></code>: Python API for the Kinova robot. These files are taken directly from the commercial</dt><dd><p><a class="reference external" href="https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L">Kinova Python API</a>. They should not be edited.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GUI</span></code>: Code for the robotics desktop app. Used Tkinter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">robotics_api</span></code>: Robotics API that manages robotic workflows. (More discussion below.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_data</span></code>: Example, standard, and test experimental data.</p></li>
+</ul>
+</section>
+<section id="robotics-api">
+<h1>Robotics API<a class="headerlink" href="#robotics-api" title="Link to this heading"></a></h1>
+<p>The Robotics API is designed to manage the D<sup>3</sup>TaLES robotics system. It consists of three modules, each of increasing abstraction:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.</p></li>
@@ -125,8 +142,12 @@ coordinates while others give actuator angles.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="Quickstart.html#running-an-experiment">Running an Experiment…</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Robot%20Run%20Checklist.html">Robot Run Checklist</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Common%20Errors.html">Common Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RobotRunChecklist.html">Robot Run Checklist</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="RobotRunChecklist.html#before-running-a-workflow">Before Running a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RobotRunChecklist.html#after-running-a-workflow">After Running a Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -134,10 +155,28 @@ coordinates while others give actuator angles.</p></li>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#high-level-workflow">High-Level Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html#db-manipulations">1. DB Manipulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#purpose">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#core-components">Core Components:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html#standard-actions">2. Standard Actions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#id1">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#id2">Core Components:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Actions.html#example-usage">Example Usage:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html#system-tests">3. System Tests</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html#snapshots">Snapshots</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">

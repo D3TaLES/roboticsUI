@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Common Errors" href="Common%20Errors.html" />
+    <link rel="next" title="Common Errors" href="CommonErrors.html" />
     <link rel="prev" title="QuickStart" href="Quickstart.html" /> 
 </head>
 
@@ -52,8 +52,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Quickstart.html">QuickStart</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Common%20Errors.html">Common Errors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-running-a-workflow">Before Running a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#after-running-a-workflow">After Running a Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CommonErrors.html">Common Errors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules and More</span></p>
 <ul>
@@ -61,8 +65,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Actions.html">Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Utils%20and%20Snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html#snapshots">Snapshots</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
 <ul>
@@ -85,7 +89,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Robot Run Checklist</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/Robot Run Checklist.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/RobotRunChecklist.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -95,6 +99,8 @@
              
   <section id="robot-run-checklist">
 <h1>Robot Run Checklist<a class="headerlink" href="#robot-run-checklist" title="Link to this heading"></a></h1>
+<section id="before-running-a-workflow">
+<h2>Before Running a Workflow<a class="headerlink" href="#before-running-a-workflow" title="Link to this heading"></a></h2>
 <ul>
 <li><p>Load Robotics Workflow</p>
 <ul>
@@ -162,13 +168,41 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
 </li>
 </ul>
 </section>
+<section id="after-running-a-workflow">
+<h2>After Running a Workflow<a class="headerlink" href="#after-running-a-workflow" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Ensure workflow is finished.</p>
+<ul>
+<li><p>Ensure robot is not active.</p></li>
+<li><p>End all running terminals.</p></li>
+<li><p>Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)</p></li>
+</ul>
+</li>
+<li><p>Turn off hardware.</p>
+<ul>
+<li><p>Move robot to resting END_HOME position. Turn off.</p></li>
+<li><p>Turn off pump.</p></li>
+<li><p>Turn off instruments.</p></li>
+</ul>
+</li>
+<li><p>Clean up materials.</p>
+<ul>
+<li><p>Cap all experiment vials.</p></li>
+<li><p>Place secure cap on liquid dispensing solvent jars.</p></li>
+<li><p>Remove and clean electrodes.</p></li>
+<li><p>Rinse and wipe down temperature probe.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Quickstart.html" class="btn btn-neutral float-left" title="QuickStart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Common%20Errors.html" class="btn btn-neutral float-right" title="Common Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CommonErrors.html" class="btn btn-neutral float-right" title="Common Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

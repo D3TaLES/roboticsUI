@@ -2,14 +2,14 @@
 
 ## Experiments and Workflows
 
-There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see [](ExpFlow_Robotic_workflows).) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see [](Fireworks).)
+There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see {ref}`ExpFlow`.) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see {ref}`Fireworks`.)
 
 Key terms:
 * **ExpFlow Template**: Generic procedure outline for a single experiment created on ExpFlow
 * **ExpFlow Robotic Workflow**: Specific procedure based on an ExpFlow template. It may consist of many parallel experiments, all with the same genreric Template procedure but differing in a couple parameters. This is also create on ExpFlow and can be downloaded as a JSON file.
 * **Workflow (FireWorks Workflow)**: The FireWorks workflow object derived from a loaded ExpFlow Robotic Workflow.
 * **Experiment**: A series of actions that is analogous to a single experiment from the ExpFlow Robotic Workflow (based on the original ExpFlow Template).
-* **Set of Actions (FireWorks Firework)**: A FireWorks firework may contain one or more actions from the original ExpFlow Template & Robotic Workflow. These are often grouped by [Categories](fireworks_categories).
+* **Set of Actions (FireWorks Firework)**: A FireWorks firework may contain one or more actions from the original ExpFlow Template & Robotic Workflow. These are often grouped by {ref}`Fireworks/Fireworks`.
 * **Action (FireWorks Firetask)**: A FireWorks firetask corresponds directly with an action from the original ExpFlow Template & Robotic Workflow. Examples include `DispenseLiquid`, `MeasureDensity`, `RunCV`, `DataProcessor`, etc.
 
 
@@ -28,7 +28,7 @@ A researcher first builds an Robotic Workflow on ExpFlow. The researcher then do
 
 ### Robotics API
 
-The Robotics API is designed to manage the D\ :sup:`3`\ TaLES robotics system. It consists of three modules, each of increasing abstraction:
+The Robotics API is designed to manage the robotics system. It consists of three modules, each of increasing abstraction:
 
 - ``utils``: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.
 - ``actions``: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.

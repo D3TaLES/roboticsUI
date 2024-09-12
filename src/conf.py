@@ -31,6 +31,7 @@ release = __version__
 html_favicon = "media/D3TaLES_logo_transparent_robotics.ico"
 
 
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -42,7 +43,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx_rtd_theme',
     'sphinx.ext.githubpages',
-    # 'recommonmark',
+    'recommonmark',
     'sphinx.ext.napoleon',
     'myst_parser',
     "sphinx.ext.autosectionlabel"
@@ -96,3 +97,7 @@ html_static_path = ['_static']
 
 # -- Extension configuration -------------------------------------------------
 
+source_suffix = [
+    ".md",
+    ".rst"
+]

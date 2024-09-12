@@ -51,6 +51,7 @@ The RoboticsAPI also contains the following items:
    :caption: Overview
 
    Installation
+   TeminologySetup
    Quickstart
    RobotRunChecklist
    CommonErrors

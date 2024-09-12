@@ -1,10 +1,6 @@
+(ExpFlow_Robotic_workflows)=
 # ExpFlow Robotic Workflows
 
-
-## Terminology
-
-* **ExpFlow Template**:  
-* **ExpFlow Robotic**:  
 
 ## Building a Template
 
@@ -20,3 +16,5 @@
 ### Set default parameters
 
 ### Establish variable parameters
+
+*!! This page is in still in development *

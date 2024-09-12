@@ -1,3 +1,4 @@
+(Robot_Run_Checklist)=
 # Robot Run Checklist
 
 ## Before Running a Workflow
@@ -17,7 +18,8 @@
   * Balance
   * Stir plate (turn the rotation rate to desired value)
 * Prepare materials:
-  * Measure and dispense solids
+  * Measure and dispense solids into experiment vials
+  * Place stir bars in experiment vials.
   * Bubble argon in solvent
   * Fill rinsing vials
 * Prepare Stations
@@ -32,7 +34,9 @@
   * Ensure any necessary calibration workflows have been completed.
   * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or desktop app)
-  * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run. 
+    > If managing workflows through the command line, be sure to [activate the environment](activate_environment) in any new terminal.   
+
+  * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run.
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally
      > run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.
 

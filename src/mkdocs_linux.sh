@@ -1,4 +1,5 @@
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH=$BASE_DIR
 
 cd $BASE_DIR
 rm -rf docs/ _temp/

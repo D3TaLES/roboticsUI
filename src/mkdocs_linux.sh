@@ -19,10 +19,10 @@ make clean
 make html
 
 cd $BASE_DIR
-cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
-touch $BASE_DIR/docs/.nojekyll
-rm -rf  $BASE_DIR/_temp/
-
-git add docs/
-git commit -am "Update documentation from GitHub Actions" || echo "No changes to commit"
-git push
+#cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
+#touch $BASE_DIR/docs/.nojekyll
+#rm -rf  $BASE_DIR/_temp/
+#
+#git add docs/
+#git commit -am "Update documentation from GitHub Actions" || echo "No changes to commit"
+#git push

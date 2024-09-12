@@ -118,25 +118,6 @@ hardware directly.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">robotics_api</span></code>: Robotics API that manages robotic workflows. (More discussion below.)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test_data</span></code>: Example, standard, and test experimental data.</p></li>
 </ul>
-</section>
-<section id="robotics-api">
-<h1>Robotics API<a class="headerlink" href="#robotics-api" title="Link to this heading"></a></h1>
-<p>The Robotics API is designed to manage the D<sup>3</sup>TaLES robotics system. It consists of three modules, each of increasing abstraction:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fireworks</span></code>: With the highest level of abstraction, this module contains classes and functions for FireWorks Workflows, FireWorks, and FireTasks.</p></li>
-</ul>
-<p>The RoboticsAPI also contains the following items:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code>: A single file with all adjustable settings for robotics operations. <strong>Always review this file before operating the robotic system!</strong></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">snapshots</span></code>: A directory containing Kinova snapshots (JSON files) for positions
-for the robot. Files named <code class="docutils literal notranslate"><span class="pre">&lt;station_name&gt;.json</span></code> give the position of the robot where
-the vial sits directly in the station. Files named <code class="docutils literal notranslate"><span class="pre">pre_&lt;station_name&gt;.json</span></code> give the position
-the robot should be before/after moving to the station. Note that some snapshots give Cartesian
-coordinates while others give actuator angles.</p></li>
-</ul>
-<img alt="_images/robotics_api_scheme.png" src="_images/robotics_api_scheme.png" />
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
@@ -220,7 +201,19 @@ coordinates while others give actuator angles.</p></li>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.actions.html">robotics_api.actions package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html">robotics_api.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api.settings">robotics_api.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

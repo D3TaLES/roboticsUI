@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Actions &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>Actions Module &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Robotics Databases" href="Databases.html" />
-    <link rel="prev" title="Fireworks" href="Fireworks.html" /> 
+    <link rel="prev" title="Fireworks Module" href="Fireworks.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,8 +64,8 @@
 <p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Settings.html">Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Actions</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Fireworks.html">Fireworks Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Actions Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#high-level-workflow">High-Level Workflow</a></li>
 </ul>
@@ -85,7 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html">Utils Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="UtilsSnapshots.html#snapshots">Snapshots</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
@@ -107,7 +107,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Actions</li>
+      <li class="breadcrumb-item active">Actions Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Actions.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -117,14 +117,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p>(Actions)=</p>
-<section id="actions">
-<h1>Actions<a class="headerlink" href="#actions" title="Link to this heading"></a></h1>
+  <section id="actions-module">
+<h1>Actions Module<a class="headerlink" href="#actions-module" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference external" href="Robotics_Databases"></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference external" href="Utils"></a> and <a class="reference internal" href="Fireworks.html"><span class="doc"></span></a> modules.</p>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="#Robotics_Databases"><code class="xref myst docutils literal notranslate"><span class="pre">Robotics_Databases</span></code></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="#Utils"><code class="xref myst docutils literal notranslate"><span class="pre">Utils</span></code></a> and <a class="reference internal" href="Fireworks.html"><span class="doc std std-doc">Fireworks Module</span></a> modules.</p>
 <p>The module consists of three files:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>
 <li><p><strong>standard_actions.py</strong>: Provides a set of classes for managing the real-time operations (e.g., movement, positioning) of vials and stations.</p></li>
 <li><p><strong>system_tests.py</strong>: Contains several tests for the robotic system software and hardware.</p></li>
@@ -133,7 +132,7 @@
 <section id="high-level-workflow">
 <h3>High-Level Workflow<a class="headerlink" href="#high-level-workflow" title="Link to this heading"></a></h3>
 <p>The strength of the actions module lies in how the two components (db_manipulations and standard_actions) work together. While db_manipulations ensures that data is accurately reflected in the database, standard_actions ensures that physical operations are seamlessly executed and tracked. This integration ensures real-time synchronization between the physical world and the database, a critical aspect of robotics and lab automation.</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><strong>Database Interaction</strong>:
 Use classes in <code class="docutils literal notranslate"><span class="pre">db_manipulations.py</span></code> to create, update, and retrieve information about vials and stations from the MongoDB database.</p></li>
 <li><p><strong>Physical Manipulation</strong>:
@@ -210,6 +209,7 @@ The <code class="docutils literal notranslate"><span class="pre">system_tests.py
 
 <span class="c1"># Move potentiostat elevator up  </span>
 <span class="n">test_potent</span><span class="o">.</span><span class="n">move_elevator</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
+
 </pre></div>
 </div>
 </section>
@@ -224,7 +224,7 @@ The <code class="docutils literal notranslate"><span class="pre">system_tests.py
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Fireworks.html" class="btn btn-neutral float-left" title="Fireworks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Fireworks.html" class="btn btn-neutral float-left" title="Fireworks Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Databases.html" class="btn btn-neutral float-right" title="Robotics Databases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

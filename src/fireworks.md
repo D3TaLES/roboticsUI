@@ -1,10 +1,10 @@
-# Fireworks Module
+# Module - Fireworks
 
 ## Workflow
 
 ## Fireworks
 
-> **Categories**
+### Categories
 
 ## Firewtasks
 

@@ -33,7 +33,7 @@ Select `Add Action` (purple cursor in image below), then fill in the information
 
 A Template can be adapted to a Robotic Workflow. After building a template, navigate to the template details page and select `Use For Robotics`. You must be logged in to view this button. If this button does not appear, you may not have the correct permissions.
 
-```{image} media/use-for-workflow.png
+```{image} media/use_for_workflow.png
 :alt: Use for Workflow
 ```
 

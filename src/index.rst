@@ -44,17 +44,18 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>`_ contains se
 
 .. toctree::
    :maxdepth: 3
-   :caption: API Modules and More
+   :caption: Robotics API
 
+   api_overview
    settings
    fireworks
    actions
-   utils_snapshots
+   utils
    databases
 
 .. toctree::
    :maxdepth: 4
-   :caption: Detailed Code Docs
+   :caption: Raw API Code Docs
 
    robotics_api
 

@@ -1,8 +1,8 @@
-# Actions Module
+# Module - Actions
 
 ## Overview
 
-The **actions** module consists of classes and functions that manage and track robotic actions related to **vials**, **stations**, and **standards**.  It interacts directly with the MongoDB robotics database collections (for more, see {ref}`databases:robotics databases`) to store and retrieve these items' status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the {ref}`utils_snapshots:utils module` and {ref}`fireworks:fireworks module` modules.
+The **actions** module consists of classes and functions that manage and track robotic actions related to **vials**, **stations**, and **standards**.  It interacts directly with the MongoDB robotics database collections (for more, see {ref}`databases:robotics databases`) to store and retrieve these items' status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the {ref}`utils_snapshots:utils module` and {ref}`fireworks:module - fireworks` modules.
 
 The module consists of three files:
 

@@ -2,7 +2,7 @@
 
 ## Experiments and Workflows
 
-There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see {ref}`expflow:expflow-robotic-workflows`.) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see {ref}`fireworks:fireworks`.)
+There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see {ref}`expflow:expflow robotic workflows`.) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see {ref}`fireworks:fireworks`.)
 
 Key terms:
 * **ExpFlow Template**: Generic procedure outline for a single experiment created on ExpFlow

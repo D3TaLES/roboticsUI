@@ -23,7 +23,9 @@ Key terms:
 
 A researcher first builds an Robotic Workflow on ExpFlow. The researcher then downloads the Robotic Workflow to the local robotics computer. Here, through the Robotics Desktop App, the researcher loads the workflow and assigns reagent locations in the robot space. This step requires human actions as a safety measure to ensure that robotic experiments have human supervision. Finally, the Robotics API translates the loaded workflow into robotic actions (which are managed through the Fireworks software). Through the local robotics app, the researcher may launch robotic actions to perform the electrochemistry experiment and complete subsequent data processing.
 
-[](media/software_setup.png)
+```{image} media/software_setup.png
+:alt: Software Setup
+```
 
 
 ### Robotics API

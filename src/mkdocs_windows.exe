@@ -1,0 +1,26 @@
+$env:BASE_DIR="C:\Users\Lab\D3talesRobotics\roboticsUI"
+
+cd $env:BASE_DIR
+rm -r docs/
+rm -r _temp/
+mkdir $env:BASE_DIR/_temp
+mkdir $env:BASE_DIR/docs
+
+sphinx-apidoc --full -o $env:BASE_DIR/_temp $env:BASE_DIR/robotics_api
+cp $env:BASE_DIR/src/conf.py $env:BASE_DIR/_temp/
+cp $env:BASE_DIR/src/index.rst $env:BASE_DIR/_temp/
+cp $env:BASE_DIR/src/*.md $env:BASE_DIR/_temp/
+cp -r $env:BASE_DIR/src/media $env:BASE_DIR/_temp/
+
+cd $env:BASE_DIR/_temp
+make clean
+make html
+
+cp -r $env:BASE_DIR/_temp/_build/html/* $env:BASE_DIR/docs
+cp $env:BASE_DIR/src/.nojekyll $env:BASE_DIR/docs
+cd $env:BASE_DIR
+rm -r $env:BASE_DIR/_temp
+
+git add docs/
+git commit -m "Update documentation from GitHub Actions" || echo "No changes to commit"
+git push

@@ -2,7 +2,7 @@
 
 ## Experiments and Workflows
 
-There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see {ref}`expflow:expflow-robotic-workflows`.) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see {ref}`fireworks:fireworks`.)
+There are several terms related to experimental procedures. ExpFlow Templates and Robotic Workflows are generated in the ExpFlow software and serve to outline the experimental procedure. (For more on ExpFlow Templates and Robotic Workflows, see {ref}`expflow:expflow robotic workflows`.) When a downloaded ExpFlow Robotic Workflow is loaded through the Desktop App, it is translated into a FireWorks-based Workflow consisting of Experiments (sets of FireWorks Fireworks), which consist of Actions (FireWorks Firetasks). (For more on the Fireworks structure, see {ref}`fireworks:fireworks`.)
 
 Key terms:
 * **ExpFlow Template**: Generic procedure outline for a single experiment created on ExpFlow
@@ -23,7 +23,9 @@ Key terms:
 
 A researcher first builds an Robotic Workflow on ExpFlow. The researcher then downloads the Robotic Workflow to the local robotics computer. Here, through the Robotics Desktop App, the researcher loads the workflow and assigns reagent locations in the robot space. This step requires human actions as a safety measure to ensure that robotic experiments have human supervision. Finally, the Robotics API translates the loaded workflow into robotic actions (which are managed through the Fireworks software). Through the local robotics app, the researcher may launch robotic actions to perform the electrochemistry experiment and complete subsequent data processing.
 
-[](media/software_setup.png)
+```{image} media/software_setup.png
+:alt: Software Setup
+```
 
 
 ### Robotics API
@@ -43,8 +45,9 @@ The RoboticsAPI also contains the following items:
   the robot should be before/after moving to the station. Note that some snapshots give Cartesian
   coordinates while others give actuator angles.
 
-[](media/robotics_api_scheme.png)
-
+```{image} media/robotics_api_scheme.png
+:alt: Robotics API Schema
+```
 
 ## Hardware Setup
 
@@ -57,4 +60,6 @@ Stations:
 * **Potentiostats**: CHI potentiostat instruments for performing electrochemical measurements.
 * **Kinova Robotic Arm**: The robot :)
 
-[](media/hardware_setup.png)
+```{image} media/hardware_setup.png
+:alt: Hardware Setup
+```

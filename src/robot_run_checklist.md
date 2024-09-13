@@ -33,7 +33,7 @@
   * Ensure any necessary calibration workflows have been completed.
   * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or desktop app)
-    > If managing workflows through the command line, be sure to {ref}`installation:activate-environment` in any new terminal.   
+    > If managing workflows through the command line, be sure to {ref}`installation:activate environment` in any new terminal.   
 
   * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run.
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally

@@ -1,7 +1,8 @@
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export PYTHONPATH=$BASE_DIR
-
 cd $BASE_DIR
+git pull
+
 rm -rf _temp/ docs/
 mkdir $BASE_DIR/_temp
 mkdir $BASE_DIR/docs

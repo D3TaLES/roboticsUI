@@ -108,11 +108,11 @@
 <section id="before-running-a-workflow">
 <h2>Before Running a Workflow<a class="headerlink" href="#before-running-a-workflow" title="Link to this heading"></a></h2>
 <ul>
-<li><p>Load Robotics Workflow</p>
+<li><p>[ ] Load Robotics Workflow</p>
 <ul>
-<li><p>Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
-<li><p>Download Robotics Workflow file</p></li>
-<li><p>Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics desktop app (select experiment and reagent locations as prompted)</p>
+<li><p>[ ] Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
+<li><p>[ ] Download Robotics Workflow file</p></li>
+<li><p>[ ] Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics desktop app (select experiment and reagent locations as prompted)</p>
 <blockquote>
 <div><p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
 on a day when you run conductivity experiments.</p>
@@ -120,61 +120,61 @@ on a day when you run conductivity experiments.</p>
 </li>
 </ul>
 </li>
-<li><p>Turn on:</p>
+<li><p>[ ] Turn on:</p>
 <ul class="simple">
-<li><p>The robot</p></li>
-<li><p>All Arduino devices</p></li>
-<li><p>Liquid dispensing pumps</p></li>
-<li><p>Instruments</p></li>
-<li><p>Balance</p></li>
-<li><p>Stir plate (turn the rotation rate to desired value)</p></li>
+<li><p>[ ] The robot</p></li>
+<li><p>[ ] All Arduino devices</p></li>
+<li><p>[ ] Liquid dispensing pumps</p></li>
+<li><p>[ ] Instruments</p></li>
+<li><p>[ ] Balance</p></li>
+<li><p>[ ] Stir plate (turn the rotation rate to desired value)</p></li>
 </ul>
 </li>
-<li><p>Prepare materials:</p>
+<li><p>[ ] Prepare materials:</p>
 <ul class="simple">
-<li><p>Measure and dispense solids into experiment vials</p></li>
-<li><p>Place stir bars in experiment vials.</p></li>
-<li><p>Bubble argon in solvent</p></li>
-<li><p>Fill rinsing vials</p></li>
+<li><p>[ ] Measure and dispense solids into experiment vials</p></li>
+<li><p>[ ] Place stir bars in experiment vials.</p></li>
+<li><p>[ ] Bubble argon in solvent</p></li>
+<li><p>[ ] Fill rinsing vials</p></li>
 </ul>
 </li>
-<li><p>Prepare Stations</p>
+<li><p>[ ] Prepare Stations</p>
 <ul class="simple">
-<li><p>Flush liquid dispensing tubes with 8 mL solution</p></li>
-<li><p>Set all electrodes</p>
+<li><p>[ ] Flush liquid dispensing tubes with 8 mL solution</p></li>
+<li><p>[ ] Set all electrodes</p>
 <ul>
-<li><p>Place electrodes in elevator holders</p></li>
-<li><p>Check secure connections for all electrodes</p></li>
-<li><p><strong>For conductivity probe</strong>, soak in DI water for 15 min.</p></li>
+<li><p>[ ] Place electrodes in elevator holders</p></li>
+<li><p>[ ] Check secure connections for all electrodes</p></li>
+<li><p>[ ] <strong>For conductivity probe</strong>, soak in DI water for 15 min.</p></li>
 </ul>
 </li>
-<li><p>Set temperature probe</p></li>
-<li><p>Set all vials (make sure they are uncapped)</p></li>
+<li><p>[ ] Set temperature probe</p></li>
+<li><p>[ ] Set all vials (make sure they are uncapped)</p></li>
 </ul>
 </li>
-<li><p>Prepare Software</p>
+<li><p>[ ] Prepare Software</p>
 <ul>
-<li><p>Ensure any necessary calibration workflows have been completed.</p></li>
-<li><p>Check your settings in settings.py!</p></li>
-<li><p>Launch Fireworks WebGUI (through command line or desktop app)</p>
+<li><p>[ ] Ensure any necessary calibration workflows have been completed.</p></li>
+<li><p>[ ] Check your settings in settings.py!</p></li>
+<li><p>[ ] Launch Fireworks WebGUI (through command line or desktop app)</p>
 <blockquote>
 <div><p>If managing workflows through the command line, be sure to <a class="reference internal" href="installation.html#activate-environment"><span class="std std-ref">Activate Environment</span></a> in any new terminal.</p>
 </div></blockquote>
 </li>
-<li><p>Ensure there is <em>only one</em> READY firework: the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework for the workflow you’d like to run.</p>
+<li><p>[ ] Ensure there is *only one- [ ] READY firework: the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework for the workflow you’d like to run.</p>
 <blockquote>
-<div><p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
+<div><p>**Important!*- [ ] *Only one- [ ] workflow may be initiated at a time. To ensure no other workflows accidentally
 run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
 </div></blockquote>
 </li>
 </ul>
 </li>
-<li><p>Start Experiment</p>
+<li><p>[ ] Start Experiment</p>
 <ul class="simple">
-<li><p>Start instrument jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start processing jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start robot jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Initialize workflow. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
+<li><p>[ ] Start instrument jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>[ ] Start processing jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>[ ] Start robot jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>[ ] Initialize workflow. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -182,26 +182,26 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
 <section id="after-running-a-workflow">
 <h2>After Running a Workflow<a class="headerlink" href="#after-running-a-workflow" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Ensure workflow is finished.</p>
+<li><p>[ ] Ensure workflow is finished.</p>
 <ul>
-<li><p>Ensure robot is not active.</p></li>
-<li><p>End all running terminals.</p></li>
-<li><p>Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)</p></li>
+<li><p>[ ] Ensure robot is not active.</p></li>
+<li><p>[ ] End all running terminals.</p></li>
+<li><p>[ ] Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)</p></li>
 </ul>
 </li>
-<li><p>Turn off hardware.</p>
+<li><p>[ ] Turn off hardware.</p>
 <ul>
-<li><p>Move robot to resting END_HOME position. Turn off.</p></li>
-<li><p>Turn off pump.</p></li>
-<li><p>Turn off instruments.</p></li>
+<li><p>[ ] Move robot to resting END_HOME position. Turn off.</p></li>
+<li><p>[ ] Turn off pump.</p></li>
+<li><p>[ ] Turn off instruments.</p></li>
 </ul>
 </li>
-<li><p>Clean up materials.</p>
+<li><p>[ ] Clean up materials.</p>
 <ul>
-<li><p>Cap all experiment vials.</p></li>
-<li><p>Place secure cap on liquid dispensing solvent jars.</p></li>
-<li><p>Remove and clean electrodes.</p></li>
-<li><p>Rinse and wipe down temperature probe.</p></li>
+<li><p>[ ] Cap all experiment vials.</p></li>
+<li><p>[ ] Place secure cap on liquid dispensing solvent jars.</p></li>
+<li><p>[ ] Remove and clean electrodes.</p></li>
+<li><p>[ ] Rinse and wipe down temperature probe.</p></li>
 </ul>
 </li>
 </ul>

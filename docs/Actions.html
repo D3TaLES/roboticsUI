@@ -21,7 +21,9 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utils Module" href="utils_snapshots.html" />
+    <link rel="prev" title="Desktop App" href="desktop_app.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,19 +52,35 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Fireworks Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Actions Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-level-workflow">High-Level Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#db-manipulations">1. DB Manipulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-components">Core Components:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#standard-actions">2. Standard Actions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Purpose:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Core Components:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage">Example Usage:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#system-tests">3. System Tests</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html">Utils Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html#snapshots">Snapshots</a></li>
 </ul>
@@ -87,7 +105,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Actions Module</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/Actions.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/actions.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -99,7 +117,7 @@
 <h1>Actions Module<a class="headerlink" href="#actions-module" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="utils_snapshots.html#utils-module"><span class="std std-ref">Utils Module</span></a> and <a class="reference internal" href="fireworks.html#fireworks-module"><span class="std std-ref">Fireworks Module</span></a> modules.</p>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="Databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="utils_snapshots.html#utils-module"><span class="std std-ref">Utils Module</span></a> and <a class="reference internal" href="Fireworks.html#fireworks-module"><span class="std std-ref">Fireworks Module</span></a> modules.</p>
 <p>The module consists of three files:</p>
 <ol class="arabic simple">
 <li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>
@@ -201,7 +219,10 @@ The <code class="docutils literal notranslate"><span class="pre">system_tests.py
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="desktop_app.html" class="btn btn-neutral float-left" title="Desktop App" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils_snapshots.html" class="btn btn-neutral float-right" title="Utils Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

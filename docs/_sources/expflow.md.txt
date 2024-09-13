@@ -12,8 +12,9 @@ For example, a CV experiment to determine the diffusion coefficient might includ
 For example, a CV experiment to determine the diffusion coefficient might include `redox_molecule` and `solvent` reagents; `beaker`, and `electrochemical_cell` apparatus, and a potentiostat instrument.   Workflow actions might include `transfer_liquid` (start position = `solvent` and end position = `beaker`), transfer_solid (start position = `redox_molecule` and end position = `beaker`), heat_stir (start and end position = `beaker`), and collect_cv_data (start position = `beaker` and end position = `electrochemical_cell`). There may be multiple data collection actions. For example, in this example, the scientist might add five collect_cv_data actions because the experiment includes five CVs, each run at a different scan rate. Each action incorporates a standard action type, starting and ending positions, and a brief description. Although these templates take time and effort to produce, they can be reused for all related experiments. Additionally, an existing templated can be cloned and modified, limiting the amount of time needed to construct new templates. Templates can also be shared among ExpFlow users.
 
 
-[](media/template_workflow.png)
-
+```{image} media/template_workflow.png
+:alt: Templates and Workflows
+```
 
 ### Add materials (reagents, apparatus, and instruments)
 
@@ -27,4 +28,4 @@ For example, a CV experiment to determine the diffusion coefficient might includ
 
 ### Establish variable parameters
 
-*!! This page is in still in development *
+*!! This page is in still in development*

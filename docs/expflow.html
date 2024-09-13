@@ -21,9 +21,7 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Desktop App" href="desktop_app.html" />
-    <link rel="prev" title="Common Errors" href="common_errors.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,31 +50,17 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ExpFlow Robotic Workflows</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#building-a-template">Building a Template</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-actions">Add actions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#set-default-parameters">Set default parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#establish-variable-parameters">Establish variable parameters</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Fireworks Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html">Utils Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html#snapshots">Snapshots</a></li>
 </ul>
@@ -101,7 +85,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">ExpFlow Robotic Workflows</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/expflow.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/ExpFlow.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,7 +101,7 @@
 <p>An ExpFlow Template converts experimental procedures into graphs that contain data provenances. The Template has categories for reagent (e.g., redox material, solvent), apparatus (e.g., beaker, electrode) and instrument (e.g., potentiostat, spectrometer). In a Template graph, nodes (the reagent, apparatus, and instrument categories) are connected by edges that correspond to actions (e.g., dispense, heat). Each action contains a start position, an end position, and action parameters (e.g., volume for dispensing liquid, temperature for heating, etc.). As the actions are sequenced, ExpFlow graphs capture the action provenances.</p>
 <p>For example, a CV experiment to determine the diffusion coefficient might include redox-active molecule and solvent reagents, a beaker/vial apparatus, and a potentiostat (Figure 2). Workflow actions might include transferring the liquid solvent and solid solute to the beaker, heating and stirring the solution, measuring the working electrode surface area, and collecting CV data. In this example, the user might add five collect-CV-data actions because the experiment includes five CV scans, each performed at a different scan rate. Although the Template can take time and effort to produce, it can be reused for all related and subsequent experiments.</p>
 <p>For example, a CV experiment to determine the diffusion coefficient might include <code class="docutils literal notranslate"><span class="pre">redox_molecule</span></code> and <code class="docutils literal notranslate"><span class="pre">solvent</span></code> reagents; <code class="docutils literal notranslate"><span class="pre">beaker</span></code>, and <code class="docutils literal notranslate"><span class="pre">electrochemical_cell</span></code> apparatus, and a potentiostat instrument.   Workflow actions might include <code class="docutils literal notranslate"><span class="pre">transfer_liquid</span></code> (start position = <code class="docutils literal notranslate"><span class="pre">solvent</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), transfer_solid (start position = <code class="docutils literal notranslate"><span class="pre">redox_molecule</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), heat_stir (start and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), and collect_cv_data (start position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">electrochemical_cell</span></code>). There may be multiple data collection actions. For example, in this example, the scientist might add five collect_cv_data actions because the experiment includes five CVs, each run at a different scan rate. Each action incorporates a standard action type, starting and ending positions, and a brief description. Although these templates take time and effort to produce, they can be reused for all related experiments. Additionally, an existing templated can be cloned and modified, limiting the amount of time needed to construct new templates. Templates can also be shared among ExpFlow users.</p>
-<p><a class="reference download internal" download="" href="_downloads/3f78265f39f4b017f1f1a987cb2d4aaa/template_workflow.png"><code class="xref download myst docutils literal notranslate"><span class="pre">media/template_workflow.png</span></code></a></p>
+<img alt="Templates and Workflows" src="_images/template_workflow.png" />
 <section id="add-materials-reagents-apparatus-and-instruments">
 <h3>Add materials (reagents, apparatus, and instruments)<a class="headerlink" href="#add-materials-reagents-apparatus-and-instruments" title="Link to this heading"></a></h3>
 </section>
@@ -132,7 +116,7 @@
 </section>
 <section id="establish-variable-parameters">
 <h3>Establish variable parameters<a class="headerlink" href="#establish-variable-parameters" title="Link to this heading"></a></h3>
-<p>*!! This page is in still in development *</p>
+<p><em>!! This page is in still in development</em></p>
 </section>
 </section>
 </section>
@@ -140,10 +124,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="common_errors.html" class="btn btn-neutral float-left" title="Common Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="desktop_app.html" class="btn btn-neutral float-right" title="Desktop App" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

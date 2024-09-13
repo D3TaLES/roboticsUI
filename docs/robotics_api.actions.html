@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.actions package &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=938c9ccc"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="robotics_api.fireworks package" href="robotics_api.fireworks.html" />
+    <link rel="prev" title="robotics_api package" href="robotics_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules and More</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Fireworks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html">Utils Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html#snapshots">Snapshots</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="robotics_api.html">robotics_api package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="robotics_api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">robotics_api.actions package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.actions.db_manipulations">robotics_api.actions.db_manipulations module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robotics-api-actions-standard-actions-module">robotics_api.actions.standard_actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robotics-api-actions-system-tests-module">robotics_api.actions.system_tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.actions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html">robotics_api.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api.settings">robotics_api.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="robotics_api.html">robotics_api package</a></li>
+      <li class="breadcrumb-item active">robotics_api.actions package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/robotics_api.actions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robotics-api-actions-package">
+<h1>robotics_api.actions package<a class="headerlink" href="#robotics-api-actions-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-robotics_api.actions.db_manipulations">
+<span id="robotics-api-actions-db-manipulations-module"></span><h2>robotics_api.actions.db_manipulations module<a class="headerlink" href="#module-robotics_api.actions.db_manipulations" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">ChemStandardsDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standards_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ChemStandardsDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.MongoDatabase" title="robotics_api.utils.mongo_dbs.MongoDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoDatabase</span></code></a></p>
+<p>Class for accessing the Chem Standards database for robotic fireworks
+Copyright 2024, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standards_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ChemStandardsDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>standards_type</strong> (<em>str</em>) – The type of chemistry standard.</p></li>
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID of the standard. Defaults to None.</p></li>
+<li><p><strong>instance</strong> (<em>dict</em><em>, </em><em>optional</em>) – The instance to insert or validate. Defaults to None.</p></li>
+<li><p><strong>override_lists</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to override existing lists. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.exists">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.exists" title="Link to this definition"></a></dt>
+<dd><p>Check if the standard exists in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the standard exists, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ChemStandardsDB.get_prop">
+<span class="sig-name descname"><span class="pre">get_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ChemStandardsDB.get_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ChemStandardsDB.get_prop" title="Link to this definition"></a></dt>
+<dd><p>Get a property of the standard from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>str</em>) – The property to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the property.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ReagentStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">ReagentStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ReagentStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ReagentStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.RobotStatusDB" title="robotics_api.utils.mongo_dbs.RobotStatusDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a></p>
+<p>Class for accessing the Robot Reagent Status database
+Copyright 2024, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ReagentStatus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_smiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#ReagentStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.ReagentStatus.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the reagent. Defaults to None.</p></li>
+<li><p><strong>r_smiles</strong> (<em>str</em><em>, </em><em>optional</em>) – The SMILES representation of the reagent. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.ReagentStatus.molecular_weight">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">molecular_weight</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.ReagentStatus.molecular_weight" title="Link to this definition"></a></dt>
+<dd><p>Calculate the molecular weight of the reagent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The molecular weight of the reagent.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">StationStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.RobotStatusDB" title="robotics_api.utils.mongo_dbs.RobotStatusDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a></p>
+<p>Class for accessing the Robot Vial Status database
+Copyright 2024, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>state_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The state ID. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.available">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.available" title="Link to this definition"></a></dt>
+<dd><p>Get the availability status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The availability status.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.content_history">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.content_history" title="Link to this definition"></a></dt>
+<dd><p>Get the content history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The content history.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.current_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_content</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.current_content" title="Link to this definition"></a></dt>
+<dd><p>Get the current content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current content.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.empty" title="Link to this definition"></a></dt>
+<dd><p>Empty the station content and update availability.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.get_all_available">
+<span class="sig-name descname"><span class="pre">get_all_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_all_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_all_available" title="Link to this definition"></a></dt>
+<dd><p>Get all available stations with a specified name string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_str</strong> (<em>str</em>) – The name string to search for.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of available station IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.get_first_available">
+<span class="sig-name descname"><span class="pre">get_first_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_first_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_first_available" title="Link to this definition"></a></dt>
+<dd><p>Get the first available station with a specified name string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_str</strong> (<em>str</em>) – The name string to search for.</p></li>
+<li><p><strong>wait</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to wait for an available station. Defaults to True.</p></li>
+<li><p><strong>max_time</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</p></li>
+<li><p><strong>wait_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval between wait checks in seconds. Defaults to 2.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ID of the first available station.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.place_vial">
+<span class="sig-name descname"><span class="pre">place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vial</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.place_vial" title="Link to this definition"></a></dt>
+<dd><p>Placeholder method for placing a vial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vial</strong> – The vial to place.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.state" title="Link to this definition"></a></dt>
+<dd><p>Get the state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The state.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_available">
+<span class="sig-name descname"><span class="pre">update_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_available" title="Link to this definition"></a></dt>
+<dd><p>Update the availability status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em>) – The new availability status.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated availability status.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>prop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_content">
+<span class="sig-name descname"><span class="pre">update_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_content" title="Link to this definition"></a></dt>
+<dd><p>Update the station content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_content</strong> – The new content in the station.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_state" title="Link to this definition"></a></dt>
+<dd><p>Update the station state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_state</strong> (<em>str</em>) – The new state for the station.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.wait_till_available">
+<span class="sig-name descname"><span class="pre">wait_till_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.wait_till_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.wait_till_available" title="Link to this definition"></a></dt>
+<dd><p>Wait until the station is available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_time</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</p></li>
+<li><p><strong>wait_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval between wait checks in seconds. Defaults to 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the station becomes available, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">VialStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.RobotStatusDB" title="robotics_api.utils.mongo_dbs.RobotStatusDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RobotStatusDB</span></code></a></p>
+<p>Class for accessing the Robot Vial Status database
+Copyright 2024, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID. Defaults to None.</p></li>
+<li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.add_reagent">
+<span class="sig-name descname"><span class="pre">add_reagent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.add_reagent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.add_reagent" title="Link to this definition"></a></dt>
+<dd><p>Add a reagent to the vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagent</strong> (<em>str</em><em> or </em><em>obj</em>) – The reagent ID or instance.</p></li>
+<li><p><strong>amount</strong> (<em>str</em><em> or </em><em>float</em><em> or </em><em>dict</em>) – The amount of the reagent.</p></li>
+<li><p><strong>default_unit</strong> (<em>str</em>) – The default unit for the reagent amount.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NameError</strong> – If the reagent does not exist in the reagent database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.clear_vial_content">
+<span class="sig-name descname"><span class="pre">clear_vial_content</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.clear_vial_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.clear_vial_content" title="Link to this definition"></a></dt>
+<dd><p>Clear the vial content.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_location">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_location</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_location" title="Link to this definition"></a></dt>
+<dd><p>Get the current location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current location.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_station">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_station</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_station" title="Link to this definition"></a></dt>
+<dd><p>Get the current station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current station status.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#robotics_api.actions.db_manipulations.StationStatus" title="robotics_api.actions.db_manipulations.StationStatus">StationStatus</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.current_weight">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_weight</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.current_weight" title="Link to this definition"></a></dt>
+<dd><p>Get the current weight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current weight.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.extract_soln">
+<span class="sig-name descname"><span class="pre">extract_soln</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_mass_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.extract_soln"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.extract_soln" title="Link to this definition"></a></dt>
+<dd><p>Add a reagent to the vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extracted_mass</strong> (<em>str</em><em> or </em><em>obj</em>) – Mass extracted from solution</p></li>
+<li><p><strong>default_mass_unit</strong> (<em>str</em>) – The default mass unit for the reagent amount.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NameError</strong> – If the reagent does not exist in the reagent database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.location_history">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">location_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.location_history" title="Link to this definition"></a></dt>
+<dd><p>Get the location history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The location history.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_location">
+<span class="sig-name descname"><span class="pre">update_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_location" title="Link to this definition"></a></dt>
+<dd><p>Update the vial location or station vial status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_location</strong> (<em>str</em>) – The new vial location.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_vial_content">
+<span class="sig-name descname"><span class="pre">update_vial_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_vial_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_vial_content" title="Link to this definition"></a></dt>
+<dd><p>Update the vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_content</strong> (<em>dict</em>) – The new vial content.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.update_weight">
+<span class="sig-name descname"><span class="pre">update_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.update_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.update_weight" title="Link to this definition"></a></dt>
+<dd><p>Update the vial location or station vial status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_weight</strong> (<em>str</em>) – weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.vial_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vial_content</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.vial_content" title="Link to this definition"></a></dt>
+<dd><p>Get the vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The vial content.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.check_duplicates">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">check_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exemptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#check_duplicates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.check_duplicates" title="Link to this definition"></a></dt>
+<dd><p>Check for duplicates in a list, excluding specified exemptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>test_list</strong> (<em>list</em>) – The list to check for duplicates.</p></li>
+<li><p><strong>exemptions</strong> (<em>list</em><em>, </em><em>optional</em>) – Items to exclude from duplicate checking. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A comma-separated string of duplicate items, or None if no duplicates are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_reagent_db">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_reagent_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_densities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC#N':</span> <span class="pre">'0.786</span> <span class="pre">g/mL',</span> <span class="pre">'O':</span> <span class="pre">'0.997</span> <span class="pre">g/mL'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentials_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC1(C)CCCC(C)(C)N1[O]':</span> <span class="pre">'0.30</span> <span class="pre">V',</span> <span class="pre">'[Cl-].[K+]':</span> <span class="pre">'0</span> <span class="pre">V'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_reagent_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_reagent_db" title="Link to this definition"></a></dt>
+<dd><p>Reset the reagent database with the provided list of reagents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reagents_list</strong> (<em>list</em>) – List of dictionaries representing reagents.</p></li>
+<li><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p></li>
+<li><p><strong>solvent_densities</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary with solvent SMILES and densities</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_station_db">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_station_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_station_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_station_db" title="Link to this definition"></a></dt>
+<dd><p>Reset the station database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_test_db">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_test_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_test_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_test_db" title="Link to this definition"></a></dt>
+<dd><p>Reset the test database with default configurations.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_vial_db">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_vial_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_locs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_vial_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_vial_db" title="Link to this definition"></a></dt>
+<dd><p>Reset the vial database with the provided experiment locations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment_locs</strong> (<em>dict</em>) – Dictionary mapping vial IDs to experiment names.</p></li>
+<li><p><strong>current_wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the current workflow. Defaults to “”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.setup_status_db">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">setup_status_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#setup_status_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.setup_status_db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="robotics-api-actions-standard-actions-module">
+<h2>robotics_api.actions.standard_actions module<a class="headerlink" href="#robotics-api-actions-standard-actions-module" title="Link to this heading"></a></h2>
+</section>
+<section id="robotics-api-actions-system-tests-module">
+<h2>robotics_api.actions.system_tests module<a class="headerlink" href="#robotics-api-actions-system-tests-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-robotics_api.actions">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-robotics_api.actions" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="robotics_api.html" class="btn btn-neutral float-left" title="robotics_api package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="robotics_api.fireworks.html" class="btn btn-neutral float-right" title="robotics_api.fireworks package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

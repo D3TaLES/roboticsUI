@@ -65,9 +65,9 @@
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Fireworks Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Actions Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html">Utils Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Detailed Code Docs</span></p>
 <ul>
@@ -153,6 +153,7 @@ hardware directly.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="expflow.html#building-a-template">Building a Template</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expflow.html#create-new-template">Create new Template</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#add-actions">Add actions</a></li>
 </ul>
@@ -160,6 +161,7 @@ hardware directly.</p>
 <li class="toctree-l2"><a class="reference internal" href="expflow.html#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#set-default-parameters">Set default parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#establish-variable-parameters">Establish variable parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expflow.html#download-completed">Download completed</a></li>
 </ul>
 </li>
 </ul>
@@ -200,9 +202,9 @@ hardware directly.</p>
 <li class="toctree-l2"><a class="reference internal" href="actions.html#system-tests">3. System Tests</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html">Utils Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils_snapshots.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -210,10 +212,41 @@ hardware directly.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.actions.html">robotics_api.actions package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html">robotics_api.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.actions.html">robotics_api.actions package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.actions.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.actions.html#module-robotics_api.actions.db_manipulations">robotics_api.actions.db_manipulations module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.actions.html#robotics-api-actions-standard-actions-module">robotics_api.actions.standard_actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.actions.html#robotics-api-actions-system-tests-module">robotics_api.actions.system_tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.actions.html#module-robotics_api.actions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#robotics-api-fireworks-firetasks-actions-module">robotics_api.fireworks.Firetasks_Actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#robotics-api-fireworks-firetasks-processing-module">robotics_api.fireworks.Firetasks_Processing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#robotics-api-fireworks-fireworks-module">robotics_api.fireworks.Fireworks module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#robotics-api-fireworks-workflow-writer-module">robotics_api.fireworks.Workflow_Writer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.fireworks.html#module-robotics_api.fireworks">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.snapshots.html#module-robotics_api.snapshots">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html">robotics_api.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-gripper-module">robotics_api.utils.kinova_gripper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-move-module">robotics_api.utils.kinova_move module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-utils-module">robotics_api.utils.kinova_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-potentiostat-hp-module">robotics_api.utils.potentiostat_hp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.potentiostat_kbio">robotics_api.utils.potentiostat_kbio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.processing_utils">robotics_api.utils.processing_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.html#submodules">Submodules</a></li>

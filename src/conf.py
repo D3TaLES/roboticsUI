@@ -43,7 +43,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx_rtd_theme',
     'sphinx.ext.githubpages',
-    'recommonmark',
+    # 'recommonmark',
     'sphinx.ext.napoleon',
     'myst_parser',
     "sphinx.ext.autosectionlabel"

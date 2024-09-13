@@ -18,7 +18,6 @@ conda install -c conda-forge fireworks
 pip install git+https://github.com/d3tales/d3tales_api.git
 ```
 
-(activate_environment)=
 ## Activate Environment
 Note that you must set the `DB_INFO_FILE` environment variable as stipulated in the
 [D<sup>3</sup>TaLES API Docs](https://github.com/D3TaLES/d3tales_api).You will also

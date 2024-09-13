@@ -30,28 +30,28 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>` contains sev
    :maxdepth: 3
    :caption: Overview
 
-   Installation
-   TerminologySetup
-   Quickstart
-   RobotRunChecklist
-   CommonErrors
+   installation
+   terminology_setup
+   quickstart
+   robot_run_checklist
+   common_errors
 
 .. toctree::
    :maxdepth: 3
    :caption: User Interfaces
 
-   ExpFlow
-   DesktopApp
+   expflow
+   desktop_app
 
 .. toctree::
    :maxdepth: 3
    :caption: API Modules and More
 
-   Settings
-   Fireworks
-   Actions
-   Databases
-   UtilsSnapshots
+   settings
+   fireworks
+   actions
+   databases
+   utils_snapshots
 
 .. toctree::
    :maxdepth: 3

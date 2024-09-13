@@ -59,12 +59,13 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Utils</a></li>
@@ -101,7 +102,17 @@
              
   <section id="module-utils">
 <h1>Module - Utils<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
-<p><em>!! This page is in still in development</em></p>
+<p>This module is the lowest level of abstraction and contains many base functions for interacting with the robot and instruments. It should not need to be edited very often. Files include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base_utils</span></code>: basic utility functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kinova_gripper</span></code>: functions adapted from official Kortex API to operate the robot gripper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kinova_move</span></code>: functions adapted from official Kortex API to move the robot to snapshots</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kinova_utils</span></code>: basic utility functions adapted from official Kortex API</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mongo_dbs</span></code>: base functions and classes for interacting with MongoDB databases</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">potentiostat_hp</span></code>: example functions for using hardpotato software for interacting with CHI potentiostats</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">potentiostat_kbio</span></code>: (no longer used!) base functions and classes for interacting with kbio potentiostats</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">processing_utils</span></code>: functions for processing</p></li>
+</ul>
 </section>
 
 

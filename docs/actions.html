@@ -59,12 +59,13 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Actions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
@@ -121,7 +122,7 @@
 <h1>Module - Actions<a class="headerlink" href="#module-actions" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <span class="xref std std-ref">utils_snapshots:utils module</span> and <a class="reference internal" href="fireworks.html#module-fireworks"><span class="std std-ref">Module - Fireworks</span></a> modules.</p>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="utils.html#module-utils"><span class="std std-ref">Module - Utils</span></a> and <a class="reference internal" href="fireworks.html#module-fireworks"><span class="std std-ref">Module - Fireworks</span></a> modules.</p>
 <p>The module consists of three files:</p>
 <ol class="arabic simple">
 <li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>

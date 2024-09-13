@@ -59,19 +59,25 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Fireworks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fireworks">Fireworks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows-workflow-writer-py">Workflows (<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose-and-high-level-overview">Purpose and High-Level Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow-lifecycle">Workflow Lifecycle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fireworks-fireworks-py">Fireworks (<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#categories">Categories</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#firewtasks">Firewtasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#firetasks-firetasks-actions-py-and-firetasks-processing-py">Firetasks (<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
@@ -109,17 +115,65 @@
              
   <section id="module-fireworks">
 <h1>Module - Fireworks<a class="headerlink" href="#module-fireworks" title="Link to this heading"></a></h1>
-<section id="workflow">
-<h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading"></a></h2>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is the highest level of abstraction in the Robotics API and FireWorks-based classes relevant for managing robotic workflows. he primary purpose of this module is to translate experimental protocols, defined in ExpFlow Robotic Workflow JSON files, into executable workflows on a robotic system and to serve as the source code for the launched Fireworks. For more information about the structure of a robotic workflow and its experiments, see <a class="reference internal" href="terminology_setup.html#experiments-and-workflows"><span class="std std-ref">Experiments and Workflows</span></a>. For even more information about the distinction between Workflows, Fireworks, and Firetasks and their base classes, see the <a class="reference external" href="https://materialsproject.github.io/fireworks/#designing-workflows">original FireWorks documentation</a>.</p>
 </section>
-<section id="fireworks">
-<h2>Fireworks<a class="headerlink" href="#fireworks" title="Link to this heading"></a></h2>
+<section id="workflows-workflow-writer-py">
+<h2>Workflows (<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)<a class="headerlink" href="#workflows-workflow-writer-py" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">fireworks</span></code> module in the Robotics API serves as the highest abstraction layer for managing robotic workflows. It integrates with <strong>FireWorks</strong>, a dynamic workflow management system, to coordinate complex experimental tasks in a robotic setup. A key component of this module is the <code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code> script, which provides functionality to convert experimental workflows into Fireworks workflows. This allows for the execution of experiments using robots.</p>
+<section id="purpose-and-high-level-overview">
+<h3>Purpose and High-Level Overview<a class="headerlink" href="#purpose-and-high-level-overview" title="Link to this heading"></a></h3>
+<p>The <strong>Workflow_Writer</strong> focuses on converting experimental flow objects (<code class="docutils literal notranslate"><span class="pre">ExpFlow</span></code>) into Fireworks workflows. These workflows are sequences of tasks that define experiments to be run on robotic systems. This module automates how experiments are designed, executed, and processed, enabling researchers to manage repetitive tasks efficiently.</p>
+<p>Key components:</p>
+<ol class="arabic simple">
+<li><p><strong>EF2Experiment Class</strong>:</p>
+<ul class="simple">
+<li><p>Converts an <code class="docutils literal notranslate"><span class="pre">ExpFlow</span></code> object into a Fireworks workflow.</p></li>
+<li><p>Takes details from the experiment, including molecules, solvents, and electrolytes, and generates a series of tasks for execution.</p></li>
+<li><p>Supports task dependencies, clustering, and prioritization.</p></li>
+</ul>
+</li>
+<li><p><strong>Task Management</strong>:</p>
+<ul class="simple">
+<li><p>Handles different types of tasks like data collection (e.g., <strong>CV</strong> and <strong>CA</strong> data), instrument setup, and data processing.</p></li>
+<li><p>Capable of dealing with multitask scenarios (e.g., collecting data for multiple scan rates).</p></li>
+<li><p>Dynamically generates tasks like setup and finish operations for instruments.</p></li>
+</ul>
+</li>
+<li><p><strong>Firetasks Generation</strong>:</p>
+<ul class="simple">
+<li><p>The module generates Firetasks for a variety of operations (e.g., transferring liquids, stirring, measuring density).</p></li>
+<li><p>It ensures tasks are correctly sequenced based on dependencies and workflow progress.</p></li>
+</ul>
+</li>
+<li><p><strong>run_expflow_wf Function</strong>:</p>
+<ul class="simple">
+<li><p>Automates the creation of workflows for running multiple iterations of the same experiment using different molecules.</p></li>
+<li><p>Manages task execution and transitions from one experimental phase to the next.</p></li>
+</ul>
+</li>
+<li><p><strong>run_ex_processing Function</strong> (For Testing):</p>
+<ul class="simple">
+<li><p>A simplified function for testing basic processing jobs (e.g., CV processing).</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="workflow-lifecycle">
+<h3>Workflow Lifecycle<a class="headerlink" href="#workflow-lifecycle" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">EF2Experiment</span></code> class parses the experimental flow and generates tasks that a robot will execute, ensuring proper sequencing. It handles multiple steps like preparation, data collection, and data processing, creating Firetasks that robots can process. For each task, specifications (e.g., molecule ID, solvent type) are passed down, ensuring that experiments follow predefined parameters.</p>
+<p>This module is crucial in automating robotic workflows in labs, providing scalability and reliability in handling repetitive experiments.</p>
+</section>
+</section>
+<section id="fireworks-fireworks-py">
+<h2>Fireworks (<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)<a class="headerlink" href="#fireworks-fireworks-py" title="Link to this heading"></a></h2>
 <section id="categories">
 <h3>Categories<a class="headerlink" href="#categories" title="Link to this heading"></a></h3>
 </section>
 </section>
-<section id="firewtasks">
-<h2>Firewtasks<a class="headerlink" href="#firewtasks" title="Link to this heading"></a></h2>
+<section id="firetasks-firetasks-actions-py-and-firetasks-processing-py">
+<h2>Firetasks (<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)<a class="headerlink" href="#firetasks-firetasks-actions-py-and-firetasks-processing-py" title="Link to this heading"></a></h2>
 <p><em>!! This page is in still in development</em></p>
 </section>
 </section>

@@ -49,11 +49,11 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>`_ contains se
    settings
    fireworks
    actions
-   databases
    utils_snapshots
+   databases
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Detailed Code Docs
 
    robotics_api

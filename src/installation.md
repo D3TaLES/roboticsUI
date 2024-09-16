@@ -18,6 +18,14 @@ conda install -c conda-forge fireworks
 pip install git+https://github.com/d3tales/d3tales_api.git
 ```
 
+### Get D3TaLES fork of hardpotato
+The Robotics API uses a forked version of the [hardpotato]() software for interacting with CHI potentiostats. This must be cloned and added to the PYTHONPATH (see next section). On the current Robotics Workstation, that would look like:
+
+```bash
+cd 'C:\Users\Lab\D3talesRobotics\Packages\'
+git clone git@github.com:D3TaLES/hardpotato.git
+```
+
 ## Activate Environment
 Note that you must set the `DB_INFO_FILE` environment variable as stipulated in the
 [D<sup>3</sup>TaLES API Docs](https://github.com/D3TaLES/d3tales_api).You will also

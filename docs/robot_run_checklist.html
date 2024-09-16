@@ -63,12 +63,13 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
@@ -112,7 +113,7 @@
 <ul>
 <li><p>Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
 <li><p>Download Robotics Workflow file</p></li>
-<li><p>Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics desktop app (select experiment and reagent locations as prompted)</p>
+<li><p>Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics Robotics App (select experiment and reagent locations as prompted)</p>
 <blockquote>
 <div><p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
 on a day when you run conductivity experiments.</p>
@@ -155,8 +156,8 @@ on a day when you run conductivity experiments.</p>
 <li><p>Prepare Software</p>
 <ul>
 <li><p>Ensure any necessary calibration workflows have been completed.</p></li>
-<li><p>Check your settings in settings.py!</p></li>
-<li><p>Launch Fireworks WebGUI (through command line or desktop app)</p>
+<li><p>Check your <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a> in settings.py!</p></li>
+<li><p>Launch Fireworks WebGUI (through <a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui"><span class="std std-ref">command line or Robotics App</span></a>)</p>
 <blockquote>
 <div><p>If managing workflows through the command line, be sure to <a class="reference internal" href="installation.html#activate-environment"><span class="std std-ref">Activate Environment</span></a> in any new terminal.</p>
 </div></blockquote>
@@ -171,10 +172,10 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
 </li>
 <li><p>Start Experiment</p>
 <ul class="simple">
-<li><p>Start instrument jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start processing jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start robot jobs. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Initialize workflow. Through the desktop app, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
+<li><p>Start instrument jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>Start processing jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>Start robot jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
+<li><p>Initialize workflow. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
 </ul>
 </li>
 </ul>

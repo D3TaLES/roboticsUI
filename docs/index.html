@@ -58,12 +58,13 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
@@ -102,7 +103,7 @@
 <h1>D<sup>3</sup>TaLES Robotics UI and API Documentation!<a class="headerlink" href="#d3tales-robotics-ui-and-api-documentation" title="Link to this heading"></a></h1>
 <p>Here you will find complete documentation for the D<sup>3</sup>TaLES robotics Python software
 hosted in the <a class="reference external" href="https://github.com/D3TaLES/roboticsUI">roboticsUI repository</a> GitHub
-repository. This includes documentation ExpFlow and Robotics Desktop App user
+repository. This includes documentation ExpFlow and Robotics Robotics App user
 interfaces as well as the Robotics API for interacting with the robotics
 hardware directly.</p>
 </section>
@@ -111,7 +112,7 @@ hardware directly.</p>
 <p>The <a class="reference external" href="https://github.com/D3TaLES/roboticsUI">roboticsUI repository</a> contains several directories:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_kbio</span></code>: Python API for the Kinova robot. These files are taken directly from the commercial <a class="reference external" href="https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L">Kinova Python API</a>. They should not be edited.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GUI</span></code>: Code for the robotics desktop app. Uses Tkinter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GUI</span></code>: Code for the robotics Robotics App. Uses Tkinter.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">robotics_api</span></code>: Robotics API that manages robotic workflows. (More discussion below.)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test_data</span></code>: Example, standard, and test experimental data.</p></li>
 </ul>
@@ -121,7 +122,10 @@ hardware directly.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#clone-this-github-repository">Clone this GitHub Repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#create-environment">Create Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#create-environment">Create Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#get-d3tales-fork-of-hardpotato">Get D3TaLES fork of hardpotato</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#activate-environment">Activate Environment</a></li>
 </ul>
 </li>
@@ -153,19 +157,22 @@ hardware directly.</p>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#create-new-template">Create new Template</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#add-actions">Add actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expflow.html#important-notes-for-building-a-template-for-robotic-workflows"><strong>Important notes for building a Template for Robotic Workflows</strong></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="expflow.html#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#set-default-parameters">Set default parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="expflow.html#establish-variable-parameters">Establish variable parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="expflow.html#download-completed">Download completed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expflow.html#download-robotic-workflow">Download robotic workflow</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui">Monitoring workflows with FireWorks WebGUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="desktop_app.html#loading-a-workflow">Loading a workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui">Monitoring workflows with FireWorks WebGUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="desktop_app.html#managing-jobs">Managing Jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="desktop_app.html#launching-jobs">Launching Jobs!</a></li>
 </ul>
 </li>
 </ul>
@@ -175,17 +182,37 @@ hardware directly.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#settings">Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#settings">Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#testing-operation-settings">TESTING OPERATION SETTINGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#operation-setting">OPERATION SETTING</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#default-conditions">DEFAULT CONDITIONS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#robot-settings">ROBOT SETTINGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings.html#potentiostat-settings">POTENTIOSTAT SETTINGS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#processing-settings">PROCESSING SETTINGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#calibration-settings">CALIBRATION SETTINGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#port-address">PORT ADDRESS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#stations">STATIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#path-variables-and-fireworks-path-variables">PATH VARIABLES (and FIREWORKS PATH VARIABLES)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="settings.html#snapshots">Snapshots</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fireworks.html#workflow">Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fireworks.html#fireworks">Fireworks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fireworks.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fireworks.html#workflows-workflow-writer-py">Workflows (<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fireworks.html#purpose-and-high-level-overview">Purpose and High-Level Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fireworks.html#workflow-lifecycle">Workflow Lifecycle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fireworks.html#fireworks-fireworks-py">Fireworks (<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="fireworks.html#categories">Categories</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="fireworks.html#firewtasks">Firewtasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fireworks.html#firetasks-firetasks-actions-py-and-firetasks-processing-py">Firetasks (<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a><ul>
@@ -208,7 +235,24 @@ hardware directly.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="databases.html#status-collections">Status Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#status-reagents"><em>status_reagents</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#status-stations"><em>status_stations</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#status-vials"><em>status_vials</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="databases.html#data-collections">Data Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#experimentation"><em>experimentation</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#metadata"><em>metadata</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="databases.html#standards-collections">Standards Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="databases.html#standards-cacalib"><em>standards_CACalib</em></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">

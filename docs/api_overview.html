@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Settings and Snapshots" href="settings.html" />
-    <link rel="prev" title="Desktop App" href="desktop_app.html" /> 
+    <link rel="prev" title="Robotics App" href="desktop_app.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,12 +59,13 @@
 <p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
@@ -103,18 +104,15 @@
 <h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
 <p>The Robotics API is designed to manage the robotics system. It consists of three modules, each of increasing abstraction:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code>: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction. ()</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">actions</span></code>: Classes for managing status, position, and content for vials, stations, or standards. These data are stored in MongoDB databases.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fireworks</span></code>: With the highest level of abstraction, this module contains classes and functions for FireWorks Workflows, FireWorks, and FireTasks.</p></li>
 </ul>
-<p>The RoboticsAPI also contains the following items:</p>
+<p>The RoboticsAPI also contains the following items (for more see <a class="reference internal" href="settings.html#settings-and-snapshots"><span class="std std-ref">Settings and Snapshots</span></a>):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code>: A single file with all adjustable settings for robotics operations. <strong>Always review this file before operating the robotic system!</strong></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">snapshots</span></code>: A directory containing Kinova snapshots (JSON files) for positions
-for the robot. Files named <code class="docutils literal notranslate"><span class="pre">&lt;station_name&gt;.json</span></code> give the position of the robot where
-the vial sits directly in the station. Files named <code class="docutils literal notranslate"><span class="pre">pre_&lt;station_name&gt;.json</span></code> give the position
-the robot should be before/after moving to the station. Note that some snapshots give Cartesian
-coordinates while others give actuator angles.</p></li>
+for the robot.</p></li>
 </ul>
 <img alt="Robotics API Schema" src="_images/robotics_api_scheme.png" />
 </section>
@@ -123,7 +121,7 @@ coordinates while others give actuator angles.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="desktop_app.html" class="btn btn-neutral float-left" title="Desktop App" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="desktop_app.html" class="btn btn-neutral float-left" title="Robotics App" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="settings.html" class="btn btn-neutral float-right" title="Settings and Snapshots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

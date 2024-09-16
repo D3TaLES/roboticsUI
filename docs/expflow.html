@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Desktop App" href="desktop_app.html" />
+    <link rel="next" title="Robotics App" href="desktop_app.html" />
     <link rel="prev" title="Common Errors" href="common_errors.html" /> 
 </head>
 
@@ -63,22 +63,24 @@
 <li class="toctree-l3"><a class="reference internal" href="#create-new-template">Create new Template</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#add-actions">Add actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes-for-building-a-template-for-robotic-workflows"><strong>Important notes for building a Template for Robotic Workflows</strong></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#set-default-parameters">Set default parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#establish-variable-parameters">Establish variable parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#download-completed">Download completed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-robotic-workflow">Download robotic workflow</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Desktop App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
@@ -135,6 +137,14 @@
 <p>Select <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Action</span></code> (purple cursor in image below), then fill in the information about your action. Note the sequence. If the sequence is higher than the existing number of actions, the action will be placed as the last action. Otherwise, it will be inserted at the specified sequence, pushing all the subsequent actions down. Add the action and repeat until all actions are added.</p>
 <img alt="Make Template" src="_images/make_template.png" />
 </section>
+<section id="important-notes-for-building-a-template-for-robotic-workflows">
+<h3><strong>Important notes for building a Template for Robotic Workflows</strong><a class="headerlink" href="#important-notes-for-building-a-template-for-robotic-workflows" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Whenever creating a Template, select <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Action</span> <span class="pre">Type</span> <span class="pre">Descriptions</span></code> for descriptions of each actions <strong>and</strong> for constrains on using each action. Always check the action constrains before using it.</p></li>
+<li><p>Remember that the base Template protocol will correspond to one of the parallel robotic experiments. Importantly, each experiment takes place in once vial, so your Template protocol should all take place in one vial.</p></li>
+<li><p>Because each experiment takes place in one vial, be sure that the total volume your Template adds is not more than the volumetric capacity of an experiment vial!</p></li>
+</ul>
+</section>
 </section>
 <section id="use-template-for-robotic-workflow">
 <h2>Use Template for Robotic Workflow<a class="headerlink" href="#use-template-for-robotic-workflow" title="Link to this heading"></a></h2>
@@ -146,12 +156,12 @@
 </section>
 <section id="establish-variable-parameters">
 <h3>Establish variable parameters<a class="headerlink" href="#establish-variable-parameters" title="Link to this heading"></a></h3>
-<p>Then, the researcher selects one or more parameters to vary. These variable parameters become the columns of a table with n rows, where the researcher specifies the variable parameter values for each of n experiments. ExpFlow then produces a machine-readable workflow for n identically structured experiments where one or more measurement parameters varies for each experiment. In the example below, three variable properties are selected. The resulting workflow will contain eight parallel experiments, where the redox active molecule, starting mass, and voltage sequence varies for each experiment.</p>
+<p>Then, the researcher selects one or more parameters to vary. These variable parameters become the columns of a table with n rows, where the researcher specifies the variable parameter values for each of <em>n</em> experiments. ExpFlow then produces a machine-readable workflow for n identically structured experiments where one or more measurement parameters varies for each experiment. In the example below, three variable properties are selected. The resulting workflow will contain eight parallel experiments, where the redox active molecule, starting mass, and voltage sequence varies for each experiment.</p>
 <img alt="Defining variable properties" src="_images/variable_props.png" />
 </section>
-<section id="download-completed">
-<h3>Download completed<a class="headerlink" href="#download-completed" title="Link to this heading"></a></h3>
-<p>Navigate to <code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">Workflows</span></code>, and select download for your Robotic Workflows</p>
+<section id="download-robotic-workflow">
+<h3>Download robotic workflow<a class="headerlink" href="#download-robotic-workflow" title="Link to this heading"></a></h3>
+<p>Navigate to <code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">Workflows</span></code>, and select download for your Robotic Workflows. This will download the workflow as a JSON file.</p>
 <img alt="Downloading a Workflow" src="_images/download_workflow.png" />
 </section>
 </section>
@@ -162,7 +172,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="common_errors.html" class="btn btn-neutral float-left" title="Common Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="desktop_app.html" class="btn btn-neutral float-right" title="Desktop App" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="desktop_app.html" class="btn btn-neutral float-right" title="Robotics App" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

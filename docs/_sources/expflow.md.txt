@@ -29,6 +29,11 @@ Select `Add Action` (purple cursor in image below), then fill in the information
 :alt: Make Template
 ```
 
+### **Important notes for building a Template for Robotic Workflows**
+* Whenever creating a Template, select `View Action Type Descriptions` for descriptions of each actions **and** for constrains on using each action. Always check the action constrains before using it.
+* Remember that the base Template protocol will correspond to one of the parallel robotic experiments. Importantly, each experiment takes place in once vial, so your Template protocol should all take place in one vial. 
+* Because each experiment takes place in one vial, be sure that the total volume your Template adds is not more than the volumetric capacity of an experiment vial!
+
 ## Use Template for Robotic Workflow
 
 A Template can be adapted to a Robotic Workflow. After building a template, navigate to the template details page and select `Use For Robotics`. You must be logged in to view this button. If this button does not appear, you may not have the correct permissions.
@@ -42,15 +47,15 @@ After creating a Workflow, the researcher indicates default measurements for all
 
 ### Establish variable parameters
 
-Then, the researcher selects one or more parameters to vary. These variable parameters become the columns of a table with n rows, where the researcher specifies the variable parameter values for each of n experiments. ExpFlow then produces a machine-readable workflow for n identically structured experiments where one or more measurement parameters varies for each experiment. In the example below, three variable properties are selected. The resulting workflow will contain eight parallel experiments, where the redox active molecule, starting mass, and voltage sequence varies for each experiment.
+Then, the researcher selects one or more parameters to vary. These variable parameters become the columns of a table with n rows, where the researcher specifies the variable parameter values for each of *n* experiments. ExpFlow then produces a machine-readable workflow for n identically structured experiments where one or more measurement parameters varies for each experiment. In the example below, three variable properties are selected. The resulting workflow will contain eight parallel experiments, where the redox active molecule, starting mass, and voltage sequence varies for each experiment.
 
 ```{image} media/variable_props.png
 :alt: Defining variable properties
 ```
 
-### Download completed
+### Download robotic workflow
 
-Navigate to `All Workflows`, and select download for your Robotic Workflows
+Navigate to `All Workflows`, and select download for your Robotic Workflows. This will download the workflow as a JSON file.
 
 ```{image} media/download_workflow.png
 :alt: Downloading a Workflow

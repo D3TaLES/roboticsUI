@@ -5,7 +5,7 @@
 * Load Robotics Workflow
   * Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
   * Download Robotics Workflow file
-  * Load Robotics Workflow file through `Add Job` on robotics desktop app (select experiment and reagent locations as prompted)
+  * Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
      > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
      > on a day when you run conductivity experiments.
 
@@ -31,8 +31,8 @@
   * Set all vials (make sure they are uncapped)
 * Prepare Software
   * Ensure any necessary calibration workflows have been completed.
-  * Check your settings in settings.py!
-  * Launch Fireworks WebGUI (through command line or desktop app)
+  * Check your {ref}`settings:settings` in settings.py!
+  * Launch Fireworks WebGUI (through {ref}`command line or Robotics App <desktop_app:monitoring workflows with FireWorks WebGUI>`)
     > If managing workflows through the command line, be sure to {ref}`installation:activate environment` in any new terminal.   
 
   * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run.
@@ -40,10 +40,10 @@
      > run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.
 
 * Start Experiment
-  * Start instrument jobs. Through the desktop app, select `Run Instruments` -> `Run Jobs Continuously`
-  * Start processing jobs. Through the desktop app, select `Run Process` -> `Run Jobs Continuously`
-  * Start robot jobs. Through the desktop app, select `Run Robot` -> `Run Jobs Continuously`
-  * Initialize workflow. Through the desktop app, select `Initialize Workflow` -> `Run a Job`
+  * Start instrument jobs. Through the Robotics App, select `Run Instruments` -> `Run Jobs Continuously`
+  * Start processing jobs. Through the Robotics App, select `Run Process` -> `Run Jobs Continuously`
+  * Start robot jobs. Through the Robotics App, select `Run Robot` -> `Run Jobs Continuously`
+  * Initialize workflow. Through the Robotics App, select `Initialize Workflow` -> `Run a Job`
 
 
 ## After Running a Workflow

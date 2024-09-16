@@ -3,8 +3,8 @@ from pathlib import Path
 
 """
 This file contains various settings and configurations for a robotics experiment setup. It includes
-operation settings, default conditions, instrument settings, processing settings, station configurations, 
-file paths, and more. Be sure to review all settings listed here before running a robotic workflow. 
+operation settings, default conditions, instrument settings, processing settings, station configurations,
+file paths, and more. Be sure to review all settings listed here before running a robotic workflow.
 
 Copyright 2024, University of Kentucky
 """
@@ -17,17 +17,17 @@ STIR = False
 WEIGH = False
 PIPETTE = False
 RUN_ROBOT = False
-MOVE_ELEVATORS = False
-CALIB_DATE = ''  # '2024_06_25'  (should be blank for a real run)
-POT_DELAY = 2  # seconds
+MOVE_ELEVATORS = True
+CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
+POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
-WEIGH_SOLVENTS = True
-RERUN_FIZZLED_ROBOT = True
-FIZZLE_CONCENTRATION_FAILURE = False
-FIZZLE_DIRTY_ELECTRODE = False
-EXIT_ZERO_VOLUME = True
-WAIT_FOR_BALANCE = True
+WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation
+RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
+FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
+FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
+EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all childeren Fireworks
+WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"

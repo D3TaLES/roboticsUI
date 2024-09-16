@@ -60,7 +60,7 @@ if __name__ == "__main__":
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # RESET TESTING
-    # reset_test_db()
+    reset_test_db()
     # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)

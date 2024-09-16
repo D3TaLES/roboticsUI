@@ -349,7 +349,7 @@ class LiquidStation(StationStatus):
 
     def dispense_mass(self, vial: VialMove, volume, raise_error=True):
         # Pre dispense weighing
-        balance = vial.current_location if "balance" in vial.current_location else BalanceStation(
+        balance = BalanceStation(vial.current_location) if "balance" in vial.current_location else BalanceStation(
             StationStatus().get_first_available("balance"))
         pre_mass = balance.existing_weight(vial)
 
@@ -357,9 +357,7 @@ class LiquidStation(StationStatus):
         self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
 
         # Post dispense weighing
-        balance = BalanceStation(StationStatus().get_first_available("balance"))
         post_mass = balance.weigh(vial)
-
         final_mass = post_mass - pre_mass
 
         # Update vial contents
@@ -441,6 +439,8 @@ class BalanceStation(StationStatus):
         return self.weigh(vial, raise_error=raise_error)
 
     def weigh(self, vial: VialMove, raise_error=True):
+        if not WEIGH:
+            return 0
         if self.current_content == vial.id:
             vial.retrieve()
         self.tare()

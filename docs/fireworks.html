@@ -65,11 +65,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Fireworks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#workflows-workflow-writer-py">Workflows (<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fireworks-fireworks-py">Fireworks (<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#firetasks-firetasks-actions-py-and-firetasks-processing-py">Firetasks (<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows">Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fireworks">Fireworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#firetasks">Firetasks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
@@ -108,8 +107,9 @@
   <section id="module-fireworks">
 <h1>Module - Fireworks<a class="headerlink" href="#module-fireworks" title="Link to this heading"></a></h1>
 <p>This module is the highest level of abstraction in the Robotics API and FireWorks-based classes relevant for managing robotic workflows. he primary purpose of this module is to translate experimental protocols, defined in ExpFlow Robotic Workflow JSON files, into executable workflows on a robotic system and to serve as the source code for the launched Fireworks. For more information about the structure of a robotic workflow and its experiments, see <a class="reference internal" href="terminology_setup.html#experiments-and-workflows"><span class="std std-ref">Experiments and Workflows</span></a>. For even more information about the distinction between Workflows, Fireworks, and Firetasks and their base classes, see the <a class="reference external" href="https://materialsproject.github.io/fireworks/#designing-workflows">original FireWorks documentation</a>.</p>
-<section id="workflows-workflow-writer-py">
-<h2>Workflows (<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)<a class="headerlink" href="#workflows-workflow-writer-py" title="Link to this heading"></a></h2>
+<section id="workflows">
+<h2>Workflows<a class="headerlink" href="#workflows" title="Link to this heading"></a></h2>
+<p>(<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)</p>
 <p>The <strong>Workflow_Writer</strong> focuses on converting ExpFlow Robotic Workflow JSON files into Fireworks workflows. These workflows are sequences of tasks that define experiments to be run on robotic systems. This module automates how experiments are designed, executed, and processed, enabling researchers to manage repetitive tasks efficiently.</p>
 <p>Key components:</p>
 <ul class="simple">
@@ -130,8 +130,9 @@
 </li>
 </ul>
 </section>
-<section id="fireworks-fireworks-py">
-<h2>Fireworks (<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)<a class="headerlink" href="#fireworks-fireworks-py" title="Link to this heading"></a></h2>
+<section id="fireworks">
+<h2>Fireworks<a class="headerlink" href="#fireworks" title="Link to this heading"></a></h2>
+<p>(<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code> file hosts all the Fireworks objects. Fireworks are groupings of Firetasks actions. To better faciclitate multitasking, all Fireworks fall into one of four categories. These categories by the native FireWorks attribute <code class="docutils literal notranslate"><span class="pre">_category</span></code>, so when launching firework jobs, one can specify which categories to launch. (For more on launching jobs, see <a class="reference internal" href="desktop_app.html#launching-jobs"><span class="std std-ref">Launching Jobs!</span></a>.)</p>
 <p>Categories:</p>
 <ul class="simple">
@@ -161,8 +162,9 @@
 </li>
 </ul>
 </section>
-<section id="firetasks-firetasks-actions-py-and-firetasks-processing-py">
-<h2>Firetasks (<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)<a class="headerlink" href="#firetasks-firetasks-actions-py-and-firetasks-processing-py" title="Link to this heading"></a></h2>
+<section id="firetasks">
+<h2>Firetasks<a class="headerlink" href="#firetasks" title="Link to this heading"></a></h2>
+<p>(<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Firetasks_Action.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code> files define a series of FireTasks, each responsible for executing specific actions in the robotics laboratory environment. The tasks leverage the robotics API to interface with different devices, such as potentiostats, stir stations, and liquid dispensers. Additionally, procesing FireTasks parse experimental data files and calculate relevant parameters.</p>
 <p>Key Components:</p>
 <ol class="arabic simple">

@@ -44,7 +44,7 @@
   * Start processing jobs. Through the Robotics App, select `Run Process` -> `Run Jobs Continuously`
   * Start robot jobs. Through the Robotics App, select `Run Robot` -> `Run Jobs Continuously`
   * Initialize workflow. Through the Robotics App, select `Initialize Workflow` -> `Run a Job`
-  * Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the {ref}`settings: settings`. 
+  * Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the {ref}`settings:settings`. 
 
 
 ## After Running a Workflow

@@ -34,10 +34,9 @@ For each vial, station, or standard object, there exists a base class in db_mani
 
 ## 1. DB Manipulations
 
-### Purpose:
 This file contains classes that manage the **database interactions** related to vials, stations, and standards. The primary goal is to **store and retrieve vial and station information** about the status and properties of these objects, ensuring data persistence and facilitating operations within the robotics system. The db_manipulations classes are invoked when the system needs to log the status of a new vial or station, update the position of an entity, or retrieve detailed information on a particular standard or item. However, as noted above, db_manipulation classes are rarely called independently because they serve as base classes for the standard_action classes.
 
-### Core Components:
+**Core Components**:
 - **VialStatus**: This class is responsible for accessing the database and managing vial-related data, such as its ID, experiment name, and other metadata. It extends from `RobotStatusDB`, which provides database access methods tailored for robotic status information.
 - **StationStatus**: Similar to `VialStatus`, but focused on the stations where vials are stored or processed. This class also extends `RobotStatusDB` and helps track information such as which vials are at which station and what actions have been performed on them.
 
@@ -47,10 +46,9 @@ These classes provide the foundational data structures to **store and retrieve v
 
 ## 2. Standard Actions
 
-### Purpose:
 This file contains the operational logic to manage the **real-time status and positioning** of vials and stations. It builds on the foundation set by `db_manipulations.py` to execute the robotic operations required to manipulate these objects. These classes abstract away the complexities involved in controlling hardware, tracking vial positions, or updating the status of stations and standards. In practical terms, standard_actions is used whenever the system needs to perform an action on a physical entity such as a vial or station. For example, if a vial needs to be moved to a new position or its contents processed in a station, this file would handle those operations while keeping the database updated with the latest state information.
 
-### Core Components:
+**Core Components**:
 - **VialMove**: A class designed to handle the physical movement of vials between positions in the robotic system.
 - **LiquidStation**: A class designed to handle the status, content, and operation of a liquid dispensing station.
 - **BalanceStation**: A class designed to handle the status, content, and operation of a balance station.

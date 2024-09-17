@@ -20,7 +20,7 @@ Robot settings including the robot IP address, the grip target values for open a
 ### POTENTIOSTAT SETTINGS
 Comp ports and executions files for the instrumnets.
 
-# Measurement Default Settings (CA, CV, iR Comp, etc. )
+### MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. )
 Default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.
 
 ### PROCESSING SETTINGS

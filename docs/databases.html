@@ -65,7 +65,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
@@ -130,7 +129,7 @@
 <h2>Status Collections<a class="headerlink" href="#status-collections" title="Link to this heading"></a></h2>
 <p>The <strong>Status Collections</strong> contain real-time information about the objects used in robotic processes. These collections help keep track of the current states and locations of vials, stations, and reagents, which are critical for ensuring the smooth operation of workflows and experiments.</p>
 <blockquote>
-<div><p><strong>Note</strong>: All Status Collections contain the field <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code>. This denotes the name of the workflow from which these collections were initialized (with the <span class="xref std std-ref">workflow initialization firework</span>). If a Firework tries to interact with a database document where the <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code> does not match the Firework’s workflow name, it will through an error (see <a class="reference internal" href="common_errors.html#common-errors"><span class="std std-ref">Common Errors</span></a>).</p>
+<div><p><strong>Note</strong>: All Status Collections contain the field <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code>. This denotes the name of the workflow from which these collections were initialized (with the <a class="reference internal" href="fireworks.html#fireworks"><span class="std std-ref">workflow initialization firework</span></a>). If a Firework tries to interact with a database document where the <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code> does not match the Firework’s workflow name, it will through an error (see <a class="reference internal" href="common_errors.html#common-errors"><span class="std std-ref">Common Errors</span></a>).</p>
 </div></blockquote>
 <section id="status-reagents">
 <h3><em>status_reagents</em><a class="headerlink" href="#status-reagents" title="Link to this heading"></a></h3>

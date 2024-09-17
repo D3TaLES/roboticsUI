@@ -6,6 +6,17 @@ from robotics_api.actions.db_manipulations import *
 
 
 def perturbed_snapshot(snapshot_file, perturb_amount=PERTURB_AMOUNT, axis="z"):
+    """
+    Creates a perturbed snapshot by modifying the specified axis position in the given snapshot file.
+
+    Args:
+        snapshot_file (str): Path to the snapshot JSON file.
+        perturb_amount (float): Amount to perturb the position along the specified axis (default is PERTURB_AMOUNT).
+        axis (str): Axis to apply the perturbation to, defaults to "z".
+
+    Returns:
+        str: Path to the new perturbed snapshot file.
+    """
     with open(snapshot_file, 'r') as fn:
         master_data = json.load(fn)
 
@@ -18,6 +29,21 @@ def perturbed_snapshot(snapshot_file, perturb_amount=PERTURB_AMOUNT, axis="z"):
 
 
 def _try_movement(snapshot_file, target_position=None, raise_error=True, error_msg=None):
+    """
+    Attempts to move the robot arm to the specified snapshot file. Retries if the initial movement fails.
+
+    Args:
+        snapshot_file (str): Path to the snapshot file.
+        target_position (str): Target position for the movement, if specified.
+        raise_error (bool): Whether to raise an error if the movement fails (default is True).
+        error_msg (str): Custom error message in case of failure.
+
+    Returns:
+        bool: True if the movement was successful, False otherwise.
+
+    Raises:
+        Exception: If the movement fails and raise_error is True.
+    """
     success = snapshot_move(snapshot_file, target_position=target_position)
     print("SNAPSHOT: ", snapshot_file)
     if not success:
@@ -33,21 +59,23 @@ def _try_movement(snapshot_file, target_position=None, raise_error=True, error_m
 def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=0.0,
                    release_vial=True, raise_error=True, go=True, leave=True):
     """
-    Function that executes an action getting or placing
+    Executes an action to get or place a vial using snapshot movements.
 
     Args:
-        snapshot_file: str, path to snapshot file
-        action_type: str, 'get' if the action is getting a vail, 'place' if action is placing the vial
-        pre_position_file: str, path to snapshot file for teh position that should be touched before and after
-            placing/retrieving the vial
-        raise_amount: float,
-        release_vial: bool,
-        raise_error: bool,
-        go: bool, go to snapshot file location if True
-        leave: bool, leave from snapshot file location if True
+        snapshot_file (str): Path to the snapshot file for the target vial position.
+        action_type (str): Action type, either 'get' (to retrieve the vial) or 'place' (to place the vial).
+        pre_position_file (str): Path to a pre-position snapshot file (optional).
+        raise_amount (float): Amount to raise the robot arm above the target position (default is 0.0).
+        release_vial (bool): Whether to release the vial after placing (default is True).
+        raise_error (bool): Whether to raise an error if movement fails (default is True).
+        go (bool): Whether to move to the snapshot file location (default is True).
+        leave (bool): Whether to leave the snapshot file location after the action (default is True).
 
-    Returns: bool, success of action
+    Returns:
+        bool: True if the action was successful, False otherwise.
 
+    Raises:
+        Exception: If the movement fails and raise_error is True.
     """
     snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
@@ -90,14 +118,16 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
 
 def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.00003, angular_z=120):
     """
-    Function that executes an action getting or placing
-    Args:
-        screw: bool, screw lid if True, unscrew if false
-        starting_position: str, filepath to snapshot of starting location
-        linear_z: float,
-        angular_z: float, rotation increment in degree
+    Screws or unscrews the vial lid by controlling the robot arm's movement.
 
-    Returns: bool, success of action
+    Args:
+        screw (bool): True to screw the lid on, False to unscrew it (default is True).
+        starting_position (str): Path to the starting snapshot position file.
+        linear_z (float): Amount of linear movement along the z-axis per iteration (default is 0.00003).
+        angular_z (float): Amount of rotational movement along the z-axis in degrees (default is 120).
+
+    Returns:
+        bool: True if the action was successful, False otherwise.
     """
     snapshot_start = os.path.join(SNAPSHOT_DIR, starting_position)
     snapshot_top = perturbed_snapshot(snapshot_start, perturb_amount=0.02)
@@ -124,6 +154,21 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
 
 
 def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
+    """
+    Sends a command to the Arduino controlling a specific station.
+
+    Args:
+        station (str): The station identifier (e.g., "E1", "P1").
+        command (str): The command to send (e.g., "0", "1", "500").
+        address (str): Address of the Arduino port (default is ARDUINO_PORT).
+        return_txt (bool): Whether to return the Arduino response text (default is False).
+
+    Returns:
+        bool or str: True if the command succeeded, the response text if return_txt is True, otherwise False on failure.
+
+    Raises:
+        Exception: If unable to connect to the Arduino.
+    """
     try:
         arduino = serial.Serial(address, 115200, timeout=.1)
     except:
@@ -161,6 +206,13 @@ def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
 
 
 def write_test(file_path, test_type=""):
+    """
+    Writes test data to a file based on the test type.
+
+    Args:
+        file_path (str): Path to the output file.
+        test_type (str): Type of test data to write. Options are "cv", "ca", or "ircomp".
+    """
     test_files = {
         "cv": os.path.join(TEST_DATA_DIR, "standard_data", "CV.txt"),
         "ca": os.path.join(TEST_DATA_DIR, "standard_data", "CA.txt"),
@@ -177,14 +229,55 @@ def write_test(file_path, test_type=""):
 
 
 class VialMove(VialStatus):
+    """
+    A class for managing the movement of a vial between various stations and locations using a robot arm.
+
+    Attributes:
+        raise_amount (float): The amount to raise the robot arm when moving the vial (default is 0.1).
+
+    Methods:
+        retrieve(raise_error=True, **move_kwargs): Retrieves the vial from its current location.
+        go_to_snapshot(target_location, raise_error=True, **move_kwargs): Moves the vial to the specified snapshot location.
+        place_snapshot(target_location, raise_error=True, **move_kwargs): Places the vial at the specified snapshot location.
+        go_to_station(station, raise_error=True): Moves the vial to the specified station.
+        leave_station(station, raise_error=True): Leaves the station by placing the vial back in the robot grip.
+        place_home(**kwargs): Places the vial back to its home position.
+        update_position(position): Updates the current position of the vial.
+        robot_available(): Checks if the robot grip is available.
+    """
+
 
     def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
+        """
+        Initializes a VialMove instance with an optional vial ID and raise amount.
+
+        Args:
+            _id (str, optional): The ID of the vial or reagent. Must be provided to move a vial.
+            raise_amount (float): Amount to raise the vial when moving (default is 0.1).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no vial ID, reagent UUID, or experiment name is provided.
+        """
         super().__init__(_id=_id, **kwargs)
         self.raise_amount = raise_amount
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
 
     def retrieve(self, raise_error=True, **move_kwargs):
+        """
+        Retrieves the vial from its current location, managing robot availability and various stations.
+
+        Args:
+            raise_error (bool): Whether to raise an error if the retrieval fails (default is True).
+            **move_kwargs: Additional keyword arguments for controlling movement behavior.
+
+        Returns:
+            bool: True if the vial was successfully retrieved, False otherwise.
+
+        Raises:
+            Exception: If the vial cannot be retrieved and raise_error is True.
+        """
         success = False
         if self.current_location == "robot_grip":
             if StationStatus("robot_grip").current_content == self.id:
@@ -232,6 +325,20 @@ class VialMove(VialStatus):
         return success
 
     def go_to_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
+        """
+        Moves the vial to the specified target snapshot location.
+
+        Args:
+            target_location (str): The target snapshot location to move the vial to.
+            raise_error (bool): Whether to raise an error if the movement fails (default is True).
+            **move_kwargs: Additional keyword arguments for controlling movement behavior.
+
+        Returns:
+            bool: True if the vial was successfully moved, False otherwise.
+
+        Raises:
+            Exception: If the movement fails and raise_error is True.
+        """
         self.retrieve(raise_error=True)
         # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
@@ -244,6 +351,20 @@ class VialMove(VialStatus):
         return success
 
     def place_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
+        """
+        Places the vial at the specified snapshot location.
+
+        Args:
+            target_location (str): The target snapshot location to place the vial.
+            raise_error (bool): Whether to raise an error if the placement fails (default is True).
+            **move_kwargs: Additional keyword arguments for controlling movement behavior.
+
+        Returns:
+            bool: True if the vial was successfully placed, False otherwise.
+
+        Raises:
+            Exception: If the placement fails and raise_error is True.
+        """
         self.retrieve(raise_error=True)
         # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
         move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
@@ -259,6 +380,19 @@ class VialMove(VialStatus):
         return success
 
     def go_to_station(self, station: StationStatus, raise_error=True):
+        """
+        Moves the vial to the specified station.
+
+        Args:
+            station (StationStatus): The station to move the vial to.
+            raise_error (bool): Whether to raise an error if the movement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully moved, False otherwise.
+
+        Raises:
+            Exception: If the movement fails and raise_error is True.
+        """
         self.retrieve(raise_error=True)
 
         print("TEST ", self.current_location, station)
@@ -279,12 +413,31 @@ class VialMove(VialStatus):
 
     @staticmethod
     def leave_station(station: StationStatus, raise_error=True):
+        """
+        Leaves the station by placing the vial back in the robot grip.
+
+        Args:
+            station (StationStatus): The station from which to leave.
+            raise_error (bool): Whether to raise an error if the leave action fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed back, False otherwise.
+        """
         success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
                                  raise_error=raise_error, go=False, raise_amount=station.raise_amount)
         station.empty()
         return success
 
     def place_home(self, **kwargs):
+        """
+        Places the vial back in its home position.
+
+        Args:
+            **kwargs: Additional keyword arguments for controlling the placement behavior.
+
+        Returns:
+            bool: True if the vial was successfully placed at home, False otherwise.
+        """
         if self.current_location == "home":
             print(f"Vial {self} is already at home.")
             return True
@@ -294,6 +447,15 @@ class VialMove(VialStatus):
         return success
 
     def update_position(self, position):
+        """
+        Updates the current position of the vial.
+
+        Args:
+            position (str): The new position of the vial.
+
+        Returns:
+            None
+        """
         self.update_location(position)
         station = StationStatus(position)
         if station.exists:
@@ -303,11 +465,45 @@ class VialMove(VialStatus):
 
     @staticmethod
     def robot_available():
+        """
+        Checks if the robot grip is available for vial movement.
+
+        Returns:
+            bool: True if the robot grip is available, False otherwise.
+        """
         return StationStatus("robot_grip").available
 
 
 class LiquidStation(StationStatus):
+    """
+    A class representing a solvent or liquid dispensing station.
+
+    Attributes:
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.04).
+        pre_location_snapshot (str): Snapshot of the pre-movement location (default is None).
+        serial_name (str): The serial name of the station used for communication with hardware.
+
+    Methods:
+        solvent_id: Retrieves the solvent ID associated with the current station.
+        place_vial(vial, raise_error=True): Places a vial at the liquid station.
+        dispense_only(volume, perform_dispense=DISPENSE): Dispenses the given volume of liquid without vial interaction.
+        _dispense_to_vial(vial, volume, raise_error=True): Handles vial placement and liquid dispensing.
+        dispense_volume(vial, volume, raise_error=True): Dispenses a specified volume of liquid into a vial and updates the vial's reagent information.
+        dispense_mass(vial, volume, raise_error=True): Dispenses a specified volume of liquid into a vial, weighing before and after to update the vial's mass.
+    """
+
     def __init__(self, _id, raise_amount=-0.04, **kwargs):
+        """
+        Initializes a LiquidStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the liquid station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.04).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station type is not 'solvent'.
+        """
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
@@ -319,6 +515,15 @@ class LiquidStation(StationStatus):
 
     @property
     def solvent_id(self):
+        """
+        Retrieves the solvent ID associated with the solvent located in the current liquid station.
+
+        Returns:
+            str: The solvent ID for the liquid at this station.
+
+        Raises:
+            ValueError: If no solvents or more than one solvent is found at this station.
+        """
         all_solvents = list(MongoDatabase(database="robotics", collection_name='status_reagents').coll.find())
         potential_solvents = [s for s in all_solvents if s["location"] == self.id]
         if len(potential_solvents) > 1:
@@ -328,26 +533,85 @@ class LiquidStation(StationStatus):
         return potential_solvents[0]["_id"]
 
     def place_vial(self, vial: VialMove, raise_error=True):
+        """
+        Places a vial at the liquid station.
+
+        Args:
+            vial (VialMove): The vial to be placed at the station.
+            raise_error (bool): Whether to raise an error if the placement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed, False otherwise.
+        """
         return vial.go_to_station(self, raise_error=raise_error)
 
     def dispense_only(self, volume, perform_dispense=DISPENSE):
+        """
+        Dispenses the specified volume of liquid without interacting with a vial.
+
+        Args:
+            volume (float): The volume of liquid to dispense in mL.
+            perform_dispense (bool): Whether to actually perform the dispense operation (default is DISPENSE).
+
+        Returns:
+            float: The volume of liquid dispensed.
+        """
         arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
         if perform_dispense:
             send_arduino_cmd(self.serial_name, arduino_vol)
         return volume
 
     def _dispense_to_vial(self, vial: VialMove, volume, raise_error=True):
+        """
+        Places the vial at the station, dispenses the liquid, and returns the volume dispensed.
+
+        Args:
+            vial (VialMove): The vial to be filled with liquid.
+            volume (float): The volume of liquid to dispense.
+            raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+
+        Returns:
+            float: The actual volume of liquid dispensed.
+        """
         self.place_vial(vial, raise_error=raise_error)
         actual_volume = self.dispense_only(volume)
         vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
     def dispense_volume(self, vial: VialMove, volume, raise_error=True):
+        """
+        Dispenses a specified volume of liquid into a vial and updates the vial's reagent information.
+
+        Args:
+            vial (VialMove): The vial to be filled with liquid.
+            volume (float): The volume of liquid to dispense.
+            raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+
+        Returns:
+            float: The actual volume of liquid dispensed.
+
+        Raises:
+            Exception: If the dispensing fails and raise_error is True.
+        """
         actual_volume = self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
         vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT)
         return actual_volume
 
     def dispense_mass(self, vial: VialMove, volume, raise_error=True):
+        """
+        Dispenses a specified volume of liquid into a vial and updates the vial's content with solvent mass using pre- and post-dispense weighing.
+
+        Args:
+            vial (VialMove): The vial to be filled with liquid.
+            volume (float): The volume of liquid to dispense.
+            raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+
+        Returns:
+            str: The mass of the liquid dispensed, in the default mass unit.
+
+        Raises:
+            Exception: If the dispensing fails or the weighing fails.
+        """
         # Pre dispense weighing
         balance = vial.current_location if "balance" in vial.current_location else BalanceStation(
             StationStatus().get_first_available("balance"))
@@ -370,7 +634,29 @@ class LiquidStation(StationStatus):
 
 
 class PipetteStation(StationStatus):
+    """
+    A class representing a pipette station.
+
+    Attributes:
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.08).
+        serial_name (str): The serial name of the station used for communication with hardware.
+
+    Methods:
+        place_vial(vial, raise_error=True): Places a vial at the pipette station.
+        pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
+    """
     def __init__(self, _id, raise_amount=-0.08, **kwargs):
+        """
+        Initializes a PipetteStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the pipette station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.08).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station type is not 'pipette'.
+        """
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a pipette station, an id must be provided.")
@@ -381,9 +667,33 @@ class PipetteStation(StationStatus):
         self.serial_name = "P{:01d}".format(int(self.id.split("_")[-1]))
 
     def place_vial(self, vial: VialMove, raise_error=True):
+        """
+        Places a vial at the pipette station.
+
+        Args:
+            vial (VialMove): The vial to be placed at the station.
+            raise_error (bool): Whether to raise an error if the placement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed, False otherwise.
+        """
         return vial.go_to_station(self, raise_error=raise_error)
 
     def pipette(self, volume: float, vial: VialMove = None, raise_error=True):
+        """
+        Pipettes a specified volume of liquid, optionally into a vial.
+
+        Args:
+            volume (float): The volume of liquid to pipette in mL.
+            vial (VialMove, optional): The vial to pipette into (default is None).
+            raise_error (bool): Whether to raise an error if the pipetting operation fails (default is True).
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If the pipetting operation fails and raise_error is True.
+        """
         if vial:
             self.place_vial(vial, raise_error=raise_error)
 
@@ -396,7 +706,35 @@ class PipetteStation(StationStatus):
 
 
 class BalanceStation(StationStatus):
+    """
+    A class representing a balance station.
+
+    Attributes:
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.05).
+        serial_name (str): The serial name of the balance used for communication with hardware.
+        p_address (str): The port address of the balance for serial communication.
+
+    Methods:
+        place_vial(vial, raise_error=True, **move_kwargs): Places a vial on the balance station.
+        _retrieve_vial(vial, **move_kwargs): Retrieves a vial from the balance station.
+        existing_weight(vial, raise_error=True): Returns the current weight of a vial if available, or weighs the vial.
+        weigh(vial, raise_error=True): Weighs a vial by taring the balance and placing the vial.
+        read_mass(): Reads the mass from the balance via serial communication.
+        tare(): Tares the balance.
+        _send_command(write_txt=None, read_response=False): Sends a command to the balance and optionally reads the response.
+    """
     def __init__(self, _id, raise_amount=0.05, **kwargs):
+        """
+        Initializes a BalanceStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the balance station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.05).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station type is not 'balance'.
+        """
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate a balance station, a balance name must be provided.")
@@ -408,6 +746,17 @@ class BalanceStation(StationStatus):
         self.p_address = BALANCE_PORT
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
+        """
+        Places a vial on the balance station.
+
+        Args:
+            vial (VialMove): The vial to be placed on the station.
+            raise_error (bool): Whether to raise an error if the placement fails (default is True).
+            **move_kwargs: Additional movement options.
+
+        Returns:
+            bool: True if the vial was successfully placed, False otherwise.
+        """
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content == vial_id and vial.current_location == self.id:
             return True
@@ -420,6 +769,19 @@ class BalanceStation(StationStatus):
             return True
 
     def _retrieve_vial(self, vial: VialMove, **move_kwargs):
+        """
+        Retrieves a vial from the balance station.
+
+        Args:
+            vial (VialMove): The vial to be retrieved.
+            **move_kwargs: Additional movement options.
+
+        Returns:
+            bool: True if the vial was successfully retrieved, False otherwise.
+
+        Raises:
+            Exception: If the vial is not located at the balance or if the robot is unavailable.
+        """
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content != vial_id:
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
@@ -435,12 +797,32 @@ class BalanceStation(StationStatus):
         return success
 
     def existing_weight(self, vial: VialMove, raise_error=True):
+        """
+        Returns the current weight of a vial if available, or weighs the vial.
+
+        Args:
+            vial (VialMove): The vial whose weight is to be measured.
+            raise_error (bool): Whether to raise an error if weighing fails (default is True).
+
+        Returns:
+            float: The current weight of the vial.
+        """
         if vial.current_weight:
             print("CURRENT WEIGHT: ", vial.current_weight)
             return vial.current_weight
         return self.weigh(vial, raise_error=raise_error)
 
     def weigh(self, vial: VialMove, raise_error=True):
+        """
+        Weighs a vial by taring the balance and placing the vial on the station.
+
+        Args:
+            vial (VialMove): The vial to be weighed.
+            raise_error (bool): Whether to raise an error if weighing fails (default is True).
+
+        Returns:
+            float: The weight of the vial.
+        """
         if self.current_content == vial.id:
             vial.retrieve()
         self.tare()
@@ -452,6 +834,15 @@ class BalanceStation(StationStatus):
         return mass
 
     def read_mass(self):
+        """
+        Reads the mass from the balance via serial communication.
+
+        Returns:
+            float: The mass read from the balance.
+
+        Raises:
+            SystemError: If the balance reading fails.
+        """
         result_txt = self._send_command(write_txt="S\n", read_response=True)
         result_list = result_txt.split(" ")
         response_status = result_list[1]
@@ -461,6 +852,15 @@ class BalanceStation(StationStatus):
             raise SystemError(f"Balance reading returned {result_txt}")
 
     def tare(self):
+        """
+        Tares the balance, resetting the weight measurement to zero.
+
+        Returns:
+            bool: True if the taring was successful.
+
+        Raises:
+            SystemError: If taring fails and the balance does not respond correctly.
+        """
         while True:
             response = self._send_command(write_txt="T\n", read_response=True)
             if "S" in response:
@@ -472,6 +872,19 @@ class BalanceStation(StationStatus):
             time.sleep(1)
 
     def _send_command(self, write_txt=None, read_response=False):
+        """
+        Sends a command to the balance via serial communication and optionally reads the response.
+
+        Args:
+            write_txt (str, optional): The command to send to the balance.
+            read_response (bool, optional): Whether to read and return the response from the balance (default is False).
+
+        Returns:
+            str: The response from the balance if read_response is True, otherwise None.
+
+        Raises:
+            Exception: If the balance is not connected or an error occurs during communication.
+        """
         try:
             balance = serial.Serial(self.p_address, timeout=1)
         except serial.SerialException as e:
@@ -493,7 +906,30 @@ class BalanceStation(StationStatus):
 
 
 class StirStation(StationStatus):
+    """
+    A class representing a stir station for stirring vials.
+
+    Attributes:
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.1).
+        serial_name (str): The serial name of the stir station used for communication with hardware.
+
+    Methods:
+        place_vial(vial, raise_error=True): Places a vial on the stir station.
+        stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
+        perform_stir(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
+    """
     def __init__(self, _id, raise_amount=0.1, **kwargs):
+        """
+        Initializes a StirStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the stir station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.1).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station type is not 'stir'.
+        """
         super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
@@ -504,21 +940,34 @@ class StirStation(StationStatus):
         self.raise_amount = raise_amount
 
     def place_vial(self, vial: VialMove, raise_error=True):
+        """
+        Places a vial on the stir station.
+
+        Args:
+            vial (VialMove): The vial to be placed on the station.
+            raise_error (bool): Whether to raise an error if the placement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed, False otherwise.
+        """
         return vial.go_to_station(self, raise_error=raise_error)
 
     def stir(self, stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
         """
-        Operate CV elevator
+        Operates the stirring mechanism.
 
         Args:
-            stir_time: int, time (seconds) for stir plate to be on
-            stir_cmd: command for stir plate; ONLY USED IF STIR_TIME IS NONE; must be 1 (on) or 0 (off), OR it must be
-                'on' or 'off'.
-            perturb_amount: float, amount to perturb vial during stirring
-            move_sleep: float, time (seconds) for robot to sleep between stirring moves
+            stir_time (int, optional): The time in seconds to stir. If None, defaults to implementing stir_cmd.
+            stir_cmd (str, optional): Command for stir plate; only used if stir_time is None.
+                                      Can be 'on'/'off' or 1/0 (default is 'off').
+            perturb_amount (float, optional): Amount to perturb the vial during stirring (default is STIR_PERTURB).
+            move_sleep (float, optional): Time in seconds for robot to sleep between stirring moves (default is 3).
 
-        Returns: bool, True if stir action was a success
+        Returns:
+            bool: True if the stir action was successful, False otherwise.
 
+        Raises:
+            TypeError: If an invalid stir command is provided.
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
@@ -550,6 +999,17 @@ class StirStation(StationStatus):
         return send_arduino_cmd(self.serial_name, stir_cmd)
 
     def perform_stir(self, vial: VialMove, stir_time=None, **kwargs):
+        """
+        Places a vial on the station, stirs it, and retrieves it.
+
+        Args:
+            vial (VialMove): The vial to be stirred.
+            stir_time (int, optional): The time in seconds to stir (default is None).
+            **kwargs: Additional keyword arguments for vial placement and retrieval.
+
+        Returns:
+            bool: True if the vial was successfully stirred and retrieved, False otherwise.
+        """
         success = vial.go_to_station(self, **kwargs)
         success += self.stir(stir_time=stir_time)
         success += vial.leave_station(self)
@@ -557,7 +1017,35 @@ class StirStation(StationStatus):
 
 
 class PotentiostatStation(StationStatus):
+    """
+    A class representing a potentiostat station, used for performing electrochemical experiments.
+
+    Attributes:
+        current_experiment (str or None): The current experiment being performed at this station.
+        pot_model (str): The model of the potentiostat.
+        serial_name (str): The serial name for the elevator control.
+        temp_serial_name (str): The serial name for temperature control.
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station.
+
+    Methods:
+        initiate_pot(vial): Prepares the potentiostat by raising the elevator if needed.
+        end_pot(): Concludes the potentiostat operation by lowering the elevator.
+        place_vial(vial, raise_error=True, **move_kwargs): Places a vial in the potentiostat.
+        move_elevator(endpoint, raise_error=True): Moves the elevator to a specified position.
+        get_temperature(): Retrieves the temperature associated with this station.
+    """
     def __init__(self, _id, raise_amount=0.028, **kwargs):
+        """
+        Initializes a PotentiostatStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the potentiostat station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.028).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station is not a potentiostat.
+        """
         super().__init__(_id=_id, **kwargs)
         self.current_experiment = self.get_prop("current_experiment") or None
         if not self.id:
@@ -576,13 +1064,29 @@ class PotentiostatStation(StationStatus):
 
     def update_experiment(self, experiment: str or None):
         """
-        Get current experiment for instance with _id
-        :param experiment: str or None, current experiment
-        :return: experiment name
+        Updates the current experiment for this potentiostat.
+
+        Args:
+            experiment (str or None): The current experiment.
+
+        Returns:
+            pymongo.results.UpdateResult: Result of the update operation.
         """
         return self.coll.update_one({"_id": self.id}, {"$set": {"current_experiment": experiment}})
 
     def initiate_pot(self, vial: VialMove or str = None):
+        """
+        Initiates the potentiostat by ensuring the vial is placed and the elevator is up.
+
+        Args:
+            vial (VialMove or str, optional): The vial to be used. If str, it's the ID of the vial.
+
+        Raises:
+            Exception: If the vial is not currently located in the potentiostat or does not match the current content.
+
+        Returns:
+            bool: True if the potentiostat is successfully initiated.
+        """
         if vial:
             vial = VialMove(_id=vial) if isinstance(vial, str) else vial
             if not vial.current_location == self.id:
@@ -600,6 +1104,12 @@ class PotentiostatStation(StationStatus):
                 return True
 
     def end_pot(self):
+        """
+        Ends the potentiostat operation by lowering the elevator.
+
+        Returns:
+            bool: True if the elevator is successfully lowered.
+        """
         if self.state == "down":
             return True
         elif self.state == "up":
@@ -607,6 +1117,19 @@ class PotentiostatStation(StationStatus):
                 return True
 
     def _retrieve_vial(self, vial: VialMove, **move_kwargs):
+        """
+        Retrieves the vial from the potentiostat station.
+
+        Args:
+            vial (VialMove): The vial to retrieve.
+            **move_kwargs: Additional arguments for vial movement.
+
+        Raises:
+            Exception: If the vial is not located in the potentiostat.
+
+        Returns:
+            bool: True if the vial is successfully retrieved.
+        """
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content != vial_id:
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
@@ -620,6 +1143,20 @@ class PotentiostatStation(StationStatus):
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
+        """
+        Places a vial on the potentiostat station.
+
+        Args:
+            vial (VialMove): The vial to be placed.
+            raise_error (bool, optional): Whether to raise an error if the placement fails (default is True).
+            **move_kwargs: Additional arguments for vial placement.
+
+        Raises:
+            Exception: If the placement is unsuccessful and raise_error is True.
+
+        Returns:
+            bool: True if the vial is successfully placed, False otherwise.
+        """
         vial_id = vial if isinstance(vial, str) else vial.id
         if self.current_content == vial_id and vial.current_location == self.id:
             return True
@@ -647,12 +1184,18 @@ class PotentiostatStation(StationStatus):
 
     def move_elevator(self, endpoint="down", raise_error=True):
         """
-        Operate CV elevator
-        Args:
-            endpoint: endpoint for elevator; must be 1 (up) or 0 (down), OR it must be 'up' or 'down'.
-            raise_error: bool, raise error if not successful and True
+        Moves the potentiostat elevator to the specified endpoint.
 
-        Returns: bool, True if elevator action was a success
+        Args:
+            endpoint (str or int, optional): The endpoint for the elevator; must be 1 (up) or 0 (down), or 'up'/'down' (default is 'down').
+            raise_error (bool, optional): Whether to raise an error if the movement fails (default is True).
+
+        Raises:
+            TypeError: If an invalid endpoint is provided.
+            Exception: If the elevator movement is not successful and raise_error is True.
+
+        Returns:
+            bool: True if the elevator movement is successful.
         """
         if MOVE_ELEVATORS:
             endpoint = 0 if endpoint == "down" or str(endpoint) == "0" else endpoint
@@ -673,9 +1216,10 @@ class PotentiostatStation(StationStatus):
 
     def get_temperature(self):
         """
-        Get temperature associated with this potentiostat station
+        Gets the temperature associated with this potentiostat station.
 
-        Returns: float, temperature (K)
+        Returns:
+            dict: A dictionary with the temperature value in Kelvin and its unit.
         """
 
         arduino_result = send_arduino_cmd(self.temp_serial_name, "", return_txt=True)
@@ -684,7 +1228,16 @@ class PotentiostatStation(StationStatus):
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
-        # Get voltages with appropriate units
+        """
+        Converts a sequence of voltages into the specified voltage unit.
+
+        Args:
+            voltage_sequence (str): A comma-separated string of voltages.
+            volt_unit (str, optional): The desired voltage unit (default is "V").
+
+        Returns:
+            list: A list of voltages converted to the specified unit.
+        """
         ureg = pint.UnitRegistry()
         voltages = voltage_sequence.split(',')
         voltage_units = ureg(voltages[-1]).units
@@ -697,6 +1250,18 @@ class PotentiostatStation(StationStatus):
         return voltages
 
     def generate_col_params(self, voltage_sequence: str, scan_rate: str, volt_unit="V", scan_unit="V/s"):
+        """
+        Generates collection parameters based on voltage sequence and scan rate.
+
+        Args:
+            voltage_sequence (str): A comma-separated string of voltages.
+            scan_rate (str): The scan rate in string format.
+            volt_unit (str, optional): The unit for voltages (default is "V").
+            scan_unit (str, optional): The unit for scan rate (default is "V/s").
+
+        Returns:
+            list: A list of dictionaries containing voltage and scan rate parameters.
+        """
         # Get voltages with appropriate units
         voltages = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit=volt_unit)
 
@@ -707,22 +1272,51 @@ class PotentiostatStation(StationStatus):
 
 
 class CVPotentiostatStation(PotentiostatStation):
+    """
+    A class representing a cyclic voltammetry (CV) potentiostat station, which runs CV experiments and iR compensation tests.
+
+    Inherits from PotentiostatStation.
+
+    Methods:
+        run_cv(data_path, voltage_sequence=None, scan_rate=None, resistance=0, sample_interval=None, sens=None, **kwargs):
+            Runs a CV experiment and saves the data.
+
+        run_ircomp_test(data_path, e_ini=0, low_freq=None, high_freq=None, amplitude=None, sens=None):
+            Runs an iR compensation test to determine the solution resistance.
+    """
     def __init__(self, _id, raise_amount=0.028, **kwargs):
+        """
+        Initializes a CVPotentiostatStation instance.
+
+        Args:
+            _id (str): The ID of the potentiostat station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.028).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station is not a potentiostat.
+        """
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
                sample_interval=None, sens=None, **kwargs):
         """
-        Run CV experiment with potentiostat. Needs either collect_params arg OR voltage_sequence and scan_rage args.
-        Args:
-            data_path: str, output data file path
-            voltage_sequence: str, comma-seperated list of voltage points
-            scan_rate: str, scan rate
-            resistance: float, solution resistance for iR compensation (A)
-            sample_interval: float, potential increment (V)
-            sens: float, current sensitivity (A/V)
+        Runs a cyclic voltammetry (CV) experiment with the potentiostat and saves the data.
 
-        Returns: bool, success
+        Args:
+            data_path (str): The output data file path where results will be saved.
+            voltage_sequence (str, optional): A comma-separated list of voltage points (e.g., '0.1,0.2,0.3').
+            scan_rate (str, optional): The scan rate of the experiment (e.g., '0.1 V/s').
+            resistance (float, optional): The solution resistance for iR compensation (default is 0, in Ohms).
+            sample_interval (float, optional): The potential increment (default is CV_SAMPLE_INTERVAL, in Volts).
+            sens (float, optional): The current sensitivity (default is CV_SENSITIVITY, in A/V).
+            **kwargs: Additional arguments for running the experiment (e.g., potentiostat-specific parameters).
+
+        Returns:
+            bool: True if the experiment is successfully run.
+
+        Raises:
+            Exception: If the potentiostat model is unsupported for the CV experiment.
         """
         sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
         sens = unit_conversion(sens or CV_SENSITIVITY, default_unit="A/V")
@@ -771,16 +1365,21 @@ class CVPotentiostatStation(PotentiostatStation):
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=None, high_freq=None,
                         amplitude=None, sens=None):
         """
-        Run iR comp test to determine resistance
-        Args:
-            data_path: str, output data file path
-            e_ini: float, V, initial voltage
-            low_freq: float, Hz, low frequency
-            high_freq: float, Hz, high frequency
-            amplitude: float, V, ac amplitude (half peak-to-peak)
-            sens: float, current sensitivity (A/V)
+        Runs an iR compensation test to determine the solution resistance and saves the data.
 
-        Returns: bool, success
+        Args:
+            data_path (str): The output data file path where results will be saved.
+            e_ini (float, optional): The initial voltage (default is 0V).
+            low_freq (float, optional): The low frequency for the test (default is INITIAL_FREQUENCY).
+            high_freq (float, optional): The high frequency for the test (default is FINAL_FREQUENCY).
+            amplitude (float, optional): The amplitude of the AC signal (default is AMPLITUDE, in Volts).
+            sens (float, optional): The current sensitivity (default is CV_SENSITIVITY, in A/V).
+
+        Returns:
+            bool: True if the test is successfully run.
+
+        Raises:
+            Exception: If the potentiostat model is unsupported for the iR compensation test.
         """
         if not RUN_POTENT:
             print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
@@ -812,25 +1411,51 @@ class CVPotentiostatStation(PotentiostatStation):
 
 
 class CAPotentiostatStation(PotentiostatStation):
+    """
+    A class representing a chronoamperometry (CA) potentiostat station, which runs CA experiments.
+
+    Inherits from PotentiostatStation.
+
+    Methods:
+        run_ca(data_path, voltage_sequence=None, si=None, pw=None, sens=None, steps=None,
+               volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
+            Runs a CA experiment and saves the data.
+    """
     def __init__(self, _id, raise_amount=0.028, **kwargs):
+        """
+        Initializes a CAPotentiostatStation instance.
+
+        Args:
+            _id (str): The ID of the potentiostat station.
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.028).
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        Raises:
+            Exception: If no station ID is provided or if the station is not a potentiostat.
+        """
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_ca(self, data_path, voltage_sequence=None, si=None, pw=None, sens=None,
                steps=None, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
         """
-        Run CA experiment with potentiostat. Needs either collect_params arg OR voltage_sequence arg.
-        Args:
-            data_path: str, output data file path
-            voltage_sequence: str, comma-seperated list of voltage points
-            si: float, sample interval (sec)
-            pw: float, pulse width (sec)
-            sens: float, current sensitivity (A/V)
-            steps: float, number of steps
-            volt_min: float, minimum acceptable voltage for CA experiment
-            volt_max: float, maximum acceptable voltage for CA experiment
-            run_delay: float, time to wait before running CA experiment (s)
+        Runs a chronoamperometry (CA) experiment with the potentiostat and saves the data.
 
-        Returns: bool, success
+        Args:
+            data_path (str): The output data file path where results will be saved.
+            voltage_sequence (str, optional): A comma-separated list of voltage points (e.g., '0.1,0.2,0.3').
+            si (float, optional): The sample interval in seconds (default is CA_SAMPLE_INTERVAL).
+            pw (float, optional): The pulse width in seconds (default is CA_PULSE_WIDTH).
+            sens (float, optional): The current sensitivity (default is CA_SENSITIVITY, in A/V).
+            steps (float, optional): The number of steps to run in the experiment (default is CA_STEPS).
+            volt_min (float, optional): The minimum voltage for the CA experiment (default is MIN_CA_VOLT).
+            volt_max (float, optional): The maximum voltage for the CA experiment (default is MAX_CA_VOLT).
+            run_delay (float, optional): The time to wait before starting the CA experiment, in seconds (default is CA_RUN_DELAY).
+
+        Returns:
+            bool: True if the experiment is successfully run.
+
+        Raises:
+            Exception: If the potentiostat model is unsupported for the CA experiment.
         """
         si = unit_conversion(si or CA_SAMPLE_INTERVAL, default_unit="s")
         sens = unit_conversion(sens or CA_SENSITIVITY, default_unit="A/V")

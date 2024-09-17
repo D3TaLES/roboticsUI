@@ -9,20 +9,34 @@ from robotics_api.actions.db_manipulations import *
 
 @add_metaclass(abc.ABCMeta)
 class RoboticsBase(FiretaskBase):
-    wflow_name: str
-    exp_name: str
-    full_name: str
-    success: bool
-    lpad: LaunchPad
-    metadata: dict
-    collection_data: list
-    processing_data: dict
-    exp_vial: VialMove
-    end_experiment: bool
-    exit: bool
+    """Base class for robotics-related FireTasks.
+
+    Attributes:
+        wflow_name (str): Name of the workflow.
+        exp_name (str): Name of the experiment.
+        full_name (str): Full name combining workflow and experiment.
+        success (bool): Flag indicating task success.
+        lpad (LaunchPad): LaunchPad instance for fireworks operations.
+        metadata (dict): Dictionary to hold task metadata.
+        collection_data (list): List of data collected during the experiment.
+        processing_data (dict): Dictionary of data related to processing.
+        exp_vial (VialMove): Instance representing a vial in the experiment.
+        end_experiment (bool): Flag indicating whether the experiment is ending.
+        exit (bool): Flag to exit workflow sequence.
+    """
+
     _fw_name = "RoboticsBase"
 
     def setup_task(self, fw_spec, get_exp_vial=True):
+        """Sets up the task with the provided fireworks spec.
+
+        Args:
+            fw_spec (dict): Firework spec containing task setup information.
+            get_exp_vial (bool): Whether to initialize the experiment vial.
+
+        Returns:
+            bool: False if exiting the workflow, True otherwise.
+        """
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
@@ -42,10 +56,18 @@ class RoboticsBase(FiretaskBase):
         if get_exp_vial:
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
-            
+
         return True
 
     def updated_specs(self, **kwargs):
+        """Updates the fireworks spec with current task data.
+
+        Args:
+            **kwargs: Additional specifications to be updated.
+
+        Returns:
+            dict: Updated specifications dictionary.
+        """
         # When updating specs, check for fizzled robot jobs and rerun
         if RERUN_FIZZLED_ROBOT:
             fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
@@ -62,13 +84,14 @@ class RoboticsBase(FiretaskBase):
         return specs
 
     def self_fizzle(self):
+        """Raises an exception to stop the task and mark it as failed."""
         self.updated_specs()
         raise Exception(f"Self defusing Firetask {self._fw_name}")
 
 
 @explicit_serialize
 class DispenseLiquid(RoboticsBase):
-    # FireTask for dispensing liquid
+    """FireTask for dispensing liquid into an experiment vial."""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -93,7 +116,7 @@ class DispenseLiquid(RoboticsBase):
 
 @explicit_serialize
 class DispenseSolid(RoboticsBase):
-    # FireTask for dispensing solid
+    """FireTask for dispensing solid into an experiment vial."""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -110,6 +133,8 @@ class DispenseSolid(RoboticsBase):
 
 @explicit_serialize
 class Heat(RoboticsBase):
+    """FireTask for heating an experiment vial."""
+
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
@@ -122,6 +147,7 @@ class Heat(RoboticsBase):
 
 @explicit_serialize
 class Stir(RoboticsBase):
+    """FireTask for holding an experiment vial over the stir plate and stirring."""
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
@@ -138,7 +164,7 @@ class Stir(RoboticsBase):
 
 @explicit_serialize
 class MeasureDensity(RoboticsBase):
-    # FireTask for measuring density
+    """FireTask for measuring solution density"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -174,7 +200,7 @@ class MeasureDensity(RoboticsBase):
 
 @explicit_serialize
 class RecordWorkingElectrodeArea(RoboticsBase):
-    # FireTask for recording size of working electrode
+    """FireTask for recording size of working electrode"""
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, get_exp_vial=False)
@@ -184,6 +210,8 @@ class RecordWorkingElectrodeArea(RoboticsBase):
 
 @explicit_serialize
 class SetupRinsePotentiostat(RoboticsBase):
+    """FireTask for setting up the electrode rinse action by moving the correct
+    vial to the potentiostat elevator"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -205,7 +233,7 @@ class SetupRinsePotentiostat(RoboticsBase):
 
 @explicit_serialize
 class RinseElectrode(RoboticsBase):
-    # FireTask for dispensing solvent
+    """FireTask for rinsing an electrode"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -223,7 +251,7 @@ class RinseElectrode(RoboticsBase):
 
 @explicit_serialize
 class CleanElectrode(RoboticsBase):
-    # FireTask for dispensing solvent
+    """FireTask for cleaning and electrode"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -234,6 +262,8 @@ class CleanElectrode(RoboticsBase):
 
 @add_metaclass(abc.ABCMeta)
 class SetupPotentiostat(RoboticsBase):
+    """Base FireTask for setting up a potentiostat action by moving the correct
+    vial to the potentiostat elevator"""
     method: str
 
     def run_task(self, fw_spec):
@@ -278,16 +308,19 @@ class SetupPotentiostat(RoboticsBase):
 
 @explicit_serialize
 class SetupCVPotentiostat(SetupPotentiostat):
+    """FireTask setting up CV potentiostat"""
     method = "cv"
 
 
 @explicit_serialize
 class SetupCAPotentiostat(SetupPotentiostat):
+    """FireTask setting up CA potentiostat"""
     method = "ca"
 
 
 @explicit_serialize
 class FinishPotentiostat(RoboticsBase):
+    """FireTask finishing potentiostat action by removing vial"""
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
@@ -313,7 +346,7 @@ class FinishPotentiostat(RoboticsBase):
 
 @explicit_serialize
 class BenchmarkCV(RoboticsBase):
-    # FireTask for testing electrode cleanliness
+    """FireTask performing CV benchmark measurement"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -348,7 +381,7 @@ class BenchmarkCV(RoboticsBase):
 
 @explicit_serialize
 class RunCV(RoboticsBase):
-    # FireTask for running CV
+    """FireTask for running CV"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -385,7 +418,7 @@ class RunCV(RoboticsBase):
 
 @explicit_serialize
 class RunCA(RoboticsBase):
-    # FireTask for running CA
+    """FireTask for running CA"""
 
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
@@ -426,6 +459,7 @@ class RunCA(RoboticsBase):
 
 @explicit_serialize
 class CollectTemp(RoboticsBase):
+    """Firetask for collecting temperature. IN DEVELOPMENT!!!"""
     def run_task(self, fw_spec):
         if not self.setup_task(fw_spec):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)

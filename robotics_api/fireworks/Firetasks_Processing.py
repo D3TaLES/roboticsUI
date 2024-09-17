@@ -20,7 +20,17 @@ VERBOSE = 1
 
 @explicit_serialize
 class InitializeRobot(FiretaskBase):
-    # FireTask for initializing robot and testing connection
+    """FireTask for initializing the robot and testing connection.
+
+    This task initializes a robot by creating a connection to the device and
+    resetting stations to their default status.
+
+    Args:
+        fw_spec (dict): Fireworks spec that contains information for the task.
+
+    Returns:
+        FWAction: An action that updates the Fireworks spec indicating success.
+    """
 
     def run_task(self, fw_spec):
         # Import the utilities helper module
@@ -40,7 +50,16 @@ class InitializeRobot(FiretaskBase):
 
 @explicit_serialize
 class InitializeStatusDB(FiretaskBase):
-    # FireTask for initializing status database contents
+    """FireTask for initializing status database contents.
+
+    This task resets and initializes the reagent, experiment, and station databases.
+
+    Args:
+        fw_spec (dict): Fireworks spec that contains information for the task.
+
+    Returns:
+        FWAction: An action that updates the Fireworks spec indicating success.
+    """
 
     def run_task(self, fw_spec):
         reagents = fw_spec.get("reagents") or self.get("reagents") or {}
@@ -58,6 +77,38 @@ class InitializeStatusDB(FiretaskBase):
 
 @add_metaclass(abc.ABCMeta)
 class ProcessBase(FiretaskBase):
+    """Abstract base class for processing experiment data.
+
+    This class provides common methods for processing experiment data such as
+    setting up the task, updating specs, and handling potentiostat data.
+
+    Attributes:
+        metadata (dict): Metadata for the experiment.
+        collection_data (dict): Data collection information.
+        processing_data (dict): Data processing information.
+        mol_id (str): Molecule ID.
+        solv_id (str): Solvent ID.
+        rom_id (str): Redox molecule ID.
+        elect_id (str): Electrolyte ID.
+        soln_density (str): Solution density.
+        name (str): Name of the task.
+        processing_id (str): Processing ID.
+        coll_dict (dict): Dictionary of collected data.
+        collect_tag (str): Tag for collection cycle.
+        lpad (LaunchPad): Fireworks LaunchPad instance for rerunning fizzled jobs.
+        data_path (str): Path to experiment data.
+        processed_locs (list): List of processed data locations.
+        wflow_name (str): Workflow name.
+
+    Methods:
+        setup_task(fw_spec, data_len_error=True): Set up task parameters from Fireworks spec.
+        updated_specs(**kwargs): Update Fireworks specs with current task information.
+        submission_info(file_type): Generate submission info for experiment data.
+        conc_info(vial_contents): Calculate concentration information from vial contents.
+        plot_cv(cv_loc, p_data, plot_name="", title_tag=""): Plot cyclic voltammetry (CV) data.
+        process_pot_data(file_loc, metadata, insert=True, processing_class=None): Process potentiostat data file.
+        process_solv_data(): Process solvent CV data.
+    """
     _fw_name = "ProcessBase"
     metadata: dict
     collection_data: dict
@@ -77,6 +128,12 @@ class ProcessBase(FiretaskBase):
     wflow_name: list
 
     def setup_task(self, fw_spec, data_len_error=True):
+        """Set up task parameters from the Fireworks spec.
+
+        Args:
+            fw_spec (dict): Fireworks spec that contains task parameters.
+            data_len_error (bool): Flag to raise a warning if no collection data is found. Default is True.
+        """
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data") or []
         self.processing_data = fw_spec.get("processing_data") or {}
@@ -102,6 +159,15 @@ class ProcessBase(FiretaskBase):
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
 
     def updated_specs(self, **kwargs):
+        """
+        Updates the FireWorks specifications with additional metadata, collection, and processing data.
+
+        Args:
+            **kwargs: Additional key-value pairs to update in the specifications.
+
+        Returns:
+            dict: A dictionary containing the updated specifications.
+        """
         if RERUN_FIZZLED_ROBOT:
             fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
                 {"name": {"$regex": "_setup_"}},
@@ -115,6 +181,15 @@ class ProcessBase(FiretaskBase):
         return specs
 
     def submission_info(self, file_type):
+        """
+        Prepares metadata for submission to the database.
+
+        Args:
+            file_type (str): The type of the file being processed.
+
+        Returns:
+            dict: A dictionary with submission information.
+        """
         return {
             "processing_id": self.processing_id,
             "source": "d3tales_robot",
@@ -127,6 +202,16 @@ class ProcessBase(FiretaskBase):
         }
 
     def conc_info(self, vial_contents):
+        """
+        Generates concentration information based on the vial contents.
+
+        Args:
+            vial_contents (dict): The contents of the vial being processed.
+
+        Returns:
+            dict: A dictionary with concentration information, including redox molecule and electrolyte concentrations
+            and mole fractions.
+        """
         return {
             "redox_mol_concentration": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
                                                          soln_density=self.soln_density),
@@ -140,7 +225,15 @@ class ProcessBase(FiretaskBase):
 
     @staticmethod
     def plot_cv(cv_loc, p_data, plot_name="", title_tag=""):
-        # Plot CV
+        """
+        Generates and saves a cyclic voltammetry (CV) plot.
+
+        Args:
+            cv_loc (str): The file location of the CV data.
+            p_data (dict): The processed CV data to be plotted.
+            plot_name (str): The name of the plot (default: "").
+            title_tag (str): Additional tag to add to the plot title (default: "").
+        """
         if 'chi' not in POTENTIOSTAT_A_EXE_PATH:
             image_path = ".".join(cv_loc.split(".")[:-1]) + "_plot.png"
             CVPlotter(connector={"scan_data": "data.scan_data",
@@ -153,7 +246,18 @@ class ProcessBase(FiretaskBase):
                                               a_to_ma=CONVERT_A_TO_MA)
 
     def process_pot_data(self, file_loc, metadata, insert=True, processing_class=None):
-        # Process data file
+        """
+        Processes potentiometric data files.
+
+        Args:
+            file_loc (str): The location of the file being processed.
+            metadata (dict): Metadata related to the file.
+            insert (bool): Whether to insert the processed data into the database (default: True).
+            processing_class (class): The processing class used to handle the data (default: None).
+
+        Returns:
+            dict: The processed data as a dictionary, or None if the file is not found or already processed.
+        """
         print("Data File: ", file_loc)
         if not os.path.isfile(file_loc):
             warnings.warn("WARNING. File {} not found. Processing did not occur.".format(file_loc))
@@ -180,7 +284,7 @@ class ProcessBase(FiretaskBase):
         return p_data
 
     def process_solv_data(self):
-        # Process solvent CV data
+        """Process solvent CV data"""
         solv_data = self.coll_dict.get("solv_cv", [])
         for d in solv_data:
             p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False,
@@ -196,8 +300,12 @@ class ProcessBase(FiretaskBase):
 
 @explicit_serialize
 class ProcessCVBenchmarking(ProcessBase):
-    # FireTask for dispensing solvent
+    """
+    FireTask for processing cyclic voltammetry (CV) benchmarking data and determining voltage ranges.
 
+    This task processes CV data, calculates the appropriate voltage sequence based on benchmarking peaks,
+    and updates the FireWorks specifications with this information.
+    """
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
 
@@ -242,7 +350,12 @@ class ProcessCVBenchmarking(ProcessBase):
 # noinspection PyTypeChecker
 @explicit_serialize
 class ProcessCalibration(ProcessBase):
-    # FireTask for processing Calibration jobs
+    """
+    FireTask for processing calibration jobs related to Conductance and Resistance measurements.
+
+    This task processes Chronoamperometry (CA) calibration data, calculates measured conductance and resistance,
+    and updates the calibration database with the processed information.
+    """
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
@@ -284,7 +397,23 @@ class ProcessCalibration(ProcessBase):
 # noinspection PyTypeChecker
 @explicit_serialize
 class DataProcessor(ProcessBase):
-    # FireTask for processing CV file
+    """
+    FireTask for processing cyclic voltammetry (CV) and chronoamperometry (CA) data files.
+
+    This class is responsible for the processing of CV and CA data, performing various calculations, plotting graphs,
+    and storing the results in a database. It also calculates metadata and processes potentiometric data.
+
+    Processes:
+        1. CV data:
+            - Retrieves and processes CV data.
+            - Performs meta calculations and records the data.
+            - Plots individual and multi-CV graphs.
+            - Stores CV metadata in a database.
+        2. CA data:
+            - Retrieves and processes CA data.
+            - Calculates conductivity, resistance, and other properties.
+            - Stores CA metadata and data in a database.
+    """
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
@@ -365,6 +494,13 @@ class DataProcessor(ProcessBase):
 
 @explicit_serialize
 class SendToStorage(FiretaskBase):
+    """
+    FireTask for securely transferring a file to a remote storage server using SFTP.
+
+    This task handles the process of transferring a file to a remote storage server, creating the necessary directory structure,
+    retrying the transfer in case of failure, and optionally ignoring errors. Once transferred, it updates the Firework
+    specification with the stored file's location.
+    """
     _fw_name = "SendToStorage"
 
     def run_task(self, fw_spec):
@@ -439,7 +575,12 @@ class SendToStorage(FiretaskBase):
 
 @explicit_serialize
 class EndWorkflow(FiretaskBase):
-    # FireTask for ending a workflow
+    """
+    FireTask responsible for ending a workflow by performing final robotic and data management tasks.
+
+    This task checks the current contents of the robot's grip, ensures that the vial (if any) is returned to its home position,
+    and triggers the final data snapshots to be moved to their designated locations.
+    """
     def run_task(self, fw_spec):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:

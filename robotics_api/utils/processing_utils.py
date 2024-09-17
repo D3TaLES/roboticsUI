@@ -66,6 +66,15 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
 
 
 def get_kcl_conductivity(temp):
+    """
+    Returns the conductivity of a KCl solution based on the temperature.
+
+    Args:
+        temp (float): The temperature at which the conductivity is measured. Expected in Celsius or other convertible units.
+
+    Returns:
+        float: Conductivity of the KCl solution at the given temperature in μS/cm, or None if temperature is out of range.
+    """
     temp_k = round(unit_conversion(temp, default_unit="K"))
     return {
         15: 1141.5,
@@ -88,6 +97,17 @@ def get_kcl_conductivity(temp):
 
 
 def kcl_cell_constant(conductance_measured, temperature, di_water_conductivity=DI_WATER_COND):
+    """
+    Calculates the cell constant based on the conductance measurement and temperature.
+
+    Args:
+        conductance_measured (float): The measured conductance in the cell (μS).
+        temperature (float): The temperature of the solution during the measurement (Celsius or other convertible units).
+        di_water_conductivity (float, optional): The conductivity of deionized water, defaults to a global constant DI_WATER_COND (μS).
+
+    Returns:
+        float: The calculated cell constant (cm^-1), which accounts for both KCl and DI water conductivities.
+    """
     cond = unit_conversion(conductance_measured, default_unit='uS')
     di_cond = unit_conversion(di_water_conductivity, default_unit='uS')
     temp = unit_conversion(temperature, default_unit='K')
@@ -128,6 +148,7 @@ def get_cell_constant(raise_error=True):
 
 
 def print_prop(prop_dict):
+    """Print property value and unit from dictionary"""
     if prop_dict:
         return "{} {}".format(prop_dict.get("value", prop_dict), prop_dict.get("unit", ""))
     return ""

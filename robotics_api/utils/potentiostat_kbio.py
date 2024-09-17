@@ -25,6 +25,7 @@ ECLIB_DLL_PATH = r"C:\EC-Lab Development Package\EC-Lab Development Package\\ECl
 
 @dataclass
 class current_step:
+    """Dataclass for representing a current step in an experiment."""
     current: float
     duration: float
     vs_init: bool = False
@@ -32,28 +33,31 @@ class current_step:
 
 @dataclass
 class voltage_step:
+    """Dataclass for representing a voltage step in an experiment."""
     voltage: float
     scan_rate: float
     vs_init: bool = False
 
 
 class PotentiostatExperiment:
+    """Class for operating a BioLogic potentiostat during an electrochemistry experiment."""
+
     def __init__(self, nb_words, time_out=TIME_OUT, load_firm=True, cut_beginning=CUT_BEGINNING, cut_end=CUT_END,
                  run_iR=True, potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=1,
                  exe_path=ECLIB_DLL_PATH, **iR_kwargs):
-        """
-        Base class for operating a BioLogic potentiostat.
+        """Initializes the PotentiostatExperiment class.
 
-        :param nb_words: int, number of rows for parsing
-        :param time_out: int, k_api connect timeout in seconds
-        :param load_firm: bool, load firmware if True
-        :param cut_beginning: float, decimal representing the percentage of the beginning of the data to cut off
-        :param cut_end: float, decimal representing the percentage of the end of the data to cut off
-        :param run_iR: bool, run iR compensation if True
-        :param potentiostat_address: str, potentiostat connection address
-        :param potentiostat_channel: int, potentiostat channel  number
-        :param exe_path: str, potentiostat executable path
-        :param iR_kwargs:
+        Args:
+            nb_words (int): Number of rows for parsing.
+            time_out (int): API connection timeout in seconds.
+            load_firm (bool): If True, load firmware.
+            cut_beginning (float): Percentage of the beginning of the data to cut off.
+            cut_end (float): Percentage of the end of the data to cut off.
+            run_iR (bool): If True, run iR compensation.
+            potentiostat_address (str): Potentiostat connection address.
+            potentiostat_channel (int): Potentiostat channel number.
+            exe_path (str): Potentiostat executable path.
+            **iR_kwargs: Keyword arguments for iR compensation settings.
         """
         self.nb_words = nb_words
         self.k_api = KBIO_api(exe_path)
@@ -77,6 +81,16 @@ class PotentiostatExperiment:
 
     @staticmethod
     def normalize_steps(steps: list, data_class, min_steps=None):
+        """Normalizes the experiment steps.
+
+        Args:
+            steps (list): List of steps for the experiment.
+            data_class (type): Class type for the steps.
+            min_steps (int, optional): Minimum number of steps to ensure.
+
+        Returns:
+            list: Normalized list of steps.
+        """
         norm_steps = []
         for step in steps:
             if isinstance(steps, object):
@@ -108,17 +122,19 @@ class PotentiostatExperiment:
                     rcomp_level=RCOMP_LEVEL,
                     # rcmp_mode=0,  # always software unless an SP-300 series and running loop function
                     ):
-        """
-        Run iR compensation before an experiment
+         """Runs iR compensation before an experiment.
 
-        :param amplitude_voltage:
-        :param final_frequency:
-        :param initial_frequency:
-        :param average_n_times:
-        :param wait_for_steady:
-        :param sweep:
-        :param rcomp_level:
-        :return:
+        Args:
+            amplitude_voltage (float): Amplitude of the voltage.
+            final_frequency (float): Final frequency for iR compensation.
+            initial_frequency (float): Initial frequency for iR compensation.
+            average_n_times (int): Number of times to average during iR compensation.
+            wait_for_steady (float): Time to wait for the system to steady.
+            sweep (bool): If True, perform a frequency sweep.
+            rcomp_level (float): Level of resistance compensation.
+
+        Returns:
+            tuple: ECC parameters and technique file name for iR compensation.
         """
         iR_params = {
             'final_frequency': ECC_parm("Final_frequency", float),
@@ -148,6 +164,11 @@ class PotentiostatExperiment:
         return ecc_params, tech_file
 
     def check_connection(self):
+        """Checks the connection to the potentiostat.
+
+        Returns:
+            bool: True if connection is successful, False otherwise.
+        """
         conn = self.k_api.TestConnection(self.id_)
         if not conn:
             print(f"> device[{self.potent_address}] must be connected to run the experiment")
@@ -161,13 +182,14 @@ class PotentiostatExperiment:
         return True
 
     def check_kernel(self):
-        # BL_GetChannelInfos
+        """Checks if the kernel is loaded for the potentiostat."""
         channel_info = self.k_api.GetChannelInfo(self.id_, self.potent_channel)
         if not channel_info.is_kernel_loaded:
             print("> kernel must be loaded in order to run the experiment")
             sys.exit(-1)
 
     def load_firmware(self):
+        """Loads firmware for the potentiostat."""
         if self.is_VMP3:
             firmware_path = "kernel.bin"
             fpga_path = "Vmp_ii_0437_a6.xlx"
@@ -184,6 +206,7 @@ class PotentiostatExperiment:
         self.k_api.LoadFirmware(self.id_, channel_map, firmware=firmware_path, fpga=fpga_path, force=True)
 
     def print_messages(self):
+        """Prints messages from the potentiostat during the experiment."""
         while True:
             msg = self.k_api.GetMessage(self.id_, self.potent_channel)
             if not msg:
@@ -192,12 +215,23 @@ class PotentiostatExperiment:
 
     @property
     def tech_file(self):
+        """Gets the technique file name for the experiment.
+
+        Returns:
+            str: Technique file name.
+        """
         return ''
 
     def experiment_print(self, data_step):
+        """Prints experiment data.
+
+        Args:
+            data_step (tuple): A tuple representing the experiment data step.
+        """
         return None
 
     def run_experiment(self):
+        """Runs the potentiostat experiment."""
         try:
             if not self.check_connection():
                 self.id_, self.d_info = self.k_api.Connect(self.potent_address, self.time_out)  # Connect
@@ -249,11 +283,20 @@ class PotentiostatExperiment:
 
     @property
     def parsed_data(self):
+        """Parses the experiment data.
+
+        Returns:
+            list: Parsed experiment data.
+        """
         return []
 
     @property
     def trimmed_data(self):
-        # Cut front and back ends off data
+        """Trims the beginning and end of the experiment data.
+
+        Returns:
+            list: Trimmed experiment data.
+        """
         extracted_data = self.parsed_data
         if not extracted_data:
             return []
@@ -261,6 +304,14 @@ class PotentiostatExperiment:
         return extracted_data[min_idx:max_idx]
 
     def cv_row_parser(self, row):
+        """Parses a row of cyclic voltammetry data.
+
+        Args:
+            row (list): Row of CV data.
+
+        Returns:
+            tuple: Parsed CV data row values.
+        """
         f, abs_Ewe, abs_I, phase_Zwe, ewe_raw, i_raw, _, \
             abs_Ece, abs_Ice, phase_Zce, ece_raw, _, _, t, i_range = row
 
@@ -285,9 +336,13 @@ class PotentiostatExperiment:
 
     @property
     def iR_comp_data(self):
-        """
-        Parses iR compensation data if run_iR is True and iR compensation has been run.
-        :return: tuple, (real resistence, imaginary resistence). All units in Ohm
+        """Parses and returns iR compensation data. All units in Ohm.
+
+        Returns:
+            tuple: Real and imaginary resistance in ohms.
+
+        Raises:
+            ValueError: If iR compensation was not run.
         """
         if self.run_iR:
             current_values, data_info, data_record = self.data[2]
@@ -303,10 +358,20 @@ class PotentiostatExperiment:
         raise ValueError("iR compensation was not run, no value to return")
 
     def save_parsed_data(self, out_file):
+        """Saves the parsed data to a JSON file.
+
+        Args:
+            out_file (str): File path to save the parsed data.
+        """
         with open(out_file, 'w') as f:
             json.dump(self.parsed_data, f)
 
     def save_data_records(self, out_file):
+        """Saves the data records to a file.
+
+        Args:
+            out_file (str): File path to save the data records.
+        """
         data = self.data
         with open(out_file, 'w+') as f:
             for data_step in data:
@@ -322,6 +387,13 @@ class PotentiostatExperiment:
             f.write(" \n \n")
 
     def to_txt(self, outfile, header='', note=''):
+        """Saves the experiment data to a text file.
+
+        Args:
+            outfile (str): File path for the output text file.
+            header (str, optional): Custom header for the output file.
+            note (str, optional): Additional notes for the output file.
+        """
         # Collect data
         extracted_data = self.trimmed_data
         if not extracted_data:
@@ -361,6 +433,38 @@ class PotentiostatExperiment:
 
 
 class EisExperiment(PotentiostatExperiment):
+    """
+    Represents an Electrochemical Impedance Spectroscopy (EIS) experiment,
+    inheriting from PotentiostatExperiment.
+
+    This class is used to configure and run an EIS experiment with parameters
+    such as initial and final voltage, frequency range, amplitude voltage,
+    and other electrochemical settings. Data from the experiment is processed
+    and stored in an internal list.
+
+    Args:
+        vs_initial (float, optional): Initial voltage of the experiment. Default is 0.
+        vs_final (float, optional): Final voltage of the experiment. Default is 0.
+        Initial_Voltage_step (float, optional): Step size for initial voltage. Default is 0.1.
+        Final_Voltage_step (float, optional): Step size for final voltage. Default is 0.1.
+        Duration_step (float, optional): Time duration for each step. Default is 0.5.
+        Step_number (int, optional): Number of voltage steps. Default is 41.
+        Record_every_dT (float, optional): Time interval for recording data. Default is 0.25.
+        Record_every_dI (float, optional): Current interval for recording data. Default is 0.1.
+        Final_frequency (float, optional): Final frequency in Hz for the EIS experiment. Default is 0.
+        Initial_frequency (float, optional): Initial frequency in Hz for the EIS experiment. Default is 0.
+        sweep (bool, optional): Whether to sweep between frequencies. Default is False.
+        Amplitude_Voltage (float, optional): Amplitude of the voltage. Default is 0.01.
+        Frequency_number (int, optional): Number of frequency points. Default is 10.
+        Average_N_times (int, optional): Number of times to average the measurement. Default is 5.
+        Correction (bool, optional): Apply correction to the data. Default is False.
+        Wait_for_steady (float, optional): Time to wait for a steady state. Default is 0.1.
+        **kwargs: Additional arguments passed to the parent class.
+
+    Attributes:
+        params (list): List of parameters for the EIS experiment.
+        data (list): List to store the experimental data.
+    """
     def __init__(self,
                  vs_initial=0,  # depends on the molecule
                  vs_final=0,  # depends on the molecule
@@ -405,10 +509,24 @@ class EisExperiment(PotentiostatExperiment):
 
     @property
     def tech_file(self):
-        # pick the correct ecc file based on the instrument family
+        """
+        Returns the appropriate technical file for the instrument family.
+
+        Returns:
+            str: The file name ('peis.ecc' or 'peis4.ecc') depending on whether
+            the instrument is VMP3.
+        """
         return 'peis.ecc' if self.is_VMP3 else 'peis4.ecc'
 
     def parameterize(self):
+        """
+        Creates and returns the experiment parameters by mapping experiment-specific
+        attributes to ECC parameter objects.
+
+        Returns:
+            list: A list of ECC parameter objects, each corresponding to an experiment
+            setting.
+        """
         eis_params = {
             'vs_initial': ECC_parm('vs_initial', bool),
             'vs_final': ECC_parm('vs_final', bool),
@@ -453,6 +571,16 @@ class EisExperiment(PotentiostatExperiment):
 
     @property
     def parsed_data(self, strict_error=False):
+        """
+        Parses and extracts data from the experiment.
+
+        Args:
+            strict_error (bool, optional): If True, raises an error for unexpected record length. Default is False.
+
+        Returns:
+            list: A list of dictionaries, where each dictionary represents a data point
+            with keys such as 't', 'Ewe', 'Ece', 'I', 'freq', and others.
+        """
         extracted_data = []
         for data_step in self.data:
             current_values, data_info, data_record = data_step
@@ -478,11 +606,25 @@ class EisExperiment(PotentiostatExperiment):
         return extracted_data
 
     def to_txt(self, outfile, header='', note=''):
+        """
+        Exports the parsed data to a CSV file.
+
+        Args:
+            outfile (str): The path to the output file.
+            header (str, optional): Header text for the file. Default is an empty string.
+            note (str, optional): Notes to be added to the file. Default is an empty string.
+        """
         extracted_data = self.parsed_data
         df = pd.DataFrame(extracted_data)
         df.to_csv(outfile)
 
     def experiment_print(self, data_step):
+        """
+        Prints time, frequency, and real resistance for each data step.
+
+        Args:
+            data_step (tuple): A tuple containing current values, data info, and data record for each step.
+        """
         current_values, data_info, data_record = data_step
         print("-------------------time / frequency / real_res-------------------------")
         ix = 0
@@ -506,7 +648,28 @@ class EisExperiment(PotentiostatExperiment):
 
 
 class CpExperiment(PotentiostatExperiment):
+    """
+    Class to run Chrono-Potentiometry (CP) experiments using a potentiostat.
 
+    Chrono-Potentiometry is an electrochemical technique where the current is held constant, and the
+    resulting potential is measured over time.
+
+    Args:
+        n_cycles (int): The number of cycles for the experiment. Must be an integer ≥ 0.
+        record_every_dt (float): Time interval (in seconds) to record the data. Must be a float ≥ 0.
+        record_every_de (float): Voltage interval (in volts) to record the data. Must be a float ≥ 0.
+        i_range (str): Current range keyword defined by the _kbio library.
+        repeat_count (int): Number of times to repeat the experiment.
+        **kwargs: Additional keyword arguments passed to the parent class.
+
+    Attributes:
+        record_every_dt (float): Time interval (in seconds) to record the data.
+        record_every_de (float): Voltage interval (in volts) to record the data.
+        i_range (str): Current range keyword defined by the _kbio library.
+        repeat_count (int): Number of times to repeat the experiment.
+        n_cycles (int): The number of cycles for the experiment.
+        params (list): List of parameter objects for the experiment configuration.
+    """
     def __init__(self,
                  n_cycles=0,
                  record_every_dt=RECORD_EVERY_DT,  # seconds
@@ -514,14 +677,6 @@ class CpExperiment(PotentiostatExperiment):
                  i_range=I_RANGE,
                  repeat_count=0,
                  **kwargs):
-        """
-        Class to run Chrono-Potentiometry technique experiments
-            :param n_cycles : Number of cycle, integer ≥ 0
-            :param record_every_dt : recording on dt (s), float ≥ 0
-            :param record_every_de : recording on dE (V), float ≥ 0
-            :param i_range : _kbio I_RANGE keyword, str
-            :param repeat_count :
-        """
         super().__init__(3, **kwargs)
 
         self.record_every_dt = record_every_dt
@@ -534,11 +689,23 @@ class CpExperiment(PotentiostatExperiment):
 
     @property
     def tech_file(self):
-        # pick the correct ecc file based on the instrument family
+        """
+        Returns the correct ECC file used by the potentiostat based on the instrument family.
+
+        Returns:
+            str: The ECC file path for the CP technique.
+        """
         return "cp.ecc" if self.is_VMP3 else "cp4.ecc"
 
     def parameterize(self):
-        # BL_Define<xxx>Parameter
+        """
+        Defines and prepares the experiment parameters required for the potentiostat to run
+        a Chrono-Potentiometry experiment. This includes setting the current step, duration, voltage,
+        and recording intervals.
+
+        Returns:
+            list: A list of parameter objects required by the potentiostat.
+        """
         CP_params = {
             'current_step': ECC_parm("Current_step", float),
             'step_duration': ECC_parm("Duration_step", float),
@@ -577,6 +744,13 @@ class CpExperiment(PotentiostatExperiment):
 
     @property
     def parsed_data(self):
+        """
+        Parses the raw data collected during the experiment and extracts relevant information
+        such as time, voltage (Ewe), current (I), and cycle number.
+
+        Returns:
+            list: A list of dictionaries containing the parsed data from the experiment.
+        """
         extracted_data = []
         for data_step in self.data:
             current_values, data_info, data_record = data_step
@@ -611,6 +785,12 @@ class CpExperiment(PotentiostatExperiment):
         return extracted_data
 
     def experiment_print(self, data_step):
+        """
+        Prints a summary of one data step, showing the voltage (Ewe) values.
+
+        Args:
+            data_step (tuple): The current values, data information, and raw data for one step of the experiment.
+        """
         current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
@@ -625,7 +805,31 @@ class CpExperiment(PotentiostatExperiment):
 
 
 class CvExperiment(PotentiostatExperiment):
+    """
+    Class to run Cyclic Voltammetry (CV) experiments using a potentiostat.
 
+    Cyclic Voltammetry is an electrochemical technique in which the working electrode potential
+    is cycled between two values while the resulting current is measured.
+
+    Args:
+        steps (list): List of step objects or nested lists defining voltage (V) and scan rate (mV/s) for each step.
+        vs_initial (bool): Boolean indicating if the voltage is measured relative to the initial step.
+        n_cycles (int): The number of cycles for the experiment. Must be an integer ≥ 0.
+        scan_number (int): Number of scans in the experiment. Must be an integer ≥ 0.
+        record_every_de (float): Voltage interval (in volts) to record data.
+        average_over_de (bool): Whether to average the measurements over the voltage interval.
+        min_steps (int): Minimum number of voltage steps for each cycle.
+        **kwargs: Additional keyword arguments passed to the parent class.
+
+    Attributes:
+        steps (list): List of normalized step objects containing voltage and scan rate details.
+        scan_number (int): Number of scans in the experiment.
+        vs_initial (bool): Indicates if voltage is measured relative to the initial step.
+        record_every_de (float): Voltage interval (in volts) to record data.
+        average_over_de (bool): Boolean flag for averaging over the voltage interval.
+        n_cycles (int): The number of cycles for the experiment.
+        params (list): List of parameter objects for the experiment configuration.
+    """
     def __init__(self,
                  steps: list,
                  vs_initial: bool = VS_INITIAL,
@@ -635,16 +839,6 @@ class CvExperiment(PotentiostatExperiment):
                  average_over_de: bool = True,
                  min_steps: int = 6,
                  **kwargs):
-        """
-        Class to run cyclic voltammetry experiments
-            :param steps: list of lists OR current_step objects: voltage (V), scan_rate (mV/s))
-            :param vs_initial: Current step vs initial one, bool
-            :param n_cycles: Number of cycle, integer ≥ 0
-            :param scan_number: Scan number, integer = 2
-            :param record_every_de: recording on dE (V), float ≥ 0
-            :param average_over_de:
-            :param min_steps: recording on dE (V), float ≥ 0
-        """
         super().__init__(6, **kwargs)
 
         # Set Parameters
@@ -662,10 +856,22 @@ class CvExperiment(PotentiostatExperiment):
 
     @property
     def tech_file(self):
-        # pick the correct ecc file based on the instrument family
+        """
+        Returns the correct ECC file used by the potentiostat based on the instrument family.
+
+        Returns:
+            str: The ECC file path for the CV technique.
+        """
         return 'cv.ecc' if self.is_VMP3 else 'cv4.ecc'
 
     def parameterize(self):
+        """
+        Defines and prepares the experiment parameters required for the potentiostat to run
+        a Cyclic Voltammetry experiment. This includes setting the voltage step, scan rate, and recording intervals.
+
+        Returns:
+            list: A list of parameter objects required by the potentiostat.
+        """
         CV_params = {
             'vs_initial': ECC_parm("vs_initial", bool),
             'voltage_step': ECC_parm("Voltage_step", float),
@@ -706,6 +912,13 @@ class CvExperiment(PotentiostatExperiment):
 
     @property
     def parsed_data(self):
+        """
+        Parses the raw data collected during the experiment and extracts relevant information
+        such as time, voltage (Ewe), current (I), and cycle number.
+
+        Returns:
+            list: A list of dictionaries containing the parsed data from the experiment.
+        """
         extracted_data = []
         data = self.data[3:] if self.run_iR else self.data
         for data_step in data:
@@ -737,6 +950,12 @@ class CvExperiment(PotentiostatExperiment):
         return extracted_data
 
     def experiment_print(self, data_step):
+        """
+        Prints a summary of one data step, showing the voltage (Ewe) and current (I) values.
+
+        Args:
+            data_step (tuple): The current values, data information, and raw data for one step of the experiment.
+        """
         current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
@@ -753,6 +972,12 @@ class CvExperiment(PotentiostatExperiment):
             ix = inx
 
     def plot(self, out_file):
+        """
+        Plots the current vs. voltage data from the experiment and saves the plot to a file.
+
+        Args:
+            out_file (str): The file path where the plot will be saved.
+        """
         if not self.trimmed_data:
             print("Cannot plot data because there is no parsed_data. Make sure you have run an experiment.")
             return None
@@ -766,6 +991,30 @@ class CvExperiment(PotentiostatExperiment):
 
 
 class CaExperiment(PotentiostatExperiment):
+    """
+    Initializes a Chronoamperometry (CA) experiment setup.
+
+    Args:
+        steps (tuple): Sequence of voltage steps (V).
+        vs_initial (tuple): Tuple indicating if the current step is relative to the initial step, bool.
+        duration_step (float or list): Step duration in seconds (float). Can be a list for multiple steps.
+        step_number (int): Number of voltage steps to perform.
+        record_every_dt (float): Time interval for data recording (s).
+        record_every_di (float): Current interval for data recording (A).
+        n_cycles (int): Number of cycles to repeat the experiment.
+        **kwargs: Additional arguments passed to the parent class.
+
+    Attributes:
+        steps (tuple): Sequence of voltage steps (V).
+        vs_initial (tuple): Boolean flags for each step indicating whether it is relative to the initial step.
+        duration (list): List of step durations in seconds.
+        step_number (int): Number of voltage steps.
+        record_every_dt (float): Time interval for data recording in seconds.
+        record_every_di (float): Current interval for data recording.
+        n_cycles (int): Number of cycles to repeat the experiment.
+        params (list): List of experiment parameters.
+        data (list): List to store recorded experiment data.
+    """
     def __init__(self,
                  steps=(0.025, -0.025) * 50,
                  vs_initial=(True, False),
@@ -775,17 +1024,6 @@ class CaExperiment(PotentiostatExperiment):
                  record_every_di=0.1,
                  n_cycles=2,
                  **kwargs):
-        """
-
-        :param steps:
-        :param vs_initial:
-        :param duration_step:
-        :param step_number:
-        :param record_every_dt:
-        :param record_every_di:
-        :param n_cycles:
-        :param kwargs:
-        """
         super().__init__(5, run_iR=False, **kwargs)
 
         # Set Parameters
@@ -804,10 +1042,21 @@ class CaExperiment(PotentiostatExperiment):
 
     @property
     def tech_file(self):
-        # pick the correct ecc file based on the instrument family
+        """
+        Returns the correct ECC technique file based on the instrument family.
+
+        Returns:
+            str: ECC technique file name.
+        """
         return 'ca.ecc' if self.is_VMP3 else 'ca4.ecc'
 
     def parameterize(self):
+        """
+        Parameterizes the CA experiment with the appropriate settings.
+
+        Returns:
+            list: List of experiment parameters for ECC technique.
+        """
         Ca_params = {
             'voltage_step': ECC_parm("Voltage_step", float),
             'vs_initial': ECC_parm("vs_initial", bool),
@@ -846,6 +1095,13 @@ class CaExperiment(PotentiostatExperiment):
 
     @property
     def parsed_data(self):
+        """
+        Extracts and parses the experimental data.
+
+        Returns:
+            list: List of dictionaries containing parsed data with keys 't' (time), 'Ewe' (working electrode potential),
+                  'I' (current), and 'cycle' (cycle number).
+        """
         extracted_data = []
         for data_step in self.data:
             current_values, data_info, data_record = data_step
@@ -873,6 +1129,12 @@ class CaExperiment(PotentiostatExperiment):
         return extracted_data
 
     def experiment_print(self, data_step):
+        """
+        Prints a summary of the data step for the experiment.
+
+        Args:
+            data_step (tuple): Tuple containing current values, data info, and data records of a step.
+        """
         current_values, data_info, data_record = data_step
         print("-------------------STEP-------------------")
         ix = 0
@@ -890,39 +1152,40 @@ class CaExperiment(PotentiostatExperiment):
             ix = inx
 
 
-def cp_ex():
-    cp_steps = [
-        current_step(0.001, 2),  # 1mA during 2s
-        current_step(0.002, 1),  # 2mA during 1s
-        current_step(0.0005, 3, True),  # 0.5mA delta during 3s
-    ]
-    cp_exp = CpExperiment(cp_steps)
-    cp_exp.run_experiment()
-    cp_exp.to_txt("cp_example.txt")
-
-
-def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
-    experiment = CaExperiment(potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
-    experiment.run_experiment()
-    p_data = experiment.parsed_data
-    df = pd.DataFrame(p_data)
-    df.to_csv(os.path.join(TEST_DATA_DIR, "ca_testing\\ca_test6.csv"))
-
-
-def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
-    collection_params = [{"voltage": 0., "scan_rate": scan_rate},
-                         {"voltage": 0, "scan_rate": scan_rate},
-                         {"voltage": 0., "scan_rate": scan_rate}]
-    ex_steps = [voltage_step(**p) for p in collection_params]
-    exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)
-    exp.run_experiment()
-    exp.to_txt(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.csv")
-    exp.plot(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.png")
-    print(exp.iR_comp_data)
-    # exp.save_data_records(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.txt")
-    # exp.save_parsed_data(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.json")
-
 
 if __name__ == "__main__":
+    def cp_ex():
+        cp_steps = [
+            current_step(0.001, 2),  # 1mA during 2s
+            current_step(0.002, 1),  # 2mA during 1s
+            current_step(0.0005, 3, True),  # 0.5mA delta during 3s
+        ]
+        cp_exp = CpExperiment(cp_steps)
+        cp_exp.run_experiment()
+        cp_exp.to_txt("cp_example.txt")
+
+
+    def ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2):
+        experiment = CaExperiment(potentiostat_address=potentiostat_address, potentiostat_channel=potentiostat_channel)
+        experiment.run_experiment()
+        p_data = experiment.parsed_data
+        df = pd.DataFrame(p_data)
+        df.to_csv(os.path.join(TEST_DATA_DIR, "ca_testing\\ca_test6.csv"))
+
+
+    def cv_ex(scan_rate=0.100, potentiostat_channel=1, **kwargs):
+        collection_params = [{"voltage": 0., "scan_rate": scan_rate},
+                             {"voltage": 0, "scan_rate": scan_rate},
+                             {"voltage": 0., "scan_rate": scan_rate}]
+        ex_steps = [voltage_step(**p) for p in collection_params]
+        exp = CvExperiment(ex_steps, potentiostat_channel=potentiostat_channel, **kwargs)
+        exp.run_experiment()
+        exp.to_txt(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.csv")
+        exp.plot(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.png")
+        print(exp.iR_comp_data)
+        # exp.save_data_records(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.txt")
+        # exp.save_parsed_data(f"{TEST_DATA_DIR}/cv_ex_ch{potentiostat_channel}.json")
+
+
     # ca_exp(potentiostat_address=POTENTIOSTAT_A_ADDRESS, potentiostat_channel=2)
     cv_ex(potentiostat_channel=1, scan_rate=0.100, run_iR=True)

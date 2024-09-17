@@ -6,7 +6,7 @@ from fireworks import Firework, ScriptTask
 from robotics_api.fireworks.Firetasks_Processing import *
 
 
-class InitializeExperiment(Firework):
+class InitializeWorkflow(Firework):
     """
     Represents a Firework responsible for initializing an experiment workflow.
 
@@ -24,7 +24,7 @@ class InitializeExperiment(Firework):
             InitializeRobot(),  # Initialize the robot
             InitializeStatusDB(wflow_name=wflow_name)  # Initialize status database
         ]
-        super(InitializeExperiment, self).__init__(tasks, parents=parents, spec=spec, name="init_" + wflow_name,
+        super(InitializeWorkflow, self).__init__(tasks, parents=parents, spec=spec, name="init_" + wflow_name,
                                                    **kwargs)
 
 
@@ -111,7 +111,7 @@ class AnalysisFirework(Firework):
         super(AnalysisFirework, self).__init__(f_tasks, parents=parents, spec=spec, name=name.strip("_"), **kwargs)
 
 
-class CVProcessing(Firework):
+class ProcessingFirework(Firework):
     """
     Represents a Firework for CV processing.
 
@@ -132,4 +132,4 @@ class CVProcessing(Firework):
             DataProcessor(mol_id=mol_id, name=name),  # Data processing task
             # SendToStorage(),  # Task to send data to storage TODO implement
         ]
-        super(CVProcessing, self).__init__(tasks, parents=parents, spec=spec, name=name, **kwargs)
+        super(ProcessingFirework, self).__init__(tasks, parents=parents, spec=spec, name=name, **kwargs)

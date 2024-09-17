@@ -196,7 +196,7 @@ class EF2Experiment(ProcessExpFlowObj):
             # Turn tasks into Firetasks and flatten resulting list
             tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             if "process" in fw_type:
-                fw = CVProcessing(tasks, name=f"{self.full_name}_{fw_type}", parents=collect_parent or parent,
+                fw = ProcessingFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=collect_parent or parent,
                                   fw_specs=self.fw_specs, mol_id=self.mol_id, priority=self.priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
             elif "rinse" in fw_type:
@@ -291,7 +291,7 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
         Fireworks Workflow object
     """
     wflow_name = expflow_wf.get("name") + "_" + name_tag.strip("_")
-    f10 = InitializeExperiment(wflow_name=wflow_name, fw_specs=exp_params)
+    f10 = InitializeWorkflow(wflow_name=wflow_name, fw_specs=exp_params)
     fws = [f10]
     robot_experiments = []
 
@@ -319,7 +319,7 @@ def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
     """
     cv_locations = [f for f in os.listdir(cv_dir) if f.endswith(".csv")]
 
-    fws = [CVProcessing(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
+    fws = [ProcessingFirework(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
 
     wf = Workflow(fws, name="{}_workflow".format(name_tag))
     return wf

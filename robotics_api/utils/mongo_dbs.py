@@ -12,14 +12,18 @@ import python_jsonschema_objects as pjs
 
 def db_info_generator(db_file=None):
     """
-    Get information about database connections. This function requires either a db_file argument
-    or a DB_INFO_FILE environment variable. This argument or  environment variable should be a path
-    to a JSON file containing connection information for the databases. The keys should be the database
-    names such as `frontend`, `backend`, `expflow`, and `fireworks`.
+    Generates information about database connections.
 
-    :param db_file: str, path to database info JSON file
+    This function requires either a `db_file` argument or a `DB_INFO_FILE` environment variable.
+    The argument or environment variable should be a path to a JSON file containing connection
+    information for the databases. The keys should be the database names such as `frontend`,
+    `backend`, `expflow`, and `fireworks`.
 
-    :return: JSON object containing information about database connections
+    Args:
+        db_file (str, optional): Path to the database info JSON file. Defaults to None.
+
+    Returns:
+        dict: JSON object containing information about database connections.
     """
     db_file = db_file or os.environ.get('DB_INFO_FILE') or os.getenv('DB_INFO_FILE')
     if not db_file:
@@ -51,11 +55,15 @@ class Schema2Class:
 
     def __init__(self, database=None, schema_name=None, schema_directory=None, named_only=False, schema_version=None):
         """
+        Initializes the Schema2Class object and retrieves the schema.
 
-        :param database: str, database name
-        :param schema_name: str, schema name
-        :param schema_directory: str, schema directory
-        :param named_only: If true, only properties with an actual title attribute will be included in the resulting namespace
+        Args:
+            database (str, optional): Database name. Defaults to None.
+            schema_name (str, optional): Schema name. Defaults to None.
+            schema_directory (str, optional): Directory of the schema. Defaults to None.
+            named_only (bool, optional): If True, only properties with a title attribute will be
+                included in the resulting namespace. Defaults to False.
+            schema_version (str, optional): Schema version. Defaults to None.
         """
 
         # fetch schema
@@ -94,7 +102,10 @@ class DBconnector:
 
     def __init__(self, db_information: dict):
         """
-        :param db_information: dictionary of database info
+        Initializes the DBconnector object with database information.
+
+        Args:
+            db_information (dict): Dictionary containing database information.
         """
 
         self.host = db_information.get("host", )
@@ -106,9 +117,10 @@ class DBconnector:
 
     def get_database(self, **kwargs):
         """
-        Returns a database object
+        Returns a database object.
 
-        :return: a database object
+        Returns:
+            pymongo.database.Database: A database object.
         """
         try:
             if "@" in self.host:
@@ -126,10 +138,13 @@ class DBconnector:
 
     def get_collection(self, coll_name=None):
         """
-        Returns a collection from the database
+        Returns a collection from the database.
 
-        :param coll_name: name of collection
-        :return: db.collection
+        Args:
+            coll_name (str, optional): Name of the collection. Defaults to None.
+
+        Returns:
+            pymongo.collection.Collection: The collection object.
         """
         db = self.get_database()
         if not coll_name:
@@ -149,15 +164,20 @@ class MongoDatabase:
     def __init__(self, database=None, collection_name=None, instance=None, schema_layer="", schema_directory=None,
                  public=None, schema_db=None, default_id=None, validate_schema=True, verbose=1, schema_version=None):
         """
-        :param database: str, name of database (should be a key in the DB_INFO_FILE)
-        :param collection_name: str, name of collection
-        :param instance: dict, instance to insert or validate
-        :param schema_layer: str, schema layer
-        :param schema_directory: str, schema directory
-        :param public: bool, instance is marked as public if True
-        :param schema_db: str, database containing schema
-        :param default_id: str, default instance ID
-        :param validate_schema: bool, validate schema if True
+        Initializes the MongoDatabase object.
+
+        Args:
+            database (str, optional): Name of the database. Defaults to None.
+            collection_name (str, optional): Name of the collection. Defaults to None.
+            instance (dict, optional): Instance to insert or validate. Defaults to None.
+            schema_layer (str, optional): Schema layer. Defaults to "".
+            schema_directory (str, optional): Directory of the schema. Defaults to None.
+            public (bool, optional): Marks instance as public if True. Defaults to None.
+            schema_db (str, optional): Database containing the schema. Defaults to None.
+            default_id (str, optional): Default instance ID. Defaults to None.
+            validate_schema (bool, optional): Validates schema if True. Defaults to True.
+            verbose (int, optional): Verbosity level. Defaults to 1.
+            schema_version (str, optional): Version of the schema. Defaults to None.
         """
         self.collection_name = collection_name
         self.instance = {schema_layer: self.dot2dict(instance)} if schema_layer else self.dot2dict(instance)
@@ -177,13 +197,14 @@ class MongoDatabase:
 
     def insert(self, _id, nested=False, update_public=True, instance=None, override_lists=True):
         """
-        Upserts a dictionary into a collection
+        Upserts a dictionary into a MongoDB collection.
 
-        :param _id: str, _id for insertion
-        :param nested: bool, insert nested attributes if True
-        :param update_public: bool, update the public status if true
-        :param instance: dict, instance to be inserted
-        :param override_lists: bool, override existing lists in insertion if True
+        Args:
+            _id (str): ID for insertion.
+            nested (bool, optional): Inserts nested attributes if True. Defaults to False.
+            update_public (bool, optional): Updates the public status if True. Defaults to True.
+            instance (dict, optional): Instance to be inserted. Defaults to None.
+            override_lists (bool, optional): Overrides existing lists in insertion if True. Defaults to True.
         """
         if not instance:
             instance = jsanitize(self.instance, allow_bson=True)
@@ -209,11 +230,12 @@ class MongoDatabase:
 
     def path_insert(self, _id, path, value):
         """
-        Insert a piece of data to a specific path, updating array if the path leads to an array
+        Inserts a value at a specific path in the collection.
 
-        :param _id: str, instance ID
-        :param path: str, path to insertion
-        :param value: value to insert
+        Args:
+            _id (str): Instance ID.
+            path (str): Path for insertion.
+            value: Value to insert.
         """
         if isinstance(value, list):
             self.array_checker(path, _id)
@@ -222,37 +244,45 @@ class MongoDatabase:
             self.coll.update_one({"_id": _id}, {"$set": {path: value}}, upsert=True)
 
     def array_checker(self, field_path, _id):
-        """
-        Create empty array in filed if this field does not already exists. Prepare for set insertion (avoid duplicates)
+         """
+        Checks if the field at the path is an array and prepares for set insertion.
 
-        :param field_path: str, path to check
-        :param _id: str, instance ID
+        Args:
+            field_path (str): Path to check.
+            _id (str): Instance ID.
         """
         if not self.coll.count_documents({"_id": _id, field_path: {"$exists": True}}):
             self.coll.update_one({"_id": _id}, {"$set": {field_path: []}}, upsert=True)
 
     def field_checker(self, entry, field):
         """
-        Check if field exists and return result or {}
+        Checks if a field exists in the collection and returns the result.
 
-        :param entry: value
-        :param field: field name
-        :return: {} or the match
+        Args:
+            entry: Value to check.
+            field (str): Name of the field.
+
+        Returns:
+            bool: True if the field exists, False otherwise.
         """
         result = self.coll.find_one({field: entry})
         return result if result else {}
 
     def make_query(self, query: dict = None, projection: dict = None, output="pandas", multi=True, limit=200):
         """
-        Make MongoDB database query
+        Executes a MongoDB database query.
 
-        :param query: dict, query
-        :param projection: dict, projection
-        :param output: str, output type
-        :param multi: bool, return multiple query responses if True
-        :param limit: int, limit to the number of responses the query will return
-        :return: 1) A dataframe if output="pandas"
-                 2) A list if multi=False and a pymongo dursor if multi=True; output != "pandas
+        Args:
+            query (dict, optional): Query parameters. Defaults to an empty dictionary.
+            projection (dict, optional): Fields to include or exclude. Defaults to an empty dictionary.
+            output (str, optional): Output type, can be "pandas", "json", or list. Defaults to "pandas".
+            multi (bool, optional): If True, returns multiple query responses. If False, returns a single result.
+                Defaults to True.
+            limit (int, optional): Maximum number of responses to return. Defaults to 200.
+
+        Returns:
+            1) A dataframe if output="pandas"
+            2) A list if multi=False and a pymongo dursor if multi=True; output != "pandas
         """
         query = query or {}
         projection = projection or {}
@@ -279,10 +309,13 @@ class MongoDatabase:
     @staticmethod
     def dot2dict(dot_dict):
         """
-        Convert a dotted dictionary to a nested dictionary
+        Converts dot notation keys to nested dictionary.
 
-        :param dot_dict: dotted dictionary
-        :return: nested final dictionary
+        Args:
+            dot_not (dict): Dictionary with dot notation keys.
+
+        Returns:
+            dict: Nested dictionary.
         """
         dot_dict = dot_dict or {}
         if isinstance(dot_dict, dict):
@@ -301,29 +334,40 @@ class MongoDatabase:
 
 class RobotStatusDB(MongoDatabase):
     """
-    Class for accessing the Robot Status database
-    Copyright 2021, University of Kentucky
+    Provides access to the Robot Status database.
+
+    This class is used to interact with the status database for a specific type of apparatus.
+    Copyright 2021, University of Kentucky.
     """
 
-    def __init__(self, apparatus_type: str, _id: str = None, instance: dict = None, override_lists: bool = True,
-                 wflow_name: str = None, validate_schema=False):
+    def __init__(self, apparatus_type: str, _id: str = None, instance: dict = None,
+                 override_lists: bool = True, wflow_name: str = None, validate_schema=False):
         """
-        Initiate class
-        :param apparatus_type: str, name of apparatus
-        :param _id: str, _id
-        :param instance: dict, instance to insert or validate
-        :param override_lists: bool,
-        :param wflow_name: str, name of active workflow; checks if database instance has appropriate wflow_name if set
+        Initializes the RobotStatusDB class.
+
+        Args:
+            apparatus_type (str): Name of the apparatus.
+            _id (str, optional): Unique identifier for the status entry. Defaults to None.
+            instance (dict, optional): Instance to insert or validate in the database. Defaults to None.
+            override_lists (bool, optional): Whether to override existing lists in the database. Defaults to True.
+            wflow_name (str, optional): Name of the active workflow. If set, verifies that the instance has the
+                appropriate workflow name. Defaults to None.
+            validate_schema (bool, optional): If True, validates the instance against the schema. Defaults to False.
+
+        Raises:
+            IOError: If no ID is provided for the status database insertion.
         """
         super().__init__("robotics", 'status_' + apparatus_type, instance, schema_db='robot',
                          validate_schema=validate_schema)
         self.id = _id or self.instance.get("_id")
         self.wflow_name = wflow_name
+
         if instance:
             instance["_id"] = self.id
             if not self.id:
                 raise IOError("ID is required for {} status database insertion.".format(apparatus_type))
             self.insert(self.id, override_lists=override_lists)
+
         if wflow_name and self.id:
             self.check_wflow_name()
 
@@ -332,29 +376,45 @@ class RobotStatusDB(MongoDatabase):
 
     @property
     def exists(self):
-        return True if self.coll.find_one({"_id": self.id}) else False
+        """Checks if an entry with the given ID exists in the database.
+
+        Returns:
+            bool: True if the entry exists, False otherwise.
+        """
+        return bool(self.coll.find_one({"_id": self.id}))
 
     def check_wflow_name(self):
+        """Checks if the workflow name matches the instance's current workflow name.
+
+        Raises:
+            NameError: If the workflow name does not match the current instance's workflow name.
+        """
         print("ID", self.id)
         current_wflow = self.coll.find_one({"_id": self.id}).get("current_wflow_name")
         if current_wflow == self.wflow_name:
             return True
-        raise NameError("Argument wflow_name ({}) does not match instance current_wflow_name {}. Make sure that "
-                        "only one workflow is initialized.".format(self.wflow_name, current_wflow))
+        raise NameError("Argument wflow_name ({}) does not match instance current_wflow_name {}. "
+                        "Make sure that only one workflow is initialized.".format(self.wflow_name, current_wflow))
 
     def get_prop(self, prop: str):
         """
-        Get database prop for instance with _id
-        :param prop: str, property name
-        :return: prop
+        Retrieves a property from the database for the instance with the given ID.
+
+        Args:
+            prop (str): Name of the property to retrieve.
+
+        Returns:
+            Any: The value of the property, or None if the property does not exist.
         """
         return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
-    def update_status(self, new_status, status_name="location"):
+    def update_status(self, new_status: str, status_name: str = "location"):
         """
-        Update status for a vial location or station vial
-        :param new_status: str, new vial location or new vial in station
-        :param status_name: str, name for status properties
+        Updates the status for a vial location or station vial.
+
+        Args:
+            new_status (str): New status, such as the new vial location or new vial in the station.
+            status_name (str, optional): Name of the status property. Defaults to "location".
         """
         current_status = self.get_prop("current_" + status_name)
         history = self.get_prop(status_name + "_history") or []
@@ -363,4 +423,3 @@ class RobotStatusDB(MongoDatabase):
             "current_" + status_name: new_status,
             status_name + "_history": history
         })
-

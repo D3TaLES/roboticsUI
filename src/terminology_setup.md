@@ -9,12 +9,12 @@ Key terms:
 * **ExpFlow Robotic Workflow**: Specific procedure based on an ExpFlow template. It may consist of many parallel experiments, all with the same genreric Template procedure but differing in a couple parameters. This is also create on ExpFlow and can be downloaded as a JSON file.
 * **Workflow (FireWorks Workflow)**: The FireWorks workflow object derived from a loaded ExpFlow Robotic Workflow.
 * **Experiment**: A series of actions that is analogous to a single experiment from the ExpFlow Robotic Workflow (based on the original ExpFlow Template).
-* **Set of Actions (FireWorks Firework)**: A FireWorks firework may contain one or more actions from the original ExpFlow Template & Robotic Workflow. These are often grouped by {ref}`fireworks:categories`.
+* **Set of Actions (FireWorks Firework)**: A FireWorks firework may contain one or more actions from the original ExpFlow Template & Robotic Workflow. These are often grouped by {ref}`categories <fireworks:fireworks>`.
 * **Action (FireWorks Firetask)**: A FireWorks firetask corresponds directly with an action from the original ExpFlow Template & Robotic Workflow. Examples include `DispenseLiquid`, `MeasureDensity`, `RunCV`, `DataProcessor`, etc.
 
 
 ```{image} media/workflows_and_experiments.png
-:alt: Experiments and workflows diagram 
+:alt: Experiments and workflows diagram
 ```
 
 ## Software Setup

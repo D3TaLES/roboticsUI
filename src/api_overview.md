@@ -1,5 +1,7 @@
 # Overview
 
+> Warning! The following two sections contain very technical information about the code supporting the robotics operations. Read only if you are interested in understanding / modifying this code.
+
 The Robotics API is designed to manage the robotics system. It consists of three modules, each of increasing abstraction:
 
 - ``utils``: Utility functions for robot movements, instrument interactions, processing, database interactions, etc. This module offers the lowest level of abstraction. ()

@@ -30,8 +30,8 @@ The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>`_ contains se
    :caption: Overview
 
    installation
-   terminology_setup
    quickstart
+   terminology_setup
    robot_run_checklist
    common_errors
 

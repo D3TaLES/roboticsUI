@@ -1,4 +1,4 @@
-# Terminology and Setup
+# Terminology and Structure
 
 ## Experiments and Workflows
 

@@ -2,12 +2,10 @@
 
 This module is the highest level of abstraction in the Robotics API and FireWorks-based classes relevant for managing robotic workflows. he primary purpose of this module is to translate experimental protocols, defined in ExpFlow Robotic Workflow JSON files, into executable workflows on a robotic system and to serve as the source code for the launched Fireworks. For more information about the structure of a robotic workflow and its experiments, see {ref}`terminology_setup:experiments and workflows`. For even more information about the distinction between Workflows, Fireworks, and Firetasks and their base classes, see the [original FireWorks documentation](https://materialsproject.github.io/fireworks/#designing-workflows).
 
-## Workflows 
+## Workflows
 (`Workflow_Writer.py`)
 
 The **Workflow_Writer** focuses on converting ExpFlow Robotic Workflow JSON files into Fireworks workflows. These workflows are sequences of tasks that define experiments to be run on robotic systems. This module automates how experiments are designed, executed, and processed, enabling researchers to manage repetitive tasks efficiently.
-
-Key components:
 
 * **EF2Experiment Class**:
    - Converts an ExpFlow object into a Fireworks workflow.
@@ -20,12 +18,12 @@ Key components:
    - Automates the creation of FireWorks Workflows for running multiple iterations of the same experiment using different molecules.
    - Manages task execution and transitions from one experimental phase to the next.
 
-## Fireworks 
+## Fireworks
 (`Fireworks.py`)
 
 The `Fireworks.py` file hosts all the Fireworks objects. Fireworks are groupings of Firetasks actions. To better faciclitate multitasking, all Fireworks fall into one of four categories. These categories by the native FireWorks attribute `_category`, so when launching firework jobs, one can specify which categories to launch. (For more on launching jobs, see {ref}`desktop_app:launching jobs!`.)
 
-Categories:
+**Categories**:
 
 * **initialize**`InitializeWorkflow`:
    - Handles the initial setup of the workflow, including robot initialization and status database setup
@@ -44,14 +42,12 @@ Categories:
    - Can be run simultaneously both with robotics and instrument tasks and with other processing tasks.
 
 
-## Firetasks 
+## Firetasks
 (`Firetasks_Actions.py` and `Firetasks_Processing.py`)
 
 
 The `Firetasks_Action.py` and `Firetasks_Processing.py` files define a series of FireTasks, each responsible for executing specific actions in the robotics laboratory environment. The tasks leverage the robotics API to interface with different devices, such as potentiostats, stir stations, and liquid dispensers. Additionally, procesing FireTasks parse experimental data files and calculate relevant parameters.
 
-
-Key Components:
 
 1. Actions (`Firetask_Actions.py`)
 

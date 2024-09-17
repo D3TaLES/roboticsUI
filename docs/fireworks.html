@@ -67,8 +67,15 @@
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Fireworks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#workflows">Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fireworks">Fireworks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#firetasks">Firetasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fireworks">Fireworks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#categories">Categories:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#firetasks">Firetasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#actions-firetask-actions-py">Actions (<code class="docutils literal notranslate"><span class="pre">Firetask_Actions.py</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing-firetasks-processing-py">Processing (<code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
@@ -112,7 +119,7 @@
 <p>(<code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>)</p>
 <p>The <strong>Workflow_Writer</strong> focuses on converting ExpFlow Robotic Workflow JSON files into Fireworks workflows. These workflows are sequences of tasks that define experiments to be run on robotic systems. This module automates how experiments are designed, executed, and processed, enabling researchers to manage repetitive tasks efficiently.</p>
 <ul class="simple">
-<li><p><strong>EF2Experiment Class</strong>:</p>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">EF2Experiment</span></code> Class</strong>:</p>
 <ul>
 <li><p>Converts an ExpFlow object into a Fireworks workflow.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">task_dictionary</span></code> pairs each ExpFlow action to a Firetask from <code class="docutils literal notranslate"><span class="pre">Firetasks_Actions</span></code>.</p></li>
@@ -121,7 +128,7 @@
 <li><p>Handles different types of tasks like data collection (e.g., <strong>CV</strong> and <strong>CA</strong> data), instrument setup, and data processing. Capable of dealing with multitask scenarios (e.g., collecting data for multiple scan rates).</p></li>
 </ul>
 </li>
-<li><p><strong>run_expflow_wf Function</strong>:</p>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">run_expflow_wf</span></code> Function</strong>:</p>
 <ul>
 <li><p>Automates the creation of FireWorks Workflows for running multiple iterations of the same experiment using different molecules.</p></li>
 <li><p>Manages task execution and transitions from one experimental phase to the next.</p></li>
@@ -133,7 +140,8 @@
 <h2>Fireworks<a class="headerlink" href="#fireworks" title="Link to this heading"></a></h2>
 <p>(<code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code>)</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Fireworks.py</span></code> file hosts all the Fireworks objects. Fireworks are groupings of Firetasks actions. To better faciclitate multitasking, all Fireworks fall into one of four categories. These categories by the native FireWorks attribute <code class="docutils literal notranslate"><span class="pre">_category</span></code>, so when launching firework jobs, one can specify which categories to launch. (For more on launching jobs, see <a class="reference internal" href="desktop_app.html#launching-jobs"><span class="std std-ref">Launching Jobs!</span></a>.)</p>
-<p><strong>Categories</strong>:</p>
+<section id="categories">
+<h3>Categories:<a class="headerlink" href="#categories" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>initialize</strong><code class="docutils literal notranslate"><span class="pre">InitializeWorkflow</span></code>:</p>
 <ul>
@@ -161,36 +169,37 @@
 </li>
 </ul>
 </section>
+</section>
 <section id="firetasks">
 <h2>Firetasks<a class="headerlink" href="#firetasks" title="Link to this heading"></a></h2>
 <p>(<code class="docutils literal notranslate"><span class="pre">Firetasks_Actions.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Firetasks_Action.py</span></code> and <code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code> files define a series of FireTasks, each responsible for executing specific actions in the robotics laboratory environment. The tasks leverage the robotics API to interface with different devices, such as potentiostats, stir stations, and liquid dispensers. Additionally, procesing FireTasks parse experimental data files and calculate relevant parameters.</p>
-<ol class="arabic simple">
-<li><p>Actions (<code class="docutils literal notranslate"><span class="pre">Firetask_Actions.py</span></code>)</p></li>
-</ol>
+<section id="actions-firetask-actions-py">
+<h3>Actions (<code class="docutils literal notranslate"><span class="pre">Firetask_Actions.py</span></code>)<a class="headerlink" href="#actions-firetask-actions-py" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>RoboticsBase</strong>:</p>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RoboticsBase</span></code></strong>:</p>
 <ul>
 <li><p>This is the base class for all FireTasks in this module. It provides setup methods, handles workflow and experiment metadata, and ensures proper integration with robotic devices. Subclasses inherit core methods.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">setup_task</span></code> method handles common task setup steps such as loading experimental metadata, managing workflow states, and ensuring tasks are only executed under valid conditions. This should be run at the beginning of every Firetask.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">updated_specs</span></code> method updates the Firework specs with newly generated data and should be run at the end of every Firetask</p></li>
 </ul>
 </li>
-<li><p><strong>DispenseLiquid</strong>, <strong>Stir</strong>, <strong>MeasureDensity</strong>, etc.: These tasks handle the robotic vial maniputation actions. They not only execute the action but also use classes from <code class="docutils literal notranslate"><span class="pre">actions:standard</span> <span class="pre">actions</span></code> to update station and vial statuses.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DispenseLiquid</span></code>, <code class="docutils literal notranslate"><span class="pre">Stir</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureDensity</span></code>, etc.</strong>: These tasks handle the robotic vial maniputation actions. They not only execute the action but also use classes from <code class="docutils literal notranslate"><span class="pre">actions:standard</span> <span class="pre">actions</span></code> to update station and vial statuses.</p></li>
 <li><p><strong>Electrode Handling Tasks</strong>: This includes tasks like <code class="docutils literal notranslate"><span class="pre">RecordWorkingElectrodeArea</span></code>, <code class="docutils literal notranslate"><span class="pre">SetupRinsePotentiostat</span></code>, <code class="docutils literal notranslate"><span class="pre">RinseElectrode</span></code>, and <code class="docutils literal notranslate"><span class="pre">CleanElectrode</span></code>, all of which focus on preparing and maintaining electrodes for electrochemical experiments. These tasks manage interactions with potentiostat stations and ensure proper rinsing and cleaning of electrodes.</p></li>
 <li><p><strong>Potentiostat Setup and Benchmarking</strong>: The <code class="docutils literal notranslate"><span class="pre">SetupPotentiostat</span></code>, <code class="docutils literal notranslate"><span class="pre">SetupCVPotentiostat</span></code>, <code class="docutils literal notranslate"><span class="pre">SetupCAPotentiostat</span></code>, and <code class="docutils literal notranslate"><span class="pre">FinishPotentiostat</span></code> classes are responsible for moving the correct vial to the correct potentiostat and controling the elevator position. They must be performed before/after any measurement task (though they are added to workflows automatically in <code class="docutils literal notranslate"><span class="pre">Workflow_Writer.py</span></code>).</p></li>
-<li><p><strong>RunCV</strong> and <strong>RunCA</strong>: These tasks handle the execution of cyclic voltammetry (CV) and chronoamperometry (CA) experiments, respectively. They control the potentiostats.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RunCV</span></code> and <code class="docutils literal notranslate"><span class="pre">RunCA</span></code></strong>: These tasks handle the execution of cyclic voltammetry (CV) and chronoamperometry (CA) experiments, respectively. They control the potentiostats.</p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>Processing (<code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)</p></li>
-</ol>
+</section>
+<section id="processing-firetasks-processing-py">
+<h3>Processing (<code class="docutils literal notranslate"><span class="pre">Firetasks_Processing.py</span></code>)<a class="headerlink" href="#processing-firetasks-processing-py" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Initializing Tasks</strong>: <code class="docutils literal notranslate"><span class="pre">InitializeRobot</span></code> and <code class="docutils literal notranslate"><span class="pre">InitializeStatusDB</span></code> initailize the robot and databases respectivly by checking connections and establishing communication. For the database initialization, initial values are inserted for reagents and station/vial statuses. (For more information about the database structure, see <a class="reference internal" href="databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>.)</p></li>
-<li><p><strong>ProcessBase</strong>: An abstract base class providing core functionality for processing experimental data, managing metadata, and database integration. It contains common methods for file handling, metadata processing, and error handling.</p></li>
-<li><p><strong>DataProcessor</strong>: Tasks like <code class="docutils literal notranslate"><span class="pre">DataProcessor</span></code> are responsible for all types of data processing, including both CV and Chronoamperometry (CA) data. It processes, analyzes, and stores experimental data, generates plots, and updates metadata.</p></li>
-<li><p><strong>EndWorkflow</strong>: Concludes a workflow by finalizing robot actions (e.g., returning a vial to its home position) and creating final system snapshots to ensure a clean end state.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ProcessBase</span></code></strong>: An abstract base class providing core functionality for processing experimental data, managing metadata, and database integration. It contains common methods for file handling, metadata processing, and error handling.</p></li>
+<li><p><strong>Processing Tasks</strong>: Tasks like <code class="docutils literal notranslate"><span class="pre">DataProcessor</span></code> are responsible for all types of data processing, including both CV and Chronoamperometry (CA) data. It processes, analyzes, and stores experimental data, generates plots, and updates metadata.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">EndWorkflow</span></code></strong>: Concludes a workflow by finalizing robot actions (e.g., returning a vial to its home position) and creating final system snapshots to ensure a clean end state.</p></li>
 </ul>
 <p><strong>Note</strong>: This is not an exhaustive list of Firetask Actions, just a sampling of the most prominant actions.</p>
+</section>
 </section>
 </section>
 

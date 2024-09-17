@@ -244,7 +244,7 @@ class MongoDatabase:
             self.coll.update_one({"_id": _id}, {"$set": {path: value}}, upsert=True)
 
     def array_checker(self, field_path, _id):
-         """
+        """
         Checks if the field at the path is an array and prepares for set insertion.
 
         Args:

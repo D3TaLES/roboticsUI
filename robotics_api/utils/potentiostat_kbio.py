@@ -122,7 +122,8 @@ class PotentiostatExperiment:
                     rcomp_level=RCOMP_LEVEL,
                     # rcmp_mode=0,  # always software unless an SP-300 series and running loop function
                     ):
-         """Runs iR compensation before an experiment.
+        """
+        Runs iR compensation before an experiment.
 
         Args:
             amplitude_voltage (float): Amplitude of the voltage.

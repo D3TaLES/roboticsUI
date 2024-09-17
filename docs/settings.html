@@ -65,20 +65,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Settings and Snapshots</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#testing-operation-settings">TESTING OPERATION SETTINGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#operation-setting">OPERATION SETTING</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#default-conditions">DEFAULT CONDITIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#robot-settings">ROBOT SETTINGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#potentiostat-settings">POTENTIOSTAT SETTINGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#measurement-default-settings-ca-cv-ir-comp-etc">MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. )</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#processing-settings">PROCESSING SETTINGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#calibration-settings">CALIBRATION SETTINGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#port-address">PORT ADDRESS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stations">STATIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#path-variables-and-fireworks-path-variables">PATH VARIABLES (and FIREWORKS PATH VARIABLES)</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 </ul>
 </li>
@@ -121,51 +108,19 @@
 <section id="settings">
 <h2>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> contains master settings for all robotic system operations. It includes operation settings, default conditions, instrument settings, processing settings, station configurations, file paths, and more. <strong>Be sure to review all settings listed here before running a robotic workflow!</strong></p>
-<section id="testing-operation-settings">
-<h3>TESTING OPERATION SETTINGS<a class="headerlink" href="#testing-operation-settings" title="Link to this heading"></a></h3>
-<p>These settings indicate whether or not hardware features should actually be used when jobs are launched. For example, if <code class="docutils literal notranslate"><span class="pre">RUN_POTENT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, no signal will be sent to the potentiostats and no measurements will actually be gathered; if <code class="docutils literal notranslate"><span class="pre">RUN_ROBOT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the robot will not actually move. These exist for testing only. When running a real workflow, these should all be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Additionally, this section contains <code class="docutils literal notranslate"><span class="pre">CALIB_DATE</span></code>, the date that should be used to gather calibration data from database (should be blank for a real run), and <code class="docutils literal notranslate"><span class="pre">POT_DELAY</span></code>, the seconds to delay in place of potentiostat measurement when <code class="docutils literal notranslate"><span class="pre">RUN_POTENT</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</section>
-<section id="operation-setting">
-<h3>OPERATION SETTING<a class="headerlink" href="#operation-setting" title="Link to this heading"></a></h3>
-<p>Setting for system operations including <code class="docutils literal notranslate"><span class="pre">RERUN_FIZZLED_ROBOT</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_CONCENTRATION_FAILURE</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_DIRTY_ELECTRODE</span></code>,
-<code class="docutils literal notranslate"><span class="pre">EXIT_ZERO_VOLUME</span></code>, and <code class="docutils literal notranslate"><span class="pre">WAIT_FOR_BALANCE</span></code>. More explination for each setting exists in the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.</p>
-</section>
-<section id="default-conditions">
-<h3>DEFAULT CONDITIONS<a class="headerlink" href="#default-conditions" title="Link to this heading"></a></h3>
-<p>Default values for several condition parameters including temperature, concentration, and working electrode radius. This section also contains the setting for default units of measurements.</p>
-</section>
-<section id="robot-settings">
-<h3>ROBOT SETTINGS<a class="headerlink" href="#robot-settings" title="Link to this heading"></a></h3>
-<p>Robot settings including the robot IP address, the grip target values for open and close, and perturbation amounts.</p>
-</section>
-<section id="potentiostat-settings">
-<h3>POTENTIOSTAT SETTINGS<a class="headerlink" href="#potentiostat-settings" title="Link to this heading"></a></h3>
-<p>Comp ports and executions files for the instrumnets.</p>
-</section>
-<section id="measurement-default-settings-ca-cv-ir-comp-etc">
-<h3>MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. )<a class="headerlink" href="#measurement-default-settings-ca-cv-ir-comp-etc" title="Link to this heading"></a></h3>
-<p>Default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.</p>
-</section>
-<section id="processing-settings">
-<h3>PROCESSING SETTINGS<a class="headerlink" href="#processing-settings" title="Link to this heading"></a></h3>
-<p>Processing settings such as processing procedures and plotting settings.</p>
-</section>
-<section id="calibration-settings">
-<h3>CALIBRATION SETTINGS<a class="headerlink" href="#calibration-settings" title="Link to this heading"></a></h3>
-<p>Setting for calibration jobs such as whether to perform a KCl CA calibration and the conductivity of DI water. This section also contains dictionaries of FORMAL_POTENTIALS and SOLVENT_DENSITIES that are used in generating the reagents database collection.</p>
-</section>
-<section id="port-address">
-<h3>PORT ADDRESS<a class="headerlink" href="#port-address" title="Link to this heading"></a></h3>
-<p>COM ports for Arduino, balance, etc.</p>
-</section>
-<section id="stations">
-<h3>STATIONS<a class="headerlink" href="#stations" title="Link to this heading"></a></h3>
-<p>List of all hardware stations. These include <code class="docutils literal notranslate"><span class="pre">DISPENSE_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">MEASUREMENT_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">ACTION_STATIONS</span></code>, and <code class="docutils literal notranslate"><span class="pre">VIALS</span></code>. If a station or vial is listed here, the robot will think it is an option for executing jobs. This section also contains the <code class="docutils literal notranslate"><span class="pre">RINSE_VIALS</span></code> setting which matches each measurement station with the vial home position that should be used to rinse it. There should be one rinse vial per measurementstation. The <code class="docutils literal notranslate"><span class="pre">ELEVATOR_DICT</span></code> setting pairs the elevator name (e.g., “A_01”) with its Aurdino identifier (e.g., 1).</p>
-</section>
-<section id="path-variables-and-fireworks-path-variables">
-<h3>PATH VARIABLES (and FIREWORKS PATH VARIABLES)<a class="headerlink" href="#path-variables-and-fireworks-path-variables" title="Link to this heading"></a></h3>
-<p>Paths for key directories and files such as the data storage directory, key snapshots, and FireWorks configuration files.</p>
-</section>
+<ul class="simple">
+<li><p>TESTING OPERATION SETTINGS: These settings indicate whether or not hardware features should actually be used when jobs are launched. For example, if <code class="docutils literal notranslate"><span class="pre">RUN_POTENT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, no signal will be sent to the potentiostats and no measurements will actually be gathered; if <code class="docutils literal notranslate"><span class="pre">RUN_ROBOT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the robot will not actually move. These exist for testing only. When running a real workflow, these should all be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Additionally, this section contains <code class="docutils literal notranslate"><span class="pre">CALIB_DATE</span></code>, the date that should be used to gather calibration data from database (should be blank for a real run), and <code class="docutils literal notranslate"><span class="pre">POT_DELAY</span></code>, the seconds to delay in place of potentiostat measurement when <code class="docutils literal notranslate"><span class="pre">RUN_POTENT</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>OPERATION SETTING: Setting for system operations including <code class="docutils literal notranslate"><span class="pre">RERUN_FIZZLED_ROBOT</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_CONCENTRATION_FAILURE</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_DIRTY_ELECTRODE</span></code>, <code class="docutils literal notranslate"><span class="pre">EXIT_ZERO_VOLUME</span></code>, and <code class="docutils literal notranslate"><span class="pre">WAIT_FOR_BALANCE</span></code>. More explination for each setting exists in the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.</p></li>
+<li><p>DEFAULT CONDITIONS: Default values for several condition parameters including temperature, concentration, and working electrode radius. This section also contains the setting for default units of measurements.</p></li>
+<li><p>ROBOT SETTINGS: Robot settings including the robot IP address, the grip target values for open and close, and perturbation amounts.</p></li>
+<li><p>POTENTIOSTAT SETTINGS: Comp ports and executions files for the instrumnets.</p></li>
+<li><p>MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. ): Default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.</p></li>
+<li><p>PROCESSING SETTINGS: Processing settings such as processing procedures and plotting settings.</p></li>
+<li><p>CALIBRATION SETTINGS: Setting for calibration jobs such as whether to perform a KCl CA calibration and the conductivity of DI water. This section also contains dictionaries of FORMAL_POTENTIALS and SOLVENT_DENSITIES that are used in generating the reagents database collection.</p></li>
+<li><p>PORT ADDRESS: COM ports for Arduino, balance, etc.</p></li>
+<li><p>STATIONS: List of all hardware stations. These include <code class="docutils literal notranslate"><span class="pre">DISPENSE_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">MEASUREMENT_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">ACTION_STATIONS</span></code>, and <code class="docutils literal notranslate"><span class="pre">VIALS</span></code>. If a station or vial is listed here, the robot will think it is an option for executing jobs. This section also contains the <code class="docutils literal notranslate"><span class="pre">RINSE_VIALS</span></code> setting which matches each measurement station with the vial home position that should be used to rinse it. There should be one rinse vial per measurementstation. The <code class="docutils literal notranslate"><span class="pre">ELEVATOR_DICT</span></code> setting pairs the elevator name (e.g., “A_01”) with its Aurdino identifier (e.g., 1).</p></li>
+<li><p>PATH VARIABLES (and FIREWORKS PATH VARIABLES): Paths for key directories and files such as the data storage directory, key snapshots, and FireWorks configuration files.</p></li>
+</ul>
 </section>
 <section id="snapshots">
 <h2>Snapshots<a class="headerlink" href="#snapshots" title="Link to this heading"></a></h2>

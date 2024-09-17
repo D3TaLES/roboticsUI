@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robotics Databases &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=938c9ccc"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="robotics_api package" href="robotics_api.html" />
+    <link rel="prev" title="Module - Utils" href="utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Robotics Databases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#status-collections">Status Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#status-reagents"><em>status_reagents</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-stations"><em>status_stations</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-vials"><em>status_vials</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-collections">Data Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#experimentation"><em>experimentation</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metadata"><em>metadata</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#standards-collections">Standards Collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#standards-cacalib"><em>standards_CACalib</em></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Raw API Code Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Robotics Databases</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/databases.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robotics-databases">
+<h1>Robotics Databases<a class="headerlink" href="#robotics-databases" title="Link to this heading"></a></h1>
+<p>The robotics system relies on MongoDB databases to store and manage real-time and experimental data related to vials, stations, reagents, and workflows. These databases ensure that the robotics and lab automation systems have access to the most up-to-date information needed to carry out experiments and operations efficiently.</p>
+<p>The databases are divided into three primary categories:</p>
+<ol class="arabic simple">
+<li><p><strong>Status Collections</strong>: Tracks the real-time state of reagents, stations, and vials.</p></li>
+<li><p><strong>Data Collections</strong>: Stores experimental data and associated metadata.</p></li>
+<li><p><strong>Standards Collections</strong>: Contains standard measurements and calibration data for various processes.</p></li>
+</ol>
+<section id="status-collections">
+<h2>Status Collections<a class="headerlink" href="#status-collections" title="Link to this heading"></a></h2>
+<p>The <strong>Status Collections</strong> contain real-time information about the objects used in robotic processes. These collections help keep track of the current states and locations of vials, stations, and reagents, which are critical for ensuring the smooth operation of workflows and experiments.</p>
+<blockquote>
+<div><p><strong>Note</strong>: All Status Collections contain the field <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code>. This denotes the name of the workflow from which these collections were initialized (with the <span class="xref std std-ref">workflow initialization firework</span>). If a Firework tries to interact with a database document where the <code class="docutils literal notranslate"><span class="pre">current_wflow_name</span></code> does not match the Firework’s workflow name, it will through an error (see <a class="reference internal" href="common_errors.html#common-errors"><span class="std std-ref">Common Errors</span></a>).</p>
+</div></blockquote>
+<section id="status-reagents">
+<h3><em>status_reagents</em><a class="headerlink" href="#status-reagents" title="Link to this heading"></a></h3>
+<p>Stores the current state of reagents, including location, type, and any supporting notes relevant to their use in experiments.</p>
+<p><strong>Example Document:</strong></p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;29690ed4-bf85-4945-9c2d-907eb942515d&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Acetonitrile&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;smiles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CC#N&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sigma_aldrich&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;solvent&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;with 0.25M TEABF4 supporting electrolyte&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;purity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;solvent_01&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_wflow_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_workflow&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;density&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">786.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;formal_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="status-stations">
+<h3><em>status_stations</em><a class="headerlink" href="#status-stations" title="Link to this heading"></a></h3>
+<p>Tracks the status of different stations used in the robotics system. This includes stations such as liquid dispensing stations, potentiostat stations, and balance stations. It also manages the availability of these stations and their current contents.</p>
+<p><strong>Fields of Interest</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code>: Station name defined in the <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">available</span></code>: Whether or not the station is available (or in use)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code>: Additional state information about station (not used for most station types)</p></li>
+</ul>
+<p><strong>Example Document (potentiostat station):</strong></p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cv_potentiostat_A_01&quot;</span><span class="p">,</span><span class="w">           </span>
+<span class="w">  </span><span class="nt">&quot;current_wflow_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_workflow&quot;</span><span class="p">,</span><span class="w">        </span>
+<span class="w">  </span><span class="nt">&quot;available&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">                     </span>
+<span class="w">  </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;up&quot;</span><span class="p">,</span><span class="w">                           </span>
+<span class="w">  </span><span class="nt">&quot;current_content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A_01&quot;</span><span class="p">,</span><span class="w">               </span>
+<span class="w">  </span><span class="nt">&quot;content_history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                     </span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;S_01&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">]</span><span class="w">                        </span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Example Document (robot grip):</strong></p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;robot_grip&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_wflow_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_workflow&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;available&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;content_history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;A_01&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;S_01&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;S_01&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="status-vials">
+<h3><em>status_vials</em><a class="headerlink" href="#status-vials" title="Link to this heading"></a></h3>
+<p>Contains information about the current state of vials being used in the system. This includes their location, contents, weight, and other relevant data necessary for tracking them throughout the workflow.</p>
+<p><strong>Fields of Interest</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code>: Vial ID defined in the <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">experiment_name</span></code>: When a workflows is loaded via the <a class="reference internal" href="desktop_app.html#loading-a-workflow"><span class="std std-ref">Robotics App</span></a>, each experiment is assigned a vial. This field denotes the experiment name assigned to this vial.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vial_content</span></code>: List of dictionaries where each dictionary represents a different reagent in the vial. These are automatically updated any time a reagent is add to <em>or extracted from</em> the vial.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">current_weight</span></code>: The most recent weight measurement for the vial and all its contents. Every time a reagent is added/extracted, <code class="docutils literal notranslate"><span class="pre">current_weight</span></code> is reset to <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p></li>
+</ul>
+<p><strong>Example Document:</strong></p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A_01&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_wflow_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_workflow&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;experiment_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exp01&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;vial_content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;reagent_uuid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;330391e4-855b-4a1d-851e-59445c65fad0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEMPO&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;amount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.4682g&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;reagent_uuid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;29690ed4-bf85-4945-9c2d-907eb942515d&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Acetonitrile&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;amount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;20.04g&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;current_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;weight_history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;current_location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cv_potentiostat_A_01&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;location_history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;robot_grip&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;home&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="data-collections">
+<h2>Data Collections<a class="headerlink" href="#data-collections" title="Link to this heading"></a></h2>
+<p>The <strong>Data Collections</strong> store experimental results and related metadata. These collections ensure that the data generated from experiments are organized and easily retrievable for analysis.</p>
+<section id="experimentation">
+<h3><em>experimentation</em><a class="headerlink" href="#experimentation" title="Link to this heading"></a></h3>
+<p>This collection stores the raw data generated from experiments, including the associated metadata such as the experimental conditions and the results. Each document represents a unique experiment measurement.</p>
+<p><strong>Example Document:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;30ded3c7-8ba0-4bab-b390-fb624223dd98&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mol_id&quot;</span><span class="p">:</span> <span class="s2">&quot;11ZHCX&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;submission_info&quot;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">home.iowa.uiowa.edu</span><span class="se">\n</span><span class="s2">stumme\documents\summer 2020</span><span class="se">\200</span><span class="s2">727</span><span class="se">\01</span><span class="s2"> gc we pt…&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;date_recorded&quot;</span><span class="p">:</span> <span class="s2">&quot;2020-07-27T17:10:46&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;data_points_per_scan&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="s2">&quot;segment&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;sample_interval&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">},</span>
+    <span class="s2">&quot;quiet_time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">},</span>
+    <span class="s2">&quot;sensitivity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">},</span>
+    <span class="s2">&quot;comp_r&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">},</span>
+    <span class="s2">&quot;scan_data&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;forward&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">},</span>
+    <span class="s2">&quot;plot_data&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;reversibility&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;e_half&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;peak_splittings&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s2">&quot;middle_sweep&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">data</span><span class="o">&gt;</span><span class="p">],</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="metadata">
+<h3><em>metadata</em><a class="headerlink" href="#metadata" title="Link to this heading"></a></h3>
+<p>Contains metadata calculated from from multiple experiment measurements, such as oxidation potentials, diffusion coefficients, and charge transfer rates.</p>
+<p><strong>Example Document:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;2fadd2f9-453f-4cf7-a29e-63c921029cde&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;oxidation_potential&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="o">&lt;</span><span class="n">oxidation</span> <span class="n">potential</span> <span class="n">data</span><span class="o">&gt;</span>  <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;diffusion_coefficient&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="o">&lt;</span><span class="n">diffusion</span> <span class="n">coefficient</span> <span class="n">data</span><span class="o">&gt;</span>  <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;charge_transfer_rate&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="o">&lt;</span><span class="n">charge</span> <span class="n">transfer</span> <span class="n">rate</span> <span class="n">data</span><span class="o">&gt;</span>  <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="standards-collections">
+<h2>Standards Collections<a class="headerlink" href="#standards-collections" title="Link to this heading"></a></h2>
+<p>The <strong>Standards Collections</strong> hold reference data used for calibration and verification of robotic processes.</p>
+<section id="standards-cacalib">
+<h3><em>standards_CACalib</em><a class="headerlink" href="#standards-cacalib" title="Link to this heading"></a></h3>
+<p>Contains calibration data for chronoamperometry (CA) experiments.</p>
+<p><strong>Example Document:</strong></p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;298fb9b4-a7b4-4a58-a55c-431cce6fe93c&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mol_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;11JNLU&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;date_updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024_09_13&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;cond_measured&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00001722937373737374</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;S&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;res_measured&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">58040.41488930109</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ohm&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">294.18</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;K&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;cell_constant&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">76.01553138051766</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>This database structure ensures the smooth operation of the robotics system by keeping track of real-time information on reagents, stations, and vials, as well as storing experimental data and calibration standards needed for accurate and consistent experimentation.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utils.html" class="btn btn-neutral float-left" title="Module - Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="robotics_api.html" class="btn btn-neutral float-right" title="robotics_api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

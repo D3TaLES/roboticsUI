@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExpFlow Robotic Workflows &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=938c9ccc"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Robotics App" href="desktop_app.html" />
+    <link rel="prev" title="Common Errors" href="common_errors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D<sup>3</sup>TaLES Robotics
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ExpFlow Robotic Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#building-a-template">Building a Template</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-new-template">Create new Template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-materials-reagents-apparatus-and-instruments">Add materials (reagents, apparatus, and instruments)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-actions">Add actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#important-notes-for-building-a-template-for-robotic-workflows"><strong>Important notes for building a Template for Robotic Workflows</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#use-template-for-robotic-workflow">Use Template for Robotic Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-default-parameters">Set default parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#establish-variable-parameters">Establish variable parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-robotic-workflow">Download robotic workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html#measurement-default-settings-ca-cv-ir-comp-etc">Measurement Default Settings (CA, CV, iR Comp, etc. )</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Raw API Code Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="robotics_api.html">robotics_api package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ExpFlow Robotic Workflows</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/expflow.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="expflow-robotic-workflows">
+<h1>ExpFlow Robotic Workflows<a class="headerlink" href="#expflow-robotic-workflows" title="Link to this heading"></a></h1>
+<section id="building-a-template">
+<h2>Building a Template<a class="headerlink" href="#building-a-template" title="Link to this heading"></a></h2>
+<p>A customizable ExpFlow Template lists the reagent types, apparatus items, instrument types, and workflow actions of an experimental protocol. A researcher uses a web-based user interface with buttons and dropdown menus to create a Template.</p>
+<p>An ExpFlow Template converts experimental procedures into graphs that contain data provenances. The Template has categories for reagent (e.g., redox material, solvent), apparatus (e.g., beaker, electrode) and instrument (e.g., potentiostat, spectrometer). In a Template graph, nodes (the reagent, apparatus, and instrument categories) are connected by edges that correspond to actions (e.g., dispense, heat). Each action contains a start position, an end position, and action parameters (e.g., volume for dispensing liquid, temperature for heating, etc.). As the actions are sequenced, ExpFlow graphs capture the action provenances.</p>
+<p>For example, a CV experiment to determine the diffusion coefficient might include redox-active molecule and solvent reagents, a beaker/vial apparatus, and a potentiostat (Figure 2). Workflow actions might include transferring the liquid solvent and solid solute to the beaker, heating and stirring the solution, measuring the working electrode surface area, and collecting CV data. In this example, the user might add five collect-CV-data actions because the experiment includes five CV scans, each performed at a different scan rate. Although the Template can take time and effort to produce, it can be reused for all related and subsequent experiments.</p>
+<p>For example, a CV experiment to determine the diffusion coefficient might include <code class="docutils literal notranslate"><span class="pre">redox_molecule</span></code> and <code class="docutils literal notranslate"><span class="pre">solvent</span></code> reagents; <code class="docutils literal notranslate"><span class="pre">beaker</span></code>, and <code class="docutils literal notranslate"><span class="pre">electrochemical_cell</span></code> apparatus, and a potentiostat instrument.   Workflow actions might include <code class="docutils literal notranslate"><span class="pre">transfer_liquid</span></code> (start position = <code class="docutils literal notranslate"><span class="pre">solvent</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), transfer_solid (start position = <code class="docutils literal notranslate"><span class="pre">redox_molecule</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), heat_stir (start and end position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code>), and collect_cv_data (start position = <code class="docutils literal notranslate"><span class="pre">beaker</span></code> and end position = <code class="docutils literal notranslate"><span class="pre">electrochemical_cell</span></code>). There may be multiple data collection actions. For example, in this example, the scientist might add five collect_cv_data actions because the experiment includes five CVs, each run at a different scan rate. Each action incorporates a standard action type, starting and ending positions, and a brief description. Although these templates take time and effort to produce, they can be reused for all related experiments. Additionally, an existing templated can be cloned and modified, limiting the amount of time needed to construct new templates. Templates can also be shared among ExpFlow users.</p>
+<img alt="Templates and Workflows" src="_images/template_workflow.png" />
+<section id="create-new-template">
+<h3>Create new Template<a class="headerlink" href="#create-new-template" title="Link to this heading"></a></h3>
+<p>To create a new Template, navigate to <code class="docutils literal notranslate"><span class="pre">Templates</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">Template</span></code>. Enter your Template name and mark is as public or not.</p>
+</section>
+<section id="add-materials-reagents-apparatus-and-instruments">
+<h3>Add materials (reagents, apparatus, and instruments)<a class="headerlink" href="#add-materials-reagents-apparatus-and-instruments" title="Link to this heading"></a></h3>
+<p>Add all your materials. Select the type of material you would like to add (blue cursor in image below), then fill in the information about your material. Finally, add the material (orange cursor in image below). Repeat until all materials are added.</p>
+</section>
+<section id="add-actions">
+<h3>Add actions<a class="headerlink" href="#add-actions" title="Link to this heading"></a></h3>
+<p>Select <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Action</span></code> (purple cursor in image below), then fill in the information about your action. Note the sequence. If the sequence is higher than the existing number of actions, the action will be placed as the last action. Otherwise, it will be inserted at the specified sequence, pushing all the subsequent actions down. Add the action and repeat until all actions are added.</p>
+<img alt="Make Template" src="_images/make_template.png" />
+</section>
+<section id="important-notes-for-building-a-template-for-robotic-workflows">
+<h3><strong>Important notes for building a Template for Robotic Workflows</strong><a class="headerlink" href="#important-notes-for-building-a-template-for-robotic-workflows" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Whenever creating a Template, select <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Action</span> <span class="pre">Type</span> <span class="pre">Descriptions</span></code> for descriptions of each actions <strong>and</strong> for constrains on using each action. Always check the action constrains before using it.</p></li>
+<li><p>Remember that the base Template protocol will correspond to one of the parallel robotic experiments. Importantly, each experiment takes place in once vial, so your Template protocol should all take place in one vial.</p></li>
+<li><p>Because each experiment takes place in one vial, be sure that the total volume your Template adds is not more than the volumetric capacity of an experiment vial!</p></li>
+</ul>
+</section>
+</section>
+<section id="use-template-for-robotic-workflow">
+<h2>Use Template for Robotic Workflow<a class="headerlink" href="#use-template-for-robotic-workflow" title="Link to this heading"></a></h2>
+<p>A Template can be adapted to a Robotic Workflow. After building a template, navigate to the template details page and select <code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">For</span> <span class="pre">Robotics</span></code>. You must be logged in to view this button. If this button does not appear, you may not have the correct permissions.</p>
+<img alt="Use for Workflow" src="_images/use_for_workflow.png" />
+<section id="set-default-parameters">
+<h3>Set default parameters<a class="headerlink" href="#set-default-parameters" title="Link to this heading"></a></h3>
+<p>After creating a Workflow, the researcher indicates default measurements for all preparation steps and specifies parameters for all data collection steps. Notably, not all properties need to be specified. For every property left blank, the robotic system will use the default parameters specified in the <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a>.</p>
+</section>
+<section id="establish-variable-parameters">
+<h3>Establish variable parameters<a class="headerlink" href="#establish-variable-parameters" title="Link to this heading"></a></h3>
+<p>Then, the researcher selects one or more parameters to vary. These variable parameters become the columns of a table with n rows, where the researcher specifies the variable parameter values for each of <em>n</em> experiments. ExpFlow then produces a machine-readable workflow for n identically structured experiments where one or more measurement parameters varies for each experiment. In the example below, three variable properties are selected. The resulting workflow will contain eight parallel experiments, where the redox active molecule, starting mass, and voltage sequence varies for each experiment.</p>
+<img alt="Defining variable properties" src="_images/variable_props.png" />
+</section>
+<section id="download-robotic-workflow">
+<h3>Download robotic workflow<a class="headerlink" href="#download-robotic-workflow" title="Link to this heading"></a></h3>
+<p>Navigate to <code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">Workflows</span></code>, and select download for your Robotic Workflows. This will download the workflow as a JSON file.</p>
+<img alt="Downloading a Workflow" src="_images/download_workflow.png" />
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="common_errors.html" class="btn btn-neutral float-left" title="Common Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="desktop_app.html" class="btn btn-neutral float-right" title="Robotics App" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

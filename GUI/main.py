@@ -13,7 +13,7 @@ d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("../docs_src/media/D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("../src/media/D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
@@ -611,7 +611,7 @@ class RoboticsGUI(tk.Tk):
         manage_jobs = tk.Button(self, text="Manage Jobs", command=self.open_manage, font=("Raleway", 14),
                                 bg=d3navy, fg='white', height=1, width=15)
         manage_jobs.grid(column=0, row=3, pady=5)
-        add_job = tk.Button(self, text="Add Job", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
+        add_job = tk.Button(self, text="Add Workflow", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
                             height=1, width=15)
         add_job.grid(column=0, row=4, pady=5)
         push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),

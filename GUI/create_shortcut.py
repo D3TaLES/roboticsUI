@@ -2,18 +2,15 @@ import winshell
 from pathlib import Path
 
 desktop = Path(winshell.desktop())
-miniconda_base = Path(winshell.folder('profile')) / "miniconda3"
-icon = str(Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "docs" / "media" / "D3TaLES_logo_transparent_robotics.ico")
-
-link_filepath = str(desktop / "d3tales_robotics.lnk")
-
-arg_str = str(miniconda_base / "Scripts" / "activate.bat") + " " + str(miniconda_base / "envs" / "d3tales_robotics")
-arg_str += " & python main.py"
+working_dir = Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "GUI"
+icon = str(Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "src" / "media" / "D3TaLES_logo_transparent_robotics.ico")
+command = r"conda activate d3tales_robotics && python " + str(working_dir / "main.py")
 
 # Create the shortcut on the desktop
-with winshell.shortcut(link_filepath) as link:
-    link.path = "main.py"
+with winshell.shortcut(str(desktop / "RoboticsApp.lnk")) as link:
     link.description = "D3TaLES Robotics"
-    link.arguments = arg_str
+    link.path = r"C:\Windows\System32\cmd.exe"  # Use cmd.exe to run the commands
+    link.arguments = f"/K {command}"  # /K keeps the command window open after execution
+
     link.icon_location = (icon, 0)
-    link.working_directory = str(Path(winshell.folder('profile')) / "D3talesRobotics" / "roboticsUI" / "GUI")
+    link.working_directory = str(working_dir)

@@ -11,17 +11,18 @@ Copyright 2024, University of Kentucky
 
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
-STIR = True
-PIPETTE = True
+RUN_POTENT = False
+DISPENSE = False
+STIR = False
+WEIGH = False
+PIPETTE = False
 RUN_ROBOT = False
 MOVE_ELEVATORS = True
-WEIGH_SOLVENTS = True
 CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
+WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation
 RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
 FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty

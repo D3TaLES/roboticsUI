@@ -52,7 +52,8 @@ class EF2Experiment(ProcessExpFlowObj):
         self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
         self.solv_id = get_id(self.solvent) or "no_solvent"
         self.elect_id = get_id(self.electrolyte) or "no_electrolyte"
-        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False), data_type + "_metadata", {})
+        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False),
+                                data_type + "_metadata", {})
         self.end_exps = []
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
@@ -110,12 +111,12 @@ class EF2Experiment(ProcessExpFlowObj):
                 task_dict = copy.deepcopy(task.__dict__)
                 task_dict["name"] = "collect_cv_data"
                 task_dict["parameters"] = other_params + [
-                        {
-                            "description": "scan_rate",
-                            "value": scan_rate,
-                            "unit": scan_rates_param.unit
-                        }
-                    ]
+                    {
+                        "description": "scan_rate",
+                        "value": scan_rate,
+                        "unit": scan_rates_param.unit
+                    }
+                ]
                 task_list.append(dict2obj(task_dict))
             return task_list
         else:
@@ -139,15 +140,14 @@ class EF2Experiment(ProcessExpFlowObj):
         for i, task in enumerate(self.workflow):
             # Get previous and next task names
             previous_name = self.workflow[:i][-1].name if self.workflow[:i] else ""
-            next_name = self.workflow[i+1:][0].name if self.workflow[i+1:] else ""
+            next_name = self.workflow[i + 1:][0].name if self.workflow[i + 1:] else ""
             # Get next non-processing name
-            next_nonP_tasks = [t for t in self.workflow[i+1:] if "process" not in t.name]
+            next_nonP_tasks = [t for t in self.workflow[i + 1:] if "process" not in t.name]
             next_nonP = next_nonP_tasks[0] if next_nonP_tasks else ""
-
 
             # If a dispense liquid action dispense 0 volume, skip all remaining tasks.
             if EXIT_ZERO_VOLUME and task.name == "transfer_liquid":
-                volumes = [float(p.value) for p in task.parameters if p.description=="volume"]
+                volumes = [float(p.value) for p in task.parameters if p.description == "volume"]
                 if not sum(volumes):
                     warnings.warn(f"Action {task.name} dispenses 0 volume. Because setting EXIT_ZERO_VOLUME is True, "
                                   f"all remaining tasks will be skipped.")
@@ -206,7 +206,7 @@ class EF2Experiment(ProcessExpFlowObj):
             tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             if "process" in fw_type:
                 fw = ProcessingFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=collect_parent or parent,
-                                  fw_specs=self.fw_specs, mol_id=self.mol_id, priority=self.priority - 1)
+                                        fw_specs=self.fw_specs, mol_id=self.mol_id, priority=self.priority - 1)
                 parent = fw if "benchmark" in fw_type else parent
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
@@ -216,14 +216,14 @@ class EF2Experiment(ProcessExpFlowObj):
                 )
                 r2 = AnalysisFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=[r1],
                                       priority=self.priority + 1, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
-                r3 = RobotFirework([FinishPotentiostat()], name=f"{self.full_name}_finish",  parents=[r2],
+                r3 = RobotFirework([FinishPotentiostat()], name=f"{self.full_name}_finish", parents=[r2],
                                    priority=self.priority + 3, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 fireworks.extend([r1, r2, r3])
                 self.end_exps.append(r3)
                 continue
             elif "setup" in fw_type:
                 name = f"{self.full_name}_{fw_type}"
-                fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=self.priority+1,
+                fw = InstrumentPrepFirework(tasks, name=name, wflow_name=self.wflow_name, priority=self.priority + 1,
                                             analysis=fw_type.split("_")[1], parents=parent, fw_specs=self.fw_specs)
                 parent = fw
             elif self.is_inst_task(fw_type):
@@ -287,7 +287,7 @@ class EF2Experiment(ProcessExpFlowObj):
         }
 
 
-def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
+def run_expflow_wf(expflow_wf: dict, name_tag='', exp_params=None, **kwargs):
     """
     Establishes Fireworks workflow for running multiple iterations of the same experiment with different molecules
 
@@ -307,7 +307,7 @@ def run_expflow_wf(expflow_wf: dict,  name_tag='', exp_params=None, **kwargs):
     for i, expflow_exp in enumerate(reversed(expflow_wf.get("experiments", []))):
         idx = len(expflow_wf.get("experiments", [])) - i
         experiment = EF2Experiment(expflow_exp, "Robotics", fw_parents=[f10], data_type=kwargs.get('data_type', 'cv'),
-                                   exp_name="exp{:02d}".format(idx), wflow_name=wflow_name,  priority=i+2)
+                                   exp_name="exp{:02d}".format(idx), wflow_name=wflow_name, priority=i + 2)
         fws.extend(experiment.fireworks)
         robot_experiments.extend(experiment.end_exps)
         print("------- EXPERIMENT {:02d} ADDED -------".format(idx))

@@ -28,6 +28,7 @@ FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all childeren Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
+RETURN_EXTRACTED_SOLN = False   # Return solution extracted via pipette after measurement made.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"

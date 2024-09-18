@@ -144,6 +144,15 @@ class EF2Experiment(ProcessExpFlowObj):
             next_nonP_tasks = [t for t in self.workflow[i+1:] if "process" not in t.name]
             next_nonP = next_nonP_tasks[0] if next_nonP_tasks else ""
 
+
+            # If a dispense liquid action dispense 0 volume, skip all remaining tasks.
+            if EXIT_ZERO_VOLUME and task.name == "transfer_liquid":
+                volumes = [float(p.value) for p in task.parameters if p.description=="volume"]
+                if not sum(volumes):
+                    warnings.warn(f"Action {task.name} dispenses 0 volume. Because setting EXIT_ZERO_VOLUME is True, "
+                                  f"all remaining tasks will be skipped.")
+                    break
+
             # Set up task clusters based on task types
             if "process" in task.name or "rinse" in task.name:
                 # Make old Fireworks for processing or rinse jobs
@@ -330,6 +339,6 @@ if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
     expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
     expflow_exp = loadfn(expflow_file)
-    experiment = EF2Experiment(expflow_exp.get("experiments")[0], "Robotics", data_type='cv')
+    experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
     tc = experiment.task_clusters
     # run_expflow_wf(expflow_exp)

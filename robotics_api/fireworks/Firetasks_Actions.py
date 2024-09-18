@@ -181,9 +181,6 @@ class MeasureDensity(RoboticsBase):
         # Get final mass
         final_mass = bal_station.weigh(self.exp_vial)
 
-        # Discard pipetted solution
-        pipette_station.pipette(volume=0)
-
         # Calculate solution density
         extracted_mass = initial_mass - final_mass
         raw_density = f"{extracted_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
@@ -192,8 +189,14 @@ class MeasureDensity(RoboticsBase):
         print("--> SOLUTION DENSITY: ", soln_density)
         self.metadata.update({"soln_density": soln_density})
 
-        # Update vial contents
-        self.exp_vial.extract_soln(extracted_mass=extracted_mass)
+        if RETURN_EXTRACTED_SOLN:
+            # Return extracted solution
+            pipette_station.pipette(volume=0, vial=self.exp_vial)
+        else:
+            # Discard extracted solution
+            pipette_station.pipette(volume=0)
+            # Update vial contents
+            self.exp_vial.extract_soln(extracted_mass=extracted_mass)
 
         return FWAction(update_spec=self.updated_specs())
 

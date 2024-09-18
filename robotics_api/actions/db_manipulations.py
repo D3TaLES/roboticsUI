@@ -180,7 +180,6 @@ class VialStatus(RobotStatusDB):
             self.insert(self.id, override_lists=True, instance={
                 "vial_content": new_vial_content,
             })
-            self.update_status(None, "weight")
             print(f"Successfully extracted {extract_perc*100:.2f}% of the mass from vial {self}.")
 
 

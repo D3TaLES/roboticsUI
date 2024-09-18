@@ -4,8 +4,8 @@ import itertools
 from pathlib import Path
 
 shift_values = {
-    "x": -0.007,
-    "y": -0.015,
+    "x": -0.006,
+    "y": -0.001,
     "z": 0,
     "thetaX": 0,
     "thetaY": 0,
@@ -13,7 +13,7 @@ shift_values = {
 }
 
 old_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240828"
-new_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240911"
+new_snapshots = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api" / "snapshots" / "snaps_20240917"
 os.makedirs(new_snapshots, exist_ok=True)
 
 for snapshot in os.listdir(old_snapshots):

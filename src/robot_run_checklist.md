@@ -16,11 +16,13 @@
   * Instruments
   * Balance
   * Stir plate (turn the rotation rate to desired value)
+
 * Prepare materials:
   * Measure and dispense solids into experiment vials
   * Place stir bars in experiment vials.
   * Bubble argon in solvent
   * Fill rinsing vials
+ 
 * Prepare Stations
   * Flush liquid dispensing tubes with 8 mL solution
   * Set all electrodes
@@ -28,9 +30,12 @@
     * Check secure connections for all electrodes
     * **For conductivity probe**, soak in DI water for 15 min.
   * Set temperature probe
+  * Place dispensing waste beaker below pipette. 
   * Set all vials (make sure they are uncapped)
+  
+* Ensure any necessary calibration workflows have been completed. If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
+
 * Prepare Software
-  * Ensure any necessary calibration workflows have been completed.
   * Check your {ref}`settings:settings` in settings.py!
   * Launch Fireworks WebGUI (through {ref}`command line or Robotics App <desktop_app:monitoring workflows with FireWorks WebGUI>`)
     > If managing workflows through the command line, be sure to {ref}`installation:activate environment` in any new terminal.   

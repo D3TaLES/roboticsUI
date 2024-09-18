@@ -335,6 +335,10 @@ class FinishPotentiostat(RoboticsBase):
             if active_vial.current_location == potentiostat.id:
                 print(f"COLLECTING VIAL {active_vial} FROM {potentiostat}")
                 self.success += active_vial.retrieve()
+
+                # Always return home solvent rinse vials.
+                if vial_id.startswith("S_"):
+                    active_vial.place_home()
             else:
                 print(f"Active vial {active_vial} has already been collected from {potentiostat}")
 

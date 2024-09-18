@@ -1,4 +1,5 @@
 import pint
+import math
 import serial
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
@@ -461,6 +462,7 @@ class VialMove(VialStatus):
         if station.exists:
             station.update_content(self.id)
             station.update_available(False)
+            print(f"Warning! Station {position} not found! Station content not updated!")
         print(f"Successfully updated vial {self} to position {position}")
 
     @staticmethod
@@ -1241,6 +1243,7 @@ class PotentiostatStation(StationStatus):
         ureg = pint.UnitRegistry()
         voltages = voltage_sequence.split(',')
         voltage_units = ureg(voltages[-1]).units
+        print(voltage_units)
         for i, v in enumerate(voltages):
             v_unit = "{}{}".format(v, voltage_units) if v.replace(".", "").replace("-", "").strip(
                 " ").isnumeric() else v
@@ -1318,6 +1321,7 @@ class CVPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CV experiment.
         """
+        voltage_sequence = voltage_sequence or VOLTAGE_SEQUENCE
         sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
         sens = unit_conversion(sens or CV_SENSITIVITY, default_unit="A/V")
         if not RUN_POTENT:
@@ -1349,7 +1353,7 @@ class CVPotentiostatStation(PotentiostatStation):
             volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
             nSweeps = math.ceil((len(volts) - 2) / 2)
             print("N_SWEEPS: ", nSweeps)
-            sr = unit_conversion(scan_rate, default_unit="V/s")
+            sr = unit_conversion(scan_rate or CV_SCAN_RATE, default_unit="V/s")
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)

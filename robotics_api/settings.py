@@ -14,7 +14,7 @@ Copyright 2024, University of Kentucky
 RUN_POTENT = False
 DISPENSE = False
 STIR = False
-WEIGH = False
+WEIGH = True
 PIPETTE = False
 RUN_ROBOT = False
 MOVE_ELEVATORS = True
@@ -60,6 +60,8 @@ POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
 IR_COMP = False  # Perform IR Compensation
 
 # CV Default Settings
+CV_SCAN_RATE = 0.01  # V/s
+VOLTAGE_SEQUENCE = "0, 0.7, 0V"
 CV_SAMPLE_INTERVAL = 0.01  # Volts
 CV_SENSITIVITY = 1e-6  # A/V, current sensitivity
 CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut

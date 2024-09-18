@@ -1,8 +1,11 @@
 import pint
+import warnings
+import numpy as np
 from datetime import datetime
-from d3tales_api.Processors.parser_echem import *
 from robotics_api.settings import *
+from robotics_api.utils.base_utils import unit_conversion
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
+from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA
 
 
 def collection_dict(coll_data: list):
@@ -45,6 +48,10 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
     if not soln_density:
         warnings.warn("No solution density provided. Using reagent density instead...this may not be accurate. ")
         soln_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
+
+    print("SOLUTE: ", solute_masses)
+    print("SOLV: ", solv_amounts)
+    print("DENSITY: ", soln_density)
     ureg = pint.UnitRegistry()
     solute_mass = sum([ureg(u) for u in solute_masses])
     solv_amt = sum([ureg(u) for u in solv_amounts])
@@ -54,14 +61,17 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
         total_mols = 0
         for reagent in vial_content:
             r_mw = ureg(f"{ReagentStatus(_id=reagent['reagent_uuid']).molecular_weight}g/mol")
-            r_mass = reagent.get["amount"]
+            r_mass = ureg(reagent["amount"])
             total_mols += r_mass/r_mw
         x = solute_mols / total_mols
+        print(f"MOL FRACTION: {x}")
         return x.magnitude
     else:
-        volume_L = unit_conversion(solv_amt, default_unit="L", density=soln_density)
+        print(solv_amt, solute_mass)
+        volume_L = unit_conversion(solv_amt + solute_mass, default_unit="L", density=soln_density)
         volume = ureg(f"{volume_L}L")
         concentration = solute_mass / solute_mw / volume
+        print(f"CONCENTRATION: {concentration}")
         return "{}{}".format(round(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 

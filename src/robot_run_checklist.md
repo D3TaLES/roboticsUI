@@ -36,6 +36,7 @@
 * Ensure any necessary calibration workflows have been completed. If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
 
 * Prepare Software
+  * Check that the CHI software is set to produce IUPAC convention CV plots. 
   * Check your {ref}`settings:settings` in settings.py!
   * Launch Fireworks WebGUI (through {ref}`command line or Robotics App <desktop_app:monitoring workflows with FireWorks WebGUI>`)
     > If managing workflows through the command line, be sure to {ref}`installation:activate environment` in any new terminal.   

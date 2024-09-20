@@ -10,14 +10,8 @@ def check_usb():
 
 def vial_col_test(col):
     # Move a vial to and from every vial home location in column 'col' in the vial holding grid station.
-    snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    get_place_vial(VialMove(_id=col + "_04").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
-    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
-    get_place_vial(VialMove(_id=col + "_03").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
-    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
-    get_place_vial(VialMove(_id=col + "_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
-    get_place_vial(VialMove(_id=col + "_01").home_snapshot, action_type='place', raise_error=True, raise_amount=0.1)
-    snapshot_move(snapshot_file=SNAPSHOT_HOME)
+    # TODO make new
+    return
 
 
 def reset_stations(end_home=False):
@@ -70,7 +64,7 @@ if __name__ == "__main__":
     # vial_col_test("B")
     # test_vial.place_home()
     test_vial.retrieve()
-    # get_place_vial(VialMove(_id="S_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)
+    # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 
     # POTENTIOSTAT TESTING
@@ -91,7 +85,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.perform_stir(test_vial, stir_time=30)
+    # test_stir.stir_vial(test_vial, stir_time=30)
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)

@@ -155,7 +155,7 @@ class Stir(RoboticsBase):
 
         if stir_time:
             stir_station = StirStation(StationStatus().get_first_available("stir"))
-            self.success += stir_station.perform_stir(self.exp_vial, stir_time=stir_time)
+            self.success &= stir_station.stir_vial(self.exp_vial, stir_time=stir_time)
         else:
             print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")
 
@@ -228,7 +228,7 @@ class SetupRinsePotentiostat(RoboticsBase):
             warnings.warn(f"Station {potentiostat} not available. Fizzling rinse.")
             return self.self_fizzle()
 
-        self.success += potentiostat.place_vial(action_vial)
+        self.success &= potentiostat.place_vial(action_vial)
         self.metadata.update({"active_vial_id": action_vial.id})
 
         return FWAction(update_spec=self.updated_specs())
@@ -297,7 +297,7 @@ class SetupPotentiostat(RoboticsBase):
                 self.exp_vial.place_home()
                 return self.self_fizzle()
             potentiostat.update_experiment(self.exp_name)
-            self.success += potentiostat.place_vial(self.exp_vial)
+            self.success &= potentiostat.place_vial(self.exp_vial)
         print("POTENTIOSTAT: ", potentiostat)
 
         # Setup metadata
@@ -337,7 +337,7 @@ class FinishPotentiostat(RoboticsBase):
             active_vial = VialMove(_id=vial_id)
             if active_vial.current_location == potentiostat.id:
                 print(f"COLLECTING VIAL {active_vial} FROM {potentiostat}")
-                self.success += active_vial.retrieve()
+                self.success &= active_vial.retrieve()
 
                 # Always return home solvent rinse vials.
                 if vial_id.startswith("S_"):
@@ -375,7 +375,7 @@ class BenchmarkCV(RoboticsBase):
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
-        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
+        self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
@@ -412,7 +412,7 @@ class RunCV(RoboticsBase):
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
-        self.success += potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
+        self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
@@ -449,7 +449,7 @@ class RunCA(RoboticsBase):
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
-        self.success += potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
+        self.success &= potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 

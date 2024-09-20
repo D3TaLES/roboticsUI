@@ -586,5 +586,5 @@ class EndWorkflow(FiretaskBase):
         if robot_content:
             VialMove(_id=robot_content).place_home()
         success = snapshot_move(SNAPSHOT_HOME)
-        success += snapshot_move(SNAPSHOT_END_HOME)
+        success &= snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

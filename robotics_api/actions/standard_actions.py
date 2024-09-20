@@ -3,7 +3,9 @@ import math
 import serial
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
+from robotics_api.utils.base_utils import *
 from robotics_api.actions.db_manipulations import *
+
 
 
 class VialMove(VialStatus):
@@ -25,7 +27,7 @@ class VialMove(VialStatus):
     """
 
 
-    def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
+    def __init__(self, _id=None, raise_amount: float = -0.1, **kwargs):
         """
         Initializes a VialMove instance with an optional vial ID and raise amount.
 
@@ -42,13 +44,12 @@ class VialMove(VialStatus):
         if not self.id:
             raise Exception("To move a vial, a vial ID or reagent UUID or experiment name must be provided.")
 
-    def retrieve(self, raise_error=True, **move_kwargs):
+    def retrieve(self, raise_error=True):
         """
         Retrieves the vial from its current location, managing robot availability and various stations.
 
         Args:
             raise_error (bool): Whether to raise an error if the retrieval fails (default is True).
-            **move_kwargs: Additional keyword arguments for controlling movement behavior.
 
         Returns:
             bool: True if the vial was successfully retrieved, False otherwise.
@@ -56,7 +57,7 @@ class VialMove(VialStatus):
         Raises:
             Exception: If the vial cannot be retrieved and raise_error is True.
         """
-        success = False
+        success = True
         if self.current_location == "robot_grip":
             if StationStatus("robot_grip").current_content == self.id:
                 return True
@@ -77,151 +78,24 @@ class VialMove(VialStatus):
             print("Robot is available")
             if self.current_location == "home":
                 print("Retrieving vial from home...")
-                success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-                success += get_place_vial(self.home_snapshot, action_type='get', raise_error=raise_error,
-                                          raise_amount=self.raise_amount, **move_kwargs)
-                success += snapshot_move(SNAPSHOT_HOME)
+                success &= get_place_vial(self, action_type='get', raise_error=raise_error)
             elif "potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
-                success += station._retrieve_vial(self)
-                success += snapshot_move(SNAPSHOT_HOME)
+                success &= station._retrieve_vial(self)
             elif "balance" in self.current_location:
                 print(f"Retrieving vial from balance station {self.current_location}...")
                 station = BalanceStation(self.current_location)
-                success += station._retrieve_vial(self)
+                success &= station._retrieve_vial(self)
             else:
-                success += get_place_vial(self.current_location, action_type='get', raise_error=raise_error,
-                                          raise_amount=self.raise_amount, **move_kwargs)
-                success += snapshot_move(SNAPSHOT_HOME)
+                success &= False
+
             if success:
                 self.update_position("robot_grip")
 
         if raise_error and not success:
             raise Exception(f"Vial {self.id} was not successfully retrieved. Vial {self.id} is located "
                             f"at {self.current_location}. ")
-        return success
-
-    def go_to_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
-        """
-        Moves the vial to the specified target snapshot location.
-
-        Args:
-            target_location (str): The target snapshot location to move the vial to.
-            raise_error (bool): Whether to raise an error if the movement fails (default is True).
-            **move_kwargs: Additional keyword arguments for controlling movement behavior.
-
-        Returns:
-            bool: True if the vial was successfully moved, False otherwise.
-
-        Raises:
-            Exception: If the movement fails and raise_error is True.
-        """
-        self.retrieve(raise_error=True)
-        # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
-        success = get_place_vial(target_location, action_type='place', release_vial=False,
-                                 raise_error=raise_error, **move_kwargs)
-
-        if raise_error and not success:
-            raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
-
-        return success
-
-    def place_snapshot(self, target_location: str, raise_error=True, **move_kwargs):
-        """
-        Places the vial at the specified snapshot location.
-
-        Args:
-            target_location (str): The target snapshot location to place the vial.
-            raise_error (bool): Whether to raise an error if the placement fails (default is True).
-            **move_kwargs: Additional keyword arguments for controlling movement behavior.
-
-        Returns:
-            bool: True if the vial was successfully placed, False otherwise.
-
-        Raises:
-            Exception: If the placement fails and raise_error is True.
-        """
-        self.retrieve(raise_error=True)
-        # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-        move_kwargs["raise_amount"] = move_kwargs.get("raise_amount", self.raise_amount)
-        success = get_place_vial(target_location, action_type='place',
-                                 raise_error=raise_error, **move_kwargs)
-        # success += snapshot_move(SNAPSHOT_HOME)
-        self.update_position(target_location)
-
-        if raise_error and not success:
-            raise Exception(f"Vial {self.id} was not successfully moved to {target_location}.")
-
-        StationStatus("robot_grip").empty() if success else None
-        return success
-
-    def go_to_station(self, station: StationStatus, raise_error=True):
-        """
-        Moves the vial to the specified station.
-
-        Args:
-            station (StationStatus): The station to move the vial to.
-            raise_error (bool): Whether to raise an error if the movement fails (default is True).
-
-        Returns:
-            bool: True if the vial was successfully moved, False otherwise.
-
-        Raises:
-            Exception: If the movement fails and raise_error is True.
-        """
-        self.retrieve(raise_error=True)
-
-        print("TEST ", self.current_location, station)
-        success = True if station.current_content == self.id else False
-        if station.available:
-            # success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-            print("LOCATION: ", station.location_snapshot)
-            success += get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
-                                      raise_error=raise_error, leave=False, raise_amount=station.raise_amount,
-                                      pre_position_file=station.pre_location_snapshot)
-            station.update_available(False)
-            station.update_content(self.id)
-
-        if raise_error and not success:
-            raise Exception(f"Vial {self} was not successfully moved to {station}.")
-
-        return success
-
-    @staticmethod
-    def leave_station(station: StationStatus, raise_error=True):
-        """
-        Leaves the station by placing the vial back in the robot grip.
-
-        Args:
-            station (StationStatus): The station from which to leave.
-            raise_error (bool): Whether to raise an error if the leave action fails (default is True).
-
-        Returns:
-            bool: True if the vial was successfully placed back, False otherwise.
-        """
-        success = get_place_vial(station.location_snapshot, action_type='place', release_vial=False,
-                                 raise_error=raise_error, go=False, raise_amount=station.raise_amount)
-        station.empty()
-        return success
-
-    def place_home(self, **kwargs):
-        """
-        Places the vial back in its home position.
-
-        Args:
-            **kwargs: Additional keyword arguments for controlling the placement behavior.
-
-        Returns:
-            bool: True if the vial was successfully placed at home, False otherwise.
-        """
-        if self.current_location == "home":
-            print(f"Vial {self} is already at home.")
-            return True
-        snapshot_move(SNAPSHOT_HOME)
-        success = self.place_snapshot(self.home_snapshot, **kwargs)
-        self.update_position("home")
         return success
 
     def update_position(self, position):
@@ -242,10 +116,116 @@ class VialMove(VialStatus):
             print(f"Warning! Station {position} not found! Station content not updated!")
         print(f"Successfully updated vial {self} to position {position}")
 
+    def place_home(self, raise_error=True):
+        """
+        Places the vial back in its home position.
+
+        Args:
+            raise_error (bool): Whether to raise an error if the retrieval fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed at home, False otherwise.
+        """
+        success = self.retrieve(raise_error=True)
+
+        if self.current_location == "home":
+            print(f"Vial {self} is already at home.")
+            return True
+        success &= get_place_vial(self, action_type='place', raise_error=raise_error)
+        if raise_error and not success:
+            raise Exception(f"Vial {self} was not successfully moved home.")
+
+        if success:
+            self.update_position("home")
+            StationStatus("robot_grip").empty()
+
+        return success
+
+    def place_station(self, station: StationStatus, raise_error=True):
+        """
+        Place the vial at the specified station.
+
+        Args:
+            station (StationStatus): The station to move the vial to.
+            raise_error (bool): Whether to raise an error if the movement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully moved, False otherwise.
+
+        Raises:
+            Exception: If the movement fails and raise_error is True.
+        """
+        success = self.retrieve(raise_error=True)
+
+        if station.current_content == self.id:
+            success &= True
+        elif station.available:
+            success &= get_place_vial(station, action_type='place', raise_error=raise_error)
+        else:
+            success &= False
+
+        if raise_error and not success:
+            raise Exception(f"Vial {self} was not successfully moved to {station}.")
+
+
+        if success:
+            self.update_position(station.id)
+            StationStatus("robot_grip").empty()
+
+        return success
+
+    def go_to_station(self, station: StationStatus, raise_error=True):
+        """
+        Moves the vial to the specified station.
+
+        Args:
+            station (StationStatus): The station to move the vial to.
+            raise_error (bool): Whether to raise an error if the movement fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully moved, False otherwise.
+
+        Raises:
+            Exception: If the movement fails and raise_error is True.
+        """
+        success = self.retrieve(raise_error=True)
+
+        if station.current_content == self.id:
+            success &= True
+        elif station.available:
+            print("LOCATION: ", station.pre_location_snapshot)
+            success &= get_place_vial(station, action_type='place', release_vial=False, leave=False,
+                                      raise_error=raise_error)
+        else:
+            success &= False
+
+        if raise_error and not success:
+            raise Exception(f"Vial {self} was not successfully moved to {station}.")
+
+        self.update_position(station.id) if success else None
+
+        return success
+
+    @staticmethod
+    def leave_station(station: StationStatus, raise_error=True):
+        """
+        Leaves the station by placing the vial back in the robot grip.
+
+        Args:
+            station (StationStatus): The station from which to leave.
+            raise_error (bool): Whether to raise an error if the leave action fails (default is True).
+
+        Returns:
+            bool: True if the vial was successfully placed back, False otherwise.
+        """
+        success = get_place_vial(station, go=False, release_vial=False, raise_error=raise_error)
+        station.empty()
+        return success
+
     @staticmethod
     def robot_available():
         """
-        Checks if the robot grip is available for vial movement.
+        Checks if the robot grip is available.
 
         Returns:
             bool: True if the robot grip is available, False otherwise.
@@ -259,7 +239,6 @@ class LiquidStation(StationStatus):
 
     Attributes:
         raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.04).
-        pre_location_snapshot (str): Snapshot of the pre-movement location (default is None).
         serial_name (str): The serial name of the station used for communication with hardware.
 
     Methods:
@@ -271,7 +250,7 @@ class LiquidStation(StationStatus):
         dispense_mass(vial, volume, raise_error=True): Dispenses a specified volume of liquid into a vial, weighing before and after to update the vial's mass.
     """
 
-    def __init__(self, _id, raise_amount=-0.04, **kwargs):
+    def __init__(self, _id, raise_amount=0.04, **kwargs):
         """
         Initializes a LiquidStation instance with an ID and raise amount.
 
@@ -289,7 +268,6 @@ class LiquidStation(StationStatus):
         if self.type != "solvent":
             raise Exception(f"Station {self.id} is not a liquid.")
         self.raise_amount = raise_amount
-        self.pre_location_snapshot = None
         self.serial_name = "L{:01d}".format(int(self.id.split("_")[-1]))
 
     @property
@@ -422,7 +400,7 @@ class PipetteStation(StationStatus):
         place_vial(vial, raise_error=True): Places a vial at the pipette station.
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
-    def __init__(self, _id, raise_amount=-0.08, **kwargs):
+    def __init__(self, _id, raise_amount=0.08, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -440,7 +418,6 @@ class PipetteStation(StationStatus):
         if self.type != "pipette":
             raise Exception(f"Station {self.id} is not a pipette.")
         self.raise_amount = raise_amount
-        # self.pre_location_snapshot = None
         self.serial_name = "P{:01d}".format(int(self.id.split("_")[-1]))
 
     def place_vial(self, vial: VialMove, raise_error=True):
@@ -494,14 +471,13 @@ class BalanceStation(StationStatus):
 
     Methods:
         place_vial(vial, raise_error=True, **move_kwargs): Places a vial on the balance station.
-        _retrieve_vial(vial, **move_kwargs): Retrieves a vial from the balance station.
         existing_weight(vial, raise_error=True): Returns the current weight of a vial if available, or weighs the vial.
         weigh(vial, raise_error=True): Weighs a vial by taring the balance and placing the vial.
         read_mass(): Reads the mass from the balance via serial communication.
         tare(): Tares the balance.
         _send_command(write_txt=None, read_response=False): Sends a command to the balance and optionally reads the response.
     """
-    def __init__(self, _id, raise_amount=0.05, **kwargs):
+    def __init__(self, _id, raise_amount=-0.05, **kwargs):
         """
         Initializes a BalanceStation instance with an ID and raise amount.
 
@@ -519,7 +495,6 @@ class BalanceStation(StationStatus):
         if self.type != "balance":
             raise Exception(f"Station {self.id} is not a balance.")
         self.raise_amount = raise_amount
-        self.pre_location_snapshot = None
         self.serial_name = "B_{:02d}".format(int(self.id.split("_")[-1]))
         self.p_address = BALANCE_PORT
 
@@ -535,24 +510,15 @@ class BalanceStation(StationStatus):
         Returns:
             bool: True if the vial was successfully placed, False otherwise.
         """
-        vial_id = vial if isinstance(vial, str) else vial.id
-        if self.current_content == vial_id and vial.current_location == self.id:
-            return True
+        vial = vial if isinstance(vial, VialMove) else VialMove(vial)
+        return vial.place_station(self.id, raise_error=raise_error)
 
-        if self.available:
-            vial.place_snapshot(self.location_snapshot, raise_error=raise_error,
-                                pre_position_file=self.pre_location_snapshot,
-                                raise_amount=self.raise_amount, **move_kwargs)
-            vial.update_position(self.id)
-            return True
-
-    def _retrieve_vial(self, vial: VialMove, **move_kwargs):
+    def _retrieve_vial(self, vial: VialMove):
         """
         Retrieves a vial from the balance station.
 
         Args:
             vial (VialMove): The vial to be retrieved.
-            **move_kwargs: Additional movement options.
 
         Returns:
             bool: True if the vial was successfully retrieved, False otherwise.
@@ -567,11 +533,11 @@ class BalanceStation(StationStatus):
         if not vial.robot_available():
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
                             f"because vial robot arm is not available.")
-        success = get_place_vial(self.location_snapshot, action_type='get',
-                                 pre_position_file=self.pre_location_snapshot,
-                                 raise_amount=self.raise_amount, **move_kwargs)
-        vial.update_position("robot_grip")
-        self.empty()
+        success = get_place_vial(self, action_type='get')
+        if success:
+            vial.update_position("robot_grip")
+            self.empty()
+
         return success
 
     def existing_weight(self, vial: VialMove, raise_error=True):
@@ -696,9 +662,9 @@ class StirStation(StationStatus):
     Methods:
         place_vial(vial, raise_error=True): Places a vial on the stir station.
         stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
-        perform_stir(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
+        stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
-    def __init__(self, _id, raise_amount=0.1, **kwargs):
+    def __init__(self, _id, raise_amount=-0.1, **kwargs):
         """
         Initializes a StirStation instance with an ID and raise amount.
 
@@ -715,7 +681,6 @@ class StirStation(StationStatus):
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
         if self.type != "stir":
             raise Exception(f"Station {self.id} is not a potentiostat.")
-        self.pre_location_snapshot = None
         self.serial_name = "S{:1d}".format(int(self.id.split("_")[-1]))
         self.raise_amount = raise_amount
 
@@ -751,24 +716,17 @@ class StirStation(StationStatus):
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
-            success = False
-            success += send_arduino_cmd(self.serial_name, 1) if STIR else True
+            success = True
+            success &= send_arduino_cmd(self.serial_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             start_time = time.time()
             time.sleep(10)
             end_time = time.time()
+            # TODO move during stirring
             while (end_time - start_time) < seconds:
-                # Move vial around stir plate center
-                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="x"))
-                time.sleep(move_sleep)
-                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=perturb_amount, axis="y"))
-                time.sleep(move_sleep)
-                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=-perturb_amount, axis="x"))
-                time.sleep(move_sleep)
-                snapshot_move(perturbed_snapshot(self.location_snapshot, perturb_amount=-perturb_amount, axis="y"))
                 time.sleep(move_sleep)
                 end_time = time.time()
-            success += send_arduino_cmd(self.serial_name, 0) if STIR else True
+            success &= send_arduino_cmd(self.serial_name, 0) if STIR else True
             return success
 
         # If stir_time not provided, default to implementing stir_cmd
@@ -778,7 +736,7 @@ class StirStation(StationStatus):
             raise TypeError("Arg 'stir' must be 11 or 10, OR it must be 'up' or 'down'.")
         return send_arduino_cmd(self.serial_name, stir_cmd)
 
-    def perform_stir(self, vial: VialMove, stir_time=None, **kwargs):
+    def stir_vial(self, vial: VialMove, stir_time=None, **kwargs):
         """
         Places a vial on the station, stirs it, and retrieves it.
 
@@ -791,8 +749,8 @@ class StirStation(StationStatus):
             bool: True if the vial was successfully stirred and retrieved, False otherwise.
         """
         success = vial.go_to_station(self, **kwargs)
-        success += self.stir(stir_time=stir_time)
-        success += vial.leave_station(self)
+        success &= self.stir(stir_time=stir_time)
+        success &= vial.leave_station(self)
         return success
 
 
@@ -814,7 +772,7 @@ class PotentiostatStation(StationStatus):
         move_elevator(endpoint, raise_error=True): Moves the elevator to a specified position.
         get_temperature(): Retrieves the temperature associated with this station.
     """
-    def __init__(self, _id, raise_amount=0.028, **kwargs):
+    def __init__(self, _id, raise_amount=-0.028, **kwargs):
         """
         Initializes a PotentiostatStation instance with an ID and raise amount.
 
@@ -896,13 +854,12 @@ class PotentiostatStation(StationStatus):
             if self.move_elevator(endpoint="down"):
                 return True
 
-    def _retrieve_vial(self, vial: VialMove, **move_kwargs):
+    def _retrieve_vial(self, vial: VialMove):
         """
         Retrieves the vial from the potentiostat station.
 
         Args:
             vial (VialMove): The vial to retrieve.
-            **move_kwargs: Additional arguments for vial movement.
 
         Raises:
             Exception: If the vial is not located in the potentiostat.
@@ -915,11 +872,11 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
                             f"because vial {vial_id} is not located in this potentiostat")
         success = self.end_pot()
-        success += snapshot_move(SNAPSHOT_HOME)
-        success += get_place_vial(self.location_snapshot, action_type='get',
-                                  pre_position_file=self.pre_location_snapshot,
-                                  raise_amount=self.raise_amount, **move_kwargs)
-        self.empty()
+        success &= snapshot_move(SNAPSHOT_HOME)
+        success &= get_place_vial(self, action_type='get')
+        if success:
+            vial.update_position("robot_grip")
+            self.empty()
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
@@ -937,30 +894,14 @@ class PotentiostatStation(StationStatus):
         Returns:
             bool: True if the vial is successfully placed, False otherwise.
         """
-        vial_id = vial if isinstance(vial, str) else vial.id
-        if self.current_content == vial_id and vial.current_location == self.id:
-            return True
-
-        success = False
-        if not vial.current_location == "robot_grip":
-            success = vial.retrieve(raise_error=True)
-
+        vial = vial if isinstance(vial, VialMove) else VialMove(vial)
         if self.available:
-            success = snapshot_move(SNAPSHOT_HOME)  # Start at home
-            success += get_place_vial(self.location_snapshot, action_type='place',
-                                      pre_position_file=self.pre_location_snapshot,
-                                      raise_amount=self.raise_amount, raise_error=raise_error, **move_kwargs)
-            vial.update_position(self.id)
-            success += snapshot_move(SNAPSHOT_HOME)
-        else:
-            success += False
-            print(f"Station {self} not available.")
+            success = True
+            if self.state == "up":
+                success &= self.move_elevator(endpoint="down")
+            success &= vial.place_station(self.id, raise_error=raise_error)
 
-        if raise_error and not success:
-            raise Exception(f"Vial {vial} was not successfully moved to {self}.")
-
-        StationStatus("robot_grip").empty() if success else None
-        return success
+            return success
 
     def move_elevator(self, endpoint="down", raise_error=True):
         """
@@ -1065,7 +1006,7 @@ class CVPotentiostatStation(PotentiostatStation):
         run_ircomp_test(data_path, e_ini=0, low_freq=None, high_freq=None, amplitude=None, sens=None):
             Runs an iR compensation test to determine the solution resistance.
     """
-    def __init__(self, _id, raise_amount=0.028, **kwargs):
+    def __init__(self, _id, raise_amount=-0.028, **kwargs):
         """
         Initializes a CVPotentiostatStation instance.
 
@@ -1203,7 +1144,7 @@ class CAPotentiostatStation(PotentiostatStation):
                volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
             Runs a CA experiment and saves the data.
     """
-    def __init__(self, _id, raise_amount=0.028, **kwargs):
+    def __init__(self, _id, raise_amount=-0.028, **kwargs):
         """
         Initializes a CAPotentiostatStation instance.
 

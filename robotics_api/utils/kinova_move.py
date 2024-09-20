@@ -1,23 +1,20 @@
 import sys
 import json
 import time
-import serial
 import warnings
 import threading
 from argparse import Namespace
-
-from d3tales_api.Calculators.utils import dict2obj
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 
 from robotics_api.settings import *
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
+from robotics_api.utils.kinova_vision import move_to_station_qr
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
 VERBOSE = 1
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
 
 
 # Create closure to set an event after an END or an ABORT
@@ -39,34 +36,8 @@ def check_for_end_or_abort(e):
     return check
 
 
-def check_for_sequence_end_or_abort(e):
-    """
-    Return a closure checking for END or ABORT notifications on a sequence
 
-    Arguments:
-        e:  event to signal when the action is completed (will be set when an END or ABORT occurs)
-    """
-
-    def check(notification, e=e):
-        event_id = notification.event_identifier
-        task_id = notification.task_index
-        if event_id == Base_pb2.SEQUENCE_TASK_COMPLETED:
-            if VERBOSE > 3:
-                print("Sequence task {} completed".format(task_id))
-        elif event_id == Base_pb2.SEQUENCE_ABORTED:
-            if VERBOSE > 3:
-                print("Sequence aborted with error {}:{}".format(
-                    notification.abort_details, Base_pb2.SubErrorCodes.Name(notification.abort_details)))
-            e.set()
-        elif event_id == Base_pb2.SEQUENCE_COMPLETED:
-            if VERBOSE > 3:
-                print("Sequence completed.")
-            e.set()
-
-    return check
-
-
-def snapshot_move_angular(base, joint_angle_values):
+def snapshot_move_angular(base: BaseClient, joint_angle_values):
     if VERBOSE > 3:
         print("Starting angular action movement ...")
     action = Base_pb2.Action()
@@ -106,7 +77,7 @@ def snapshot_move_angular(base, joint_angle_values):
     return finished
 
 
-def snapshot_move_cartesian(base, coordinate_values):
+def snapshot_move_cartesian(base: BaseClient, coordinate_values: dict):
     if VERBOSE > 3:
         print("Starting Cartesian action movement ...")
     action = Base_pb2.Action()
@@ -151,14 +122,12 @@ def move_gripper(target_position=None):
     :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
     :return: bool, True if action a success
     """
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     finished = True
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create connection to the device and get therouter
+        # Create connection to the device and get the router
         with utilities.DeviceConnection.createUdpConnection(connector) as router_real_time:
             action = GripperMove(router, router_real_time, 2)
 
@@ -182,20 +151,86 @@ def move_gripper(target_position=None):
     return finished
 
 
-def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
-                  angle_error=0.2, position_error=0.1):
+def move_hand(linear_x: float = 0, linear_y: float = 0, linear_z: float = 0,
+              angular_x: float = 0, angular_y: float = 0, angular_z: float = 0):
+    """
+    Function to move the robotic hand by linear and angular x, y, and z
+
+    Args:
+        linear_x (float): increment of linear x movement
+        linear_y (float): increment of linear y movement
+        linear_z (float): increment of linear z movement
+        angular_x (float): increment of angular x movement
+        angular_y (float): increment of angular y movement
+        angular_z (float): increment of angular z movement
+
+    Returns: boolean indicating success of action
+
+    """
+    # Create connection to the device and get the router
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+
+        command = Base_pb2.TwistCommand()
+        command.reference_frame = Base_pb2.CARTESIAN_REFERENCE_FRAME_TOOL
+        command.duration = 0
+
+        twist = command.twist
+        twist.linear_x = linear_x
+        twist.linear_y = linear_y
+        twist.linear_z = linear_z
+        twist.angular_x = angular_x
+        twist.angular_y = angular_y
+        twist.angular_z = angular_z
+
+        try:
+            e = threading.Event()
+            notification_handle = base.OnNotificationActionTopic(
+                check_for_end_or_abort(e),
+                Base_pb2.NotificationOptions()
+            )
+
+            if VERBOSE > 2:
+                print("Executing twist action")
+            base.SendTwistCommand(command)
+
+            if VERBOSE > 2:
+                print("Waiting for twist to finish ...")
+            finished = e.wait(TIMEOUT_DURATION)
+            base.Unsubscribe(notification_handle)
+
+        except Exception:
+            finished = False
+
+        if VERBOSE > 2:
+            print("Stopping the robot...")
+        base.Stop()
+        time.sleep(1)
+
+    return finished
+
+
+def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_error: bool = True,
+                  angle_error: float = 0.2, position_error: float = 0.1):
     """
 
     :param snapshot_file: str, path to snapshot file (JSON)
     :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
+    :param raise_error:
+    :param angle_error:
+    :param position_error:
     :return: bool, True if movement was a success
+
+    Args:
+        angle_error:
+        position_error:
     """
     if not RUN_ROBOT:
         warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
         return True
 
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
     finished = True
 
     # Create connection to the device and get the router
@@ -272,122 +307,7 @@ def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
     return finished
 
 
-def sequence_move(sequence_file):
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
-    finished = True
-
-    # Create connection to the device and get the router
-    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
-
-        # loads file
-        sequence_file = open(sequence_file, 'r')
-        # converts JSON to nested dictionary
-        sequence_file.dict = json.load(sequence_file)
-        sequence = dict2obj(sequence_file.dict["sequences"]["sequence"][0], master_obj=Base_pb2.Sequence)
-        print(dir(sequence.tasks))
-        sequence_file.close()
-
-        e = threading.Event()
-        notification_handle = base.OnNotificationSequenceInfoTopic(
-            check_for_sequence_end_or_abort(e),
-            Base_pb2.NotificationOptions()
-        )
-
-        print("Creating sequence on device and executing it")
-        handle_sequence = base.CreateSequence(sequence)
-        base.PlaySequence(handle_sequence)
-
-        if VERBOSE > 3:
-            print("Waiting for movement to finish ...")
-        finished = e.wait(TIMEOUT_DURATION)
-        base.Unsubscribe(notification_handle)
-
-    if not finished:
-        print("Timeout on action notification wait")
-    return finished
-
-    # Iterate through tasks
-    # tasks = sequence_file.dict["sequences"]["sequence"][0]["tasks"]
-    # print(tasks)
-    # for task in tasks:
-    #     if "reachJointAngles" in task["action"]:
-    #         # grabs the list of joint angle values
-    #         joint_angle_values = task["action"]["reachJointAngles"]["jointAngles"]["jointAngles"]
-    #         # Move Robot
-    #         finished += snapshot_move_angular(base, joint_angle_values)
-    #     elif "reachPose" in task["action"]:
-    #         # grabs the dictionary of coordinate values
-    #         coordinate_values = task["action"]["reachPose"]["targetPose"]
-    #         # Move Robot
-    #         finished += snapshot_move_cartesian(base, coordinate_values)
-    #     elif "sendGripperCommand" in task["action"]:
-    #         # grabs the dictionary of coordinate values
-    #         gripper_value = task["action"]["sendGripperCommand"]["gripper"]["finger"]["value"]
-    #         # Move Robot
-    #         finished += move_gripper(gripper_value)
-    #     else:
-    #         print("invalid action type")
-    #
-    # sequence_file.close()
-    #
-    # print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
-    # return finished
-
-
-def twist_hand(linear_x=0, linear_y=0, linear_z=0,
-               angular_x=0, angular_y=0, angular_z=0):
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
-    # Create connection to the device and get the router
-    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
-
-        command = Base_pb2.TwistCommand()
-        command.reference_frame = Base_pb2.CARTESIAN_REFERENCE_FRAME_TOOL
-        command.duration = 0
-
-        twist = command.twist
-        twist.linear_x = linear_x
-        twist.linear_y = linear_y
-        twist.linear_z = linear_z
-        twist.angular_x = angular_x
-        twist.angular_y = angular_y
-        twist.angular_z = angular_z
-
-        try:
-            e = threading.Event()
-            notification_handle = base.OnNotificationActionTopic(
-                check_for_end_or_abort(e),
-                Base_pb2.NotificationOptions()
-            )
-
-            if VERBOSE > 2:
-                print("Executing twist action")
-            base.SendTwistCommand(command)
-
-            if VERBOSE > 2:
-                print("Waiting for twist to finish ...")
-            finished = e.wait(TIMEOUT_DURATION)
-            base.Unsubscribe(notification_handle)
-
-        except Exception:
-            finished = False
-
-        if VERBOSE > 2:
-            print("Stopping the robot...")
-        base.Stop()
-        time.sleep(1)
-
-    return finished
-
-
-def perturbed_snapshot(snapshot_file, perturb_amount=PERTURB_AMOUNT, axis="z"):
+def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, axis="z"):
     """
     Creates a perturbed snapshot by modifying the specified axis position in the given snapshot file.
 
@@ -410,48 +330,17 @@ def perturbed_snapshot(snapshot_file, perturb_amount=PERTURB_AMOUNT, axis="z"):
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
-def _try_movement(snapshot_file, target_position=None, raise_error=True, error_msg=None):
-    """
-    Attempts to move the robot arm to the specified snapshot file. Retries if the initial movement fails.
-
-    Args:
-        snapshot_file (str): Path to the snapshot file.
-        target_position (str): Target position for the movement, if specified.
-        raise_error (bool): Whether to raise an error if the movement fails (default is True).
-        error_msg (str): Custom error message in case of failure.
-
-    Returns:
-        bool: True if the movement was successful, False otherwise.
-
-    Raises:
-        Exception: If the movement fails and raise_error is True.
-    """
-    success = snapshot_move(snapshot_file, target_position=target_position)
-    print("SNAPSHOT: ", snapshot_file)
-    if not success:
-        # If movement fails the first time, move to home then try again
-        print(f"Moving to snapshot {snapshot_file} failed the first time...trying to move to home...")
-        snapshot_move(SNAPSHOT_HOME)
-        success = snapshot_move(snapshot_file)
-        if (not success) and raise_error:
-            raise Exception(error_msg or f"Failed to move robot arm to snapshot {snapshot_file}.")
-    return success
-
-
-def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, raise_amount=0.0,
-                   release_vial=True, raise_error=True, go=True, leave=True):
+def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True):
     """
     Executes an action to get or place a vial using snapshot movements.
 
     Args:
-        snapshot_file (str): Path to the snapshot file for the target vial position.
+        station (StationStatus):
         action_type (str): Action type, either 'get' (to retrieve the vial) or 'place' (to place the vial).
-        pre_position_file (str): Path to a pre-position snapshot file (optional).
-        raise_amount (float): Amount to raise the robot arm above the target position (default is 0.0).
-        release_vial (bool): Whether to release the vial after placing (default is True).
-        raise_error (bool): Whether to raise an error if movement fails (default is True).
         go (bool): Whether to move to the snapshot file location (default is True).
         leave (bool): Whether to leave the snapshot file location after the action (default is True).
+        release_vial (bool): Whether to release the vial after placing (default is True).
+        raise_error (bool): Whether to raise an error if movement fails (default is True).
 
     Returns:
         bool: True if the action was successful, False otherwise.
@@ -459,41 +348,49 @@ def get_place_vial(snapshot_file, action_type="get", pre_position_file=None, rai
     Raises:
         Exception: If the movement fails and raise_error is True.
     """
-    snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
+    # Check if robot operation is enabled
+    if not RUN_ROBOT:
+        warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
+        return True
 
-    # Start open if getting a vial
-    success = snapshot_move(target_position='open') if action_type == "get" else True
+    destination_name = station.id
+    starting_snapshot = station.pre_location_snapshot
+    raise_amount = station.raise_amount
+
+    success = True
 
     if go:
-        # If pre-position, go there
-        if pre_position_file:
-            success += snapshot_move(pre_position_file)
-            if (not success) and raise_error:
-                raise Exception(f"Failed to move robot arm pre-position snapshot {pre_position_file} before target.")
+        # Start open if getting a vial
+        success &= snapshot_move(target_position='open') if action_type == "get" else True
+
+        # Go to starting_snapshot
+        success &= snapshot_move(starting_snapshot)
+        if (not success) and raise_error:
+            raise Exception(f"Failed to move robot arm pre-position snapshot {starting_snapshot} before {station}.")
 
         # Go to above target position before target
-        success += snapshot_move(snapshot_file_above)
-        print("ABOVE: ", snapshot_file_above)
+        success += move_to_station_qr(destination_name)
         if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to {raise_amount} above target before snapshot {snapshot_file}.")
+            raise Exception(f"Failed to move robot arm to the QR code for {station}.")
 
         # Go to target position
         target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
-        success += snapshot_move(snapshot_file, target_position=target)
+        success &= move_hand(linear_z=raise_amount)
+        success &= snapshot_move(target_position=target)
         if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to snapshot {snapshot_file}.")
+            raise Exception(f"Failed to move robot arm to snapshot {station}.")
 
     if leave:
-        # Go to above target position after target
-        success += snapshot_move(snapshot_file_above)
+        # Go to above target position above/below target
+        if raise_amount:
+            success &= move_hand(linear_z=-raise_amount)
         if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to {raise_amount} above target after snapshot {snapshot_file}.")
+            raise Exception(f"Failed to move robot arm to {-raise_amount} above {station}.")
 
-        # If pre-position, go there
-        if pre_position_file:
-            success += snapshot_move(pre_position_file)
-            if (not success) and raise_error:
-                raise Exception(f"Failed to move robot arm pre-position snapshot {pre_position_file} after target.")
+        # Go to starting_snapshot
+        success &= snapshot_move(starting_snapshot)
+        if (not success) and raise_error:
+            raise Exception(f"Failed to move robot arm pre-position snapshot {starting_snapshot} for {station}.")
 
     return success
 
@@ -518,100 +415,20 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
         snapshot_start = perturbed_snapshot(snapshot_start, perturb_amount=0.0005)
     else:
         success = snapshot_move(target_position='open')
-    success += snapshot_move(snapshot_start)
-    success += snapshot_move(target_position=VIAL_GRIP_TARGET + 4)
+    success &= snapshot_move(snapshot_start)
+    success &= snapshot_move(target_position=VIAL_GRIP_TARGET + 4)
 
     rotation_increment = (angular_z / 20) if screw else (-angular_z / 20)
     raise_height = linear_z if screw else -linear_z
     for _ in range(5):
-        success += twist_hand(linear_z=raise_height, angular_z=rotation_increment)
+        success &= move_hand(linear_z=raise_height, angular_z=rotation_increment)
 
     if screw:
         success = snapshot_move(target_position='open')
     else:
         print("Done unscrewing. ")
-        success += snapshot_move(snapshot_top)
+        success &= snapshot_move(snapshot_top)
 
     return success
 
 
-def send_arduino_cmd(station, command, address=ARDUINO_PORT, return_txt=False):
-    """
-    Sends a command to the Arduino controlling a specific station.
-
-    Args:
-        station (str): The station identifier (e.g., "E1", "P1").
-        command (str): The command to send (e.g., "0", "1", "500").
-        address (str): Address of the Arduino port (default is ARDUINO_PORT).
-        return_txt (bool): Whether to return the Arduino response text (default is False).
-
-    Returns:
-        bool or str: True if the command succeeded, the response text if return_txt is True, otherwise False on failure.
-
-    Raises:
-        Exception: If unable to connect to the Arduino.
-    """
-    try:
-        arduino = serial.Serial(address, 115200, timeout=.1)
-    except:
-        try:
-            time.sleep(20)
-            arduino = serial.Serial(address, 115200, timeout=.1)
-        except:
-            raise Exception("Warning! {} is not connected".format(address))
-    time.sleep(1)  # give the connection a second to settle
-    arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))  # EX: E1_0 or P1_1_500
-    print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
-    start_time = time.time()
-    try:
-        while True:
-            print("trying to read...")
-            data = arduino.readline()
-            print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
-            if data:
-                result_txt = data.decode().strip()  # strip out the old lines
-                print("ARDUINO RESULT: ", result_txt)
-                if "success" in result_txt:
-                    return result_txt if return_txt else True
-                elif "failure" in result_txt:
-                    return False
-            time.sleep(1)
-    except KeyboardInterrupt:
-        arduino.write(bytes(f"ABORT_{station}", encoding='utf-8'))
-        while True:
-            print("Aborted arduino. Trying to read abort message...")
-            data = arduino.readline()
-            if data:
-                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the old lines
-                raise KeyboardInterrupt
-            time.sleep(1)
-
-
-def write_test(file_path, test_type=""):
-    """
-    Writes test data to a file based on the test type.
-
-    Args:
-        file_path (str): Path to the output file.
-        test_type (str): Type of test data to write. Options are "cv", "ca", or "ircomp".
-    """
-    test_files = {
-        "cv": os.path.join(TEST_DATA_DIR, "standard_data", "CV.txt"),
-        "ca": os.path.join(TEST_DATA_DIR, "standard_data", "CA.txt"),
-        "ircomp": os.path.join(TEST_DATA_DIR, "standard_data", "iRComp.txt"),
-    }
-    test_fn = test_files.get(test_type.lower())
-    if os.path.isfile(test_fn):
-        with open(test_fn, 'r') as fn:
-            test_text = fn.read()
-    else:
-        test_text = "test"
-    with open(file_path, 'w+') as fn:
-        fn.write(test_text)
-
-
-if __name__ == "__main__":
-    # some commands for demonstration
-    sn_file = r"C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\snapshots\Cartesian Example.json"
-    # snapshot_move(sn_file, False)
-    twist_hand(angular_z=30)

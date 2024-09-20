@@ -1,4 +1,7 @@
 import pint
+import time
+import serial
+from robotics_api.settings import *
 
 
 def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):
@@ -34,3 +37,78 @@ def unit_conversion(measurement, default_unit: str, density=None, return_dict=Fa
     if return_dict:
         return {"value": pint_unit.to(default_unit, 'mol_density').magnitude, "unit": default_unit}
     return pint_unit.to(default_unit, 'mol_density').magnitude
+
+
+def write_test(file_path, test_type=""):
+    """
+    Writes test data to a file based on the test type.
+
+    Args:
+        file_path (str): Path to the output file.
+        test_type (str): Type of test data to write. Options are "cv", "ca", or "ircomp".
+    """
+    test_files = {
+        "cv": os.path.join(TEST_DATA_DIR, "standard_data", "CV.txt"),
+        "ca": os.path.join(TEST_DATA_DIR, "standard_data", "CA.txt"),
+        "ircomp": os.path.join(TEST_DATA_DIR, "standard_data", "iRComp.txt"),
+    }
+    test_fn = test_files.get(test_type.lower())
+    if os.path.isfile(test_fn):
+        with open(test_fn, 'r') as fn:
+            test_text = fn.read()
+    else:
+        test_text = "test"
+    with open(file_path, 'w+') as fn:
+        fn.write(test_text)
+
+
+def send_arduino_cmd(station: str, command: str or float, address: str = ARDUINO_PORT, return_txt: bool = False):
+    """
+    Sends a command to the Arduino controlling a specific station.
+
+    Args:
+        station (str): The station identifier (e.g., "E1", "P1").
+        command (str or float): The command to send (e.g., "0", "1", "500").
+        address (str): Address of the Arduino port (default is ARDUINO_PORT).
+        return_txt (bool): Whether to return the Arduino response text (default is False).
+
+    Returns:
+        bool or str: True if the command succeeded, the response text if return_txt is True, otherwise False on failure.
+
+    Raises:
+        Exception: If unable to connect to the Arduino.
+    """
+    try:
+        arduino = serial.Serial(address, 115200, timeout=.1)
+    except:
+        try:
+            time.sleep(20)
+            arduino = serial.Serial(address, 115200, timeout=.1)
+        except:
+            raise Exception("Warning! {} is not connected".format(address))
+    time.sleep(1)  # give the connection a second to settle
+    arduino.write(bytes(f"{station}_{command}", encoding='utf-8'))  # EX: E1_0 or P1_1_500
+    print("Command {} given to station {} at {} via Arduino.".format(command, station, address))
+    start_time = time.time()
+    try:
+        while True:
+            print("trying to read...")
+            data = arduino.readline()
+            print("waiting for {} arduino results for {:.1f} seconds...".format(station, time.time() - start_time))
+            if data:
+                result_txt = data.decode().strip()  # strip out the old lines
+                print("ARDUINO RESULT: ", result_txt)
+                if "success" in result_txt:
+                    return result_txt if return_txt else True
+                elif "failure" in result_txt:
+                    return False
+            time.sleep(1)
+    except KeyboardInterrupt:
+        arduino.write(bytes(f"ABORT_{station}", encoding='utf-8'))
+        while True:
+            print("Aborted arduino. Trying to read abort message...")
+            data = arduino.readline()
+            if data:
+                print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the old lines
+                raise KeyboardInterrupt
+            time.sleep(1)

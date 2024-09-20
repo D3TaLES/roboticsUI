@@ -34,7 +34,7 @@ class VialStatus(RobotStatusDB):
         self.experiment_name = self.get_prop("experiment_name") if self.id else None
         self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
         self.home_location = self.id.split("_") if self.id else None
-        self.home_snapshot = os.path.join(
+        self.pre_location_snapshot = os.path.join(
             SNAPSHOT_DIR, f"VialHome_{self.home_location[0]}_{self.home_location[1]:02}.json") if self.id else None
 
     @property
@@ -205,8 +205,7 @@ class StationStatus(RobotStatusDB):
                 self.check_wflow_name()
         self.type = self.id.split("_")[0] if self.id else None
         self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
-        self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json") if self.id else None
-        self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json") if self.id else None
+        self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.type}.json") if self.id else None
         self.raise_amount = 0
 
     @property
@@ -259,13 +258,12 @@ class StationStatus(RobotStatusDB):
         """
         raise NotImplementedError
 
-    def _retrieve_vial(self, vial, **kwargs):
+    def _retrieve_vial(self, vial):
         """
         Placeholder method for retrieving a vial.
 
         Args:
             vial: The vial to retrieve.
-            **kwargs: Additional keyword arguments.
         """
         raise NotImplementedError
 

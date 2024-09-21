@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.625,
+            "y": -0.405,
+            "z": 0.125,
+            "thetaX": 90,
+            "thetaY": 1.5,
+            "thetaZ": 60
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10003,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "balance_01"
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.416,
+            "y": -0.273,
+            "z": 0.061,
+            "thetaX": 90,
+            "thetaY": 1.5,
+            "thetaZ": 63
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10003,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "stir_01"
+      }
+    ]
+  }
+}

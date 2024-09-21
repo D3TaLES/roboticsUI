@@ -1,48 +1,30 @@
 {
-  "jointAnglesGroup": {
-    "jointAngles": [
+  "poses": {
+    "pose": [
       {
-        "applicationData": "{\"kinova\":{\"color\":0}}",
-        "handle": {
-          "identifier": 10040,
-          "permission": 7,
-          "actionType": 7
-        },
-        "reachJointAngles": {
-          "jointAngles": {
-            "jointAngles": [
-              {
-                "value": 303,
-                "jointIdentifier": 0
-              },
-              {
-                "value": 75,
-                "jointIdentifier": 1
-              },
-              {
-                "value": 242,
-                "jointIdentifier": 2
-              },
-              {
-                "value": 0,
-                "jointIdentifier": 3
-              },
-              {
-                "value": 106,
-                "jointIdentifier": 4
-              },
-              {
-                "value": 90,
-                "jointIdentifier": 5
-              }
-            ]
+        "reachPose": {
+          "targetPose": {
+            "x": 0.328,
+            "y": 0.462,
+            "z": 0.050,
+            "thetaX": 90,
+            "thetaY": 3.0,
+            "thetaZ": 160
           },
           "constraint": {
-            "type": 0,
-            "value": 0
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
           }
         },
-        "name": "CA Elevator B"
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10006,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "Potentiostat Elevator 2"
       }
     ]
   }

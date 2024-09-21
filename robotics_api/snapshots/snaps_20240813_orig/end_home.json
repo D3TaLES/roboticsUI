@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x":0.548,
+            "y":-0.131,
+            "z":0.016,
+            "thetaX":90.6,
+            "thetaY":-0.203,
+            "thetaZ":82.5
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10033,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "EndHome"
+      }
+    ]
+  }
+}

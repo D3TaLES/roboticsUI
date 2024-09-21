@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.4286,
+            "y": 0.2833,
+            "z": 0.067,
+            "thetaX": 90,
+            "thetaY": 1.5,
+            "thetaZ": 126.7
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10003,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "Pre-Potentiostat Elevator 1"
+      }
+    ]
+  }
+}

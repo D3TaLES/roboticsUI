@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.45,
+            "y": 0.117,
+            "z": 0.22,
+            "thetaX": 90,
+            "thetaY": 1.5,
+            "thetaZ": 105
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10000,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "Home"
+      }
+    ]
+  }
+}

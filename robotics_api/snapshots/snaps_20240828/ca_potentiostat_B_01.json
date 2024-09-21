@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.326,
+            "y": 0.469,
+            "z": 0.05,
+            "thetaX": 90,
+            "thetaY": 3.0,
+            "thetaZ": 160
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10006,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "Potentiostat Elevator 2"
+      }
+    ]
+  }
+}

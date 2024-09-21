@@ -10,7 +10,6 @@ from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.settings import *
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
-from robotics_api.utils.kinova_vision import move_to_station_qr
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
@@ -327,71 +326,6 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
     with open(os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json"), "w+") as fn:
         json.dump(master_data, fn, indent=2)
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
-
-
-def get_place_vial_vision(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True):
-    """
-    Executes an action to get or place a vial using snapshot movements.
-
-    Args:
-        station (StationStatus):
-        action_type (str): Action type, either 'get' (to retrieve the vial) or 'place' (to place the vial).
-        go (bool): Whether to move to the snapshot file location (default is True).
-        leave (bool): Whether to leave the snapshot file location after the action (default is True).
-        release_vial (bool): Whether to release the vial after placing (default is True).
-        raise_error (bool): Whether to raise an error if movement fails (default is True).
-
-    Returns:
-        bool: True if the action was successful, False otherwise.
-
-    Raises:
-        Exception: If the movement fails and raise_error is True.
-    """
-    # Check if robot operation is enabled
-    if not RUN_ROBOT:
-        warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
-        return True
-
-    destination_name = station.id
-    starting_snapshot = station.pre_location_snapshot
-    raise_amount = station.raise_amount
-
-    success = True
-
-    if go:
-        # Start open if getting a vial
-        success &= snapshot_move(target_position='open') if action_type == "get" else True
-
-        # Go to starting_snapshot
-        success &= snapshot_move(starting_snapshot)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm pre-position snapshot {starting_snapshot} before {station}.")
-
-        # Go to above target position before target
-        success &= move_to_station_qr(destination_name)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to the QR code for {station}.")
-
-        # Go to target position
-        target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
-        success &= move_hand(linear_z=raise_amount)
-        success &= snapshot_move(target_position=target)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to snapshot {station}.")
-
-    if leave:
-        # Go to above target position above/below target
-        if raise_amount:
-            success &= move_hand(linear_z=-raise_amount)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to {-raise_amount} above {station}.")
-
-        # Go to starting_snapshot
-        success &= snapshot_move(starting_snapshot)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm pre-position snapshot {starting_snapshot} for {station}.")
-
-    return success
 
 
 def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True):

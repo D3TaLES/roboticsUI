@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.335,
+            "y": -0.367,
+            "z": 0.248,
+            "thetaX": 90,
+            "thetaY": 3.0,
+            "thetaZ": 44
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10000,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "solvent_03"
+      }
+    ]
+  }
+}

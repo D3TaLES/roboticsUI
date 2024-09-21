@@ -207,7 +207,6 @@ class StationStatus(RobotStatusDB):
         self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
         self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json") if self.id else None
         self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json") if self.id else None
-        # self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.type}.json") if self.id else None
         self.raise_amount = 0
 
     @property

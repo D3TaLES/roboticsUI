@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.328,
-            "y": 0.462,
-            "z": 0.050,
+            "x": 0.193,
+            "y": -0.354,
+            "z": 0.243,
             "thetaX": 90,
-            "thetaY": 3.0,
-            "thetaZ": 160
+            "thetaY": 3,
+            "thetaZ": 20
           },
           "constraint": {
             "speed": {
@@ -20,11 +20,11 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10006,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "Potentiostat Elevator 2"
+        "name": "pipette_01"
       }
     ]
   }

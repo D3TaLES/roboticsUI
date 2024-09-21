@@ -4,7 +4,7 @@
       {
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10019,
+          "identifier": 10040,
           "permission": 7,
           "actionType": 7
         },
@@ -12,27 +12,27 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 349.597900390625,
+                "value": 60,
                 "jointIdentifier": 0
               },
               {
-                "value": 51.88328170776367,
+                "value": 70,
                 "jointIdentifier": 1
               },
               {
-                "value": 226.94183349609375,
+                "value": 225,
                 "jointIdentifier": 2
               },
               {
-                "value": 3.7881195545196533,
+                "value": 0,
                 "jointIdentifier": 3
               },
               {
-                "value": 95.31611633300781,
+                "value": 117,
                 "jointIdentifier": 4
               },
               {
-                "value": 88.61930847167969,
+                "value": 90,
                 "jointIdentifier": 5
               }
             ]
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "Home_angular"
+        "name": "PrePipette"
       }
     ]
   }

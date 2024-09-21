@@ -5,11 +5,11 @@
         "reachPose": {
           "targetPose": {
             "x": 0.328,
-            "y": 0.462,
-            "z": 0.050,
+            "y": -0.382,
+            "z": 0.248,
             "thetaX": 90,
             "thetaY": 3.0,
-            "thetaZ": 160
+            "thetaZ": 44
           },
           "constraint": {
             "speed": {
@@ -20,11 +20,11 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10006,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "Potentiostat Elevator 2"
+        "name": "solvent_03"
       }
     ]
   }

@@ -202,16 +202,6 @@ class MeasureDensity(RoboticsBase):
 
 
 @explicit_serialize
-class RecordWorkingElectrodeArea(RoboticsBase):
-    """FireTask for recording size of working electrode"""
-
-    def run_task(self, fw_spec):
-        self.setup_task(fw_spec, get_exp_vial=False)
-        self.metadata.update({"working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS})
-        return FWAction(update_spec=self.updated_specs())
-
-
-@explicit_serialize
 class SetupRinsePotentiostat(RoboticsBase):
     """FireTask for setting up the electrode rinse action by moving the correct
     vial to the potentiostat elevator"""
@@ -305,7 +295,7 @@ class SetupPotentiostat(RoboticsBase):
         self.metadata.update({"collect_tag": f"cycle{cycle + 1:02d}_{self.method}", "cycle": cycle + 1,
                               f"{self.method}_idx": self.metadata.get(f"{self.method}_idx", 1),
                               f"{self.method}_potentiostat": potentiostat, "active_vial_id": self.exp_vial.id,
-                              "active_method": self.method})
+                              "active_method": self.method, "instrument": f"robotics_{potentiostat}"})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -374,7 +364,7 @@ class BenchmarkCV(RoboticsBase):
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
-        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_")) if IR_COMP else 0
+        resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
         self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]

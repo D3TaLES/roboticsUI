@@ -267,7 +267,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
-            "process_data": [RecordWorkingElectrodeArea, DataProcessor],
+            "process_data": [DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],
@@ -276,10 +276,10 @@ class EF2Experiment(ProcessExpFlowObj):
             "finish_ca": [FinishPotentiostat],
 
             # TODO Deprecated. Remove eventually
-            "process_working_electrode_area": [RecordWorkingElectrodeArea],  # needs: SIZE
+            "process_working_electrode_area": [],  # needs: SIZE
             "heat_stir": [Stir],  # needs: TEMPERATURE, TIME
             "process_cv_benchmarking": [ProcessCVBenchmarking],
-            "measure_working_electrode_area": [RecordWorkingElectrodeArea],
+            "measure_working_electrode_area": [],
             "process_cv_data": [DataProcessor],
             "collect_electrode_test": [RunCV],
             "collect_electrode_test_data": [RunCV],

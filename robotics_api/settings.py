@@ -33,9 +33,6 @@ RETURN_EXTRACTED_SOLN = False   # Return solution extracted via pipette after me
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
 DEFAULT_CONCENTRATION = 0  # "0.01M"
-DEFAULT_WORKING_ELECTRODE_RADIUS = 0.0011 / 2  # radius in cm
-MICRO_ELECTRODES = True if DEFAULT_WORKING_ELECTRODE_RADIUS < 0.1 else False
-DIRTY_ELECTRODE_CURRENT = 1e-8 if MICRO_ELECTRODES else 1e-5  # max current allowed (A) for a clean electrode
 
 TIME_UNIT = "s"
 MASS_UNIT = "g"
@@ -53,44 +50,77 @@ PERTURB_AMOUNT = 0.07
 STIR_PERTURB = 0.003
 
 # ---------  POTENTIOSTAT SETTINGS -------------
-POTENTIOSTAT_A_ADDRESS = "COM6"
-POTENTIOSTAT_A_EXE_PATH = r"C:\Users\Lab\Desktop\chi650e.exe"
-POTENTIOSTAT_B_ADDRESS = "COM4"
-POTENTIOSTAT_B_EXE_PATH = r"C:\Users\Lab\Desktop\chi620e.exe"
+MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
 
-IR_COMP = False  # Perform IR Compensation
+POTENTIOSTAT_SETTINGS = {
+    "cv_potentiostat_A_01": dict(
+        address = "COM6",
+        exe_path = r"C:\Users\Lab\Desktop\chi650e.exe",
 
-# CV Default Settings
-CV_SCAN_RATE = 0.01  # V/s
-VOLTAGE_SEQUENCE = "0, 0.7, 0V"
-CV_SAMPLE_INTERVAL = 0.01  # Volts
-CV_SENSITIVITY = 1e-6  # A/V, current sensitivity
-CUT_BEGINNING = 0.0  # percentage as decimal of front of CV to cut
-CUT_END = 0.0  # percentage as decimal of end of CV to cut
-# CA Default Settings
-CA_RUN_DELAY = 60  # seconds
-CA_SAMPLE_INTERVAL = 1e-6  # seconds
-CA_SENSITIVITY = 1e-4  # A/V, current sensitivity
-CA_PULSE_WIDTH = 1e-4  # sec, pulse width for CA
-CA_STEPS = 200  # number of steps for CA
-MAX_CA_VOLT = None  # V, maximum acceptable voltage for CA experiment
-MIN_CA_VOLT = None  # V, minimum acceptable voltage for CA experiment
+        working_electrode_radius = 0.0011 / 2,  # radius in cm
+        dirty_electrode_current = 1e-8,  # max current allowed (A) for a clean electrode
 
-RECORD_EVERY_DT = 0.01  # seconds
-I_RANGE = 'I_RANGE_10mA'
-VS_INITIAL = False
-TIME_OUT = 10  # seconds
-TIME_AFTER_CV = 5  # seconds
-MAX_WAIT_TIME = 4  # seconds, time to wait for station to be available
+        # CV settings
+        scan_rate = 0.01,  # V/s
+        voltage_sequence = "0, 0.7, 0V",
+        sample_interval = 0.01,  # Volts
+        sensitivity = 1e-6,  # A/V, current sensitivity
 
-AUTO_VOLT_BUFFER = 0.25  # volts, buffer used in setting voltage range from benchmark peaks
-ADD_MICRO_BUFFER = 0.15  # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
+        # IR Compensation settings
+        ir_comp = False,  # Perform IR Compensation
+        rcomp_level = 0.85,  # percentage as decimal of solution resistance to use
+        low_freq = 10000,
+        high_freq = 100000,
+        amplitude = 0.01,
+        time_after = 5,  # seconds
 
-# iR Compensation Variables
-RCOMP_LEVEL = 0.85  # percentage as decimal of solution resistance to use
-INITIAL_FREQUENCY = 10000
-FINAL_FREQUENCY = 100000
-AMPLITUDE = 0.01
+        # Processing settings
+        cut_beginning = 0.0,  # percentage as decimal of front of CV to cut
+        cut_end = 0.0,  # percentage as decimal of end of CV to cut
+        benchmark_buffer = 0.15,  # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
+
+    ),
+    "cv_potentiostat_A_02": dict(
+        address = "COM6",
+        exe_path = r"C:\Users\Lab\Desktop\chi650e.exe",
+
+        working_electrode_radius = 0.07,  # radius in cm
+        dirty_electrode_current = 1e-8,  # max current allowed (A) for a clean electrode
+
+        # CV settings
+        scan_rate = 0.1,  # V/s
+        voltage_sequence = "0, 0.7, 0V",
+        sample_interval = 0.01,  # Volts
+        sensitivity = 1e-6,  # A/V, current sensitivity
+
+        # IR Compensation settings
+        ir_comp = False,  # Perform IR Compensation
+        rcomp_level = 0.85,  # percentage as decimal of solution resistance to use
+        low_freq = 10000,
+        high_freq = 100000,
+        amplitude = 0.01,
+        time_after = 5,  # seconds
+
+        # Processing settings
+        cut_beginning = 0.0,  # percentage as decimal of front of CV to cut
+        cut_end = 0.0,  # percentage as decimal of end of CV to cut
+        benchmark_buffer = 0.25,  # volts, buffer used in setting voltage range from benchmark peaks
+
+    ),
+    "ca_potentiostat_B_01": dict(
+        address = "COM4",
+        exe_path = r"C:\Users\Lab\Desktop\chi620e.exe",
+
+        run_delay = 60,  # seconds
+        sample_interval = 1e-6,  # seconds
+        sensitivity = 1e-4,  # A/V, current sensitivity
+        pulse_width = 1e-4,  # sec, pulse width for CA
+        steps = 200,  # number of steps for CA
+        volt_min = None,  # V, minimum acceptable voltage for CA experiment
+        volt_max = None,  # V, maximum acceptable voltage for CA experiment
+        time_after = 5,  # seconds
+    ),
+}
 
 # ---------  PROCESSING SETTINGS -------------
 RUN_ANODIC = False
@@ -137,26 +167,23 @@ VIALS = [
     "C_01", "C_02", "C_03", "C_04",
 ]
 RINSE_VIALS = {"cv_potentiostat_A_01": "S_01", "ca_potentiostat_B_01": "S_02"}
-ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
+ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "A_02": 3}
 
 # ---------  PATH VARIABLES -------------
-ROBOTICS_API = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
-TEST_DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "test_data")
-DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
-SNAPSHOT_DIR = os.path.join(ROBOTICS_API, "snapshots")
-SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
-SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
+HOME_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = HOME_DIR.parent / "data"
+LAUNCH_DIR = HOME_DIR.parent / 'launch_dir'
+TEST_DATA_DIR = HOME_DIR / "test_data"
+ROBOTICS_API = HOME_DIR / "robotics_api"
+
+SNAPSHOT_DIR = ROBOTICS_API /"snapshots"
+SNAPSHOT_HOME = SNAPSHOT_DIR / "home.json"
+SNAPSHOT_END_HOME = SNAPSHOT_DIR / "end_home.json"
 
 # ---------  FIREWORKS PATH VARIABLES -------------
-HOME_DIR = os.path.dirname(os.path.realpath(__file__))
-LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
-LAUNCHPAD = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\launchpad_robot.yaml')
-INIT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_initialize.yaml')
-ROBOT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_robot.yaml')
-PROCESS_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_process.yaml')
-INSTRUMENT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_instrument.yaml')
+FW_CONFIG_DIR = ROBOTICS_API / 'fireworks' / 'fw_config'
+LAUNCHPAD = ROBOTICS_API / 'fireworks' / 'fw_config' / 'launchpad_robot.yaml'
+INIT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_initialize.yaml'
+ROBOT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_robot.yaml'
+PROCESS_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_process.yaml'
+INSTRUMENT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_instrument.yaml'

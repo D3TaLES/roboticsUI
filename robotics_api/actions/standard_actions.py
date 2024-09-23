@@ -791,14 +791,26 @@ class PotentiostatStation(StationStatus):
         if "potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.method, _, self.pot, self.p_channel = self.id.split("_")
-        self.p_address = eval(f"POTENTIOSTAT_{self.pot}_ADDRESS")
-        self.p_exe_path = eval(f"POTENTIOSTAT_{self.pot}_EXE_PATH")
+        self.p_address = self.settings["address"]
+        self.p_exe_path = self.settings["exe_path"]
         self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
 
         elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
         self.serial_name = f"E{elevator:1d}"
         self.temp_serial_name = f"T{elevator:1d}"
         self.raise_amount = raise_amount
+
+        self.micro_electrode = True if self.settings("working_electrode_radius") <= MICRO_ELECTRODES_MAX_RADIUS else False
+
+    def settings(self, settings_name):
+        settings_dict = POTENTIOSTAT_SETTINGS.get(self.id)
+        if not settings_dict:
+            raise KeyError(f"No settings set for potentiostat {self}. Please add settings for {self} in settings.py.")
+        if settings_dict.get(settings_name):
+            return settings_dict[settings_name]
+        raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
+                       f"condition {settings_name} in the ExpFlow robotic workflow or set a default condition in the "
+                       f"settings file (settings.py).")
 
     def update_experiment(self, experiment: str or None):
         """
@@ -1040,9 +1052,9 @@ class CVPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CV experiment.
         """
-        voltage_sequence = voltage_sequence or VOLTAGE_SEQUENCE
-        sample_interval = unit_conversion(sample_interval or CV_SAMPLE_INTERVAL, default_unit="V")
-        sens = unit_conversion(sens or CV_SENSITIVITY, default_unit="A/V")
+        voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
+        sample_interval = unit_conversion(sample_interval or self.settings("sample_interval"), default_unit="V")
+        sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
         if not RUN_POTENT:
             print(
                 f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY * 5} second CV_DELAY.")
@@ -1060,7 +1072,7 @@ class CVPotentiostatStation(PotentiostatStation):
                                 exe_path=self.p_exe_path, run_iR=True, **kwargs)
             # Run CV and save data
             expt.run_experiment()
-            time.sleep(TIME_AFTER_CV)
+            time.sleep(self.settings("time_after"))
             expt.to_txt(data_path)
         elif "chi" in self.pot_model:
             if not resistance:
@@ -1072,15 +1084,15 @@ class CVPotentiostatStation(PotentiostatStation):
             volts = self.generate_volts(voltage_sequence=voltage_sequence, volt_unit="V")
             nSweeps = math.ceil((len(volts) - 2) / 2)
             print("N_SWEEPS: ", nSweeps)
-            sr = unit_conversion(scan_rate or CV_SCAN_RATE, default_unit="V/s")
+            sr = unit_conversion(scan_rate or self.settings("scan_rate"), default_unit="V/s")
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
                                     nSweeps=nSweeps, dE=sample_interval, sens=sens,
-                                    fileName=f_name, header="CV " + f_name, resistance=resistance * RCOMP_LEVEL)
+                                    fileName=f_name, header="CV " + f_name, resistance=resistance * self.settings("rcomp_level"))
             cv.run()
-            time.sleep(TIME_AFTER_CV)
+            time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True
@@ -1110,6 +1122,13 @@ class CVPotentiostatStation(PotentiostatStation):
             write_test(data_path, test_type="iRComp")
             time.sleep(POT_DELAY)
             return True
+
+        if not self.settings("ir_comp"):
+            print(f"iR Comp Test is NOT running because ir_comp in settings for {self} is False. "
+                  f"Resistance of 0 is in use.")
+            return 0
+
+
         # Benchmark CV for voltage range
         print(f"RUN IR COMP TEST")
         if "chi" in self.pot_model:
@@ -1120,14 +1139,14 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
-            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or INITIAL_FREQUENCY,
-                                      high_freq=high_freq or FINAL_FREQUENCY, amplitude=amplitude or AMPLITUDE,
-                                      sens=sens or CV_SENSITIVITY, fileName=f_name, header="iRComp " + f_name)
+            eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or self.settings("low_freq"),
+                                      high_freq=high_freq or self.settings("high_freq"), amplitude=amplitude or self.settings("amplitude"),
+                                      sens=sens or self.settings("sensitivity"), fileName=f_name, header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
             data = ProcessChiESI(os.path.join(out_folder, f_name + ".txt"))
-            time.sleep(TIME_AFTER_CV)
+            time.sleep(self.settings("time_after"))
 
             print(data.resistance)
             return data.resistance
@@ -1159,7 +1178,7 @@ class CAPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_ca(self, data_path, voltage_sequence=None, si=None, pw=None, sens=None,
-               steps=None, volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
+               steps=None, volt_min=None, volt_max=None, run_delay=None):
         """
         Runs a chronoamperometry (CA) experiment with the potentiostat and saves the data.
 
@@ -1180,10 +1199,13 @@ class CAPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CA experiment.
         """
-        si = unit_conversion(si or CA_SAMPLE_INTERVAL, default_unit="s")
-        sens = unit_conversion(sens or CA_SENSITIVITY, default_unit="A/V")
-        pw = unit_conversion(pw or CA_PULSE_WIDTH, default_unit="s")
-        steps = steps or CA_STEPS
+        run_delay = run_delay or self.settings("run_delay")
+        si = unit_conversion(si or self.settings("sample_interval"), default_unit="s")
+        sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
+        pw = unit_conversion(pw or self.settings("pulse_width"), default_unit="s")
+        steps = steps or self.settings("steps")
+        volt_min = volt_min or self.settings("volt_min")
+        volt_max = volt_max or self.settings("volt_max")
 
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
@@ -1207,7 +1229,7 @@ class CAPotentiostatStation(PotentiostatStation):
             ca = hp.potentiostat.CA(Eini=0, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw,
                                     sens=sens, fileName=f_name, header="CA " + f_name)
             ca.run()
-            time.sleep(TIME_AFTER_CV)
+            time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
         return True

@@ -517,7 +517,7 @@ class RunBase(tk.Toplevel):
         self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
         os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
-        os.chdir(HOME_DIR)
+        os.chdir(API_HOME_DIR)
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run a Job")

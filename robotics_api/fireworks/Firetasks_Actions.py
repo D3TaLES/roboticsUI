@@ -27,6 +27,19 @@ class RoboticsBase(FiretaskBase):
 
     _fw_name = "RoboticsBase"
 
+    def __init__(self):
+        self.wflow_name = ""
+        self.exp_name = ""
+        self.full_name = ""
+        self.end_experiment = False
+        self.metadata = {}
+        self.collection_data = []
+        self.processing_data = {}
+        self.exp_vial = None
+
+        self.success = True
+        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+
     def setup_task(self, fw_spec, get_exp_vial=True):
         """Sets up the task with the provided fireworks spec.
 
@@ -44,20 +57,14 @@ class RoboticsBase(FiretaskBase):
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
 
-        self.success = True
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data", [])
         self.processing_data = fw_spec.get("processing_data", {})
 
-        if fw_spec.get("exit", self.get("exit", False)):
-            print("EXITING WORKFLOW SEQUENCE")
-            return False
         if get_exp_vial:
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
-
-        return True
 
     def updated_specs(self, **kwargs):
         """Updates the fireworks spec with current task data.
@@ -94,8 +101,7 @@ class DispenseLiquid(RoboticsBase):
     """FireTask for dispensing liquid into an experiment vial."""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
         if not volume and EXIT_ZERO_VOLUME:
@@ -119,8 +125,7 @@ class DispenseSolid(RoboticsBase):
     """FireTask for dispensing solid into an experiment vial."""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         mass = self.get("mass")
 
         reagent = ReagentStatus(_id=self.get("start_uuid"))
@@ -136,8 +141,7 @@ class Heat(RoboticsBase):
     """FireTask for heating an experiment vial."""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         # temperature = self.get("temperature")
         # heat_time = self.get("time")
 
@@ -149,8 +153,7 @@ class Heat(RoboticsBase):
 class Stir(RoboticsBase):
     """FireTask for holding an experiment vial over the stir plate and stirring."""
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         stir_time = self.get("time")
 
         if stir_time:
@@ -167,8 +170,7 @@ class MeasureDensity(RoboticsBase):
     """FireTask for measuring solution density"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         volume = self.get("volume", 0)
         volume = unit_conversion(volume, default_unit=VOLUME_UNIT)
 
@@ -207,8 +209,7 @@ class SetupRinsePotentiostat(RoboticsBase):
     vial to the potentiostat elevator"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         potentiostat = PotentiostatStation(self.metadata.get(f"{self.metadata.get('active_method')}_potentiostat"))
         action_vial = VialMove(_id=RINSE_VIALS.get(potentiostat.id))
@@ -229,8 +230,7 @@ class RinseElectrode(RoboticsBase):
     """FireTask for rinsing an electrode"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         rinse_time = unit_conversion(self.get("time", 0), default_unit='s')
         method = self.metadata.get("active_method")
 
@@ -247,8 +247,7 @@ class CleanElectrode(RoboticsBase):
     """FireTask for cleaning and electrode"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         # time = self.get("time")
         return FWAction(update_spec=self.updated_specs())
 
@@ -260,8 +259,7 @@ class SetupPotentiostat(RoboticsBase):
     method: str
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
         self.method = self.method or self.metadata.get("active_method")
 
         # Move vial to potentiostat elevator
@@ -315,8 +313,7 @@ class SetupCAPotentiostat(SetupPotentiostat):
 class FinishPotentiostat(RoboticsBase):
     """FireTask finishing potentiostat action by removing vial"""
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         method = self.metadata.get("active_method")
         potentiostat = PotentiostatStation(self.metadata.get(f"{method}_potentiostat"))
@@ -346,8 +343,7 @@ class BenchmarkCV(RoboticsBase):
     """FireTask performing CV benchmark measurement"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         # CV parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
@@ -381,8 +377,7 @@ class RunCV(RoboticsBase):
     """FireTask for running CV"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         # CV parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
@@ -418,8 +413,7 @@ class RunCA(RoboticsBase):
     """FireTask for running CA"""
 
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         # CA parameters and keywords
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
@@ -458,8 +452,7 @@ class RunCA(RoboticsBase):
 class CollectTemp(RoboticsBase):
     """Firetask for collecting temperature. IN DEVELOPMENT!!!"""
     def run_task(self, fw_spec):
-        if not self.setup_task(fw_spec):
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
+        self.setup_task(fw_spec)
 
         # Collect temperature
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))

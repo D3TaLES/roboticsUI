@@ -5,7 +5,7 @@ import copy
 from functools import reduce
 from operator import iconcat
 from fireworks import Workflow
-from d3tales_api.Processors.expflow_parser import *
+from d3tales_api.Processors.expflow_parser import ProcessExpFlowObj, ProcessExperimentRun, get_id
 
 from robotics_api.fireworks.Fireworks import *
 from robotics_api.fireworks.Firetasks_Actions import *
@@ -339,6 +339,11 @@ if __name__ == "__main__":
     downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
     expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
     expflow_exp = loadfn(expflow_file)
-    experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
-    tc = experiment.task_clusters
-    # run_expflow_wf(expflow_exp)
+    # experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
+    # tc = experiment.task_clusters
+    ex_params = {"experiment_vials": {"exp01": "A_01", "exp02": "A_02"},
+                "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
+                             {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
+                             {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
+                 }
+    run_expflow_wf(expflow_exp, exp_params=ex_params)

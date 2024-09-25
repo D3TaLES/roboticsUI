@@ -1,7 +1,6 @@
 # FireTasks for individual experiment processing
 # Copyright 2024, University of Kentucky
 import traceback
-from six import add_metaclass
 from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
 from d3tales_api.Calculators.calculators import *
@@ -12,7 +11,7 @@ from robotics_api.actions.system_tests import reset_stations
 from robotics_api.actions.standard_actions import *
 from robotics_api.utils.processing_utils import *
 from robotics_api.utils.kinova_utils import DeviceConnection
-from tests.calculator_tests.dft_test import plotting
+from robotics_api.fireworks.Firetasks_Actions import RoboticsBase
 
 # Copyright 2024, University of Kentucky
 TESTING = False
@@ -76,58 +75,24 @@ class InitializeStatusDB(FiretaskBase):
         return FWAction(update_spec={"success": True})
 
 
-@add_metaclass(abc.ABCMeta)
-class ProcessBase(FiretaskBase):
+class ProcessBase(RoboticsBase):
     """Abstract base class for processing experiment data.
 
     This class provides common methods for processing experiment data such as
     setting up the task, updating specs, and handling potentiostat data.
-
-    Attributes:
-        metadata (dict): Metadata for the experiment.
-        collection_data (dict): Data collection information.
-        processing_data (dict): Data processing information.
-        mol_id (str): Molecule ID.
-        solv_id (str): Solvent ID.
-        rom_id (str): Redox molecule ID.
-        elect_id (str): Electrolyte ID.
-        soln_density (str): Solution density.
-        name (str): Name of the task.
-        processing_id (str): Processing ID.
-        coll_dict (dict): Dictionary of collected data.
-        collect_tag (str): Tag for collection cycle.
-        lpad (LaunchPad): Fireworks LaunchPad instance for rerunning fizzled jobs.
-        data_path (str): Path to experiment data.
-        processed_locs (list): List of processed data locations.
-        wflow_name (str): Workflow name.
-
-    Methods:
-        setup_task(fw_spec, data_len_error=True): Set up task parameters from Fireworks spec.
-        updated_specs(**kwargs): Update Fireworks specs with current task information.
-        submission_info(file_type): Generate submission info for experiment data.
-        conc_info(vial_contents): Calculate concentration information from vial contents.
-        plot_cv(cv_loc, p_data, plot_name="", title_tag=""): Plot cyclic voltammetry (CV) data.
-        process_pot_data(file_loc, metadata, insert=True, processing_class=None): Process potentiostat data file.
-        process_solv_data(): Process solvent CV data.
     """
     _fw_name = "ProcessBase"
-    metadata: dict
-    collection_data: dict
-    processing_data: dict
     mol_id: str
     solv_id: str
     rom_id: str
     elect_id: str
     soln_density: str
-    name: str
     active_method: str
     processing_id: str
     coll_dict: dict
     collect_tag: str
-    lpad: LaunchPad
     data_path: str
     processed_locs: list
-    wflow_name: list
     instrument: PotentiostatStation
 
     def setup_task(self, fw_spec, data_len_error=True, instrument_error=True):
@@ -138,19 +103,11 @@ class ProcessBase(FiretaskBase):
             data_len_error (bool): Flag to raise a warning if no collection data is found. Default is True.
             instrument_error (bool): Flag to raise a warning if instrument is found. Default is True.
         """
-        # Fireworks info
-        self.name = fw_spec.get("full_name") or self.get("full_name")
-        self.wflow_name = fw_spec.get("wflow_name") or self.get("wflow_name", "")
-        self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
-
+        super().setup_task(fw_spec, get_exp_vial=False)
         # General info
-        self.metadata = fw_spec.get("metadata", {})
-        self.collection_data = fw_spec.get("collection_data") or []
-        self.processing_data = fw_spec.get("processing_data") or {}
+        self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         self.processed_locs = self.processing_data.get("processed_locs") or []
         self.coll_dict = collection_dict(self.collection_data)
-
 
         # Solution info
         self.mol_id = fw_spec.get("mol_id") or self.get("mol_id")
@@ -180,29 +137,6 @@ class ProcessBase(FiretaskBase):
 
         if self.collection_data:
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
-
-    def updated_specs(self, **kwargs):
-        """
-        Updates the FireWorks specifications with additional metadata, collection, and processing data.
-
-        Args:
-            **kwargs: Additional key-value pairs to update in the specifications.
-
-        Returns:
-            dict: A dictionary containing the updated specifications.
-        """
-        if RERUN_FIZZLED_ROBOT:
-            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
-                {"name": {"$regex": "_setup_"}},
-                {"name": {"$regex": "robot"}}
-            ]}).distinct("fw_id")
-            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
-            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
-        self.processing_data.update({'processed_locs': self.processed_locs})
-        specs = {"metadata": self.metadata, "collection_data": self.collection_data,
-                 "processing_data": self.processing_data}
-        specs.update(dict(**kwargs))
-        return specs
 
     def submission_info(self, file_type):
         """
@@ -289,7 +223,7 @@ class ProcessBase(FiretaskBase):
         self.processed_locs.append(file_loc)
 
         # Plot
-        plot_name = plot_name or f"{self.name}, {self.metadata['redox_mol_concentration']} redox, " \
+        plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
                                  f"{self.metadata['electrolyte_concentration']} SE"
         if not self.instrument.micro_electrode:
             image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"

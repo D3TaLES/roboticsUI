@@ -6,4 +6,3 @@ logs/
 db_infos.json
 workflows/actions/examples/
 .idea/
-get_started.sh

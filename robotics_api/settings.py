@@ -1,4 +1,5 @@
 import os
+import subprocess
 from pathlib import Path
 
 """
@@ -26,7 +27,7 @@ WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying 
 RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
 FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
-EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all childeren Fireworks
+EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 RETURN_EXTRACTED_SOLN = False   # Return solution extracted via pipette after measurement made.
 
@@ -187,3 +188,13 @@ INIT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_initialize
 ROBOT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_robot.yaml'
 PROCESS_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_process.yaml'
 INSTRUMENT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_instrument.yaml'
+
+if __name__ == "__main__":
+    # Activate the conda environment (note: this may require special handling in Python)
+    subprocess.call("conda activate d3tales_robotics", shell=True)
+
+    # Set environment variables with HOME_DIR
+    os.environ['PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
+    os.environ['FW_CONFIG_FILE'] = f'{FW_CONFIG_DIR}/FW_config.yaml'
+    os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
+    os.chdir(f'{HOME_DIR.parent}/launch_dir')

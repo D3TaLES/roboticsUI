@@ -118,7 +118,7 @@ class SetLocations(tk.Toplevel):
             tk.Label(self, text="{}".format(exp), justify="center", font=("Raleway", 16,),
                      fg=d3navy).grid(column=2, row=i + 3)
             dropdown_txt = tk.StringVar()
-            dropdown_txt.set(self.vial_options[0])
+            dropdown_txt.set(self.vial_options[i])
             dropdown = tk.OptionMenu(self, dropdown_txt, *self.vial_options)
             dropdown.config(font=("Raleway", 14), bg=d3blue, fg='white', height=2, width=10)
             dropdown.grid(column=3, row=i + 3)

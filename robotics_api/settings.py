@@ -50,7 +50,7 @@ OPEN_GRIP_TARGET = 40
 PERTURB_AMOUNT = 0.07
 STIR_PERTURB = 0.003
 
-# ---------  POTENTIOSTAT SETTINGS -------------
+# ---------  INSTRUMENT SETTINGS -------------
 MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
 
 POTENTIOSTAT_SETTINGS = {

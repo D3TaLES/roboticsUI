@@ -34,8 +34,7 @@ class VialStatus(RobotStatusDB):
         self.experiment_name = self.get_prop("experiment_name") if self.id else None
         self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
         self.home_location = self.id.split("_") if self.id else None
-        self.pre_location_snapshot = os.path.join(
-            SNAPSHOT_DIR, f"VialHome_{self.home_location[0]}_{self.home_location[1]:02}.json") if self.id else None
+        self.home_snapshot = os.path.join(SNAPSHOT_DIR, "VialHome_{}_{}.json".format(*self.home_location)) if self.id else None
 
     @property
     def vial_content(self):

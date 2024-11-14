@@ -12,7 +12,11 @@
           "jointAngles": {
             "jointAngles": [
               {
+<<<<<<< HEAD:robotics_api/snapshots/pipette.json
                 "value": 60,
+=======
+                "value": 325,
+>>>>>>> reb_dev:robotics_api/snapshots/pre_cv_potentiostat_A_01.json
                 "jointIdentifier": 0
               },
               {

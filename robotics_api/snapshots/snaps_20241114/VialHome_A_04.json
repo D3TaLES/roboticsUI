@@ -1,0 +1,25 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.658,
+            "y": 0.167,
+            "z": 0.188,
+            "thetaX": 90,
+            "thetaY": 0,
+            "thetaZ": 103
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10011,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "VHome_A_04"
+      }
+    ]
+  }
+}

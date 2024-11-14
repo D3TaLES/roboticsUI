@@ -2,12 +2,32 @@
   "jointAnglesGroup": {
     "jointAngles": [
       {
+<<<<<<< HEAD
+=======
+        "reachPose": {
+          "targetPose": {
+            "x": 0.327,
+            "y": 0.464,
+            "z": 0.057,
+            "thetaX": 90,
+            "thetaY": 0,
+            "thetaZ": 150
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+>>>>>>> reb_dev
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
           "identifier": 10040,
           "permission": 7,
           "actionType": 7
         },
+<<<<<<< HEAD
         "reachJointAngles": {
           "jointAngles": {
             "jointAngles": [
@@ -43,6 +63,9 @@
           }
         },
         "name": "CA Elevator B"
+=======
+        "name": "CA Elevator"
+>>>>>>> reb_dev
       }
     ]
   }

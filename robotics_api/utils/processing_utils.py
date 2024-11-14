@@ -151,10 +151,11 @@ def get_cell_constant(raise_error=True):
         ]}))
         ca_calib_measured = [c.get("cond_measured") for c in query]
         ca_calib_true = [c.get("cond_true") for c in query]
-        if (ca_calib_measured and ca_calib_true) and raise_error:
+        if ca_calib_measured and ca_calib_true:
             return np.polyfit(ca_calib_measured, ca_calib_true, 1)[0]
-    raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
-                     f"workflow today before preceding with CA experiments.")
+    if raise_error:
+        raise ValueError(f"Conductivity calibration for today, {date}, does not exist. Please run a CA calibration "
+                         f"workflow today before preceding with CA experiments.")
 
 
 def print_prop(prop_dict):
@@ -337,6 +338,6 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
 
 if __name__ == "__main__":
     meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
-                 "working_electrode_radius": DEFAULT_WORKING_ELECTRODE_RADIUS}
+                 "working_electrode_radius": 0.007}
     cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
     processing_test(cv_dir, metadata=meta_data)

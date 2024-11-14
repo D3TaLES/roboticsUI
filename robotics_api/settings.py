@@ -10,7 +10,6 @@ file paths, and more. Be sure to review all settings listed here before running 
 Copyright 2024, University of Kentucky
 """
 
-
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
 DISPENSE = False
@@ -29,7 +28,7 @@ FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
-RETURN_EXTRACTED_SOLN = False   # Return solution extracted via pipette after measurement made.
+RETURN_EXTRACTED_SOLN = False  # Return solution extracted via pipette after measurement made.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -55,71 +54,72 @@ MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
 
 POTENTIOSTAT_SETTINGS = {
     "cv_potentiostat_A_01": dict(
-        address = "COM6",
-        exe_path = r"C:\Users\Lab\Desktop\chi650e.exe",
+        address="COM6",
+        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
-        working_electrode_radius = 0.0011 / 2,  # radius in cm
-        dirty_electrode_current = 1e-8,  # max current allowed (A) for a clean electrode
+        working_electrode_radius=0.0011 / 2,  # radius in cm
+        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
         # CV settings
-        scan_rate = 0.01,  # V/s
-        voltage_sequence = "0, 0.7, 0V",
-        sample_interval = 0.01,  # Volts
-        sensitivity = 1e-6,  # A/V, current sensitivity
+        scan_rate=0.01,  # V/s
+        voltage_sequence="0, 0.7, 0V",
+        sample_interval=0.01,  # Volts
+        sensitivity=1e-6,  # A/V, current sensitivity
 
         # IR Compensation settings
-        ir_comp = False,  # Perform IR Compensation
-        rcomp_level = 0.85,  # percentage as decimal of solution resistance to use
-        low_freq = 10000,
-        high_freq = 100000,
-        amplitude = 0.01,
-        time_after = 5,  # seconds
+        ir_comp=False,  # Perform IR Compensation
+        rcomp_level=0.85,  # percentage as decimal of solution resistance to use
+        low_freq=10000,
+        high_freq=100000,
+        amplitude=0.01,
+        time_after=5,  # seconds
 
         # Processing settings
-        cut_beginning = 0.0,  # percentage as decimal of front of CV to cut
-        cut_end = 0.0,  # percentage as decimal of end of CV to cut
-        benchmark_buffer = 0.15,  # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
+        cut_beginning=0.0,  # percentage as decimal of front of CV to cut
+        cut_end=0.0,  # percentage as decimal of end of CV to cut
+        benchmark_buffer=0.15,
+        # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
 
     ),
     "cv_potentiostat_A_02": dict(
-        address = "COM6",
-        exe_path = r"C:\Users\Lab\Desktop\chi650e.exe",
+        address="COM6",
+        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
-        working_electrode_radius = 0.07,  # radius in cm
-        dirty_electrode_current = 1e-8,  # max current allowed (A) for a clean electrode
+        working_electrode_radius=0.07,  # radius in cm
+        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
         # CV settings
-        scan_rate = 0.1,  # V/s
-        voltage_sequence = "0, 0.7, 0V",
-        sample_interval = 0.01,  # Volts
-        sensitivity = 1e-6,  # A/V, current sensitivity
+        scan_rate=0.1,  # V/s
+        voltage_sequence="0, 0.7, 0V",
+        sample_interval=0.01,  # Volts
+        sensitivity=1e-6,  # A/V, current sensitivity
 
         # IR Compensation settings
-        ir_comp = False,  # Perform IR Compensation
-        rcomp_level = 0.85,  # percentage as decimal of solution resistance to use
-        low_freq = 10000,
-        high_freq = 100000,
-        amplitude = 0.01,
-        time_after = 5,  # seconds
+        ir_comp=False,  # Perform IR Compensation
+        rcomp_level=0.85,  # percentage as decimal of solution resistance to use
+        low_freq=10000,
+        high_freq=100000,
+        amplitude=0.01,
+        time_after=5,  # seconds
 
         # Processing settings
-        cut_beginning = 0.0,  # percentage as decimal of front of CV to cut
-        cut_end = 0.0,  # percentage as decimal of end of CV to cut
-        benchmark_buffer = 0.25,  # volts, buffer used in setting voltage range from benchmark peaks
+        cut_beginning=0.0,  # percentage as decimal of front of CV to cut
+        cut_end=0.0,  # percentage as decimal of end of CV to cut
+        benchmark_buffer=0.25,  # volts, buffer used in setting voltage range from benchmark peaks
 
     ),
     "ca_potentiostat_B_01": dict(
-        address = "COM4",
-        exe_path = r"C:\Users\Lab\Desktop\chi620e.exe",
+        address="COM4",
+        exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
-        run_delay = 60,  # seconds
-        sample_interval = 1e-6,  # seconds
-        sensitivity = 1e-4,  # A/V, current sensitivity
-        pulse_width = 1e-4,  # sec, pulse width for CA
-        steps = 200,  # number of steps for CA
-        volt_min = None,  # V, minimum acceptable voltage for CA experiment
-        volt_max = None,  # V, maximum acceptable voltage for CA experiment
-        time_after = 5,  # seconds
+        run_delay=60,  # seconds
+        sample_interval=1e-6,  # seconds
+        sensitivity=1e-4,  # A/V, current sensitivity
+        pulse_width=1e-4,  # sec, pulse width for CA
+        steps=200,  # number of steps for CA
+        volt_min=None,  # V, minimum acceptable voltage for CA experiment
+        volt_max=None,  # V, maximum acceptable voltage for CA experiment
+        time_after=5,  # seconds
     ),
 }
 
@@ -149,7 +149,7 @@ FORMAL_POTENTIALS = {  # Formal potentials
 }
 SOLVENT_DENSITIES = {  # Formal potentials
     "O": "0.997 g/mL",  # H2O
-    "CC#N": "0.786 g/mL",   # ACN
+    "CC#N": "0.786 g/mL",  # ACN
 }
 
 # ---------  PORT ADDRESS -------------
@@ -177,7 +177,7 @@ LAUNCH_DIR = HOME_DIR.parent / 'launch_dir'
 TEST_DATA_DIR = HOME_DIR / "test_data"
 ROBOTICS_API = HOME_DIR / "robotics_api"
 
-SNAPSHOT_DIR = ROBOTICS_API /"snapshots"
+SNAPSHOT_DIR = ROBOTICS_API / "snapshots"
 SNAPSHOT_HOME = SNAPSHOT_DIR / "home.json"
 SNAPSHOT_END_HOME = SNAPSHOT_DIR / "end_home.json"
 
@@ -194,7 +194,8 @@ if __name__ == "__main__":
     subprocess.call("conda activate d3tales_robotics", shell=True)
 
     # Set environment variables with HOME_DIR
-    os.environ['PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
+    os.environ[
+        'PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
     os.environ['FW_CONFIG_FILE'] = f'{FW_CONFIG_DIR}/FW_config.yaml'
     os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
     os.chdir(f'{HOME_DIR.parent}/launch_dir')

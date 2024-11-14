@@ -15,4 +15,13 @@ This repository contains several directories:
 * `robotics_api``: Robotics API that manages robotic workflows. (More discussion below.)
 * `test_data`: Example, standard, and test experimental data.
 * `docs`: Documentation files for the Robotics API
-* `docs_src`: Sphinx source documentation files for the Robotics API 
+* `docs_src`: Sphinx source documentation files for the Robotics API
+
+## Getting Started
+
+To set up the Robotics API environment, run `settings.py`
+```commandline
+cd robotics_api/
+python settings.py
+```
+Be sure to review the [Robotics API Docs](https://d3tales.github.io/roboticsUI/).

@@ -273,7 +273,16 @@ class ProcessBase(RoboticsBase):
         for d in solv_data:
             p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False,
                                            processing_class=ProcessChiCV)
-            self.plot_cv(d.get("data_location"), p_data, plot_name="Solvent")
+            if not self.instrument.micro_electrode:
+                image_path = ".".join(d.get("data_location").split(".")[:-1]) + "_plot.png"
+                CVPlotter(connector={"scan_data": "data.scan_data",
+                                     "we_surface_area": "data.conditions.working_electrode_surface_area"
+                                     }).live_plot(p_data, fig_path=image_path,
+                                                  title=f"CV Plot for Solvent",
+                                                  xlabel=MULTI_PLOT_XLABEL,
+                                                  ylabel=MULTI_PLOT_YLABEL,
+                                                  current_density=PLOT_CURRENT_DENSITY,
+                                                  a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
                 dirty = dirty_calc.calculate(p_data, max_current_range=self.instrument.settings("dirty_electrode_current"))

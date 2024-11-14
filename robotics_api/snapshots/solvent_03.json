@@ -5,11 +5,11 @@
         "reachPose": {
           "targetPose": {
             "x": 0.329,
-            "y": -0.368,
+            "y": -0.379,
             "z": 0.248,
             "thetaX": 90,
-            "thetaY": 3.0,
-            "thetaZ": 44
+            "thetaY": 0,
+            "thetaZ": 38
           },
           "constraint": {
             "speed": {

@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.4296,
-            "y": 0.2973,
-            "z": 0.067,
+            "x": 0.329,
+            "y": -0.379,
+            "z": 0.248,
             "thetaX": 90,
-            "thetaY": 1.5,
-            "thetaZ": 126.7
+            "thetaY": 0,
+            "thetaZ": 38
           },
           "constraint": {
             "speed": {
-              "translation": 0.3,
+              "translation": 0,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10003,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "Pre-Potentiostat Elevator 1"
+        "name": "solvent_03"
       }
     ]
   }

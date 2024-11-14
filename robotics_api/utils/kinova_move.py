@@ -9,7 +9,6 @@ from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
-from d3tales_api.Calculators.utils import dict2obj
 from robotics_api.settings import *
 
 # Maximum allowed waiting time during actions (in seconds)
@@ -64,7 +63,7 @@ def check_for_sequence_end_or_abort(e):
     return check
 
 
-def snapshot_move_angular(base, joint_angle_values):
+def snapshot_move_angular(base: BaseClient, joint_angle_values):
     if VERBOSE > 3:
         print("Starting angular action movement ...")
     action = Base_pb2.Action()
@@ -104,7 +103,7 @@ def snapshot_move_angular(base, joint_angle_values):
     return finished
 
 
-def snapshot_move_cartesian(base, coordinate_values):
+def snapshot_move_cartesian(base: BaseClient, coordinate_values):
     if VERBOSE > 3:
         print("Starting Cartesian action movement ...")
     action = Base_pb2.Action()
@@ -155,26 +154,30 @@ def move_gripper(target_position=None):
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create connection to the device and get therouter
-        with utilities.DeviceConnection.createUdpConnection(connector) as router_real_time:
-            action = GripperMove(router, router_real_time, 2)
+    try:
+        with utilities.DeviceConnection.createTcpConnection(connector) as router:
+            # Create connection to the device and get the router
+            with utilities.DeviceConnection.createUdpConnection(connector) as router_real_time:
+                action = GripperMove(router, router_real_time, 2)
 
-            if target_position == 'open':
-                if VERBOSE > 2:
-                    print("Moving gripper open...")
-                finished += action.gripper_move(OPEN_GRIP_TARGET)
-                action.cleanup()
-            elif target_position == 'closed':
-                if VERBOSE > 2:
-                    print("Moving gripper closed...")
-                finished += action.gripper_move(90)
-                action.cleanup()
-            elif target_position:
-                if VERBOSE > 2:
-                    print("Moving gripper to {}...".format(target_position))
-                finished += action.gripper_move(target_position)
-                action.cleanup()
+                if target_position == 'open':
+                    if VERBOSE > 2:
+                        print("Moving gripper open...")
+                    finished += action.gripper_move(OPEN_GRIP_TARGET)
+                    action.cleanup()
+                elif target_position == 'closed':
+                    if VERBOSE > 2:
+                        print("Moving gripper closed...")
+                    finished += action.gripper_move(90)
+                    action.cleanup()
+                elif target_position:
+                    if VERBOSE > 2:
+                        print("Moving gripper to {}...".format(target_position))
+                    finished += action.gripper_move(target_position)
+                    action.cleanup()
+
+    except Exception as e:
+        raise Exception("Gripper movement failed with exception ", e)
 
     print("Gripper movement successfully executed!" if finished else "Error! Gripper was not successfully moved.")
     return finished
@@ -198,189 +201,118 @@ def snapshot_move(snapshot_file=None, target_position=None, raise_error=True,
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
+    try:
+        with utilities.DeviceConnection.createTcpConnection(connector) as router:
+            # Create required services
+            base = BaseClient(router)
 
-        if snapshot_file:
-            # loads file
-            snapshot_file = open(snapshot_file, 'r')
+            if snapshot_file:
+                # loads file
+                snapshot_file = open(snapshot_file, 'r')
 
-            # converts JSON to nested dictionary
-            snapshot_file.dict = json.load(snapshot_file)
+                # converts JSON to nested dictionary
+                snapshot_file.dict = json.load(snapshot_file)
 
-            if "jointAnglesGroup" in snapshot_file.dict:
-                # grabs the list of joint angle values
-                joint_angle_values = \
-                    snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
-                        "jointAngles"]
-                move_type = "angular"
-            elif "poses" in snapshot_file.dict:
-                # grabs the dictionary of coordinate values
-                coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
-                move_type = "cartesian"
-            else:
-                print("invalid file type")
-                move_type = "null"
-
-            # Move Robot
-            if move_type == "angular":
-                finished = snapshot_move_angular(base, joint_angle_values)
-            elif move_type == "cartesian":
-                finished = snapshot_move_cartesian(base, coordinate_values)
-            else:
-                finished = True
-                if VERBOSE > 3:
-                    print("... and nothing happened")
-            snapshot_file.close()
-
-            if finished:
-                if move_type == "angular":
-                    current_joint_angles_raw = base.GetMeasuredJointAngles()  # Assuming this method exists
-                    def _angle(a):
-                        return a if a < 360 else a-360
-                    current_joint_angles = {i.joint_identifier: _angle(i.value) for i in current_joint_angles_raw.joint_angles}
-                    joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
-                    angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k in joint_angle_values_dict]
-                    if not all([d < angle_error for d in angle_diffs]):
-                        error_diffs = [d for d in angle_diffs if d > angle_error]
-                        if not all([abs(d-360) < angle_error for d in error_diffs]):
-                            finished = False
-                            if raise_error:
-                                raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
-                elif move_type == "cartesian":
-                    current_pose_raw = base.GetMeasuredCartesianPose()  # Assuming this method exists
-                    current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
-                                    "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y, "thetaZ": current_pose_raw.theta_z}
-                    pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
-                    if not all([d < position_error for d in pose_diffs]):
-                        if raise_error:
-                            raise SystemError("Error: Robot did not reach the desired Cartesian pose: ", pose_diffs)
-                        finished = False
+                if "jointAnglesGroup" in snapshot_file.dict:
+                    # grabs the list of joint angle values
+                    joint_angle_values = \
+                        snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
+                            "jointAngles"]
+                    move_type = "angular"
+                elif "poses" in snapshot_file.dict:
+                    # grabs the dictionary of coordinate values
+                    coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
+                    move_type = "cartesian"
                 else:
+                    print("invalid file type")
+                    move_type = "null"
 
-                    if raise_error:
-                        raise SystemError("Error: Unknown move type for confirmation.")
-                    finished = False
+                # Move Robot
+                if move_type == "angular":
+                    finished = snapshot_move_angular(base, joint_angle_values)
+                elif move_type == "cartesian":
+                    finished = snapshot_move_cartesian(base, coordinate_values)
+                else:
+                    finished = True
+                    if VERBOSE > 3:
+                        print("... and nothing happened")
+                snapshot_file.close()
+
+                if finished:
+                    if move_type == "angular":
+                        current_joint_angles_raw = base.GetMeasuredJointAngles()  # Assuming this method exists
+                        def _angle(a):
+                            return a if a < 360 else a-360
+                        current_joint_angles = {i.joint_identifier: _angle(i.value) for i in current_joint_angles_raw.joint_angles}
+                        joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
+                        angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k in joint_angle_values_dict]
+                        if not all([d < angle_error for d in angle_diffs]):
+                            error_diffs = [d for d in angle_diffs if d > angle_error]
+                            if not all([abs(d-360) < angle_error for d in error_diffs]):
+                                finished = False
+                                if raise_error:
+                                    raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
+                    elif move_type == "cartesian":
+                        current_pose_raw = base.GetMeasuredCartesianPose()  # Assuming this method exists
+                        current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
+                                        "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y, "thetaZ": current_pose_raw.theta_z}
+                        pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
+                        if not all([d < position_error for d in pose_diffs]):
+                            if raise_error:
+                                raise SystemError("Error: Robot did not reach the desired Cartesian pose: ", pose_diffs)
+                            finished = False
+                    else:
+
+                        if raise_error:
+                            raise SystemError("Error: Unknown move type for confirmation.")
+                        finished = False
+
+    except Exception as e:
+        raise Exception(e)
 
     if target_position:
         move_gripper(target_position)
-
     print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     return finished
 
 
-def sequence_move(sequence_file):
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
-    finished = True
+def twist_hand(base: BaseClient, linear_x=0, linear_y=0, linear_z=0,
+               angular_x=0, angular_y=0, angular_z=0):
+    command = Base_pb2.TwistCommand()
+    command.reference_frame = Base_pb2.CARTESIAN_REFERENCE_FRAME_TOOL
+    command.duration = 0
 
-    # Create connection to the device and get the router
-    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
+    twist = command.twist
+    twist.linear_x = linear_x
+    twist.linear_y = linear_y
+    twist.linear_z = linear_z
+    twist.angular_x = angular_x
+    twist.angular_y = angular_y
+    twist.angular_z = angular_z
 
-        # loads file
-        sequence_file = open(sequence_file, 'r')
-        # converts JSON to nested dictionary
-        sequence_file.dict = json.load(sequence_file)
-        sequence = dict2obj(sequence_file.dict["sequences"]["sequence"][0], master_obj=Base_pb2.Sequence)
-        print(dir(sequence.tasks))
-        sequence_file.close()
-
+    try:
         e = threading.Event()
-        notification_handle = base.OnNotificationSequenceInfoTopic(
-            check_for_sequence_end_or_abort(e),
+        notification_handle = base.OnNotificationActionTopic(
+            check_for_end_or_abort(e),
             Base_pb2.NotificationOptions()
         )
 
-        print("Creating sequence on device and executing it")
-        handle_sequence = base.CreateSequence(sequence)
-        base.PlaySequence(handle_sequence)
+        if VERBOSE > 2:
+            print("Executing twist action")
+        base.SendTwistCommand(command)
 
-        if VERBOSE > 3:
-            print("Waiting for movement to finish ...")
+        if VERBOSE > 2:
+            print("Waiting for twist to finish ...")
         finished = e.wait(TIMEOUT_DURATION)
         base.Unsubscribe(notification_handle)
 
-    if not finished:
-        print("Timeout on action notification wait")
-    return finished
+    except Exception:
+        finished = False
 
-    # Iterate through tasks
-    # tasks = sequence_file.dict["sequences"]["sequence"][0]["tasks"]
-    # print(tasks)
-    # for task in tasks:
-    #     if "reachJointAngles" in task["action"]:
-    #         # grabs the list of joint angle values
-    #         joint_angle_values = task["action"]["reachJointAngles"]["jointAngles"]["jointAngles"]
-    #         # Move Robot
-    #         finished += snapshot_move_angular(base, joint_angle_values)
-    #     elif "reachPose" in task["action"]:
-    #         # grabs the dictionary of coordinate values
-    #         coordinate_values = task["action"]["reachPose"]["targetPose"]
-    #         # Move Robot
-    #         finished += snapshot_move_cartesian(base, coordinate_values)
-    #     elif "sendGripperCommand" in task["action"]:
-    #         # grabs the dictionary of coordinate values
-    #         gripper_value = task["action"]["sendGripperCommand"]["gripper"]["finger"]["value"]
-    #         # Move Robot
-    #         finished += move_gripper(gripper_value)
-    #     else:
-    #         print("invalid action type")
-    #
-    # sequence_file.close()
-    #
-    # print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
-    # return finished
-
-
-def twist_hand(linear_x=0, linear_y=0, linear_z=0,
-               angular_x=0, angular_y=0, angular_z=0):
-    # Import the utilities' helper module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../fireworks"))
-    # Create connection to the device and get the router
-    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
-
-        command = Base_pb2.TwistCommand()
-        command.reference_frame = Base_pb2.CARTESIAN_REFERENCE_FRAME_TOOL
-        command.duration = 0
-
-        twist = command.twist
-        twist.linear_x = linear_x
-        twist.linear_y = linear_y
-        twist.linear_z = linear_z
-        twist.angular_x = angular_x
-        twist.angular_y = angular_y
-        twist.angular_z = angular_z
-
-        try:
-            e = threading.Event()
-            notification_handle = base.OnNotificationActionTopic(
-                check_for_end_or_abort(e),
-                Base_pb2.NotificationOptions()
-            )
-
-            if VERBOSE > 2:
-                print("Executing twist action")
-            base.SendTwistCommand(command)
-
-            if VERBOSE > 2:
-                print("Waiting for twist to finish ...")
-            finished = e.wait(TIMEOUT_DURATION)
-            base.Unsubscribe(notification_handle)
-
-        except Exception:
-            finished = False
-
-        if VERBOSE > 2:
-            print("Stopping the robot...")
-        base.Stop()
-        time.sleep(1)
+    if VERBOSE > 2:
+        print("Stopping the robot...")
+    base.Stop()
+    time.sleep(1)
 
     return finished
 

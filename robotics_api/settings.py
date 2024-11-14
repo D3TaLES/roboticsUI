@@ -12,11 +12,11 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-DISPENSE = False
-STIR = False
+DISPENSE = True
+STIR = True
 WEIGH = True
-PIPETTE = False
-RUN_ROBOT = False
+PIPETTE = True
+RUN_ROBOT = True
 MOVE_ELEVATORS = True
 CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
@@ -139,7 +139,7 @@ RINSE_VIALS = {"cv_potentiostat_A_01": "S_01", "ca_potentiostat_B_01": "S_02"}
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2}
 
 # ---------  PATH VARIABLES -------------
-ROBOTICS_API = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api")
+ROBOTICS_API = Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "robotics_api"
 TEST_DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "roboticsUI" / "test_data")
 DATA_DIR = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "data")
 SNAPSHOT_DIR = os.path.join(ROBOTICS_API, "snapshots")
@@ -147,15 +147,23 @@ SNAPSHOT_HOME = os.path.join(ROBOTICS_API, "snapshots", "home.json")
 SNAPSHOT_END_HOME = os.path.join(ROBOTICS_API, "snapshots", "end_home.json")
 
 # ---------  FIREWORKS PATH VARIABLES -------------
-HOME_DIR = os.path.dirname(os.path.realpath(__file__))
+HOME_DIR = Path(__file__).resolve().parent.parent
 LAUNCH_DIR = os.path.abspath('C:\\Users\\Lab\\D3talesRobotics\\launch_dir')
-LAUNCHPAD = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\launchpad_robot.yaml')
-INIT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_initialize.yaml')
-ROBOT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_robot.yaml')
-PROCESS_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_process.yaml')
-INSTRUMENT_FWORKER = os.path.abspath(
-    'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\robotics_api\\fireworks\\fw_config\\fireworker_instrument.yaml')
+FW_CONFIG_DIR = ROBOTICS_API / 'fireworks' / 'fw_config'
+LAUNCHPAD = ROBOTICS_API / 'fireworks' / 'fw_config' / 'launchpad_robot.yaml'
+INIT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_initialize.yaml'
+ROBOT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_robot.yaml'
+PROCESS_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_process.yaml'
+INSTRUMENT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_instrument.yaml'
+
+if __name__ == "__main__":
+    import subprocess
+    # Activate the conda environment (note: this may require special handling in Python)
+    subprocess.call("conda activate d3tales_robotics", shell=True)
+
+    # Set environment variables with HOME_DIR
+    os.environ[
+        'PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
+    os.environ['FW_CONFIG_FILE'] = f'{FW_CONFIG_DIR}/FW_config.yaml'
+    os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
+    os.chdir(f'{HOME_DIR.parent}/launch_dir')

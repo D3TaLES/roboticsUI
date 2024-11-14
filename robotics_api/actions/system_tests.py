@@ -67,7 +67,7 @@ if __name__ == "__main__":
     # snapshot_move(target_position=60)
 
     # VIAL TESTING
-    # vial_col_test("B")
+    # vial_col_test("A")
     # test_vial.place_home()
     test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02").home_snapshot, action_type='get', raise_error=True, raise_amount=0.1)

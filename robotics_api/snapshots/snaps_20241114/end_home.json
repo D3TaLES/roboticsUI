@@ -12,15 +12,15 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 325,
+                "value": 12,
                 "jointIdentifier": 0
               },
               {
-                "value": 75,
+                "value": 80,
                 "jointIdentifier": 1
               },
               {
-                "value": 250,
+                "value": 255,
                 "jointIdentifier": 2
               },
               {
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "Pre CV Elevator"
+        "name": "EndHome"
       }
     ]
   }

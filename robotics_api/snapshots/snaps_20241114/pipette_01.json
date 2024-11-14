@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.444,
-            "y": 0.116,
-            "z": 0.22,
+            "x": 0.167,
+            "y": -0.361,
+            "z": 0.247,
             "thetaX": 90,
-            "thetaY": 1.5,
-            "thetaZ": 105
+            "thetaY": 0,
+            "thetaZ": 20
           },
           "constraint": {
             "speed": {
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "Home"
+        "name": "pipette_01"
       }
     ]
   }

@@ -12,12 +12,12 @@ Copyright 2024, University of Kentucky
 
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
-DISPENSE = True
-STIR = True
-WEIGH = True
-PIPETTE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+DISPENSE = False
+STIR = False
+WEIGH = False
+PIPETTE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
@@ -29,6 +29,7 @@ FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blan
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 RETURN_EXTRACTED_SOLN = False  # Return solution extracted via pipette after measurement made.
+MAX_WAIT_TIME = 10
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -195,7 +196,10 @@ if __name__ == "__main__":
 
     # Set environment variables with HOME_DIR
     os.environ[
-        'PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
+        'PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}/Packages/d3tales_api:{HOME_DIR.parent}/Packages/hardpotato/src'
     os.environ['FW_CONFIG_FILE'] = f'{FW_CONFIG_DIR}/FW_config.yaml'
     os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
+    print(f'export PYTHONPATH={HOME_DIR}:{HOME_DIR.parent}/Packages/d3tales_api:{HOME_DIR.parent}/Packages/hardpotato/src')
+    print(f'export FW_CONFIG_FILE={FW_CONFIG_DIR}/FW_config.yaml')
+    print(f'export DB_INFO_FILE={HOME_DIR}/db_infos.json')
     os.chdir(f'{HOME_DIR.parent}/launch_dir')

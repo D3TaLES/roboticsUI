@@ -27,7 +27,7 @@ if __name__ == "__main__":
         expflow_wf = loadfn(expflow_file)
         wf = workflow_function(expflow_wf, name_tag=name_tag)
 
-    lpad = LaunchPad().from_file(lpad_file)
+    lpad = LaunchPad().from_file(os.path.abspath(lpad_file))
     info = lpad.add_wf(wf)
     fw_id = list(info.values())[0]
 

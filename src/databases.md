@@ -54,7 +54,7 @@ Tracks the status of different stations used in the robotics system. This includ
   "content_history": [                     
     "",
     "S_01",
-    "",
+    ""
   ]                        
 }
 ```
@@ -73,7 +73,7 @@ Tracks the status of different stations used in the robotics system. This includ
     "S_01",
     "",
     "S_01",
-    "",
+    ""
   ]
 }
 ```
@@ -110,7 +110,7 @@ Contains information about the current state of vials being used in the system. 
   "current_location": "cv_potentiostat_A_01",
   "location_history": [
     "robot_grip",
-    "home",
+    "home"
   ]
 }
 ```

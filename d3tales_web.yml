@@ -199,7 +199,7 @@ dependencies:
       - colorama==0.4.6
       - cryptography==41.0.1
       - custodian==2023.6.5
-      - d3tales-api==0.2.0
+#      - d3tales-api==0.2.0
       - dbstep==1.1.0
       - django==2.2.28
       - django-mkdocs-updated==0.1.6
@@ -275,7 +275,7 @@ dependencies:
       - sqlparse==0.2.4
       - sshtunnel==0.4.0
       - starlette==0.27.0
-      - swagger-client==1.0.0
+#      - swagger-client==1.0.0
       - sympy==1.12
       - tabulate==0.9.0
       - tenacity==8.2.2

@@ -1,6 +1,9 @@
 import os
+from pathlib import Path
 
-os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
+HOME_DIR = Path(__file__).resolve().parent.parent
+os.environ['PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages\\d3tales_api:{HOME_DIR.parent}Packages\\hardpotato\\src'
+os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
 import subprocess
 import webbrowser
 import tkinter as tk

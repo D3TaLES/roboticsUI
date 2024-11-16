@@ -290,14 +290,14 @@ class StationStatus(RobotStatusDB):
         else:
             return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
 
-    def get_first_available(self, name_str, wait=True, max_time=MAX_WAIT_TIME, wait_interval=2, **kwargs):
+    def get_first_available(self, name_str, wait=True, max_time=MAX_DB_WAIT_TIME, wait_interval=2, **kwargs):
         """
         Get the first available station with a specified name string.
 
         Args:
             name_str (str): The name string to search for.
             wait (bool, optional): Whether to wait for an available station. Defaults to True.
-            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
+            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_DB_WAIT_TIME.
             wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.
             **kwargs: Additional keyword arguments.
 
@@ -317,12 +317,12 @@ class StationStatus(RobotStatusDB):
             available_stations = self.get_all_available(name_str)
         return available_stations[0]
 
-    def wait_till_available(self, max_time=MAX_WAIT_TIME, wait_interval=2):
+    def wait_till_available(self, max_time=MAX_DB_WAIT_TIME, wait_interval=2):
         """
         Wait until the station is available.
 
         Args:
-            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.
+            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_DB_WAIT_TIME.
             wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.
 
         Returns:

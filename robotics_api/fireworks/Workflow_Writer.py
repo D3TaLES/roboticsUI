@@ -2,9 +2,12 @@
 # Copyright 2024, University of Kentucky
 
 import copy
+import os.path
 from functools import reduce
 from operator import iconcat
 from fireworks import Workflow
+from fireworks import LaunchPad
+from monty.serialization import loadfn
 from d3tales_api.Processors.expflow_parser import ProcessExpFlowObj, ProcessExperimentRun, get_id
 
 from robotics_api.fireworks.Fireworks import *
@@ -250,7 +253,7 @@ class EF2Experiment(ProcessExpFlowObj):
             if param.value:
                 parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))
-        return [firetask(**parameters_dict) for firetask in firetasks]
+        return [firetask(parameters_dict) for firetask in firetasks]
 
     @property
     def task_dictionary(self):
@@ -336,8 +339,7 @@ def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
 
 if __name__ == "__main__":
     # run_ex_processing()
-    downloaded_wfls_dir = os.path.join(Path("C:/Users") / "Lab" / "D3talesRobotics" / "downloaded_wfs")
-    expflow_file = os.path.join(downloaded_wfls_dir, 'Cond3_all_TEMPO_workflow.json')
+    expflow_file = TEST_DATA_DIR / 'workflows' / 'TEST_Density_workflow.json'
     expflow_exp = loadfn(expflow_file)
     # experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
     # tc = experiment.task_clusters
@@ -346,4 +348,5 @@ if __name__ == "__main__":
                              {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
                              {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
                  }
-    run_expflow_wf(expflow_exp, exp_params=ex_params)
+    wf = run_expflow_wf(expflow_exp, exp_params=ex_params)
+    LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf)

@@ -12,9 +12,7 @@ The `settings.py` contains master settings for all robotic system operations. It
 
   * ROBOT SETTINGS: Robot settings including the robot IP address, the grip target values for open and close, and perturbation amounts.
 
-  * POTENTIOSTAT SETTINGS: Comp ports and executions files for the instrumnets.
-
-  * MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. ): Default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.
+  * INSTRUMENT SETTINGS: Comp ports and executions files for the instruments along with default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.
 
   * PROCESSING SETTINGS: Processing settings such as processing procedures and plotting settings.
 
@@ -26,6 +24,7 @@ The `settings.py` contains master settings for all robotic system operations. It
 
   * PATH VARIABLES (and FIREWORKS PATH VARIABLES): Paths for key directories and files such as the data storage directory, key snapshots, and FireWorks configuration files.
 
+> Running the settings file via `python settings.py` will set up the necessary environment variable for using the Robotics API. 
 
 ## Snapshots
 

@@ -9,14 +9,17 @@ import webbrowser
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfile
-from GUI.app_processing import *
-from robotics_api.fireworks.Workflow_Writer import *
+from GUI.app_processing import get_exp_reagents, get_exps, reagent_location_options, vial_location_options, assign_locations
+from collections import OrderedDict
 
+from d3tales_api.D3database.d3database import BackDB
+from robotics_api.fireworks.Fireworks import *
+from robotics_api.fireworks.Workflow_Writer import run_expflow_wf
 d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("../src/media/D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("../docs_src/media/D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
@@ -193,7 +196,7 @@ class AddJob(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
 
     def open_file(self):
         self.selected_txt.set("loading file...")
@@ -233,7 +236,7 @@ class PushToDB(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
 
         self.design_frame()
 
@@ -273,7 +276,7 @@ class PushToDB_Exp(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         workflow_nodes = self.lpad.workflows.find_one({"name": wflow_name}).get("nodes")
         self.processing_fws = self.get_processing_fws(workflow_nodes)
 
@@ -300,7 +303,7 @@ class PushToDB_Exp(tk.Toplevel):
                                       offvalue=False, justify="left")
             checkbox.grid(column=0, row=i + 2)
             button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"),
-                               command=lambda fw_id=fw_id: self.dir_open(fw_id))
+                               command=lambda: self.dir_open(fw_id))
             button.grid(column=1, row=i + 2)
             self.push_dict[fw_id] = push_var
 
@@ -429,7 +432,7 @@ class ManageJobs(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
 
     def do_fw_action(self):
         cmd = "lpad {} {}".format(self.fw_action.get(), self.fw_specs.get())
@@ -475,7 +478,7 @@ class RunBase(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
 
     @property
     def next_fw(self):
@@ -520,7 +523,7 @@ class RunBase(tk.Toplevel):
         self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
         os.chdir(LAUNCH_DIR)
         return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
-        os.chdir(API_HOME_DIR)
+        os.chdir(ROBOTICS_API)
         if return_code == 0:
             AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run a Job")

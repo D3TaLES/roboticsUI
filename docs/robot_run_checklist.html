@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,24 +8,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Robot Run Checklist &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/checklist.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Common Errors" href="common_errors.html" />
-    <link rel="prev" title="QuickStart" href="quickstart.html" /> 
+    <link rel="prev" title="Terminology and Structure" href="terminology_setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,9 +36,6 @@
           <a href="index.html" class="icon icon-home">
             D<sup>3</sup>TaLES Robotics
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -51,8 +47,8 @@
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-running-a-workflow">Before Running a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#after-running-a-workflow">After Running a Workflow</a></li>
@@ -110,9 +106,9 @@
 <ul>
 <li><p>Load Robotics Workflow</p>
 <ul>
-<li><p>Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
-<li><p>Download Robotics Workflow file</p></li>
-<li><p>Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics Robotics App (select experiment and reagent locations as prompted)</p>
+<li><p>[ ] Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
+<li><p>[ ] Download Robotics Workflow file</p></li>
+<li><p>[ ] Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics Robotics App (select experiment and reagent locations as prompted)</p>
 <blockquote>
 <div><p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
 on a day when you run conductivity experiments.</p>
@@ -149,12 +145,14 @@ on a day when you run conductivity experiments.</p>
 </ul>
 </li>
 <li><p>Set temperature probe</p></li>
+<li><p>Place dispensing waste beaker below pipette.</p></li>
 <li><p>Set all vials (make sure they are uncapped)</p></li>
 </ul>
 </li>
+<li><p>Ensure any necessary calibration workflows have been completed. If you need to run a calibration, complete the next several items for the calibrations, then return to this step.</p></li>
 <li><p>Prepare Software</p>
 <ul>
-<li><p>Ensure any necessary calibration workflows have been completed.</p></li>
+<li><p>Check that the CHI software is set to produce IUPAC convention CV plots.</p></li>
 <li><p>Check your <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a> in settings.py!</p></li>
 <li><p>Launch Fireworks WebGUI (through <a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui"><span class="std std-ref">command line or Robotics App</span></a>)</p>
 <blockquote>
@@ -213,7 +211,7 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="QuickStart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="terminology_setup.html" class="btn btn-neutral float-left" title="Terminology and Structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="common_errors.html" class="btn btn-neutral float-right" title="Common Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

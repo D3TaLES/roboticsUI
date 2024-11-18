@@ -44,22 +44,6 @@ robotics\_api.utils.mongo\_dbs module
    :undoc-members:
    :show-inheritance:
 
-robotics\_api.utils.potentiostat\_hp module
--------------------------------------------
-
-.. automodule:: robotics_api.utils.potentiostat_hp
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-robotics\_api.utils.potentiostat\_kbio module
----------------------------------------------
-
-.. automodule:: robotics_api.utils.potentiostat_kbio
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 robotics\_api.utils.processing\_utils module
 --------------------------------------------
 

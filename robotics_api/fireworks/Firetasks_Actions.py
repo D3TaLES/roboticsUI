@@ -27,7 +27,7 @@ class RoboticsBase(FiretaskBase):
 
     _fw_name = "RoboticsBase"
 
-    def __init__(self):
+    def setup_task(self, fw_spec, get_exp_vial=True):
         self.wflow_name = ""
         self.exp_name = ""
         self.full_name = ""
@@ -38,9 +38,7 @@ class RoboticsBase(FiretaskBase):
         self.exp_vial = None
 
         self.success = True
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
-
-    def setup_task(self, fw_spec, get_exp_vial=True):
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         """Sets up the task with the provided fireworks spec.
 
         Args:

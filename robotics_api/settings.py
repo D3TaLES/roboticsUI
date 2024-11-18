@@ -192,13 +192,19 @@ INSTRUMENT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_inst
 
 if __name__ == "__main__":
     # Activate the conda environment (note: this may require special handling in Python)
-    # subprocess.call("conda activate d3tales_robotics", shell=True)
+    subprocess.call("conda activate d3tales_robotics", shell=True)
+    os.chdir(f'{HOME_DIR.parent}/launch_dir')
 
     # Set environment variables with HOME_DIR
-    os.environ[
-        'PYTHONPATH'] = f'{HOME_DIR}:{HOME_DIR.parent}Packages/d3tales_api:{HOME_DIR.parent}Packages/hardpotato/src'
-    os.environ['FW_CONFIG_FILE'] = f'{FW_CONFIG_DIR}/FW_config.yaml'
-    os.environ['DB_INFO_FILE'] = f'{HOME_DIR}/db_infos.json'
-    os.chdir(f'{HOME_DIR.parent}/launch_dir')
-    print(f'export PYTHONPATH={HOME_DIR}:{HOME_DIR.parent}/Packages/d3tales_api:{HOME_DIR.parent}/Packages/hardpotato/src')
-    print(f'export FW_CONFIG_FILE={FW_CONFIG_DIR}/FW_config.yaml')
+    py_path = f"{HOME_DIR}:{HOME_DIR.parent/'Packages'/'d3tales_api'}:{HOME_DIR.parent/'Packages'/'hardpotato'/'docs_src'}"
+    os.environ['FW_CONFIG_FILE'] = os.path.abspath(FW_CONFIG_DIR / 'FW_config.yaml')
+    os.environ['DB_INFO_FILE'] = os.path.abspath(HOME_DIR / 'db_infos.json')
+    os.environ['PYTHONPATH'] = py_path
+
+    print(os.environ['FW_CONFIG_FILE'])
+    print(os.environ['DB_INFO_FILE'])
+    print(os.environ['PYTHONPATH'])
+
+    print(f"export FW_CONFIG_FILE={FW_CONFIG_DIR / 'FW_config.yaml'}".replace('\\', "/").replace("C:", "/c"))
+    print(f"export DB_INFO_FILE={HOME_DIR / 'db_infos.json'}".replace('\\', "/").replace("C:", "/c"))
+    print(f"export PYTHONPATH={py_path}".replace('\\', "/").replace("C:", "/c"))

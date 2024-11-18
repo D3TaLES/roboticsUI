@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 host: 172.19.52.212
+=======
+host: localhost:27017
+>>>>>>> fireworks_fix
 port: 27017
 name: fireworks

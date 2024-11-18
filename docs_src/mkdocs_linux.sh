@@ -9,21 +9,22 @@ mkdir $BASE_DIR/docs
 
 
 sphinx-apidoc --full -o $BASE_DIR/_temp $BASE_DIR/robotics_api
-cp $BASE_DIR/src/conf.py $BASE_DIR/_temp/
-cp $BASE_DIR/src/index.rst $BASE_DIR/_temp/
-cp $BASE_DIR/src/*.md $BASE_DIR/_temp/
-cp -r $BASE_DIR/src/media $BASE_DIR/_temp/
+cp $BASE_DIR/docs_src/conf.py $BASE_DIR/_temp/
+cp $BASE_DIR/docs_src/index.rst $BASE_DIR/_temp/
+cp $BASE_DIR/docs_src/*.md $BASE_DIR/_temp/
+cp -r $BASE_DIR/docs_src/media $BASE_DIR/_temp/
 
 
 cd $BASE_DIR/_temp
-make clean
-make html
+make.bat clean
+make.bat html
 
 cd $BASE_DIR
 cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs
+cp -r $BASE_DIR/docs_src/_static/* $BASE_DIR/docs/_static
 touch $BASE_DIR/docs/.nojekyll
 rm -rf  $BASE_DIR/_temp/
 
 git add docs/
-git commit -am "Update documentation from GitHub Actions" || echo "No changes to commit"
+git commit -am "Update documentation" || echo "No changes to commit"
 git push

@@ -1,11 +1,21 @@
+---
+title: Robot Run Checklist
+author: Rebekah Duke-Crockett
+date: 2024-11-18
+description: Checklist for preparing a robot run in the robotics system.
+tags:
+  - robotics
+  - checklist
+---
+
 # Robot Run Checklist
 
 ## Before Running a Workflow
 
 * Load Robotics Workflow
-  * Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
-  * Download Robotics Workflow file
-  * Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
+  - [ ] Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
+  - [ ] Download Robotics Workflow file
+  - [ ] Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
      > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
      > on a day when you run conductivity experiments.
 

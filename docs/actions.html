@@ -77,8 +77,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html#this-database-structure-ensures-the-smooth-operation-of-the-robotics-system-by-keeping-track-of-real-time-information-on-reagents-stations-and-vials-as-well-as-storing-experimental-data-and-calibration-standards-needed-for-accurate-and-consistent-experimentation">This database structure ensures the smooth operation of the robotics system by keeping track of real-time information on reagents, stations, and vials, as well as storing experimental data and calibration standards needed for accurate and consistent experimentation.</a></li>
-<li class="toctree-l1"><a class="reference internal" href="databases.html#id1">Robotics Databases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Raw API Code Docs</span></p>
 <ul>
@@ -113,7 +111,7 @@
 <h1>Module - Actions<a class="headerlink" href="#module-actions" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="databases.html#id1"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="utils.html#module-utils"><span class="std std-ref">Module - Utils</span></a> and <a class="reference internal" href="fireworks.html#module-fireworks"><span class="std std-ref">Module - Fireworks</span></a> modules.</p>
+<p>The <strong>actions</strong> module consists of classes and functions that manage and track robotic actions related to <strong>vials</strong>, <strong>stations</strong>, and <strong>standards</strong>.  It interacts directly with the MongoDB robotics database collections (for more, see <a class="reference internal" href="databases.html#robotics-databases"><span class="std std-ref">Robotics Databases</span></a>) to store and retrieve these items’ status, positions, and contents. Its modular design facilitates precise handling and tracking of items during robotic operations. It is the second level of abstraction between the <a class="reference internal" href="utils.html#module-utils"><span class="std std-ref">Module - Utils</span></a> and <a class="reference internal" href="fireworks.html#module-fireworks"><span class="std std-ref">Module - Fireworks</span></a> modules.</p>
 <p>The module consists of three files:</p>
 <ol class="arabic simple">
 <li><p><strong>db_manipulations.py</strong>: Defines classes that manage database entries, allowing for reading and writing of vial, station, or standard data.</p></li>

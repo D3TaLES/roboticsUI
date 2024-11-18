@@ -16,8 +16,8 @@ cp -r $BASE_DIR/docs_src/media $BASE_DIR/_temp/
 
 
 cd $BASE_DIR/_temp
-make clean.bat
-make html.bat
+make.bat clean
+make.bat html
 
 cd $BASE_DIR
 cp -r $BASE_DIR/_temp/_build/html/* $BASE_DIR/docs

@@ -1,4 +1,3 @@
-<<<<<<< HEAD:src/databases.md
 # Robotics Databases
 
 The robotics system relies on MongoDB databases to store and manage real-time and experimental data related to vials, stations, reagents, and workflows. These databases ensure that the robotics and lab automation systems have access to the most up-to-date information needed to carry out experiments and operations efficiently.
@@ -414,4 +413,3 @@ Contains calibration data for chronoamperometry (CA) experiments.
 ---
 
 This database structure ensures the smooth operation of the robotics system by keeping track of real-time information on reagents, stations, and vials, as well as storing experimental data and calibration standards needed for accurate and consistent experimentation.
->>>>>>> fireworks_fix:docs_src/databases.md

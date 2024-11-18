@@ -20,8 +20,8 @@ tags:
   
     Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
     ```
-       > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
-     > on a day when you run conductivity experiments.
+    > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
+    > on a day when you run conductivity experiments.
 
 * Turn on:
   * The robot

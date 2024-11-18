@@ -15,6 +15,8 @@ import sys
 from robotics_api import __version__, __credits__, __author__
 from docutils import nodes
 from docutils.parsers.rst import Directive
+from sphinx.util.docutils import SphinxDirective
+from markdown_it import MarkdownIt
 sys.path.insert(0, '../')
 
 
@@ -50,20 +52,29 @@ extensions = [
     'myst_parser',
     "sphinx.ext.autosectionlabel"
 ]
-class CheckboxList(Directive):
-    """Custom directive for creating interactive checkbox lists."""
+
+
+class CheckboxList(SphinxDirective):
+    """Custom directive for creating interactive checkbox lists with Markdown support."""
     has_content = True
 
     def run(self):
-        # Create a container node to hold the checkbox list
         container = nodes.container()
-        # Iterate over each item in the content (lines under the directive)
+
+        # Use MarkdownIt to parse inline Markdown in each checkbox item
+        md = MarkdownIt()
+
         for item in self.content:
-            # Create a checkbox followed by the text
-            checkbox_html = f'<input type="checkbox"> {item}'
+            # Parse the text as Markdown
+            rendered_html = md.renderInline(item)
+            # Create a checkbox with rendered Markdown
+            checkbox_html = f'<input type="checkbox"> {rendered_html}'
+            # Add the checkbox as raw HTML to the container
             checkbox_node = nodes.raw('', checkbox_html, format='html')
             container += checkbox_node
+
         return [container]
+
 
 
 def skip(app, what, name, obj, would_skip, options):

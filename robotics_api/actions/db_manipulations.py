@@ -188,7 +188,7 @@ class StationStatus(RobotStatusDB):
     Copyright 2024, University of Kentucky
     """
 
-    def __init__(self, _id: str = None, state_id: str = None, pre_snapshot_generic=False, **kwargs):
+    def __init__(self, _id: str = None, state_id: str = None, pre_snapshot=True, **kwargs):
         """
         Initialize class instance.
 
@@ -205,8 +205,7 @@ class StationStatus(RobotStatusDB):
         self.type = self.id.split("_")[0] if self.id else None
         self.current_wflow_name = self.get_prop("current_wflow_name") if self.id else None
         self.location_snapshot = os.path.join(SNAPSHOT_DIR, f"{self.id}.json") if self.id else None
-        pre_name = "generic" if pre_snapshot_generic else self.id
-        self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{pre_name}.json") if self.id else None
+        self.pre_location_snapshot = os.path.join(SNAPSHOT_DIR, f"pre_{self.id}.json") if self.id and pre_snapshot else None
         self.raise_amount = 0
 
     @property

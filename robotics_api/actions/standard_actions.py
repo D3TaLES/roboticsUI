@@ -7,7 +7,6 @@ from robotics_api.utils.base_utils import *
 from robotics_api.actions.db_manipulations import *
 
 
-
 class VialMove(VialStatus):
     """
     A class for managing the movement of a vial between various stations and locations using a robot arm.
@@ -25,7 +24,6 @@ class VialMove(VialStatus):
         update_position(position): Updates the current position of the vial.
         robot_available(): Checks if the robot grip is available.
     """
-
 
     def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
         """
@@ -98,17 +96,19 @@ class VialMove(VialStatus):
                             f"at {self.current_location}. ")
         return success
 
-    def update_position(self, position):
+    def update_position(self, position, update_vial=True):
         """
         Updates the current position of the vial.
 
         Args:
             position (str): The new position of the vial.
+            update_vial (bool): Update vial position if true.
 
         Returns:
             None
         """
-        self.update_location(position)
+        if update_vial:
+            self.update_location(position)
         station = StationStatus(position)
         if station.exists:
             station.update_content(self.id)
@@ -167,7 +167,6 @@ class VialMove(VialStatus):
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
 
-
         if success:
             self.update_position(station.id)
             StationStatus("robot_grip").empty()
@@ -202,7 +201,7 @@ class VialMove(VialStatus):
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
 
-        self.update_position(station.id) if success else None
+        self.update_position(station.id, update_vial=False) if success else None
 
         return success
 
@@ -262,7 +261,7 @@ class LiquidStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'solvent'.
         """
-        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
         if self.type != "solvent":
@@ -400,6 +399,7 @@ class PipetteStation(StationStatus):
         place_vial(vial, raise_error=True): Places a vial at the pipette station.
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
+
     def __init__(self, _id, raise_amount: float = -0.08, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
@@ -477,6 +477,7 @@ class BalanceStation(StationStatus):
         tare(): Tares the balance.
         _send_command(write_txt=None, read_response=False): Sends a command to the balance and optionally reads the response.
     """
+
     def __init__(self, _id, raise_amount: float = 0.05, **kwargs):
         """
         Initializes a BalanceStation instance with an ID and raise amount.
@@ -489,7 +490,7 @@ class BalanceStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'balance'.
         """
-        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate a balance station, a balance name must be provided.")
         if self.type != "balance":
@@ -664,6 +665,7 @@ class StirStation(StationStatus):
         stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
         stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
+
     def __init__(self, _id, raise_amount: float = 0.1, **kwargs):
         """
         Initializes a StirStation instance with an ID and raise amount.
@@ -676,7 +678,7 @@ class StirStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'stir'.
         """
-        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
+        super().__init__(_id=_id, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
         if self.type != "stir":
@@ -697,7 +699,7 @@ class StirStation(StationStatus):
         """
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def stir(self, stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
+    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None):
         """
         Operates the stirring mechanism.
 
@@ -705,8 +707,8 @@ class StirStation(StationStatus):
             stir_time (int, optional): The time in seconds to stir. If None, defaults to implementing stir_cmd.
             stir_cmd (str, optional): Command for stir plate; only used if stir_time is None.
                                       Can be 'on'/'off' or 1/0 (default is 'off').
-            perturb_amount (float, optional): Amount to perturb the vial during stirring (default is STIR_PERTURB).
             move_sleep (float, optional): Time in seconds for robot to sleep between stirring moves (default is 3).
+            joint_deltas (dict, optional): Key word arguments
 
         Returns:
             bool: True if the stir action was successful, False otherwise.
@@ -716,15 +718,19 @@ class StirStation(StationStatus):
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
-            success = True
+            success = False
             success &= send_arduino_cmd(self.serial_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             start_time = time.time()
-            time.sleep(10)
+            time.sleep(5)
             end_time = time.time()
-            # TODO move during stirring
             while (end_time - start_time) < seconds:
-                time.sleep(move_sleep)
+                # Move vial around stir plate center
+                joint_deltas = joint_deltas or dict(j6=7)
+                perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=0, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
+                perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()
             success &= send_arduino_cmd(self.serial_name, 0) if STIR else True
             return success
@@ -772,6 +778,7 @@ class PotentiostatStation(StationStatus):
         move_elevator(endpoint, raise_error=True): Moves the elevator to a specified position.
         get_temperature(): Retrieves the temperature associated with this station.
     """
+
     def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a PotentiostatStation instance with an ID and raise amount.
@@ -918,6 +925,7 @@ class PotentiostatStation(StationStatus):
             success = True
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
+            success &= snapshot_move(SNAPSHOT_HOME)
             success &= vial.place_station(self, raise_error=raise_error)
 
             return success
@@ -1025,6 +1033,7 @@ class CVPotentiostatStation(PotentiostatStation):
         run_ircomp_test(data_path, e_ini=0, low_freq=None, high_freq=None, amplitude=None, sens=None):
             Runs an iR compensation test to determine the solution resistance.
     """
+
     def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CVPotentiostatStation instance.
@@ -1098,7 +1107,8 @@ class CVPotentiostatStation(PotentiostatStation):
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
                                     nSweeps=nSweeps, dE=sample_interval, sens=sens,
-                                    fileName=f_name, header="CV " + f_name, resistance=resistance * self.settings("rcomp_level"))
+                                    fileName=f_name, header="CV " + f_name,
+                                    resistance=resistance * self.settings("rcomp_level"))
             cv.run()
             time.sleep(self.settings("time_after"))
         else:
@@ -1136,7 +1146,6 @@ class CVPotentiostatStation(PotentiostatStation):
                   f"Resistance of 0 is in use.")
             return 0
 
-
         # Benchmark CV for voltage range
         print(f"RUN IR COMP TEST")
         if "chi" in self.pot_model:
@@ -1148,8 +1157,10 @@ class CVPotentiostatStation(PotentiostatStation):
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or self.settings("low_freq"),
-                                      high_freq=high_freq or self.settings("high_freq"), amplitude=amplitude or self.settings("amplitude"),
-                                      sens=sens or self.settings("sensitivity"), fileName=f_name, header="iRComp " + f_name)
+                                      high_freq=high_freq or self.settings("high_freq"),
+                                      amplitude=amplitude or self.settings("amplitude"),
+                                      sens=sens or self.settings("sensitivity"), fileName=f_name,
+                                      header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
@@ -1171,6 +1182,7 @@ class CAPotentiostatStation(PotentiostatStation):
                volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
             Runs a CA experiment and saves the data.
     """
+
     def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CAPotentiostatStation instance.

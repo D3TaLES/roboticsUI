@@ -315,6 +315,42 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
     return finished
 
 
+def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
+    """
+    Moves a given joint a specified range (in degrees).
+
+    Args:
+        reverse : Reverse all joint deltas if True
+        wait_time : Wait time after move
+        joint_deltas : Key word arguments
+
+    Returns:
+        bool: True if the movement completed successfully, False otherwise.
+    """
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+        current_joint_angles = base.GetMeasuredJointAngles()  # Assuming this method exists
+
+        def _angle(a):
+            return a if a < 360 else a - 360
+
+        joint_angles = []
+        for joint in current_joint_angles.joint_angles:
+            i = joint.joint_identifier
+            delta_value = joint_deltas.get(f"j{i+1}", 0) * (-1 if reverse else 1)
+            final_angle = _angle(joint.value + delta_value)
+            if delta_value:
+                print(f"Moving joint {i+1} {delta_value} degrees to {final_angle}")
+            joint_angles.append({"joint_identifier": i, "value": final_angle})
+
+        if wait_time:
+            time.sleep(wait_time)
+
+        return snapshot_move_angular(base, joint_angles)
+
+
 def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, axis="z"):
     """
     Creates a perturbed snapshot by modifying the specified axis position in the given snapshot file.

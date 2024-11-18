@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # SOLVENT TESTING
-    # vol = test_solv.dispense(test_vial, 0)
+    # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
     # flush_solvent(8, vial_id="C_04", solv_id="solvent_02", go_home=False)
     # LiquidStation("solvent_02").dispense_only(2)
@@ -85,8 +85,14 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.stir_vial(test_vial, stir_time=5)
-    test_bal.weigh(test_vial)
+    test_stir.stir_vial(test_vial, stir_time=15)
+    # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)
     # check_usb()
+
+    # joint_deltas = dict(j1=0, j6=7)
+    # perturb_angular(reverse=False, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=False, wait_time=1, **joint_deltas)

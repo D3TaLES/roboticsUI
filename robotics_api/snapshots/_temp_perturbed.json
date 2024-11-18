@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.409,
-            "y": -0.294,
-            "z": 0.165,
+            "x": 0.327,
+            "y": 0.464,
+            "z": 0.085,
             "thetaX": 90,
-            "thetaY": 3.0,
-            "thetaZ": 63
+            "thetaY": 0,
+            "thetaZ": 150
           },
           "constraint": {
             "speed": {
-              "translation": 0.3,
+              "translation": 0,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10003,
+          "identifier": 10006,
           "permission": 7,
           "actionType": 6
         },
-        "name": "stir_01"
+        "name": "CA Elevator"
       }
     ]
   }

@@ -13,9 +13,9 @@ Copyright 2024, University of Kentucky
 # ---------  TESTING OPERATION SETTINGS -------------
 RUN_POTENT = False
 DISPENSE = False
-STIR = False
+STIR = True
 WEIGH = True
-PIPETTE = False
+PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)

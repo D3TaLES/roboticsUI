@@ -35,7 +35,6 @@ release = __version__
 html_favicon = "media/D3TaLES_logo_transparent_robotics.ico"
 
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -64,35 +63,33 @@ class CheckboxList(SphinxDirective):
         # Initialize MarkdownIt to render links, bold, etc.
         md = MarkdownIt()
 
+        # Temporary content to process (will include placeholder for {ref} links)
         processed_content = []
 
-        # Process each line
         for item in self.content:
             item = item.strip()
 
-            # Check if the line is a list item starting with * or -
+            # Temporarily replace {ref:...} with placeholders
+            item = re.sub(r'(\{ref:[^\}]+\})', r'__REF_\1__', item)
+
+            # Replace list items starting with * or - with checkboxes
             if item.startswith(("*", "-")):
-                # Create the checkbox (strip the bullet and leading spaces)
                 checkbox_item = f'<input type="checkbox"> {item[2:].strip()}'
                 processed_content.append(checkbox_item)
             else:
-                # For other items, leave them as-is (to preserve links, ref, etc.)
+                # Keep other content as-is (links, code, etc.)
                 processed_content.append(item)
 
-        # Now we join the processed content into one string
+        # Join the processed content
         content_to_render = "\n".join(processed_content)
 
-        # Render the content as Markdown (so links, bold, etc., are preserved)
-        # Ensure that {ref:...} links are not altered by replacing them temporarily
-        content_to_render = re.sub(r'(\{ref:[^\}]+\})', r'__REF_\1__', content_to_render)
-
-        # Render the content using MarkdownIt (so it processes Markdown correctly)
+        # Render the Markdown content (leaves links and other syntax intact)
         rendered_html = md.render(content_to_render)
 
-        # Replace temporary placeholders with actual {ref:...} links
+        # Restore the {ref:...} placeholders to their original format
         rendered_html = re.sub(r'__REF_\{ref:([^\}]+)\}__', r'{ref:\1}', rendered_html)
 
-        # Wrap the rendered content in a container and add it to the directive's output
+        # Wrap the rendered content in a container and return it
         checkbox_node = nodes.raw('', rendered_html, format='html')
         container += checkbox_node
 

@@ -14,7 +14,7 @@ Copyright 2024, University of Kentucky
 RUN_POTENT = False
 DISPENSE = False
 STIR = False
-WEIGH = False
+WEIGH = True
 PIPETTE = False
 RUN_ROBOT = True
 MOVE_ELEVATORS = True

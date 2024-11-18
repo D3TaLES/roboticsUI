@@ -633,7 +633,7 @@ class BalanceStation(StationStatus):
         """
         try:
             balance = serial.Serial(self.p_address, timeout=1)
-        except serial.SerialException as e:
+        except IOError as e:
             raise Exception("Warning! Balance {} is not connected to {} because: {}".format(self, self.p_address, e))
         time.sleep(1)  # give the connection a second to settle
         if write_txt:

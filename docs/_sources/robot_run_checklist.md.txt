@@ -57,11 +57,11 @@ Ensure any necessary calibration workflows have been completed.
      > run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.
 
 #### Start Experiment
-  * Start instrument jobs. Through the Robotics App, select `Run Instruments` -> `Run Jobs Continuously`
-  * Start processing jobs. Through the Robotics App, select `Run Process` -> `Run Jobs Continuously`
-  * Start robot jobs. Through the Robotics App, select `Run Robot` -> `Run Jobs Continuously`
-  * Initialize workflow. Through the Robotics App, select `Initialize Workflow` -> `Run a Job`
-  * Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the ettings. 
+  * Start instrument jobs. Through the Robotics App, `Run Instruments` -> `Run Jobs Continuously`
+  * Start processing jobs. Through the Robotics App, `Run Process` -> `Run Jobs Continuously`
+  * Start robot jobs. Through the Robotics App, `Run Robot` -> `Run Jobs Continuously`
+  * Initialize workflow. Through the Robotics App, `Initialize Workflow` -> `Run a Job`
+  * Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the settings. 
 
 
 ## After Running a Workflow

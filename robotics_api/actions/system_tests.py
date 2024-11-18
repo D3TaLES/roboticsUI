@@ -45,7 +45,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_01")
+    test_vial = VialMove(_id="A_02")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
@@ -54,16 +54,16 @@ if __name__ == "__main__":
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # RESET TESTING
-    # reset_test_db()
+    reset_test_db()
     # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    snapshot_move(target_position=VIAL_GRIP_TARGET)
+    # snapshot_move(target_position=VIAL_GRIP_TARGET)
 
     # VIAL TESTING
     # vial_col_test("A")
     # test_vial.place_home()
-    # test_vial.retrieve()
+    test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 

@@ -27,7 +27,7 @@ class VialMove(VialStatus):
     """
 
 
-    def __init__(self, _id=None, raise_amount: float = -0.1, **kwargs):
+    def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
         """
         Initializes a VialMove instance with an optional vial ID and raise amount.
 
@@ -250,7 +250,7 @@ class LiquidStation(StationStatus):
         dispense_mass(vial, volume, raise_error=True): Dispenses a specified volume of liquid into a vial, weighing before and after to update the vial's mass.
     """
 
-    def __init__(self, _id, raise_amount=0.04, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.04, **kwargs):
         """
         Initializes a LiquidStation instance with an ID and raise amount.
 
@@ -400,7 +400,7 @@ class PipetteStation(StationStatus):
         place_vial(vial, raise_error=True): Places a vial at the pipette station.
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
-    def __init__(self, _id, raise_amount=0.08, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.08, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -477,7 +477,7 @@ class BalanceStation(StationStatus):
         tare(): Tares the balance.
         _send_command(write_txt=None, read_response=False): Sends a command to the balance and optionally reads the response.
     """
-    def __init__(self, _id, raise_amount=-0.05, **kwargs):
+    def __init__(self, _id, raise_amount: float = 0.05, **kwargs):
         """
         Initializes a BalanceStation instance with an ID and raise amount.
 
@@ -664,7 +664,7 @@ class StirStation(StationStatus):
         stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
         stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
-    def __init__(self, _id, raise_amount=-0.1, **kwargs):
+    def __init__(self, _id, raise_amount: float = 0.1, **kwargs):
         """
         Initializes a StirStation instance with an ID and raise amount.
 
@@ -772,7 +772,7 @@ class PotentiostatStation(StationStatus):
         move_elevator(endpoint, raise_error=True): Moves the elevator to a specified position.
         get_temperature(): Retrieves the temperature associated with this station.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a PotentiostatStation instance with an ID and raise amount.
 
@@ -1025,7 +1025,7 @@ class CVPotentiostatStation(PotentiostatStation):
         run_ircomp_test(data_path, e_ini=0, low_freq=None, high_freq=None, amplitude=None, sens=None):
             Runs an iR compensation test to determine the solution resistance.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CVPotentiostatStation instance.
 
@@ -1170,7 +1170,7 @@ class CAPotentiostatStation(PotentiostatStation):
                volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
             Runs a CA experiment and saves the data.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CAPotentiostatStation instance.
 

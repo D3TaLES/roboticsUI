@@ -77,6 +77,7 @@ def snapshot_move_angular(base: BaseClient, joint_angle_values):
 
 
 def snapshot_move_cartesian(base: BaseClient, coordinate_values: dict):
+    raise Exception(coordinate_values)
     if VERBOSE > 3:
         print("Starting Cartesian action movement ...")
     action = Base_pb2.Action()
@@ -361,6 +362,7 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         return True
 
     raise_amount = station.raise_amount
+    raise Exception(raise_amount)
     if isinstance(station, VialStatus):
         snapshot_file = station.home_snapshot
         pre_position_file = None

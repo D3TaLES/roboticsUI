@@ -55,26 +55,38 @@ extensions = [
 
 
 class CheckboxList(SphinxDirective):
-    """Custom directive for creating interactive checkbox lists with Markdown support."""
+    """Custom directive for creating checkbox lists while retaining all Markdown formatting."""
     has_content = True
 
     def run(self):
         container = nodes.container()
 
-        # Use MarkdownIt to parse inline Markdown in each checkbox item
+        # Use MarkdownIt to parse the entire content block
         md = MarkdownIt()
 
+        # Process each line to replace * or - with a checkbox
+        content_with_checkboxes = []
         for item in self.content:
-            # Parse the text as Markdown
-            rendered_html = md.renderInline(item)
-            # Create a checkbox with rendered Markdown
-            checkbox_html = f'<input type="checkbox"> {rendered_html}'
-            # Add the checkbox as raw HTML to the container
-            checkbox_node = nodes.raw('', checkbox_html, format='html')
-            container += checkbox_node
+            # Replace list items starting with * or - with checkboxes
+            if item.strip().startswith(("*", "-")):
+                # Strip the leading * or - and replace with a checkbox
+                checkbox_item = f'<input type="checkbox"> {item[2:].strip()}'
+                content_with_checkboxes.append(checkbox_item)
+            else:
+                # Otherwise, leave the content as-is (no changes)
+                content_with_checkboxes.append(item)
+
+        # Join the processed lines
+        processed_content = "\n".join(content_with_checkboxes)
+
+        # Render the entire block as Markdown (including links, code, etc.)
+        rendered_html = md.render(processed_content)
+
+        # Wrap the rendered content in a container and add it to the directive's output
+        checkbox_node = nodes.raw('', rendered_html, format='html')
+        container += checkbox_node
 
         return [container]
-
 
 
 def skip(app, what, name, obj, would_skip, options):

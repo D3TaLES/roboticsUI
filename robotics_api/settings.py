@@ -16,8 +16,8 @@ DISPENSE = False
 STIR = False
 WEIGH = False
 PIPETTE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 

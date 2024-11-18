@@ -51,7 +51,6 @@
 <li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-running-a-workflow">Before Running a Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#after-running-a-workflow">After Running a Workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
@@ -103,103 +102,64 @@
 <h1>Robot Run Checklist<a class="headerlink" href="#robot-run-checklist" title="Link to this heading"></a></h1>
 <section id="before-running-a-workflow">
 <h2>Before Running a Workflow<a class="headerlink" href="#before-running-a-workflow" title="Link to this heading"></a></h2>
-<ul>
-<li><p>Load Robotics Workflow</p>
 <div class="docutils container">
-<input type="checkbox"> Create Robotics Workflow on <a href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a><input type="checkbox"> <input type="checkbox"> Download Robotics Workflow file<input type="checkbox"> <input type="checkbox"> Load Robotics Workflow file through <code>Add Job</code> on robotics Robotics App (select experiment and reagent locations as prompted)</div>
-<blockquote>
-<div><p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
-on a day when you run conductivity experiments.</p>
-</div></blockquote>
-</li>
-<li><p>Turn on:</p>
-<ul class="simple">
-<li><p>The robot</p></li>
-<li><p>All Arduino devices</p></li>
-<li><p>Liquid dispensing pumps</p></li>
-<li><p>Instruments</p></li>
-<li><p>Balance</p></li>
-<li><p>Stir plate (turn the rotation rate to desired value)</p></li>
-</ul>
-</li>
-<li><p>Prepare materials:</p>
-<ul class="simple">
-<li><p>Measure and dispense solids into experiment vials</p></li>
-<li><p>Place stir bars in experiment vials.</p></li>
-<li><p>Bubble argon in solvent</p></li>
-<li><p>Fill rinsing vials</p></li>
-</ul>
-</li>
-<li><p>Prepare Stations</p>
-<ul class="simple">
-<li><p>Flush liquid dispensing tubes with 8 mL solution</p></li>
-<li><p>Set all electrodes</p>
-<ul>
-<li><p>Place electrodes in elevator holders</p></li>
-<li><p>Check secure connections for all electrodes</p></li>
-<li><p><strong>For conductivity probe</strong>, soak in DI water for 15 min.</p></li>
-</ul>
-</li>
-<li><p>Set temperature probe</p></li>
-<li><p>Place dispensing waste beaker below pipette.</p></li>
-<li><p>Set all vials (make sure they are uncapped)</p></li>
-</ul>
-</li>
-<li><p>Ensure any necessary calibration workflows have been completed. If you need to run a calibration, complete the next several items for the calibrations, then return to this step.</p></li>
-<li><p>Prepare Software</p>
-<ul>
-<li><p>Check that the CHI software is set to produce IUPAC convention CV plots.</p></li>
-<li><p>Check your <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a> in settings.py!</p></li>
-<li><p>Launch Fireworks WebGUI (through <a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui"><span class="std std-ref">command line or Robotics App</span></a>)</p>
-<blockquote>
-<div><p>If managing workflows through the command line, be sure to <a class="reference internal" href="installation.html#activate-environment"><span class="std std-ref">Activate Environment</span></a> in any new terminal.</p>
-</div></blockquote>
-</li>
-<li><p>Ensure there is <em>only one</em> READY firework: the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework for the workflow you’d like to run.</p>
-<blockquote>
-<div><p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
-run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
-</div></blockquote>
-</li>
-</ul>
-</li>
-<li><p>Start Experiment</p>
-<ul class="simple">
-<li><p>Start instrument jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start processing jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start robot jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Initialize workflow. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
-<li><p>Note that all data collected during the workflow will appear in the <code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code> defined in the <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a>.</p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="after-running-a-workflow">
-<h2>After Running a Workflow<a class="headerlink" href="#after-running-a-workflow" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Ensure workflow is finished.</p>
-<ul>
-<li><p>Ensure robot is not active.</p></li>
-<li><p>End all running terminals.</p></li>
-<li><p>Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)</p></li>
-</ul>
-</li>
-<li><p>Turn off hardware.</p>
-<ul>
-<li><p>Move robot to resting END_HOME position. Turn off.</p></li>
-<li><p>Turn off pump.</p></li>
-<li><p>Turn off instruments.</p></li>
-</ul>
-</li>
-<li><p>Clean up materials.</p>
-<ul>
-<li><p>Cap all experiment vials.</p></li>
-<li><p>Place secure cap on liquid dispensing solvent jars.</p></li>
-<li><p>Remove and clean electrodes.</p></li>
-<li><p>Rinse and wipe down temperature probe.</p></li>
-</ul>
-</li>
-</ul>
+<p><input type="checkbox"> Load Robotics Workflow
+<input type="checkbox"> * Create Robotics Workflow on <a href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a>
+<input type="checkbox"> * Download Robotics Workflow file
+<input type="checkbox"> * Load Robotics Workflow file through <code>Add Job</code> on robotics Robotics App (select experiment and reagent locations as prompted)
+&gt; <strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
+&gt; on a day when you run conductivity experiments.</p>
+<p><input type="checkbox"> Turn on:
+<input type="checkbox"> * The robot
+<input type="checkbox"> * All Arduino devices
+<input type="checkbox"> * Liquid dispensing pumps
+<input type="checkbox"> * Instruments
+<input type="checkbox"> * Balance
+<input type="checkbox"> * Stir plate (turn the rotation rate to desired value)</p>
+<p><input type="checkbox"> Prepare materials:
+<input type="checkbox"> * Measure and dispense solids into experiment vials
+<input type="checkbox"> * Place stir bars in experiment vials.
+<input type="checkbox"> * Bubble argon in solvent
+<input type="checkbox"> * Fill rinsing vials</p>
+<p><input type="checkbox"> Prepare Stations
+<input type="checkbox"> * Flush liquid dispensing tubes with 8 mL solution
+<input type="checkbox"> * Set all electrodes
+<input type="checkbox"> * Place electrodes in elevator holders
+<input type="checkbox"> * Check secure connections for all electrodes
+<input type="checkbox"> * <strong>For conductivity probe</strong>, soak in DI water for 15 min.
+<input type="checkbox"> * Set temperature probe
+<input type="checkbox"> * Place dispensing waste beaker below pipette.
+<input type="checkbox"> * Set all vials (make sure they are uncapped)</p>
+<p><input type="checkbox"> Ensure any necessary calibration workflows have been completed. If you need to run a calibration, complete the next several items for the calibrations, then return to this step.</p>
+<p><input type="checkbox"> Prepare Software
+<input type="checkbox"> * Check that the CHI software is set to produce IUPAC convention CV plots.
+<input type="checkbox"> * Check your {ref}<code>settings:settings</code> in settings.py!
+<input type="checkbox"> * Launch Fireworks WebGUI (through {ref}<code>command line or Robotics App &lt;desktop_app:monitoring workflows with FireWorks WebGUI&gt;</code>)
+&gt; If managing workflows through the command line, be sure to {ref}<code>installation:activate environment</code> in any new terminal.</p>
+<p><input type="checkbox"> * Ensure there is <em>only one</em> READY firework: the <code>init_</code> firework for the workflow you'd like to run.
+&gt;<strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
+&gt; run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
+<p><input type="checkbox"> Start Experiment
+<input type="checkbox"> * Start instrument jobs. Through the Robotics App, select <code>Run Instruments</code> -&gt; <code>Run Jobs Continuously</code>
+<input type="checkbox"> * Start processing jobs. Through the Robotics App, select <code>Run Process</code> -&gt; <code>Run Jobs Continuously</code>
+<input type="checkbox"> * Start robot jobs. Through the Robotics App, select <code>Run Robot</code> -&gt; <code>Run Jobs Continuously</code>
+<input type="checkbox"> * Initialize workflow. Through the Robotics App, select <code>Initialize Workflow</code> -&gt; <code>Run a Job</code>
+<input type="checkbox"> * Note that all data collected during the workflow will appear in the <code>DATA_DIR</code> defined in the {ref}<code>settings:settings</code>.</p>
+<h2>After Running a Workflow</h2>
+<p><input type="checkbox"> Ensure workflow is finished.
+<input type="checkbox"> * Ensure robot is not active.
+<input type="checkbox"> * End all running terminals.
+<input type="checkbox"> * Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)
+<input type="checkbox"> Turn off hardware.
+<input type="checkbox"> * Move robot to resting END_HOME position. Turn off.
+<input type="checkbox"> * Turn off pump.
+<input type="checkbox"> * Turn off instruments.
+<input type="checkbox"> Clean up materials.
+<input type="checkbox"> * Cap all experiment vials.
+<input type="checkbox"> * Place secure cap on liquid dispensing solvent jars.
+<input type="checkbox"> * Remove and clean electrodes.
+<input type="checkbox"> * Rinse and wipe down temperature probe.</p>
+</div>
 </section>
 </section>
 

@@ -12,16 +12,13 @@ tags:
 
 ## Before Running a Workflow
 
+```{checkbox-list}
 * Load Robotics Workflow
-    ```{checkbox-list}
-    Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
-  
-    Download Robotics Workflow file
-  
-    Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
-    ```
-    > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
-    > on a day when you run conductivity experiments.
+  * Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
+  * Download Robotics Workflow file
+  * Load Robotics Workflow file through `Add Job` on robotics Robotics App (select experiment and reagent locations as prompted)
+     > **Note for Measuring Conductivity**: Be sure to create, load, and run a CA Calibration workflow at least once
+     > on a day when you run conductivity experiments.
 
 * Turn on:
   * The robot
@@ -82,3 +79,4 @@ tags:
    * Place secure cap on liquid dispensing solvent jars.
    * Remove and clean electrodes.
    * Rinse and wipe down temperature probe.
+```

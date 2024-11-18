@@ -180,7 +180,6 @@
 <div class="viewcode-block" id="snapshot_move_cartesian">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_move_cartesian">[docs]</a>
 <span class="k">def</span> <span class="nf">snapshot_move_cartesian</span><span class="p">(</span><span class="n">base</span><span class="p">:</span> <span class="n">BaseClient</span><span class="p">,</span> <span class="n">coordinate_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">coordinate_values</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">VERBOSE</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Cartesian action movement ...&quot;</span><span class="p">)</span>
     <span class="n">action</span> <span class="o">=</span> <span class="n">Base_pb2</span><span class="o">.</span><span class="n">Action</span><span class="p">()</span>
@@ -480,7 +479,6 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="n">raise_amount</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">raise_amount</span>
-    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">raise_amount</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">VialStatus</span><span class="p">):</span>
         <span class="n">snapshot_file</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">home_snapshot</span>
         <span class="n">pre_position_file</span> <span class="o">=</span> <span class="kc">None</span>

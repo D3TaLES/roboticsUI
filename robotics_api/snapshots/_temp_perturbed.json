@@ -4,21 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.586,
-            "y": 0.162,
-            "z": -0.0020000000000000018,
+            "x": 0.409,
+            "y": -0.294,
+            "z": 0.165,
             "thetaX": 90,
-            "thetaY": 0,
-            "thetaZ": 103
+            "thetaY": 3.0,
+            "thetaZ": 63
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_A_02"
+        "name": "stir_01"
       }
     ]
   }

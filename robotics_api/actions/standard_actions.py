@@ -262,7 +262,7 @@ class LiquidStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'solvent'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
         if self.type != "solvent":
@@ -489,7 +489,7 @@ class BalanceStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'balance'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
         if not self.id:
             raise Exception("To operate a balance station, a balance name must be provided.")
         if self.type != "balance":
@@ -511,7 +511,7 @@ class BalanceStation(StationStatus):
             bool: True if the vial was successfully placed, False otherwise.
         """
         vial = vial if isinstance(vial, VialMove) else VialMove(vial)
-        return vial.place_station(self.id, raise_error=raise_error)
+        return vial.place_station(self, raise_error=raise_error)
 
     def _retrieve_vial(self, vial: VialMove):
         """
@@ -676,7 +676,7 @@ class StirStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'stir'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot_generic=True, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
         if self.type != "stir":
@@ -918,7 +918,7 @@ class PotentiostatStation(StationStatus):
             success = True
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
-            success &= vial.place_station(self.id, raise_error=raise_error)
+            success &= vial.place_station(self, raise_error=raise_error)
 
             return success
 
@@ -1071,7 +1071,8 @@ class CVPotentiostatStation(PotentiostatStation):
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
-            from robotics_api.utils.potentiostat_kbio import CvExperiment, voltage_step
+            warnings.warn("WARNING! Kbio potentiostat command is DEPRECATED! Use with caution! ")
+            from robotics_api.utils._depriciated.potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,

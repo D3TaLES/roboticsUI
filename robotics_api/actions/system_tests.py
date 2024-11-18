@@ -54,7 +54,7 @@ if __name__ == "__main__":
     d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # RESET TESTING
-    reset_test_db()
+    # reset_test_db()
     # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # VIAL TESTING
     # vial_col_test("A")
     # test_vial.place_home()
-    test_vial.retrieve()
+    # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.stir_vial(test_vial, stir_time=30)
-    # test_bal.weigh(test_vial)
+    # test_stir.stir_vial(test_vial, stir_time=5)
+    test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)
     # check_usb()

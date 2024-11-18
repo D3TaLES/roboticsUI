@@ -26,5 +26,5 @@ touch $BASE_DIR/docs/.nojekyll
 rm -rf  $BASE_DIR/_temp/
 
 git add docs/
-git commit -am "Update documentation from GitHub Actions" || echo "No changes to commit"
+git commit -am "Update documentation" || echo "No changes to commit"
 git push

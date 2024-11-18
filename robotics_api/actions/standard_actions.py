@@ -791,8 +791,8 @@ class PotentiostatStation(StationStatus):
         if "potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.method, _, self.pot, self.p_channel = self.id.split("_")
-        self.p_address = self.settings["address"]
-        self.p_exe_path = self.settings["exe_path"]
+        self.p_address = self.settings("address")
+        self.p_exe_path = self.settings("exe_path")
         self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
 
         elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
@@ -800,17 +800,24 @@ class PotentiostatStation(StationStatus):
         self.temp_serial_name = f"T{elevator:1d}"
         self.raise_amount = raise_amount
 
-        self.micro_electrode = True if self.settings("working_electrode_radius") <= MICRO_ELECTRODES_MAX_RADIUS else False
+        self.electrode_radius = self.settings("working_electrode_radius", raise_error=False)
+        if self.electrode_radius:
+            self.micro_electrode = True if self.electrode_radius <= MICRO_ELECTRODES_MAX_RADIUS else False
 
-    def settings(self, settings_name):
-        settings_dict = POTENTIOSTAT_SETTINGS.get(self.id)
+    @property
+    def _settings_dict(self):
+        settings_dict = POTENTIOSTAT_SETTINGS.get(self.id, {})
         if not settings_dict:
             raise KeyError(f"No settings set for potentiostat {self}. Please add settings for {self} in settings.py.")
-        if settings_dict.get(settings_name):
-            return settings_dict[settings_name]
-        raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
-                       f"condition {settings_name} in the ExpFlow robotic workflow or set a default condition in the "
-                       f"settings file (settings.py).")
+        return settings_dict
+
+    def settings(self, settings_name, raise_error=True):
+        if self._settings_dict.get(settings_name):
+            return self._settings_dict[settings_name]
+        if raise_error:
+            raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
+                           f"condition {settings_name} in the ExpFlow robotic workflow or set a default condition in "
+                           f"the settings file (settings.py).")
 
     def update_experiment(self, experiment: str or None):
         """

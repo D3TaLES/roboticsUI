@@ -58,12 +58,12 @@ if __name__ == "__main__":
     # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    # snapshot_move(target_position=60)
+    snapshot_move(target_position=VIAL_GRIP_TARGET)
 
     # VIAL TESTING
     # vial_col_test("A")
     # test_vial.place_home()
-    test_vial.retrieve()
+    # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 

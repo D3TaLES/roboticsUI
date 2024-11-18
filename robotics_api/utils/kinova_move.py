@@ -7,6 +7,7 @@ from argparse import Namespace
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 
+from robotics_api.actions.db_manipulations import VialStatus
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
 from robotics_api.settings import *
@@ -358,8 +359,13 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         return True
 
     raise_amount = station.raise_amount
-    snapshot_file = station.location_snapshot
-    pre_position_file = station.pre_location_snapshot
+    if isinstance(station, VialStatus):
+        snapshot_file = station.home_snapshot
+        pre_position_file = None
+    else:
+        snapshot_file = station.location_snapshot
+        pre_position_file = station.pre_location_snapshot
+
     snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
     success = True

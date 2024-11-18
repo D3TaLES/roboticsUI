@@ -296,7 +296,9 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                         pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
                         if not all([d < position_error for d in pose_diffs]):
                             if raise_error:
-                                raise SystemError("Error: Robot did not reach the desired Cartesian pose: ", pose_diffs)
+                                raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
+                                                  f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
+                                                  f" {pose_diffs}")
                             finished = False
                     else:
 

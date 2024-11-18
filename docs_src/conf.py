@@ -13,6 +13,8 @@
 import os
 import sys
 from robotics_api import __version__, __credits__, __author__
+from docutils import nodes
+from docutils.parsers.rst import Directive
 sys.path.insert(0, '../')
 
 
@@ -48,6 +50,21 @@ extensions = [
     'myst_parser',
     "sphinx.ext.autosectionlabel"
 ]
+class CheckboxList(Directive):
+    """Custom directive for creating interactive checkbox lists."""
+    has_content = True
+
+    def run(self):
+        # Create a container node to hold the checkbox list
+        container = nodes.container()
+        # Iterate over each item in the content (lines under the directive)
+        for item in self.content:
+            # Create a checkbox followed by the text
+            checkbox_html = f'<input type="checkbox"> {item}'
+            checkbox_node = nodes.raw('', checkbox_html, format='html')
+            container += checkbox_node
+        return [container]
+
 
 def skip(app, what, name, obj, would_skip, options):
     if name == "__init__":
@@ -56,8 +73,10 @@ def skip(app, what, name, obj, would_skip, options):
         return False
     return would_skip
 
+
 def setup(app):
     app.connect("autodoc-skip-member", skip)
+    app.add_directive("checkbox-list", CheckboxList)
 
 
 # Make sure the target is unique

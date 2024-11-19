@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 from datetime import datetime
 from robotics_api.settings import *
-from robotics_api.utils.base_utils import unit_conversion
+from robotics_api.utils.base_utils import unit_conversion, sig_figs
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA
 
@@ -45,34 +45,41 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
             raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
                             f"solv_id={solv_id}, solute_mass={solute_masses}, solv_vol={solv_amounts}")
         return DEFAULT_CONCENTRATION
-    if not soln_density:
-        warnings.warn("No solution density provided. Using reagent density instead...this may not be accurate. ")
-        soln_density = f"{ReagentStatus(_id=solute_id).density}{DENSITY_UNIT}"
 
-    print("SOLUTE: ", solute_masses)
-    print("SOLV: ", solv_amounts)
-    print("DENSITY: ", soln_density)
     ureg = pint.UnitRegistry()
     solute_mass = sum([ureg(u) for u in solute_masses])
     solv_amt = sum([ureg(u) for u in solv_amounts])
-    solute_mw = ureg(f"{ReagentStatus(_id=solute_id).molecular_weight}g/mol")
+    solute_mw = float(ReagentStatus(_id=solute_id).molecular_weight) * ureg('g/mol')
+    solv_density = f"{ReagentStatus(_id=solv_id).density}{DENSITY_UNIT}"
+    solv_mass = unit_conversion(solv_amt, default_unit="g", density=solv_density) * ureg.gram
+
     if mol_fraction:
         solute_mols = solute_mass / solute_mw
         total_mols = 0
         for reagent in vial_content:
-            r_mw = ureg(f"{ReagentStatus(_id=reagent['reagent_uuid']).molecular_weight}g/mol")
-            r_mass = ureg(reagent["amount"])
+            r_mw = ReagentStatus(_id=reagent['reagent_uuid']).molecular_weight * ureg('g/mol')
+            r_density = f"{ReagentStatus(_id=reagent['reagent_uuid']).density}{DENSITY_UNIT}"
+            if not r_density:
+                warnings.warn(f"Mol fraction could not be calculated because reagent {reagent} was reported as volume, "
+                              "but it does not have a density.")
+                return None
+            r_mass = unit_conversion(reagent["amount"], default_unit="g", density=r_density) * ureg.gram
+            print(r_mass, r_mw)
             total_mols += r_mass/r_mw
         x = solute_mols / total_mols
         print(f"MOL FRACTION: {x}")
         return x.magnitude
     else:
-        print(solv_amt, solute_mass)
-        volume_L = unit_conversion(solv_amt + solute_mass, default_unit="L", density=soln_density)
-        volume = ureg(f"{volume_L}L")
-        concentration = solute_mass / solute_mw / volume
+        if soln_density:
+            soln_volume = unit_conversion(solv_mass + solute_mass, default_unit="L", density=soln_density) * ureg.liter
+        else:
+            warnings.warn("No solution density provided. The solution volume is assumed to be the solvent volume. "
+                          "This may not be accurate if volume expansion is present. ")
+            soln_volume = unit_conversion(solv_amt, default_unit="L", density=solv_density) * ureg.liter
+
+        concentration = solute_mass / solute_mw / soln_volume
         print(f"CONCENTRATION: {concentration}")
-        return "{}{}".format(round(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
+        return "{}{}".format(sig_figs(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 
 def get_kcl_conductivity(temp):
@@ -158,10 +165,10 @@ def get_cell_constant(raise_error=True):
                          f"workflow today before preceding with CA experiments.")
 
 
-def print_prop(prop_dict):
+def print_prop(prop_dict, num_sig_figs=5):
     """Print property value and unit from dictionary"""
     if prop_dict:
-        return "{} {}".format(prop_dict.get("value", prop_dict), prop_dict.get("unit", ""))
+        return "{} {}".format(sig_figs(prop_dict.get("value", prop_dict), num_sig_figs), prop_dict.get("unit", ""))
     return ""
 
 

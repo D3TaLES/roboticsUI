@@ -7,18 +7,18 @@ This file contains various settings and configurations for a robotics experiment
 operation settings, default conditions, instrument settings, processing settings, station configurations,
 file paths, and more. Be sure to review all settings listed here before running a robotic workflow.
 
-Copyright 2024, University of Kentucky
+Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 DISPENSE = False
-STIR = True
-WEIGH = True
-PIPETTE = True
-RUN_ROBOT = True
+STIR = False
+WEIGH = False
+PIPETTE = False
+RUN_ROBOT = False
 MOVE_ELEVATORS = True
-CALIB_DATE = ''  # '2024_06_25'  The date that should be used to gather calibration data from database (should be blank for a real run)
+CALIB_DATE = ''  # '2024_06_25'  Date used in testing to gather calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -26,14 +26,15 @@ WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying 
 RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
 FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
-EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit this experiment by skipping actions for all children Fireworks
+EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment by skipping all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
-RETURN_EXTRACTED_SOLN = False  # Return solution extracted via pipette after measurement made.
+RETURN_EXTRACTED_SOLN = True  # Return solution extracted via pipette after measurement made.
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
+SOLV_D_IS_SOLN_D = True  # Solution density is assumed to be the solvent density if True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
-DEFAULT_CONCENTRATION = 0  # "0.01M"
+DEFAULT_CONCENTRATION = None  # "0.01M"
 
 TIME_UNIT = "s"
 MASS_UNIT = "g"
@@ -53,6 +54,7 @@ STIR_PERTURB = 0.003
 # ---------  INSTRUMENT SETTINGS -------------
 MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
 
+# NOTE: A potentiostat setting cannot be None
 POTENTIOSTAT_SETTINGS = {
     "cv_potentiostat_A_01": dict(
         address="COM6",
@@ -118,8 +120,8 @@ POTENTIOSTAT_SETTINGS = {
         sensitivity=1e-4,  # A/V, current sensitivity
         pulse_width=1e-4,  # sec, pulse width for CA
         steps=200,  # number of steps for CA
-        volt_min=None,  # V, minimum acceptable voltage for CA experiment
-        volt_max=None,  # V, maximum acceptable voltage for CA experiment
+        volt_min=False,  # V, minimum acceptable voltage for CA experiment
+        volt_max=False,  # V, maximum acceptable voltage for CA experiment
         time_after=5,  # seconds
     ),
 }
@@ -147,6 +149,7 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
 FORMAL_POTENTIALS = {  # Formal potentials
     "CC1(C)CCCC(C)(C)N1[O]": "0.30 V",  # TEMPO, V vs. Ag/Ag+
     "[Cl-].[K+]": "0 V",  # KCl, NOT REAL, just a stand in!
+    "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]": "0 V",  # Fc, NOT REAL, just a stand in!
 }
 SOLVENT_DENSITIES = {  # Formal potentials
     "O": "0.997 g/mL",  # H2O
@@ -173,8 +176,9 @@ ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "A_02": 3}
 
 # ---------  PATH VARIABLES -------------
 HOME_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = HOME_DIR.parent / "data"
-LAUNCH_DIR = HOME_DIR.parent / 'launch_dir'
+PARENT_DIR = HOME_DIR.parent
+DATA_DIR = PARENT_DIR / "data"
+LAUNCH_DIR = PARENT_DIR / 'launch_dir'
 TEST_DATA_DIR = HOME_DIR / "test_data"
 ROBOTICS_API = HOME_DIR / "robotics_api"
 
@@ -193,10 +197,10 @@ INSTRUMENT_FWORKER = ROBOTICS_API / 'fireworks' / 'fw_config' / 'fireworker_inst
 if __name__ == "__main__":
     # Activate the conda environment (note: this may require special handling in Python)
     subprocess.call("conda activate d3tales_robotics", shell=True)
-    os.chdir(f'{HOME_DIR.parent}/launch_dir')
+    os.chdir(f'{PARENT_DIR}/launch_dir')
 
     # Set environment variables with HOME_DIR
-    py_path = f"{HOME_DIR}:{HOME_DIR.parent/'Packages'/'d3tales_api'}:{HOME_DIR.parent/'Packages'/'hardpotato'/'docs_src'}"
+    py_path = f"{HOME_DIR}:{PARENT_DIR/'Packages'/'d3tales_api'}:{PARENT_DIR/'Packages'/'hardpotato'/'src'}"
     os.environ['FW_CONFIG_FILE'] = os.path.abspath(FW_CONFIG_DIR / 'FW_config.yaml')
     os.environ['DB_INFO_FILE'] = os.path.abspath(HOME_DIR / 'db_infos.json')
     os.environ['PYTHONPATH'] = py_path

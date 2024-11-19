@@ -12,11 +12,10 @@ the _pack_ attribute in the Structures.
 
 """
 
-from math import nan
-from enum import Enum, EnumMeta
+from enum import Enum
 from dataclasses import dataclass
 
-from _kbio.c_utils import *
+from robotics_api.utils._kbio.c_utils import *
 
 #==============================================================================#
 

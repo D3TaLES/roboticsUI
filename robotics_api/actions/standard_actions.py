@@ -25,7 +25,7 @@ class VialMove(VialStatus):
         robot_available(): Checks if the robot grip is available.
     """
 
-    def __init__(self, _id=None, raise_amount: float = 0.1, **kwargs):
+    def __init__(self, _id=None, raise_amount: float = 0.12, **kwargs):
         """
         Initializes a VialMove instance with an optional vial ID and raise amount.
 
@@ -819,7 +819,7 @@ class PotentiostatStation(StationStatus):
         return settings_dict
 
     def settings(self, settings_name, raise_error=True):
-        if self._settings_dict.get(settings_name):
+        if self._settings_dict.get(settings_name) is not None:
             return self._settings_dict[settings_name]
         if raise_error:
             raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
@@ -903,6 +903,7 @@ class PotentiostatStation(StationStatus):
         if success:
             vial.update_position("robot_grip")
             self.empty()
+        success &= snapshot_move(SNAPSHOT_HOME)
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
@@ -925,6 +926,7 @@ class PotentiostatStation(StationStatus):
             success = True
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
+            success &= vial.retrieve(raise_error=True)
             success &= snapshot_move(SNAPSHOT_HOME)
             success &= vial.place_station(self, raise_error=raise_error)
 
@@ -972,7 +974,7 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_serial_name, "", return_txt=True)
         if arduino_result:
-            return {"value": round(float(arduino_result.split(":")[1].strip()) + 273.15, 2), "unit": "K"}
+            return {"value": sig_figs(float(arduino_result.split(":")[1].strip()) + 273.15, 5), "unit": "K"}
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):

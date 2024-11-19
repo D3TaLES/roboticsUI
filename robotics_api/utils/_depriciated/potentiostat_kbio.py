@@ -11,10 +11,10 @@ from dataclasses import dataclass
 from scipy.stats import linregress
 
 try:
-    import _kbio.kbio_types as KBIO
-    from _kbio.kbio_api import KBIO_api
-    from _kbio.tech_types import TECH_ID
-    from _kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
+    import robotics_api.utils._kbio.kbio_types as KBIO
+    from robotics_api.utils._kbio.kbio_api import KBIO_api
+    from robotics_api.utils._kbio.tech_types import TECH_ID
+    from robotics_api.utils._kbio.kbio_tech import ECC_parm, make_ecc_parm, make_ecc_parms, print_experiment_data
 except ModuleNotFoundError:
     warnings.warn("KBIO module not imported.")
 from robotics_api.settings import *

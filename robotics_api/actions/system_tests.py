@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # POTENTIOSTAT TESTING
     # test_potent.place_vial(test_vial)
     # test_potent.move_elevator(endpoint="down")
-    # test_potent.move_elevator(endpoint="up")
+    test_potent.move_elevator(endpoint="up")
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # SOLVENT TESTING
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    test_stir.stir_vial(test_vial, stir_time=15)
+    # test_stir.stir_vial(test_vial, stir_time=15)
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)

@@ -158,13 +158,13 @@ class EF2Experiment(ProcessExpFlowObj):
 
             # Set up task clusters based on task types
             if "process" in task.name or "rinse" in task.name:
-                # Make old Fireworks for processing or rinse jobs
+                # Make own Fireworks for processing or rinse jobs
                 all_tasks.extend([task_cluster, [task]]) if task_cluster else all_tasks.append([task])
                 task_cluster = []
                 if "process" in next_name:
                     continue
             elif self.is_inst_task(task) and not self.is_inst_task(previous_name):
-                # Make old Firework for collect jobs
+                # Make own Firework for collect jobs
                 all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = [task]
             else:
@@ -178,7 +178,8 @@ class EF2Experiment(ProcessExpFlowObj):
             if self.is_inst_task(task) and self.is_inst_task(next_nonP) and (not self.same_positions(task, next_nonP)):
                 active_method = None
 
-            if next_method != active_method:
+            # Add additional tasks based on active and next methods
+            if next_method != active_method:  # or "transfer_liquid" in task.name:
                 all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = []
                 if "collect" in task.name and "process" not in next_name:
@@ -187,7 +188,7 @@ class EF2Experiment(ProcessExpFlowObj):
                     task_cluster.append(self.instrument_task(task, tag="finish"))
                 if self.is_inst_task(next_nonP):
                     task_cluster.append(self.instrument_task(next_nonP, tag="setup"))
-                all_tasks.append(task_cluster)
+                all_tasks.append(task_cluster) if task_cluster else None
                 task_cluster = []
 
             active_method = next_method

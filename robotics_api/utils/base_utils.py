@@ -4,6 +4,30 @@ import serial
 from robotics_api.settings import *
 
 
+def sig_figs(number, num_sig_figs=3):
+    """
+    Round a number to the specified number of significant figures.
+
+    Args:
+        number (float): The number to round.
+        num_sig_figs (int): The number of significant figures to retain.
+
+    Returns:
+        float: The number rounded to the given significant figures.
+    """
+    if number == 0:
+        return 0  # Zero remains zero regardless of sig figs
+    if num_sig_figs <= 0:
+        raise ValueError("Number of significant figures must be greater than zero.")
+
+    import math
+    # Calculate the order of magnitude
+    magnitude = math.floor(math.log10(abs(number)))
+    # Scale the number to round at the desired decimal place
+    scale = 10 ** (magnitude - num_sig_figs + 1)
+    return round(number / scale) * scale
+
+
 def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):
     """
     Convert a measurement into a default unit using pint.

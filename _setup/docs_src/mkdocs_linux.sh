@@ -1,4 +1,4 @@
-export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export PYTHONPATH=$BASE_DIR
 cd $BASE_DIR
 git pull
@@ -9,11 +9,11 @@ mkdir $BASE_DIR/docs
 
 
 sphinx-apidoc --full -o $BASE_DIR/_temp $BASE_DIR/robotics_api
-cp $BASE_DIR/docs_src/conf.py $BASE_DIR/_temp/
-cp $BASE_DIR/docs_src/index.rst $BASE_DIR/_temp/
-cp $BASE_DIR/docs_src/*.md $BASE_DIR/_temp/
-cp -r $BASE_DIR/docs_src/media $BASE_DIR/_temp/
-cp -r $BASE_DIR/docs_src/_static/* $BASE_DIR/_temp/_static
+cp $BASE_DIR/_setup/docs_src/conf.py $BASE_DIR/_temp/
+cp $BASE_DIR/_setup/docs_src/index.rst $BASE_DIR/_temp/
+cp $BASE_DIR/_setup/docs_src/*.md $BASE_DIR/_temp/
+cp -r $BASE_DIR/_setup/docs_src/media $BASE_DIR/_temp/
+cp -r $BASE_DIR/_setup/docs_src/_static/* $BASE_DIR/_temp/_static
 
 cd $BASE_DIR/_temp
 make.bat clean

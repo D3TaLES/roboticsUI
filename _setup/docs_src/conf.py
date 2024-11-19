@@ -17,7 +17,7 @@ from docutils import nodes
 from docutils.parsers.rst import Directive
 from sphinx.util.docutils import SphinxDirective
 from markdown_it import MarkdownIt
-sys.path.insert(0, '../')
+sys.path.insert(0, '../../')
 
 
 # -- Project information -----------------------------------------------------

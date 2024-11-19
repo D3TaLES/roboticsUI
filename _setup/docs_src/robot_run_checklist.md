@@ -10,8 +10,8 @@ tags:
 
 # Robot Run Checklist
 
-## Before Running a Workflow
 
+## Before Running a Workflow
 ```{checkbox-list}
 #### Load Robotics Workflow
   * Create Robotics Workflow on [ExpFlow](https://d3tales.as.uky.edu/expflow/)
@@ -37,20 +37,21 @@ tags:
 #### Prepare Stations
   * Flush liquid dispensing tubes with 8 mL solution
   * Place electrodes in elevator holders
+  * Be sure the vial does not hit electrodes when risen 
   * Check secure connections for all electrodes
   * **For conductivity probe**, soak in DI water for 15 min.
-  * Set temperature probe
+  * Set temperature probe (NOT in the vial solution)
   * Place dispensing waste beaker below pipette. 
   * Set all vials (make sure they are uncapped)
   
-Ensure any necessary calibration workflows have been completed. 
+#### Ensure any necessary calibration workflows have been completed. 
   * If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
 
 #### Prepare Software
-  * Check that the CHI software is set to produce IUPAC convention CV plots. 
+  * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` --> `System` --> Anodic Positive)
   * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or Robotics App.)
-    > If managing workflows through the command line, be sure to installation:activate environment in any new terminal.   
+    > **Note**: If managing workflows through the command line, be sure to activate the environment in any new terminal.   
 
   * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run.
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally
@@ -61,11 +62,12 @@ Ensure any necessary calibration workflows have been completed.
   * Start processing jobs. Through the Robotics App, `Run Process` -> `Run Jobs Continuously`
   * Start robot jobs. Through the Robotics App, `Run Robot` -> `Run Jobs Continuously`
   * Initialize workflow. Through the Robotics App, `Initialize Workflow` -> `Run a Job`
-  * Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the settings. 
-
+  
+    > **Note**: Note that all data collected during the workflow will appear in the `DATA_DIR` defined in the settings. 
+```
 
 ## After Running a Workflow
-
+```{checkbox-list}
 #### Ensure workflow is finished.
    * Ensure robot is not active.
    * End all running terminals.

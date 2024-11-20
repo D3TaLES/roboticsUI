@@ -212,6 +212,7 @@ class ProcessBase(RoboticsBase):
         if self.mol_id and e_ref is None:
             raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
         metadata.update({"e_ref": e_ref})
+        metadata.update(self.instrument._settings_dict)
         metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCV(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
                               metadata=metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
@@ -256,6 +257,7 @@ class ProcessBase(RoboticsBase):
             return None
 
         self.metadata.update({"cell_constant": get_cell_constant(raise_error=cell_constant_error)})
+        metadata.update(self.instrument._settings_dict)
         metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
                               metadata=metadata).data_dict
@@ -449,7 +451,7 @@ class DataProcessor(ProcessBase):
                 with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
                     fn.write(json.dumps(processed_data))
                 with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
-                    fn.write(print_ca_analysis([processed_data], verbose=VERBOSE))
+                    fn.write(print_ca_analysis(processed_data, verbose=VERBOSE))
 
         else:
             processed_data = []

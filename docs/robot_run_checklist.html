@@ -1,29 +1,28 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Robot Run Checklist &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>Robot Run Checklist &mdash; D3TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/checklist.js?v=5a0fb0df"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Common Errors" href="common_errors.html" />
-    <link rel="prev" title="QuickStart" href="quickstart.html" /> 
+    <link rel="prev" title="Terminology and Structure" href="terminology_setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -35,11 +34,8 @@
           
           
           <a href="index.html" class="icon icon-home">
-            D<sup>3</sup>TaLES Robotics
+            D3TaLES Robotics
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -51,8 +47,8 @@
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-running-a-workflow">Before Running a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#after-running-a-workflow">After Running a Workflow</a></li>
@@ -85,7 +81,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+          <a href="index.html">D3TaLES Robotics</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -107,105 +103,77 @@
 <h1>Robot Run Checklist<a class="headerlink" href="#robot-run-checklist" title="Link to this heading"></a></h1>
 <section id="before-running-a-workflow">
 <h2>Before Running a Workflow<a class="headerlink" href="#before-running-a-workflow" title="Link to this heading"></a></h2>
-<ul>
-<li><p>Load Robotics Workflow</p>
-<ul>
-<li><p>Create Robotics Workflow on <a class="reference external" href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a></p></li>
-<li><p>Download Robotics Workflow file</p></li>
-<li><p>Load Robotics Workflow file through <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Job</span></code> on robotics Robotics App (select experiment and reagent locations as prompted)</p>
+<div class="docutils container">
+<h4>Load Robotics Workflow</h4>
+<p><input type="checkbox"> Create Robotics Workflow on <a href="https://d3tales.as.uky.edu/expflow/">ExpFlow</a><br>
+<input type="checkbox"> Download Robotics Workflow file<br>
+<input type="checkbox"> Load Robotics Workflow file through <code>Add Job</code> on robotics Robotics App (select experiment and reagent locations as prompted)<br></p>
 <blockquote>
-<div><p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
+<p><strong>Note for Measuring Conductivity</strong>: Be sure to create, load, and run a CA Calibration workflow at least once
 on a day when you run conductivity experiments.</p>
-</div></blockquote>
-</li>
-</ul>
-</li>
-<li><p>Turn on:</p>
-<ul class="simple">
-<li><p>The robot</p></li>
-<li><p>All Arduino devices</p></li>
-<li><p>Liquid dispensing pumps</p></li>
-<li><p>Instruments</p></li>
-<li><p>Balance</p></li>
-<li><p>Stir plate (turn the rotation rate to desired value)</p></li>
-</ul>
-</li>
-<li><p>Prepare materials:</p>
-<ul class="simple">
-<li><p>Measure and dispense solids into experiment vials</p></li>
-<li><p>Place stir bars in experiment vials.</p></li>
-<li><p>Bubble argon in solvent</p></li>
-<li><p>Fill rinsing vials</p></li>
-</ul>
-</li>
-<li><p>Prepare Stations</p>
-<ul class="simple">
-<li><p>Flush liquid dispensing tubes with 8 mL solution</p></li>
-<li><p>Set all electrodes</p>
-<ul>
-<li><p>Place electrodes in elevator holders</p></li>
-<li><p>Check secure connections for all electrodes</p></li>
-<li><p><strong>For conductivity probe</strong>, soak in DI water for 15 min.</p></li>
-</ul>
-</li>
-<li><p>Set temperature probe</p></li>
-<li><p>Set all vials (make sure they are uncapped)</p></li>
-</ul>
-</li>
-<li><p>Prepare Software</p>
-<ul>
-<li><p>Ensure any necessary calibration workflows have been completed.</p></li>
-<li><p>Check your <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a> in settings.py!</p></li>
-<li><p>Launch Fireworks WebGUI (through <a class="reference internal" href="desktop_app.html#monitoring-workflows-with-fireworks-webgui"><span class="std std-ref">command line or Robotics App</span></a>)</p>
+</blockquote>
+<h4>Turn on:</h4>
+<p><input type="checkbox"> The robot<br>
+<input type="checkbox"> All Arduino devices<br>
+<input type="checkbox"> Liquid dispensing pumps<br>
+<input type="checkbox"> Instruments<br>
+<input type="checkbox"> Balance<br>
+<input type="checkbox"> Stir plate (turn the rotation rate to desired value)<br></p>
+<h4>Prepare materials:</h4>
+<p><input type="checkbox"> Measure and dispense solids into experiment vials<br>
+<input type="checkbox"> Place stir bars in experiment vials.<br>
+<input type="checkbox"> Bubble argon in solvent<br>
+<input type="checkbox"> Fill rinsing vials<br></p>
+<h4>Prepare Stations</h4>
+<p><input type="checkbox"> Flush liquid dispensing tubes with 8 mL solution<br>
+<input type="checkbox"> Place electrodes in elevator holders<br>
+<input type="checkbox"> Be sure the vial does not hit electrodes when risen<br>
+<input type="checkbox"> Check secure connections for all electrodes<br>
+<input type="checkbox"> <strong>For conductivity probe</strong>, soak in DI water for 15 min.<br>
+<input type="checkbox"> Set temperature probe (NOT in the vial solution)<br>
+<input type="checkbox"> Place dispensing waste beaker below pipette.<br>
+<input type="checkbox"> Set all vials (make sure they are uncapped)<br></p>
+<h4>Ensure any necessary calibration workflows have been completed.</h4>
+<p><input type="checkbox"> If you need to run a calibration, complete the next several items for the calibrations, then return to this step.<br></p>
+<h4>Prepare Software</h4>
+<p><input type="checkbox"> Check that the CHI software is set to produce IUPAC convention CV plots. (<code>Setup</code> --&gt; <code>System</code> --&gt; Anodic Positive)<br>
+<input type="checkbox"> Check your settings in settings.py!<br>
+<input type="checkbox"> Launch Fireworks WebGUI (through command line or Robotics App.)<br></p>
 <blockquote>
-<div><p>If managing workflows through the command line, be sure to <a class="reference internal" href="installation.html#activate-environment"><span class="std std-ref">Activate Environment</span></a> in any new terminal.</p>
-</div></blockquote>
-</li>
-<li><p>Ensure there is <em>only one</em> READY firework: the <code class="docutils literal notranslate"><span class="pre">init_</span></code> firework for the workflow you’d like to run.</p>
+<p><strong>Note</strong>: If managing workflows through the command line, be sure to activate the environment in any new terminal.</p>
+</blockquote>
+<p><input type="checkbox"> Ensure there is <em>only one</em> READY firework: the <code>init_</code> firework for the workflow you'd like to run.<br></p>
 <blockquote>
-<div><p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
+<p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
 run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
-</div></blockquote>
-</li>
-</ul>
-</li>
-<li><p>Start Experiment</p>
-<ul class="simple">
-<li><p>Start instrument jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Instruments</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start processing jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Process</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Start robot jobs. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Robot</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Jobs</span> <span class="pre">Continuously</span></code></p></li>
-<li><p>Initialize workflow. Through the Robotics App, select <code class="docutils literal notranslate"><span class="pre">Initialize</span> <span class="pre">Workflow</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">a</span> <span class="pre">Job</span></code></p></li>
-<li><p>Note that all data collected during the workflow will appear in the <code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code> defined in the <a class="reference internal" href="settings.html#settings"><span class="std std-ref">Settings</span></a>.</p></li>
-</ul>
-</li>
-</ul>
+</blockquote>
+<h4>Start Experiment</h4>
+<p><input type="checkbox"> Start instrument jobs. Through the Robotics App, <code>Run Instruments</code> -&gt; <code>Run Jobs Continuously</code><br>
+<input type="checkbox"> Start processing jobs. Through the Robotics App, <code>Run Process</code> -&gt; <code>Run Jobs Continuously</code><br>
+<input type="checkbox"> Start robot jobs. Through the Robotics App, <code>Run Robot</code> -&gt; <code>Run Jobs Continuously</code><br>
+<input type="checkbox"> Initialize workflow. Through the Robotics App, <code>Initialize Workflow</code> -&gt; <code>Run a Job</code><br></p>
+<blockquote>
+<p><strong>Note</strong>: Note that all data collected during the workflow will appear in the <code>DATA_DIR</code> defined in the settings.</p>
+</blockquote>
+</div>
 </section>
 <section id="after-running-a-workflow">
 <h2>After Running a Workflow<a class="headerlink" href="#after-running-a-workflow" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Ensure workflow is finished.</p>
-<ul>
-<li><p>Ensure robot is not active.</p></li>
-<li><p>End all running terminals.</p></li>
-<li><p>Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)</p></li>
-</ul>
-</li>
-<li><p>Turn off hardware.</p>
-<ul>
-<li><p>Move robot to resting END_HOME position. Turn off.</p></li>
-<li><p>Turn off pump.</p></li>
-<li><p>Turn off instruments.</p></li>
-</ul>
-</li>
-<li><p>Clean up materials.</p>
-<ul>
-<li><p>Cap all experiment vials.</p></li>
-<li><p>Place secure cap on liquid dispensing solvent jars.</p></li>
-<li><p>Remove and clean electrodes.</p></li>
-<li><p>Rinse and wipe down temperature probe.</p></li>
-</ul>
-</li>
-</ul>
+<div class="docutils container">
+<h4>Ensure workflow is finished.</h4>
+<p><input type="checkbox"> Ensure robot is not active.<br>
+<input type="checkbox"> End all running terminals.<br>
+<input type="checkbox"> Ensure there are no READY fireworks (DEFUSE or Pause any remaining READY fireworks.)<br></p>
+<h4>Turn off hardware.</h4>
+<p><input type="checkbox"> Move robot to resting END_HOME position. Turn off.<br>
+<input type="checkbox"> Turn off pump.<br>
+<input type="checkbox"> Turn off instruments.<br></p>
+<h4>Clean up materials.</h4>
+<p><input type="checkbox"> Cap all experiment vials.<br>
+<input type="checkbox"> Place secure cap on liquid dispensing solvent jars.<br>
+<input type="checkbox"> Remove and clean electrodes.<br>
+<input type="checkbox"> Rinse and wipe down temperature probe.<br></p>
+</div>
 </section>
 </section>
 
@@ -213,7 +181,7 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="QuickStart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="terminology_setup.html" class="btn btn-neutral float-left" title="Terminology and Structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="common_errors.html" class="btn btn-neutral float-right" title="Common Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

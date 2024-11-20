@@ -1,23 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>robotics_api.actions.db_manipulations &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>robotics_api.actions.db_manipulations &mdash; D3TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="../../../_static/D3TaLES_logo_transparent_robotics.ico"/>
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/checklist.js?v=5a0fb0df"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -32,11 +31,8 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            D<sup>3</sup>TaLES Robotics
+            D3TaLES Robotics
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -48,8 +44,8 @@
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../terminology_setup.html">Terminology and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../robot_run_checklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../common_errors.html">Common Errors</a></li>
 </ul>
@@ -78,7 +74,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">D<sup>3</sup>TaLES Robotics</a>
+          <a href="../../../index.html">D3TaLES Robotics</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -137,8 +133,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;experiment_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_wflow_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">home_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">home_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;VialHome_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">home_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">home_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="s2">&quot;VialHome_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.json&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">home_location</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
     <span class="nd">@property</span>
@@ -301,7 +296,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="n">new_vial_content</span><span class="p">,</span>
             <span class="p">})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully extracted </span><span class="si">{</span><span class="n">extract_perc</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% of the mass from vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 </div>
 
@@ -317,7 +311,7 @@
 
 <div class="viewcode-block" id="StationStatus.__init__">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pre_snapshot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize class instance.</span>
 
@@ -334,7 +328,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_wflow_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_wflow_name&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pre_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_location_snapshot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pre_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">pre_snapshot</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raise_amount</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 
@@ -391,13 +385,12 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_retrieve_vial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vial</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Placeholder method for retrieving a vial.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            vial: The vial to retrieve.</span>
-<span class="sd">            **kwargs: Additional keyword arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -429,14 +422,14 @@
 
 <div class="viewcode-block" id="StationStatus.get_first_available">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.get_first_available">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_first_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_first_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_DB_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the first available station with a specified name string.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name_str (str): The name string to search for.</span>
 <span class="sd">            wait (bool, optional): Whether to wait for an available station. Defaults to True.</span>
-<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</span>
+<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_DB_WAIT_TIME.</span>
 <span class="sd">            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.</span>
 <span class="sd">            **kwargs: Additional keyword arguments.</span>
 
@@ -459,12 +452,12 @@
 
 <div class="viewcode-block" id="StationStatus.wait_till_available">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.wait_till_available">[docs]</a>
-    <span class="k">def</span> <span class="nf">wait_till_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wait_till_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">MAX_DB_WAIT_TIME</span><span class="p">,</span> <span class="n">wait_interval</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wait until the station is available.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_WAIT_TIME.</span>
+<span class="sd">            max_time (int, optional): The maximum time to wait in seconds. Defaults to MAX_DB_WAIT_TIME.</span>
 <span class="sd">            wait_interval (int, optional): The interval between wait checks in seconds. Defaults to 2.</span>
 
 <span class="sd">        Returns:</span>

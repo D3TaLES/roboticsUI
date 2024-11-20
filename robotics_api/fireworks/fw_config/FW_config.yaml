@@ -1,8 +1,8 @@
 ECHO_TEST: FW_config.yaml is loaded for D3TaLES robotics.
 #ADD_USER_PACKAGES:
 #  -fireworks.python
-LAUNCHPAD_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\launchpad_robot.yaml
-FWORKER_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\fireworker_all.yaml
+LAUNCHPAD_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\fireworks\fw_config\launchpad_robot.yaml
+FWORKER_LOC:  C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\fireworks\fw_config\fireworker_all.yaml
 # set to FIFO if you want older FireWorks to be run first, FILO if you want recent FireWorks run first.
 # Note that higher priority FireWorks are always run first.
 SORT_FWS: 'FIFO'
@@ -10,7 +10,7 @@ SORT_FWS: 'FIFO'
 PRINT_FW_JSON: True
 # whether to print the FW.yaml file in your run directory
 PRINT_FW_YAML: False
-# the name to give the script for submitting PBS/SLURM/etc. queue jobs
+# the name to give the script for submitting PBS\SLURM\etc. queue jobs
 SUBMIT_SCRIPT_NAME: FW_submit.sh
 # format for loggers (this String will be passed to logging.Formatter())
 FW_LOGGING_FORMAT: "%(asctime)s %(levelname)s %(message)s"

@@ -45,7 +45,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_01")
+    test_vial = VialMove(_id="A_02")
     test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
@@ -58,12 +58,12 @@ if __name__ == "__main__":
     # reset_stations(end_home=True)
     # snapshot_move(SNAPSHOT_HOME)
     # snapshot_move(SNAPSHOT_END_HOME)
-    # snapshot_move(target_position=60)
+    # snapshot_move(target_position=VIAL_GRIP_TARGET)
 
     # VIAL TESTING
     # vial_col_test("A")
     # test_vial.place_home()
-    test_vial.retrieve()
+    # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 
@@ -74,19 +74,25 @@ if __name__ == "__main__":
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # SOLVENT TESTING
-    # vol = test_solv.dispense(test_vial, 0)
+    # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(8, vial_id="C_04", solv_id="solvent_02", go_home=False)
+    # flush_solvent(8, vial_id="B_04", solv_id="solvent_02", go_home=False)
     # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    # test_pip.pipette(volume=0)  # mL
+    test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.stir_vial(test_vial, stir_time=30)
+    # test_stir.stir_vial(test_vial, stir_time=15)
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)
     # check_usb()
+
+    # joint_deltas = dict(j1=0, j6=7)
+    # perturb_angular(reverse=False, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
+    # perturb_angular(reverse=False, wait_time=1, **joint_deltas)

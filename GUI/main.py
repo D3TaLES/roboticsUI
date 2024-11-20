@@ -1,19 +1,22 @@
-import os
-
-os.environ['DB_INFO_FILE'] = 'C:\\Users\\Lab\\D3talesRobotics\\roboticsUI\\db_infos.json'
-import subprocess
 import webbrowser
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfile
 from GUI.app_processing import *
-from robotics_api.fireworks.Workflow_Writer import *
+from collections import OrderedDict
+from fireworks.flask_site.app import app
+from fireworks.core.fworker import FWorker
+from fireworks.core.rocket_launcher import launch_rocket, rapidfire
+
+from d3tales_api.D3database.d3database import BackDB
+from robotics_api.fireworks.Fireworks import *
+from robotics_api.fireworks.Workflow_Writer import run_expflow_wf
 
 d3orange = "#FF9004"
 d3blue = "#4590B8"
 d3navy = "#1A3260"
 
-logo = Image.open("../src/media/D3TaLES_logo_transparent_robotics.png")
+logo = Image.open("../_setup/docs_src/media/D3TaLES_logo_transparent_robotics.png")
 d3logo = logo.resize([int(0.3 * s) for s in logo.size])
 d3logo_small = logo.resize([int(0.1 * s) for s in logo.size])
 
@@ -190,7 +193,7 @@ class AddJob(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
     def open_file(self):
         self.selected_txt.set("loading file...")
@@ -230,7 +233,7 @@ class PushToDB(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
         self.design_frame()
 
@@ -270,7 +273,7 @@ class PushToDB_Exp(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
-        self.lpad = LaunchPad().from_file(LAUNCHPAD)
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
         workflow_nodes = self.lpad.workflows.find_one({"name": wflow_name}).get("nodes")
         self.processing_fws = self.get_processing_fws(workflow_nodes)
 
@@ -297,7 +300,7 @@ class PushToDB_Exp(tk.Toplevel):
                                       offvalue=False, justify="left")
             checkbox.grid(column=0, row=i + 2)
             button = tk.Button(self, text="View Data", fg=d3blue, font=("Raleway", 9, "bold"),
-                               command=lambda fw_id=fw_id: self.dir_open(fw_id))
+                               command=lambda: self.dir_open(fw_id))
             button.grid(column=1, row=i + 2)
             self.push_dict[fw_id] = push_var
 
@@ -325,7 +328,8 @@ class PushToDB_Exp(tk.Toplevel):
             meta_dict = MongoDatabase(database="robotics", collection_name="metadata").coll.find_one({"_id": m_id}).get(
                 "metadata")
             for p_id in p_ids:
-                p_data = MongoDatabase(database="robotics", collection_name="experimentation").coll.find_one({"_id": p_id})
+                p_data = MongoDatabase(database="robotics", collection_name="experimentation").coll.find_one(
+                    {"_id": p_id})
                 BackDB(collection_name="experimentation", instance=p_data)
             CV2Front(id_list=p_ids, metadata_dict=meta_dict, run_processing=False, insert=True)
 
@@ -426,7 +430,7 @@ class ManageJobs(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
     def do_fw_action(self):
         cmd = "lpad {} {}".format(self.fw_action.get(), self.fw_specs.get())
@@ -472,7 +476,7 @@ class RunBase(tk.Toplevel):
 
     @property
     def lpad(self):
-        return LaunchPad().from_file(LAUNCHPAD)
+        return LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
     @property
     def next_fw(self):
@@ -516,26 +520,22 @@ class RunBase(tk.Toplevel):
     def run_job(self):
         self.run_txt.set("Launching {} Job...".format(self.category.capitalize()))
         os.chdir(LAUNCH_DIR)
-        return_code = subprocess.call('rlaunch -w {} singleshot'.format(self.fireworker), )
-        os.chdir(API_HOME_DIR)
-        if return_code == 0:
-            AlertDialog(self, alert_msg="Firework successfully launched!")
+        launch_rocket(launchpad=self.lpad, fworker=self.fireworker)
+        AlertDialog(self, alert_msg="Firework successfully launched!")
         self.run_txt.set("Run a Job")
         self.destroy()
 
     def run_job_all(self):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
-        subprocess.call('cls', shell=True)
         print('LAUNCHING ALL READY {} JOBS...\n\n'.format(self.category.upper()))
-        subprocess.call('rlaunch -w {} rapidfire'.format(self.fireworker), )
+        rapidfire(launchpad=self.lpad, fworker=self.fireworker, nlaunches=0)
 
     def run_job_continuous(self):
         self.parent.destroy()
         os.chdir(LAUNCH_DIR)
-        subprocess.call('cls', shell=True)
         print('LAUNCHING {} JOBS CONTINUOUSLY...\n\n'.format(self.category.upper()))
-        subprocess.call('rlaunch -w {} rapidfire --nlaunches infinite --sleep 10'.format(self.fireworker), )
+        rapidfire(launchpad=self.lpad, fworker=self.fireworker, nlaunches=-1, sleep_time=10)
 
     def view_fw_workflows(self):
         self.parent.destroy()
@@ -548,7 +548,7 @@ class RunInit(RunBase):
         self.parent = parent
 
         self.title('Initialize Workflow')
-        self.fireworker = INIT_FWORKER
+        self.fireworker = FWorker.from_file(INIT_FWORKER.as_posix())
         self.category = "initialize"
         self.design_frame()
 
@@ -559,7 +559,7 @@ class RunRobot(RunBase):
         self.parent = parent
 
         self.title('Run Robot')
-        self.fireworker = ROBOT_FWORKER
+        self.fireworker = FWorker.from_file(ROBOT_FWORKER.as_posix())
         self.category = "robotics"
         self.design_frame()
 
@@ -570,7 +570,7 @@ class RunProcess(RunBase):
         self.parent = parent
 
         self.title('Run Processing')
-        self.fireworker = PROCESS_FWORKER
+        self.fireworker = FWorker.from_file(PROCESS_FWORKER.as_posix())
         self.category = "processing"
         self.design_frame()
 
@@ -581,7 +581,7 @@ class RunInstrument(RunBase):
         self.parent = parent
 
         self.title('Run Instruments')
-        self.fireworker = INSTRUMENT_FWORKER
+        self.fireworker = FWorker.from_file(INSTRUMENT_FWORKER.as_posix())
         self.category = "instrument"
         self.design_frame()
 
@@ -611,7 +611,8 @@ class RoboticsGUI(tk.Tk):
         manage_jobs = tk.Button(self, text="Manage Jobs", command=self.open_manage, font=("Raleway", 14),
                                 bg=d3navy, fg='white', height=1, width=15)
         manage_jobs.grid(column=0, row=3, pady=5)
-        add_job = tk.Button(self, text="Add Workflow", command=self.open_add, font=("Raleway", 14), bg=d3navy, fg='white',
+        add_job = tk.Button(self, text="Add Workflow", command=self.open_add, font=("Raleway", 14), bg=d3navy,
+                            fg='white',
                             height=1, width=15)
         add_job.grid(column=0, row=4, pady=5)
         push_to_db = tk.Button(self, text="Push Data to DB", command=self.open_push, font=("Raleway", 14),
@@ -671,5 +672,9 @@ class RoboticsGUI(tk.Tk):
 
 
 if __name__ == "__main__":
-    app = RoboticsGUI()
-    app.mainloop()
+    py_path = f"{HOME_DIR};{PARENT_DIR/'Packages'/'d3tales_api'};{PARENT_DIR/'Packages'/'hardpotato'/'src'}"
+    os.environ['FW_CONFIG_FILE'] = os.path.abspath(FW_CONFIG_DIR / 'FW_config.yaml')
+    os.environ['DB_INFO_FILE'] = os.path.abspath(HOME_DIR / 'db_infos.json')
+    os.environ['PYTHONPATH'] = py_path
+    robotics_app = RoboticsGUI()
+    robotics_app.mainloop()

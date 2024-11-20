@@ -1,24 +1,23 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings and Snapshots &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>Settings and Snapshots &mdash; D3TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/checklist.js?v=5a0fb0df"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,11 +34,8 @@
           
           
           <a href="index.html" class="icon icon-home">
-            D<sup>3</sup>TaLES Robotics
+            D3TaLES Robotics
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -51,8 +47,8 @@
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
 </ul>
@@ -85,7 +81,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+          <a href="index.html">D3TaLES Robotics</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -113,14 +109,16 @@
 <li><p>OPERATION SETTING: Setting for system operations including <code class="docutils literal notranslate"><span class="pre">RERUN_FIZZLED_ROBOT</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_CONCENTRATION_FAILURE</span></code>, <code class="docutils literal notranslate"><span class="pre">FIZZLE_DIRTY_ELECTRODE</span></code>, <code class="docutils literal notranslate"><span class="pre">EXIT_ZERO_VOLUME</span></code>, and <code class="docutils literal notranslate"><span class="pre">WAIT_FOR_BALANCE</span></code>. More explination for each setting exists in the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.</p></li>
 <li><p>DEFAULT CONDITIONS: Default values for several condition parameters including temperature, concentration, and working electrode radius. This section also contains the setting for default units of measurements.</p></li>
 <li><p>ROBOT SETTINGS: Robot settings including the robot IP address, the grip target values for open and close, and perturbation amounts.</p></li>
-<li><p>POTENTIOSTAT SETTINGS: Comp ports and executions files for the instrumnets.</p></li>
-<li><p>MEASUREMENT DEFAULT SETTINGS (CA, CV, iR Comp, etc. ): Default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.</p></li>
+<li><p>INSTRUMENT SETTINGS: Comp ports and executions files for the instruments along with default instrument measurement settings such as sample interval, sensitivity, pulse width, wait times, etc. These are used when the ExpFlow Robotic Workflow action parameters were left blank.</p></li>
 <li><p>PROCESSING SETTINGS: Processing settings such as processing procedures and plotting settings.</p></li>
 <li><p>CALIBRATION SETTINGS: Setting for calibration jobs such as whether to perform a KCl CA calibration and the conductivity of DI water. This section also contains dictionaries of FORMAL_POTENTIALS and SOLVENT_DENSITIES that are used in generating the reagents database collection.</p></li>
 <li><p>PORT ADDRESS: COM ports for Arduino, balance, etc.</p></li>
 <li><p>STATIONS: List of all hardware stations. These include <code class="docutils literal notranslate"><span class="pre">DISPENSE_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">MEASUREMENT_STATIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">ACTION_STATIONS</span></code>, and <code class="docutils literal notranslate"><span class="pre">VIALS</span></code>. If a station or vial is listed here, the robot will think it is an option for executing jobs. This section also contains the <code class="docutils literal notranslate"><span class="pre">RINSE_VIALS</span></code> setting which matches each measurement station with the vial home position that should be used to rinse it. There should be one rinse vial per measurementstation. The <code class="docutils literal notranslate"><span class="pre">ELEVATOR_DICT</span></code> setting pairs the elevator name (e.g., “A_01”) with its Aurdino identifier (e.g., 1).</p></li>
 <li><p>PATH VARIABLES (and FIREWORKS PATH VARIABLES): Paths for key directories and files such as the data storage directory, key snapshots, and FireWorks configuration files.</p></li>
 </ul>
+<blockquote>
+<div><p>Running the settings file via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">settings.py</span></code> will set up the necessary environment variable for using the Robotics API.</p>
+</div></blockquote>
 </section>
 <section id="snapshots">
 <h2>Snapshots<a class="headerlink" href="#snapshots" title="Link to this heading"></a></h2>

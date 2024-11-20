@@ -7,6 +7,7 @@ from argparse import Namespace
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 
+from robotics_api.actions.db_manipulations import VialStatus
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
 from robotics_api.utils.kinova_vision import move_to_station_qr
@@ -296,7 +297,9 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                         pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
                         if not all([d < position_error for d in pose_diffs]):
                             if raise_error:
-                                raise SystemError("Error: Robot did not reach the desired Cartesian pose: ", pose_diffs)
+                                raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
+                                                  f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
+                                                  f" {pose_diffs}")
                             finished = False
                     else:
 
@@ -311,6 +314,42 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
         move_gripper(target_position)
     print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     return finished
+
+
+def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
+    """
+    Moves a given joint a specified range (in degrees).
+
+    Args:
+        reverse : Reverse all joint deltas if True
+        wait_time : Wait time after move
+        joint_deltas : Key word arguments
+
+    Returns:
+        bool: True if the movement completed successfully, False otherwise.
+    """
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+        current_joint_angles = base.GetMeasuredJointAngles()  # Assuming this method exists
+
+        def _angle(a):
+            return a if a < 360 else a - 360
+
+        joint_angles = []
+        for joint in current_joint_angles.joint_angles:
+            i = joint.joint_identifier
+            delta_value = joint_deltas.get(f"j{i+1}", 0) * (-1 if reverse else 1)
+            final_angle = _angle(joint.value + delta_value)
+            if delta_value:
+                print(f"Moving joint {i+1} {delta_value} degrees to {final_angle}")
+            joint_angles.append({"joint_identifier": i, "value": final_angle})
+
+        if wait_time:
+            time.sleep(wait_time)
+
+        return snapshot_move_angular(base, joint_angles)
 
 
 def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, axis="z"):
@@ -336,7 +375,8 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
-def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True):
+def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True,
+                   pre_position_only=False):
     """
     Executes an action to get or place a vial using snapshot movements.
 
@@ -347,7 +387,7 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         leave (bool): Whether to leave the snapshot file location after the action (default is True).
         release_vial (bool): Whether to release the vial after placing (default is True).
         raise_error (bool): Whether to raise an error if movement fails (default is True).
-
+        pre_position_only (bool): Only move to "above" position if True (default is True).
     Returns:
         bool: True if the action was successful, False otherwise.
 
@@ -362,6 +402,14 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
     destination_name = station.id
     starting_snapshot = station.pre_location_snapshot
     raise_amount = station.raise_amount
+    if isinstance(station, VialStatus):
+        snapshot_file = station.home_snapshot
+        pre_position_file = None
+    else:
+        snapshot_file = station.location_snapshot
+        pre_position_file = station.pre_location_snapshot
+
+    snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
     success = True
 
@@ -380,11 +428,12 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
             raise Exception(f"Failed to move robot arm to the QR code for {station}.")
 
         # Go to target position
-        target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
-        success &= move_hand(linear_z=raise_amount)
-        success &= snapshot_move(target_position=target)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to snapshot {station}.")
+        if not pre_position_only:
+            target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
+            success &= move_hand(linear_z=raise_amount)
+            success &= snapshot_move(target_position=target)
+            if (not success) and raise_error:
+                raise Exception(f"Failed to move robot arm to snapshot {station}.")
 
     if leave:
         # Go to above target position above/below target

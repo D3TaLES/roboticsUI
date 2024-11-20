@@ -1,0 +1,49 @@
+{
+  "jointAnglesGroup": {
+    "jointAngles": [
+      {
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10041,
+          "permission": 7,
+          "actionType": 7
+        },
+        "reachJointAngles": {
+          "jointAngles": {
+            "jointAngles": [
+              {
+                "value": 40,
+                "jointIdentifier": 0
+              },
+              {
+                "value": 62,
+                "jointIdentifier": 1
+              },
+              {
+                "value": 238,
+                "jointIdentifier": 2
+              },
+              {
+                "value": 12,
+                "jointIdentifier": 3
+              },
+              {
+                "value": 92,
+                "jointIdentifier": 4
+              },
+              {
+                "value": 91,
+                "jointIdentifier": 5
+              }
+            ]
+          },
+          "constraint": {
+            "type": 0,
+            "value": 0
+          }
+        },
+        "name": "PreStir"
+      }
+    ]
+  }
+}

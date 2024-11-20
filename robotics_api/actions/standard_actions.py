@@ -1,12 +1,25 @@
-import pint
 import math
-import serial
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
 from robotics_api.utils.base_utils import *
 from robotics_api.actions.db_manipulations import *
 
 
+def station_from_name(station_name):
+    if "potentiostat" in station_name:
+        station = PotentiostatStation(station_name)
+    elif "balance" in station_name:
+        station = BalanceStation(station_name)
+    elif "liquid" in station_name:
+        station = LiquidStation(station_name)
+    elif "stir" in station_name:
+        station = StirStation(station_name)
+    elif "pipette" in station_name:
+        station = PipetteStation(station_name)
+    else:
+        station = StationStatus(station_name)
+
+    return station
 
 class VialMove(VialStatus):
     """
@@ -26,8 +39,7 @@ class VialMove(VialStatus):
         robot_available(): Checks if the robot grip is available.
     """
 
-
-    def __init__(self, _id=None, raise_amount: float = -0.1, **kwargs):
+    def __init__(self, _id=None, raise_amount: float = 0.12, **kwargs):
         """
         Initializes a VialMove instance with an optional vial ID and raise amount.
 
@@ -79,16 +91,11 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
-            elif "potentiostat" in self.current_location:
-                print(f"Retrieving vial from potentiostat station {self.current_location}...")
-                station = PotentiostatStation(self.current_location)
-                success &= station._retrieve_vial(self)
-            elif "balance" in self.current_location:
-                print(f"Retrieving vial from balance station {self.current_location}...")
-                station = BalanceStation(self.current_location)
-                success &= station._retrieve_vial(self)
+                success &= snapshot_move(SNAPSHOT_HOME)
             else:
-                success &= False
+                station = station_from_name(self.current_location)
+                print(f"Retrieving vial from station {station}...")
+                success &= station._retrieve_vial(self)
 
             if success:
                 self.update_position("robot_grip")
@@ -98,17 +105,19 @@ class VialMove(VialStatus):
                             f"at {self.current_location}. ")
         return success
 
-    def update_position(self, position):
+    def update_position(self, position, update_vial=True):
         """
         Updates the current position of the vial.
 
         Args:
             position (str): The new position of the vial.
+            update_vial (bool): Update vial position if true.
 
         Returns:
             None
         """
-        self.update_location(position)
+        if update_vial:
+            self.update_location(position)
         station = StationStatus(position)
         if station.exists:
             station.update_content(self.id)
@@ -167,20 +176,20 @@ class VialMove(VialStatus):
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
 
-
         if success:
             self.update_position(station.id)
             StationStatus("robot_grip").empty()
 
         return success
 
-    def go_to_station(self, station: StationStatus, raise_error=True):
+    def go_to_station(self, station: StationStatus, raise_error=True, pre_position_only=False):
         """
         Moves the vial to the specified station.
 
         Args:
             station (StationStatus): The station to move the vial to.
             raise_error (bool): Whether to raise an error if the movement fails (default is True).
+            pre_position_only (bool): Only move to "above" position if True (default is True).
 
         Returns:
             bool: True if the vial was successfully moved, False otherwise.
@@ -195,14 +204,14 @@ class VialMove(VialStatus):
         elif station.available:
             print("LOCATION: ", station.pre_location_snapshot)
             success &= get_place_vial(station, action_type='place', release_vial=False, leave=False,
-                                      raise_error=raise_error)
+                                      raise_error=raise_error, pre_position_only=pre_position_only)
         else:
             success &= False
 
         if raise_error and not success:
             raise Exception(f"Vial {self} was not successfully moved to {station}.")
 
-        self.update_position(station.id) if success else None
+        self.update_position(station.id, update_vial=False) if success else None
 
         return success
 
@@ -250,7 +259,7 @@ class LiquidStation(StationStatus):
         dispense_mass(vial, volume, raise_error=True): Dispenses a specified volume of liquid into a vial, weighing before and after to update the vial's mass.
     """
 
-    def __init__(self, _id, raise_amount=0.04, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.04, **kwargs):
         """
         Initializes a LiquidStation instance with an ID and raise amount.
 
@@ -262,7 +271,7 @@ class LiquidStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'solvent'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate a solvent station, a solvent name must be provided.")
         if self.type != "solvent":
@@ -393,14 +402,16 @@ class PipetteStation(StationStatus):
     A class representing a pipette station.
 
     Attributes:
-        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.08).
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station
+            (default is -0.08).
         serial_name (str): The serial name of the station used for communication with hardware.
 
     Methods:
         place_vial(vial, raise_error=True): Places a vial at the pipette station.
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
-    def __init__(self, _id, raise_amount=0.08, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = -0.08, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -456,8 +467,17 @@ class PipetteStation(StationStatus):
             send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
-            vial.update_status(None, "weight")
+            vial.update_status(None, status_name="weight")
             vial.leave_station(self, raise_error=raise_error)
+
+    def return_soln(self, vial: VialMove, raise_error=True):
+        vial.go_to_station(self, raise_error=raise_error, pre_position_only=True)
+
+        if PIPETTE:
+            send_arduino_cmd(self.serial_name, 0)
+
+        vial.update_status(None, status_name="weight")
+        vial.leave_station(self, raise_error=raise_error)
 
 
 class BalanceStation(StationStatus):
@@ -477,7 +497,8 @@ class BalanceStation(StationStatus):
         tare(): Tares the balance.
         _send_command(write_txt=None, read_response=False): Sends a command to the balance and optionally reads the response.
     """
-    def __init__(self, _id, raise_amount=-0.05, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = 0.05, **kwargs):
         """
         Initializes a BalanceStation instance with an ID and raise amount.
 
@@ -489,7 +510,7 @@ class BalanceStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'balance'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate a balance station, a balance name must be provided.")
         if self.type != "balance":
@@ -511,7 +532,7 @@ class BalanceStation(StationStatus):
             bool: True if the vial was successfully placed, False otherwise.
         """
         vial = vial if isinstance(vial, VialMove) else VialMove(vial)
-        return vial.place_station(self.id, raise_error=raise_error)
+        return vial.place_station(self, raise_error=raise_error)
 
     def _retrieve_vial(self, vial: VialMove):
         """
@@ -633,7 +654,7 @@ class BalanceStation(StationStatus):
         """
         try:
             balance = serial.Serial(self.p_address, timeout=1)
-        except serial.SerialException as e:
+        except IOError as e:
             raise Exception("Warning! Balance {} is not connected to {} because: {}".format(self, self.p_address, e))
         time.sleep(1)  # give the connection a second to settle
         if write_txt:
@@ -664,13 +685,15 @@ class StirStation(StationStatus):
         stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
         stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
-    def __init__(self, _id, raise_amount=-0.1, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = 0.1, **kwargs):
         """
         Initializes a StirStation instance with an ID and raise amount.
 
         Args:
             _id (str): The ID of the stir station.
-            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.1).
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station
+                (default is 0.1).
             **kwargs: Additional keyword arguments passed to the parent class.
 
         Raises:
@@ -697,7 +720,7 @@ class StirStation(StationStatus):
         """
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def stir(self, stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3):
+    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None):
         """
         Operates the stirring mechanism.
 
@@ -705,8 +728,8 @@ class StirStation(StationStatus):
             stir_time (int, optional): The time in seconds to stir. If None, defaults to implementing stir_cmd.
             stir_cmd (str, optional): Command for stir plate; only used if stir_time is None.
                                       Can be 'on'/'off' or 1/0 (default is 'off').
-            perturb_amount (float, optional): Amount to perturb the vial during stirring (default is STIR_PERTURB).
             move_sleep (float, optional): Time in seconds for robot to sleep between stirring moves (default is 3).
+            joint_deltas (dict, optional): Key word arguments
 
         Returns:
             bool: True if the stir action was successful, False otherwise.
@@ -716,15 +739,19 @@ class StirStation(StationStatus):
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
-            success = True
+            success = False
             success &= send_arduino_cmd(self.serial_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
             start_time = time.time()
-            time.sleep(10)
+            time.sleep(5)
             end_time = time.time()
-            # TODO move during stirring
             while (end_time - start_time) < seconds:
-                time.sleep(move_sleep)
+                # Move vial around stir plate center
+                joint_deltas = joint_deltas or dict(j6=7)
+                perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=0, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
+                perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()
             success &= send_arduino_cmd(self.serial_name, 0) if STIR else True
             return success
@@ -772,7 +799,8 @@ class PotentiostatStation(StationStatus):
         move_elevator(endpoint, raise_error=True): Moves the elevator to a specified position.
         get_temperature(): Retrieves the temperature associated with this station.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a PotentiostatStation instance with an ID and raise amount.
 
@@ -791,8 +819,8 @@ class PotentiostatStation(StationStatus):
         if "potentiostat" not in self.id:
             raise Exception(f"Station {self.id} is not a potentiostat.")
         self.method, _, self.pot, self.p_channel = self.id.split("_")
-        self.p_address = self.settings["address"]
-        self.p_exe_path = self.settings["exe_path"]
+        self.p_address = self.settings("address")
+        self.p_exe_path = self.settings("exe_path")
         self.pot_model = self.p_exe_path.split("\\")[-1].split(".")[0]
 
         elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
@@ -800,17 +828,24 @@ class PotentiostatStation(StationStatus):
         self.temp_serial_name = f"T{elevator:1d}"
         self.raise_amount = raise_amount
 
-        self.micro_electrode = True if self.settings("working_electrode_radius") <= MICRO_ELECTRODES_MAX_RADIUS else False
+        self.electrode_radius = self.settings("working_electrode_radius", raise_error=False)
+        if self.electrode_radius:
+            self.micro_electrode = True if self.electrode_radius <= MICRO_ELECTRODES_MAX_RADIUS else False
 
-    def settings(self, settings_name):
-        settings_dict = POTENTIOSTAT_SETTINGS.get(self.id)
+    @property
+    def _settings_dict(self):
+        settings_dict = POTENTIOSTAT_SETTINGS.get(self.id, {})
         if not settings_dict:
             raise KeyError(f"No settings set for potentiostat {self}. Please add settings for {self} in settings.py.")
-        if settings_dict.get(settings_name):
-            return settings_dict[settings_name]
-        raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
-                       f"condition {settings_name} in the ExpFlow robotic workflow or set a default condition in the "
-                       f"settings file (settings.py).")
+        return settings_dict
+
+    def settings(self, settings_name, raise_error=True):
+        if self._settings_dict.get(settings_name) is not None:
+            return self._settings_dict[settings_name]
+        if raise_error:
+            raise KeyError(f"Potentiostat {self} does not have default condition {settings_name}. You must either set "
+                           f"condition {settings_name} in the ExpFlow robotic workflow or set a default condition in "
+                           f"the settings file (settings.py).")
 
     def update_experiment(self, experiment: str or None):
         """
@@ -889,6 +924,7 @@ class PotentiostatStation(StationStatus):
         if success:
             vial.update_position("robot_grip")
             self.empty()
+        success &= snapshot_move(SNAPSHOT_HOME)
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
@@ -911,7 +947,9 @@ class PotentiostatStation(StationStatus):
             success = True
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
-            success &= vial.place_station(self.id, raise_error=raise_error)
+            success &= vial.retrieve(raise_error=True)
+            success &= snapshot_move(SNAPSHOT_HOME)
+            success &= vial.place_station(self, raise_error=raise_error)
 
             return success
 
@@ -957,7 +995,7 @@ class PotentiostatStation(StationStatus):
 
         arduino_result = send_arduino_cmd(self.temp_serial_name, "", return_txt=True)
         if arduino_result:
-            return {"value": round(float(arduino_result.split(":")[1].strip()) + 273.15, 2), "unit": "K"}
+            return {"value": sig_figs(float(arduino_result.split(":")[1].strip()) + 273.15, 5), "unit": "K"}
 
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
@@ -1018,7 +1056,8 @@ class CVPotentiostatStation(PotentiostatStation):
         run_ircomp_test(data_path, e_ini=0, low_freq=None, high_freq=None, amplitude=None, sens=None):
             Runs an iR compensation test to determine the solution resistance.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CVPotentiostatStation instance.
 
@@ -1064,7 +1103,8 @@ class CVPotentiostatStation(PotentiostatStation):
         # Benchmark CV for voltage range
         print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
-            from robotics_api.utils.potentiostat_kbio import CvExperiment, voltage_step
+            warnings.warn("WARNING! Kbio potentiostat command is DEPRECATED! Use with caution! ")
+            from robotics_api.utils._depriciated.potentiostat_kbio import CvExperiment, voltage_step
             # Set up CV parameters and KBIO CVExperiment object
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,
@@ -1090,7 +1130,8 @@ class CVPotentiostatStation(PotentiostatStation):
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
                                     nSweeps=nSweeps, dE=sample_interval, sens=sens,
-                                    fileName=f_name, header="CV " + f_name, resistance=resistance * self.settings("rcomp_level"))
+                                    fileName=f_name, header="CV " + f_name,
+                                    resistance=resistance * self.settings("rcomp_level"))
             cv.run()
             time.sleep(self.settings("time_after"))
         else:
@@ -1128,7 +1169,6 @@ class CVPotentiostatStation(PotentiostatStation):
                   f"Resistance of 0 is in use.")
             return 0
 
-
         # Benchmark CV for voltage range
         print(f"RUN IR COMP TEST")
         if "chi" in self.pot_model:
@@ -1140,8 +1180,10 @@ class CVPotentiostatStation(PotentiostatStation):
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or self.settings("low_freq"),
-                                      high_freq=high_freq or self.settings("high_freq"), amplitude=amplitude or self.settings("amplitude"),
-                                      sens=sens or self.settings("sensitivity"), fileName=f_name, header="iRComp " + f_name)
+                                      high_freq=high_freq or self.settings("high_freq"),
+                                      amplitude=amplitude or self.settings("amplitude"),
+                                      sens=sens or self.settings("sensitivity"), fileName=f_name,
+                                      header="iRComp " + f_name)
             eis.run()
 
             # Load recently acquired data
@@ -1163,7 +1205,8 @@ class CAPotentiostatStation(PotentiostatStation):
                volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
             Runs a CA experiment and saves the data.
     """
-    def __init__(self, _id, raise_amount=-0.028, **kwargs):
+
+    def __init__(self, _id, raise_amount: float = 0.028, **kwargs):
         """
         Initializes a CAPotentiostatStation instance.
 

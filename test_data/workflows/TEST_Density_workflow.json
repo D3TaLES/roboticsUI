@@ -1,0 +1,78 @@
+{
+    "_id": "54cba2dd-b0f4-43ad-9771-56bee94d4486",
+    "name": "TEST_Density",
+    "parent_uuid": "cff7c065-1a5c-47f4-9256-b05eed4d7046",
+    "parent_name": "TestDensity",
+    "author": 3,
+    "experiments": [
+        {
+            "_id": "ba2e865f-9b9d-4635-b835-e4bbd851ea1f",
+            "name": "Experiment_01",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [],
+            "reagents": [
+                {
+                    "_id": "86ca3b59-bfac-4af4-8e57-34f729d82188",
+                    "name": "ACN",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "25afe1da-a932-4fcd-a36c-be311ce7af78",
+                    "type": "vial",
+                    "description": "vial",
+                    "reusable": "on",
+                    "name": "vial",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": 1,
+                    "description": "dispense solvent",
+                    "name": "transfer_liquid",
+                    "start_uuid": "86ca3b59-bfac-4af4-8e57-34f729d82188",
+                    "start_position": "ACN",
+                    "start_type": "solvent",
+                    "end_uuid": "25afe1da-a932-4fcd-a36c-be311ce7af78",
+                    "end_position": "vial",
+                    "end_type": "vial",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "5.0",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 2,
+                    "description": "measure density",
+                    "name": "measure_density",
+                    "start_uuid": "25afe1da-a932-4fcd-a36c-be311ce7af78",
+                    "start_position": "vial",
+                    "start_type": "vial",
+                    "end_uuid": "25afe1da-a932-4fcd-a36c-be311ce7af78",
+                    "end_position": "vial",
+                    "end_type": "vial",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                }
+            ],
+            "author": null
+        }
+    ],
+    "variable_props": []
+}

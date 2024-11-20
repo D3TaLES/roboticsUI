@@ -1,24 +1,23 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>robotics_api package &mdash; D&lt;sup&gt;3&lt;/sup&gt;TaLES Robotics 0.2.0 documentation</title>
+  <title>robotics_api package &mdash; D3TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=938c9ccc"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/checklist.js?v=5a0fb0df"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,11 +34,8 @@
           
           
           <a href="index.html" class="icon icon-home">
-            D<sup>3</sup>TaLES Robotics
+            D3TaLES Robotics
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -51,8 +47,8 @@
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
 </ul>
@@ -93,7 +89,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">D<sup>3</sup>TaLES Robotics</a>
+          <a href="index.html">D3TaLES Robotics</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -200,12 +196,46 @@
 <li class="toctree-l1"><a class="reference internal" href="robotics_api.utils.html">robotics_api.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.base_utils.send_arduino_cmd"><code class="docutils literal notranslate"><span class="pre">send_arduino_cmd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.base_utils.sig_figs"><code class="docutils literal notranslate"><span class="pre">sig_figs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.base_utils.unit_conversion"><code class="docutils literal notranslate"><span class="pre">unit_conversion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.base_utils.write_test"><code class="docutils literal notranslate"><span class="pre">write_test()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-gripper-module">robotics_api.utils.kinova_gripper module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-move-module">robotics_api.utils.kinova_move module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-kinova-utils-module">robotics_api.utils.kinova_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.kinova_gripper">robotics_api.utils.kinova_gripper module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove"><code class="docutils literal notranslate"><span class="pre">GripperMove</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.__init__"><code class="docutils literal notranslate"><span class="pre">GripperMove.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.cleanup"><code class="docutils literal notranslate"><span class="pre">GripperMove.cleanup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_gripper.GripperMove.gripper_move"><code class="docutils literal notranslate"><span class="pre">GripperMove.gripper_move()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.kinova_move">robotics_api.utils.kinova_move module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.check_for_end_or_abort"><code class="docutils literal notranslate"><span class="pre">check_for_end_or_abort()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.get_place_vial"><code class="docutils literal notranslate"><span class="pre">get_place_vial()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.move_gripper"><code class="docutils literal notranslate"><span class="pre">move_gripper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.move_hand"><code class="docutils literal notranslate"><span class="pre">move_hand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.perturb_angular"><code class="docutils literal notranslate"><span class="pre">perturb_angular()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.perturbed_snapshot"><code class="docutils literal notranslate"><span class="pre">perturbed_snapshot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.screw_lid"><code class="docutils literal notranslate"><span class="pre">screw_lid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_move"><code class="docutils literal notranslate"><span class="pre">snapshot_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_move_angular"><code class="docutils literal notranslate"><span class="pre">snapshot_move_angular()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_move_cartesian"><code class="docutils literal notranslate"><span class="pre">snapshot_move_cartesian()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.kinova_utils">robotics_api.utils.kinova_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.TCP_PORT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.UDP_PORT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection.__init__"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createTcpConnection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection"><code class="docutils literal notranslate"><span class="pre">DeviceConnection.createUdpConnection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.kinova_utils.parseConnectionArguments"><code class="docutils literal notranslate"><span class="pre">parseConnectionArguments()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.DBconnector"><code class="docutils literal notranslate"><span class="pre">DBconnector</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.DBconnector.__init__"><code class="docutils literal notranslate"><span class="pre">DBconnector.__init__()</span></code></a></li>
@@ -238,116 +268,7 @@
 <li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.mongo_dbs.db_info_generator"><code class="docutils literal notranslate"><span class="pre">db_info_generator()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-potentiostat-hp-module">robotics_api.utils.potentiostat_hp module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.potentiostat_kbio">robotics_api.utils.potentiostat_kbio module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment"><code class="docutils literal notranslate"><span class="pre">CaExperiment</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.steps"><code class="docutils literal notranslate"><span class="pre">CaExperiment.steps</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.vs_initial"><code class="docutils literal notranslate"><span class="pre">CaExperiment.vs_initial</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.duration"><code class="docutils literal notranslate"><span class="pre">CaExperiment.duration</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.step_number"><code class="docutils literal notranslate"><span class="pre">CaExperiment.step_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.record_every_dt"><code class="docutils literal notranslate"><span class="pre">CaExperiment.record_every_dt</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.record_every_di"><code class="docutils literal notranslate"><span class="pre">CaExperiment.record_every_di</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.n_cycles"><code class="docutils literal notranslate"><span class="pre">CaExperiment.n_cycles</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.params"><code class="docutils literal notranslate"><span class="pre">CaExperiment.params</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.data"><code class="docutils literal notranslate"><span class="pre">CaExperiment.data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CaExperiment.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CaExperiment.experiment_print()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parameterize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CaExperiment.parsed_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CaExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CaExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment"><code class="docutils literal notranslate"><span class="pre">CpExperiment</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.record_every_dt"><code class="docutils literal notranslate"><span class="pre">CpExperiment.record_every_dt</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.record_every_de"><code class="docutils literal notranslate"><span class="pre">CpExperiment.record_every_de</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.i_range"><code class="docutils literal notranslate"><span class="pre">CpExperiment.i_range</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.repeat_count"><code class="docutils literal notranslate"><span class="pre">CpExperiment.repeat_count</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.n_cycles"><code class="docutils literal notranslate"><span class="pre">CpExperiment.n_cycles</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.params"><code class="docutils literal notranslate"><span class="pre">CpExperiment.params</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CpExperiment.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CpExperiment.experiment_print()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parameterize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CpExperiment.parsed_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CpExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CpExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment"><code class="docutils literal notranslate"><span class="pre">CvExperiment</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.steps"><code class="docutils literal notranslate"><span class="pre">CvExperiment.steps</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.scan_number"><code class="docutils literal notranslate"><span class="pre">CvExperiment.scan_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.vs_initial"><code class="docutils literal notranslate"><span class="pre">CvExperiment.vs_initial</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.record_every_de"><code class="docutils literal notranslate"><span class="pre">CvExperiment.record_every_de</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.average_over_de"><code class="docutils literal notranslate"><span class="pre">CvExperiment.average_over_de</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.n_cycles"><code class="docutils literal notranslate"><span class="pre">CvExperiment.n_cycles</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.params"><code class="docutils literal notranslate"><span class="pre">CvExperiment.params</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">CvExperiment.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">CvExperiment.experiment_print()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parameterize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">CvExperiment.parsed_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.plot"><code class="docutils literal notranslate"><span class="pre">CvExperiment.plot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.CvExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">CvExperiment.tech_file</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment"><code class="docutils literal notranslate"><span class="pre">EisExperiment</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.params"><code class="docutils literal notranslate"><span class="pre">EisExperiment.params</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.data"><code class="docutils literal notranslate"><span class="pre">EisExperiment.data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">EisExperiment.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">EisExperiment.experiment_print()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.parameterize"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parameterize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">EisExperiment.parsed_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">EisExperiment.tech_file</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.EisExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">EisExperiment.to_txt()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.__init__"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_connection"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_connection()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.check_kernel"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.check_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.cv_row_parser"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.cv_row_parser()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.experiment_print"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.experiment_print()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.iR_comp_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.iR_comp_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.load_firmware"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.load_firmware()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.normalize_steps"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.normalize_steps()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.parsed_data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.print_messages"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.print_messages()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_experiment"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_experiment()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.run_iR_comp"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.run_iR_comp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_data_records"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_data_records()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.save_parsed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.save_parsed_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.tech_file"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.tech_file</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.to_txt"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.to_txt()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.PotentiostatExperiment.trimmed_data"><code class="docutils literal notranslate"><span class="pre">PotentiostatExperiment.trimmed_data</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.current_step"><code class="docutils literal notranslate"><span class="pre">current_step</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.current_step.__init__"><code class="docutils literal notranslate"><span class="pre">current_step.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.current_step.current"><code class="docutils literal notranslate"><span class="pre">current_step.current</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.current_step.duration"><code class="docutils literal notranslate"><span class="pre">current_step.duration</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.current_step.vs_init"><code class="docutils literal notranslate"><span class="pre">current_step.vs_init</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.voltage_step"><code class="docutils literal notranslate"><span class="pre">voltage_step</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.voltage_step.__init__"><code class="docutils literal notranslate"><span class="pre">voltage_step.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.voltage_step.scan_rate"><code class="docutils literal notranslate"><span class="pre">voltage_step.scan_rate</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.voltage_step.voltage"><code class="docutils literal notranslate"><span class="pre">voltage_step.voltage</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.potentiostat_kbio.voltage_step.vs_init"><code class="docutils literal notranslate"><span class="pre">voltage_step.vs_init</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils.processing_utils">robotics_api.utils.processing_utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.all_cvs_data"><code class="docutils literal notranslate"><span class="pre">all_cvs_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.collection_dict"><code class="docutils literal notranslate"><span class="pre">collection_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.get_cell_constant"><code class="docutils literal notranslate"><span class="pre">get_cell_constant()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.get_concentration"><code class="docutils literal notranslate"><span class="pre">get_concentration()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.get_kcl_conductivity"><code class="docutils literal notranslate"><span class="pre">get_kcl_conductivity()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.kcl_cell_constant"><code class="docutils literal notranslate"><span class="pre">kcl_cell_constant()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.print_ca_analysis"><code class="docutils literal notranslate"><span class="pre">print_ca_analysis()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.print_cv_analysis"><code class="docutils literal notranslate"><span class="pre">print_cv_analysis()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.print_prop"><code class="docutils literal notranslate"><span class="pre">print_prop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.processing_test"><code class="docutils literal notranslate"><span class="pre">processing_test()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="robotics_api.utils.html#robotics_api.utils.processing_utils.prop_by_order"><code class="docutils literal notranslate"><span class="pre">prop_by_order()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#robotics-api-utils-processing-utils-module">robotics_api.utils.processing_utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="robotics_api.utils.html#module-robotics_api.utils">Module contents</a></li>
 </ul>
 </li>

@@ -146,7 +146,7 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "Calib__03": 7,  # CA Calibration 3
 }
 FORMAL_POTENTIALS = {  # Formal potentials
-    "CC1(C)CCCC(C)(C)N1[O]": "0.30 V",  # TEMPO, V vs. Ag/Ag+
+    "CC1(C)CCCC(C)(C)N1[O]": "0.367 V",  # TEMPO, V vs. Ag/Ag+  TODO Figure out what value to actually use
     "[Cl-].[K+]": "0 V",  # KCl, NOT REAL, just a stand in!
     "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]": "0 V",  # Fc, NOT REAL, just a stand in!
 }

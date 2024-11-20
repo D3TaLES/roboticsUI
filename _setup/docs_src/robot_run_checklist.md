@@ -48,7 +48,7 @@ tags:
   * If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
 
 #### Prepare Software
-  * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` --> `System` --> Anodic Positive)
+  * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` &#8594; `System` &#8594; Anodic Positive)
   * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or Robotics App.)
     > **Note**: If managing workflows through the command line, be sure to activate the environment in any new terminal.   

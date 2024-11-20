@@ -4,27 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.617,
-            "y": -0.427,
-            "z": 0.182,
+            "x": 0.167,
+            "y": -0.361,
+            "z": 0.16599999999999998,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 63
+            "thetaZ": 20
           },
           "constraint": {
             "speed": {
-              "translation": 0.3,
+              "translation": 0,
               "orientation": 0
             }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10003,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "balance_01"
+        "name": "pipette_01"
       }
     ]
   }

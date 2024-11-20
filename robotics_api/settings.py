@@ -11,13 +11,13 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
+RUN_POTENT = False
 DISPENSE = False
 STIR = False
 WEIGH = False
-PIPETTE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = True
+PIPETTE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = False
 CALIB_DATE = ''  # '2024_06_25'  Date used in testing to gather calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 

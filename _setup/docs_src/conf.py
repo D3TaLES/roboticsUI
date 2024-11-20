@@ -22,7 +22,7 @@ sys.path.insert(0, '../../')
 
 # -- Project information -----------------------------------------------------
 
-project = 'D<sup>3</sup>TaLES Robotics'
+project = 'D3TaLES Robotics'
 copyright = __credits__
 author = __author__
 

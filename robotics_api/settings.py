@@ -11,13 +11,13 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
-STIR = False
-WEIGH = False
+RUN_POTENT = True
+DISPENSE = True
+STIR = True
+WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
-MOVE_ELEVATORS = False
+MOVE_ELEVATORS = True
 CALIB_DATE = ''  # '2024_06_25'  Date used in testing to gather calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
@@ -30,7 +30,6 @@ EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment b
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 RETURN_EXTRACTED_SOLN = True  # Return solution extracted via pipette after measurement made.
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
-SOLV_D_IS_SOLN_D = True  # Solution density is assumed to be the solvent density if True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"

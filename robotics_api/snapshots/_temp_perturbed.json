@@ -4,27 +4,21 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.167,
-            "y": -0.361,
-            "z": 0.16599999999999998,
+            "x": 0.586,
+            "y": 0.162,
+            "z": 0.218,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 20
-          },
-          "constraint": {
-            "speed": {
-              "translation": 0,
-              "orientation": 0
-            }
+            "thetaZ": 103
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10000,
+          "identifier": 10011,
           "permission": 7,
           "actionType": 6
         },
-        "name": "pipette_01"
+        "name": "VHome_A_02"
       }
     ]
   }

@@ -77,6 +77,7 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
+                success &= snapshot_move(SNAPSHOT_HOME)
             elif "potentiostat" in self.current_location:
                 print(f"Retrieving vial from potentiostat station {self.current_location}...")
                 station = PotentiostatStation(self.current_location)
@@ -456,8 +457,17 @@ class PipetteStation(StationStatus):
             send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
-            vial.update_status(None, "weight")
+            vial.update_status(new_status=None, status_name="weight")
             vial.leave_station(self, raise_error=raise_error)
+
+    def return_soln(self, vial, raise_error=True):
+        self.place_vial(vial, raise_error=raise_error)  # TODO fix
+
+        if PIPETTE:
+            send_arduino_cmd(self.serial_name, 0)
+
+        vial.update_status(None, "weight")
+        vial.leave_station(self, raise_error=raise_error)
 
 
 class BalanceStation(StationStatus):

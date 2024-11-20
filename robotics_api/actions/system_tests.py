@@ -70,20 +70,20 @@ if __name__ == "__main__":
     # POTENTIOSTAT TESTING
     # test_potent.place_vial(test_vial)
     # test_potent.move_elevator(endpoint="down")
-    test_potent.move_elevator(endpoint="up")
+    # test_potent.move_elevator(endpoint="up")
     # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(8, vial_id="C_04", solv_id="solvent_02", go_home=False)
+    # flush_solvent(8, vial_id="B_04", solv_id="solvent_02", go_home=False)
     # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    # test_pip.pipette(volume=0)  # mL
+    test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
     # test_stir.stir_vial(test_vial, stir_time=15)
     # test_bal.weigh(test_vial)

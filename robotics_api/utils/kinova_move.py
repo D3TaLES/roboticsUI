@@ -374,7 +374,8 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
-def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True):
+def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True,
+                   pre_position_only=False):
     """
     Executes an action to get or place a vial using snapshot movements.
 
@@ -385,6 +386,7 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         leave (bool): Whether to leave the snapshot file location after the action (default is True).
         release_vial (bool): Whether to release the vial after placing (default is True).
         raise_error (bool): Whether to raise an error if movement fails (default is True).
+        pre_position_only (bool): Only move to "above" position if True (default is True).
     Returns:
         bool: True if the action was successful, False otherwise.
 
@@ -424,10 +426,11 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
             raise Exception(f"Failed to move robot arm to {raise_amount} above target before snapshot {snapshot_file}.")
 
         # Go to target position
-        target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
-        success &= snapshot_move(snapshot_file, target_position=target)
-        if (not success) and raise_error:
-            raise Exception(f"Failed to move robot arm to snapshot {snapshot_file}.")
+        if not pre_position_only:
+            target = VIAL_GRIP_TARGET if action_type == "get" else 'open' if release_vial else VIAL_GRIP_TARGET
+            success &= snapshot_move(snapshot_file, target_position=target)
+            if (not success) and raise_error:
+                raise Exception(f"Failed to move robot arm to snapshot {snapshot_file}.")
 
     if leave:
         # Go to above target position after target

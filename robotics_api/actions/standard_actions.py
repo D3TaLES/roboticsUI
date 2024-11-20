@@ -1,11 +1,25 @@
-import pint
 import math
-import serial
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
 from robotics_api.utils.base_utils import *
 from robotics_api.actions.db_manipulations import *
 
+
+def station_from_name(station_name):
+    if "potentiostat" in station_name:
+        station = PotentiostatStation(station_name)
+    elif "balance" in station_name:
+        station = BalanceStation(station_name)
+    elif "liquid" in station_name:
+        station = LiquidStation(station_name)
+    elif "stir" in station_name:
+        station = StirStation(station_name)
+    elif "pipette" in station_name:
+        station = PipetteStation(station_name)
+    else:
+        station = StationStatus(station_name)
+
+    return station
 
 class VialMove(VialStatus):
     """
@@ -78,16 +92,10 @@ class VialMove(VialStatus):
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
                 success &= snapshot_move(SNAPSHOT_HOME)
-            elif "potentiostat" in self.current_location:
-                print(f"Retrieving vial from potentiostat station {self.current_location}...")
-                station = PotentiostatStation(self.current_location)
-                success &= station._retrieve_vial(self)
-            elif "balance" in self.current_location:
-                print(f"Retrieving vial from balance station {self.current_location}...")
-                station = BalanceStation(self.current_location)
-                success &= station._retrieve_vial(self)
             else:
-                success &= False
+                station = station_from_name(self.current_location)
+                print(f"Retrieving vial from station {station}...")
+                success &= station._retrieve_vial(self)
 
             if success:
                 self.update_position("robot_grip")
@@ -174,13 +182,14 @@ class VialMove(VialStatus):
 
         return success
 
-    def go_to_station(self, station: StationStatus, raise_error=True):
+    def go_to_station(self, station: StationStatus, raise_error=True, pre_position_only=False):
         """
         Moves the vial to the specified station.
 
         Args:
             station (StationStatus): The station to move the vial to.
             raise_error (bool): Whether to raise an error if the movement fails (default is True).
+            pre_position_only (bool): Only move to "above" position if True (default is True).
 
         Returns:
             bool: True if the vial was successfully moved, False otherwise.
@@ -195,7 +204,7 @@ class VialMove(VialStatus):
         elif station.available:
             print("LOCATION: ", station.pre_location_snapshot)
             success &= get_place_vial(station, action_type='place', release_vial=False, leave=False,
-                                      raise_error=raise_error)
+                                      raise_error=raise_error, pre_position_only=pre_position_only)
         else:
             success &= False
 
@@ -393,7 +402,8 @@ class PipetteStation(StationStatus):
     A class representing a pipette station.
 
     Attributes:
-        raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is -0.08).
+        raise_amount (float): The amount to raise or lower the vial when interacting with the station
+            (default is -0.08).
         serial_name (str): The serial name of the station used for communication with hardware.
 
     Methods:
@@ -457,16 +467,16 @@ class PipetteStation(StationStatus):
             send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
-            vial.update_status(new_status=None, status_name="weight")
+            vial.update_status(None, status_name="weight")
             vial.leave_station(self, raise_error=raise_error)
 
-    def return_soln(self, vial, raise_error=True):
-        self.place_vial(vial, raise_error=raise_error)  # TODO fix
+    def return_soln(self, vial: VialMove, raise_error=True):
+        vial.go_to_station(self, raise_error=raise_error, pre_position_only=True)
 
         if PIPETTE:
             send_arduino_cmd(self.serial_name, 0)
 
-        vial.update_status(None, "weight")
+        vial.update_status(None, status_name="weight")
         vial.leave_station(self, raise_error=raise_error)
 
 
@@ -682,7 +692,8 @@ class StirStation(StationStatus):
 
         Args:
             _id (str): The ID of the stir station.
-            raise_amount (float): The amount to raise or lower the vial when interacting with the station (default is 0.1).
+            raise_amount (float): The amount to raise or lower the vial when interacting with the station
+                (default is 0.1).
             **kwargs: Additional keyword arguments passed to the parent class.
 
         Raises:

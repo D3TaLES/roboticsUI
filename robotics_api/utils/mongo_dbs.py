@@ -408,7 +408,7 @@ class RobotStatusDB(MongoDatabase):
         """
         return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
-    def update_status(self, new_status: str or None, status_name: str = "location"):
+    def update_status(self, new_status, status_name: str = "location"):
         """
         Updates the status for a vial location or station vial.
 

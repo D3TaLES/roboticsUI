@@ -1,0 +1,832 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robotics_api.utils package &mdash; D3TaLES Robotics 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="_static/D3TaLES_logo_transparent_robotics.ico"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/checklist.js?v=5a0fb0df"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="robotics_api.snapshots package" href="robotics_api.snapshots.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            D3TaLES Robotics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_errors.html">Common Errors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="expflow.html">ExpFlow Robotic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desktop_app.html">Robotics App</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Robotics API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Raw API Code Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="robotics_api.html">robotics_api package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="robotics_api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.actions.html">robotics_api.actions package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.fireworks.html">robotics_api.fireworks package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="robotics_api.snapshots.html">robotics_api.snapshots package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">robotics_api.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.base_utils">robotics_api.utils.base_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_gripper">robotics_api.utils.kinova_gripper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_move">robotics_api.utils.kinova_move module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.kinova_utils">robotics_api.utils.kinova_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils.mongo_dbs">robotics_api.utils.mongo_dbs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robotics-api-utils-processing-utils-module">robotics_api.utils.processing_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-robotics_api.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api.settings">robotics_api.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotics_api.html#module-robotics_api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">D3TaLES Robotics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="robotics_api.html">robotics_api package</a></li>
+      <li class="breadcrumb-item active">robotics_api.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/robotics_api.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robotics-api-utils-package">
+<h1>robotics_api.utils package<a class="headerlink" href="#robotics-api-utils-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-robotics_api.utils.base_utils">
+<span id="robotics-api-utils-base-utils-module"></span><h2>robotics_api.utils.base_utils module<a class="headerlink" href="#module-robotics_api.utils.base_utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.base_utils.send_arduino_cmd">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.base_utils.</span></span><span class="sig-name descname"><span class="pre">send_arduino_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'COM4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_txt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/base_utils.html#send_arduino_cmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.base_utils.send_arduino_cmd" title="Link to this definition"></a></dt>
+<dd><p>Sends a command to the Arduino controlling a specific station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station</strong> (<em>str</em>) – The station identifier (e.g., “E1”, “P1”).</p></li>
+<li><p><strong>command</strong> (<em>str</em><em> or </em><em>float</em>) – The command to send (e.g., “0”, “1”, “500”).</p></li>
+<li><p><strong>address</strong> (<em>str</em>) – Address of the Arduino port (default is ARDUINO_PORT).</p></li>
+<li><p><strong>return_txt</strong> (<em>bool</em>) – Whether to return the Arduino response text (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the command succeeded, the response text if return_txt is True, otherwise False on failure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool or str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If unable to connect to the Arduino.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.base_utils.sig_figs">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.base_utils.</span></span><span class="sig-name descname"><span class="pre">sig_figs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_sig_figs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/base_utils.html#sig_figs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.base_utils.sig_figs" title="Link to this definition"></a></dt>
+<dd><p>Round a number to the specified number of significant figures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number</strong> (<em>float</em>) – The number to round.</p></li>
+<li><p><strong>num_sig_figs</strong> (<em>int</em>) – The number of significant figures to retain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number rounded to the given significant figures.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.base_utils.unit_conversion">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.base_utils.</span></span><span class="sig-name descname"><span class="pre">unit_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/base_utils.html#unit_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.base_utils.unit_conversion" title="Link to this definition"></a></dt>
+<dd><p>Convert a measurement into a default unit using pint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement</strong> – Measurements can be pint object, int or float(in which case it will be assumed to already be in the default unit), string of magnitude and unit, or a measurement dictionary (EX: {“value”: 0.5, “unit”: “eV”}</p></li>
+<li><p><strong>default_unit</strong> – default unit / unit to be converted to</p></li>
+<li><p><strong>return_dict</strong></p></li>
+<li><p><strong>density</strong> – molecular density (in case needed for conversion)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>float magnitude for the converted measurement</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.base_utils.write_test">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.base_utils.</span></span><span class="sig-name descname"><span class="pre">write_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/base_utils.html#write_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.base_utils.write_test" title="Link to this definition"></a></dt>
+<dd><p>Writes test data to a file based on the test type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – Path to the output file.</p></li>
+<li><p><strong>test_type</strong> (<em>str</em>) – Type of test data to write. Options are “cv”, “ca”, or “ircomp”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_gripper">
+<span id="robotics-api-utils-kinova-gripper-module"></span><h2>robotics_api.utils.kinova_gripper module<a class="headerlink" href="#module-robotics_api.utils.kinova_gripper" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_gripper.</span></span><span class="sig-name descname"><span class="pre">GripperMove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_real_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">router_real_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.__init__" title="Link to this definition"></a></dt>
+<dd><p>GripperMove class constructor.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>kortex_api.RouterClient router:            TCP router
+kortex_api.RouterClient router_real_time:  Real-time UDP router
+float proportional_gain: Proportional gain used in control loop (default value is 2.0)</p>
+</dd>
+<dt>Outputs:</dt><dd><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Actuators and gripper initial position are retrieved to set initial positions</p></li>
+<li><p>Actuator and gripper cyclic command objects are created in constructor. Their
+references are used to update position and speed.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Restore arm’s servoing mode to the one that
+was effective before running the example.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_gripper.GripperMove.gripper_move">
+<span class="sig-name descname"><span class="pre">gripper_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_gripper.html#GripperMove.gripper_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_gripper.GripperMove.gripper_move" title="Link to this definition"></a></dt>
+<dd><p>Position gripper to a requested target position using a simple
+proportional feedback loop which changes speed according to error
+between target position and current gripper position</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>float target_position: position (0% - 100%) to send gripper to.</p>
+</dd>
+<dt>Outputs:</dt><dd><p>Returns True if gripper was positioned successfully, returns False
+otherwise.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This function blocks until position is reached.</p></li>
+<li><p>If target position exceeds 100.0, its value is changed to 100.0.</p></li>
+<li><p>If target position is below 0.0, its value is set to 0.0.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_move">
+<span id="robotics-api-utils-kinova-move-module"></span><h2>robotics_api.utils.kinova_move module<a class="headerlink" href="#module-robotics_api.utils.kinova_move" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.check_for_end_or_abort">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">check_for_end_or_abort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#check_for_end_or_abort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.check_for_end_or_abort" title="Link to this definition"></a></dt>
+<dd><p>Return a closure checking for END or ABORT notifications</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> – event to signal when the action is completed (will be set when an END or ABORT occurs)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.get_place_vial">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">get_place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'get'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">go</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release_vial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#get_place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.get_place_vial" title="Link to this definition"></a></dt>
+<dd><p>Executes an action to get or place a vial using snapshot movements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>station</strong> (<a class="reference internal" href="robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus" title="robotics_api.actions.db_manipulations.StationStatus"><em>StationStatus</em></a>)</p></li>
+<li><p><strong>action_type</strong> (<em>str</em>) – Action type, either ‘get’ (to retrieve the vial) or ‘place’ (to place the vial).</p></li>
+<li><p><strong>go</strong> (<em>bool</em>) – Whether to move to the snapshot file location (default is True).</p></li>
+<li><p><strong>leave</strong> (<em>bool</em>) – Whether to leave the snapshot file location after the action (default is True).</p></li>
+<li><p><strong>release_vial</strong> (<em>bool</em>) – Whether to release the vial after placing (default is True).</p></li>
+<li><p><strong>raise_error</strong> (<em>bool</em>) – Whether to raise an error if movement fails (default is True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the action was successful, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If the movement fails and raise_error is True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.move_gripper">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">move_gripper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#move_gripper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.move_gripper" title="Link to this definition"></a></dt>
+<dd><p>Move gripper
+:param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
+:return: bool, True if action a success</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.move_hand">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">move_hand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#move_hand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.move_hand" title="Link to this definition"></a></dt>
+<dd><p>Function to move the robotic hand by linear and angular x, y, and z</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linear_x</strong> (<em>float</em>) – increment of linear x movement</p></li>
+<li><p><strong>linear_y</strong> (<em>float</em>) – increment of linear y movement</p></li>
+<li><p><strong>linear_z</strong> (<em>float</em>) – increment of linear z movement</p></li>
+<li><p><strong>angular_x</strong> (<em>float</em>) – increment of angular x movement</p></li>
+<li><p><strong>angular_y</strong> (<em>float</em>) – increment of angular y movement</p></li>
+<li><p><strong>angular_z</strong> (<em>float</em>) – increment of angular z movement</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: boolean indicating success of action</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.perturb_angular">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">perturb_angular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">joint_deltas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#perturb_angular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.perturb_angular" title="Link to this definition"></a></dt>
+<dd><p>Moves a given joint a specified range (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reverse</strong> – Reverse all joint deltas if True</p></li>
+<li><p><strong>wait_time</strong> – Wait time after move</p></li>
+<li><p><strong>joint_deltas</strong> – Key word arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the movement completed successfully, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.perturbed_snapshot">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">perturbed_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturb_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#perturbed_snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.perturbed_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Creates a perturbed snapshot by modifying the specified axis position in the given snapshot file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_file</strong> (<em>str</em>) – Path to the snapshot JSON file.</p></li>
+<li><p><strong>perturb_amount</strong> (<em>float</em>) – Amount to perturb the position along the specified axis (default is PERTURB_AMOUNT).</p></li>
+<li><p><strong>axis</strong> (<em>str</em>) – Axis to apply the perturbation to, defaults to “z”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the new perturbed snapshot file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.screw_lid">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">screw_lid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vial-screw_test.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#screw_lid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.screw_lid" title="Link to this definition"></a></dt>
+<dd><p>Screws or unscrews the vial lid by controlling the robot arm’s movement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>screw</strong> (<em>bool</em>) – True to screw the lid on, False to unscrew it (default is True).</p></li>
+<li><p><strong>starting_position</strong> (<em>str</em>) – Path to the starting snapshot position file.</p></li>
+<li><p><strong>linear_z</strong> (<em>float</em>) – Amount of linear movement along the z-axis per iteration (default is 0.00003).</p></li>
+<li><p><strong>angular_z</strong> (<em>float</em>) – Amount of rotational movement along the z-axis in degrees (default is 120).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the action was successful, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_file</strong> – str, path to snapshot file (JSON)</p></li>
+<li><p><strong>target_position</strong> – target position for the gripper: open, closed, or percentage closed (e.g., 90)</p></li>
+<li><p><strong>raise_error</strong></p></li>
+<li><p><strong>angle_error</strong></p></li>
+<li><p><strong>position_error</strong></p></li>
+<li><p><strong>angle_error</strong></p></li>
+<li><p><strong>position_error</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, True if movement was a success</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move_angular">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move_angular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_angle_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move_angular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move_angular" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move_cartesian">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move_cartesian" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.kinova_utils">
+<span id="robotics-api-utils-kinova-utils-module"></span><h2>robotics_api.utils.kinova_utils module<a class="headerlink" href="#module-robotics_api.utils.kinova_utils" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_utils.</span></span><span class="sig-name descname"><span class="pre">DeviceConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ipAddress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('',</span> <span class="pre">'')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT">
+<span class="sig-name descname"><span class="pre">TCP_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10000</span></em><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.TCP_PORT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT">
+<span class="sig-name descname"><span class="pre">UDP_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10001</span></em><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.UDP_PORT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ipAddress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('',</span> <span class="pre">'')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createTcpConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.createTcpConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.createTcpConnection" title="Link to this definition"></a></dt>
+<dd><p>returns RouterClient required to create services and send requests to device or sub-devices,</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createUdpConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#DeviceConnection.createUdpConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.DeviceConnection.createUdpConnection" title="Link to this definition"></a></dt>
+<dd><p>returns RouterClient that allows to create services and send requests to a device or its sub-devices &#64; 1khz.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_utils.parseConnectionArguments">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_utils.</span></span><span class="sig-name descname"><span class="pre">parseConnectionArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser=ArgumentParser(prog='sphinx-build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter_class=&lt;class</span> <span class="pre">'argparse.HelpFormatter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conflict_handler='error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help=True)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_utils.html#parseConnectionArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_utils.parseConnectionArguments" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-robotics_api.utils.mongo_dbs">
+<span id="robotics-api-utils-mongo-dbs-module"></span><h2>robotics_api.utils.mongo_dbs module<a class="headerlink" href="#module-robotics_api.utils.mongo_dbs" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">DBconnector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to retrieve a collection from a database and insert new entry.
+Requires a db_infos.json file with credentials
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_information</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the DBconnector object with database information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_information</strong> (<em>dict</em>) – Dictionary containing database information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.get_collection">
+<span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coll_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.get_collection" title="Link to this definition"></a></dt>
+<dd><p>Returns a collection from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coll_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the collection. Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The collection object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pymongo.collection.Collection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.DBconnector.get_database">
+<span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#DBconnector.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.DBconnector.get_database" title="Link to this definition"></a></dt>
+<dd><p>Returns a database object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A database object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pymongo.database.Database</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">MongoDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for connecting to a database
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the MongoDatabase object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the database. Defaults to None.</p></li>
+<li><p><strong>collection_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the collection. Defaults to None.</p></li>
+<li><p><strong>instance</strong> (<em>dict</em><em>, </em><em>optional</em>) – Instance to insert or validate. Defaults to None.</p></li>
+<li><p><strong>schema_layer</strong> (<em>str</em><em>, </em><em>optional</em>) – Schema layer. Defaults to “”.</p></li>
+<li><p><strong>schema_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory of the schema. Defaults to None.</p></li>
+<li><p><strong>public</strong> (<em>bool</em><em>, </em><em>optional</em>) – Marks instance as public if True. Defaults to None.</p></li>
+<li><p><strong>schema_db</strong> (<em>str</em><em>, </em><em>optional</em>) – Database containing the schema. Defaults to None.</p></li>
+<li><p><strong>default_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Default instance ID. Defaults to None.</p></li>
+<li><p><strong>validate_schema</strong> (<em>bool</em><em>, </em><em>optional</em>) – Validates schema if True. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>optional</em>) – Verbosity level. Defaults to 1.</p></li>
+<li><p><strong>schema_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Version of the schema. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.array_checker">
+<span class="sig-name descname"><span class="pre">array_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.array_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.array_checker" title="Link to this definition"></a></dt>
+<dd><p>Checks if the field at the path is an array and prepares for set insertion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_path</strong> (<em>str</em>) – Path to check.</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – Instance ID.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dot2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.dot2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.dot2dict" title="Link to this definition"></a></dt>
+<dd><p>Converts dot notation keys to nested dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dot_not</strong> (<em>dict</em>) – Dictionary with dot notation keys.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Nested dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.field_checker">
+<span class="sig-name descname"><span class="pre">field_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.field_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.field_checker" title="Link to this definition"></a></dt>
+<dd><p>Checks if a field exists in the collection and returns the result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> – Value to check.</p></li>
+<li><p><strong>field</strong> (<em>str</em>) – Name of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the field exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.insert" title="Link to this definition"></a></dt>
+<dd><p>Upserts a dictionary into a MongoDB collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – ID for insertion.</p></li>
+<li><p><strong>nested</strong> (<em>bool</em><em>, </em><em>optional</em>) – Inserts nested attributes if True. Defaults to False.</p></li>
+<li><p><strong>update_public</strong> (<em>bool</em><em>, </em><em>optional</em>) – Updates the public status if True. Defaults to True.</p></li>
+<li><p><strong>instance</strong> (<em>dict</em><em>, </em><em>optional</em>) – Instance to be inserted. Defaults to None.</p></li>
+<li><p><strong>override_lists</strong> (<em>bool</em><em>, </em><em>optional</em>) – Overrides existing lists in insertion if True. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.make_query">
+<span class="sig-name descname"><span class="pre">make_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pandas'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.make_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.make_query" title="Link to this definition"></a></dt>
+<dd><p>Executes a MongoDB database query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>dict</em><em>, </em><em>optional</em>) – Query parameters. Defaults to an empty dictionary.</p></li>
+<li><p><strong>projection</strong> (<em>dict</em><em>, </em><em>optional</em>) – Fields to include or exclude. Defaults to an empty dictionary.</p></li>
+<li><p><strong>output</strong> (<em>str</em><em>, </em><em>optional</em>) – Output type, can be “pandas”, “json”, or list. Defaults to “pandas”.</p></li>
+<li><p><strong>multi</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns multiple query responses. If False, returns a single result.
+Defaults to True.</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of responses to return. Defaults to 200.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ol class="arabic simple">
+<li><p>A dataframe if output=”pandas”</p></li>
+<li><p>A list if multi=False and a pymongo dursor if multi=True; output != “pandas</p></li>
+</ol>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.MongoDatabase.path_insert">
+<span class="sig-name descname"><span class="pre">path_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#MongoDatabase.path_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.MongoDatabase.path_insert" title="Link to this definition"></a></dt>
+<dd><p>Inserts a value at a specific path in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Instance ID.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path for insertion.</p></li>
+<li><p><strong>value</strong> – Value to insert.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">RobotStatusDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#robotics_api.utils.mongo_dbs.MongoDatabase" title="robotics_api.utils.mongo_dbs.MongoDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoDatabase</span></code></a></p>
+<p>Provides access to the Robot Status database.</p>
+<p>This class is used to interact with the status database for a specific type of apparatus.
+Copyright 2021, University of Kentucky.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apparatus_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_lists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wflow_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the RobotStatusDB class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apparatus_type</strong> (<em>str</em>) – Name of the apparatus.</p></li>
+<li><p><strong>_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique identifier for the status entry. Defaults to None.</p></li>
+<li><p><strong>instance</strong> (<em>dict</em><em>, </em><em>optional</em>) – Instance to insert or validate in the database. Defaults to None.</p></li>
+<li><p><strong>override_lists</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to override existing lists in the database. Defaults to True.</p></li>
+<li><p><strong>wflow_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the active workflow. If set, verifies that the instance has the
+appropriate workflow name. Defaults to None.</p></li>
+<li><p><strong>validate_schema</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, validates the instance against the schema. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IOError</strong> – If no ID is provided for the status database insertion.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name">
+<span class="sig-name descname"><span class="pre">check_wflow_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.check_wflow_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.check_wflow_name" title="Link to this definition"></a></dt>
+<dd><p>Checks if the workflow name matches the instance’s current workflow name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NameError</strong> – If the workflow name does not match the current instance’s workflow name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.exists">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.exists" title="Link to this definition"></a></dt>
+<dd><p>Checks if an entry with the given ID exists in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the entry exists, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop">
+<span class="sig-name descname"><span class="pre">get_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.get_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.get_prop" title="Link to this definition"></a></dt>
+<dd><p>Retrieves a property from the database for the instance with the given ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>str</em>) – Name of the property to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the property, or None if the property does not exist.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.RobotStatusDB.update_status">
+<span class="sig-name descname"><span class="pre">update_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'location'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#RobotStatusDB.update_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.RobotStatusDB.update_status" title="Link to this definition"></a></dt>
+<dd><p>Updates the status for a vial location or station vial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_status</strong> (<em>str</em>) – New status, such as the new vial location or new vial in the station.</p></li>
+<li><p><strong>status_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the status property. Defaults to “location”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.Schema2Class">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">Schema2Class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#Schema2Class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.Schema2Class" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Get D3TaLES schema from GitHub and load it to a class
+Copyright 2021, University of Kentucky</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.Schema2Class.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#Schema2Class.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.Schema2Class.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the Schema2Class object and retrieves the schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database</strong> (<em>str</em><em>, </em><em>optional</em>) – Database name. Defaults to None.</p></li>
+<li><p><strong>schema_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Schema name. Defaults to None.</p></li>
+<li><p><strong>schema_directory</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory of the schema. Defaults to None.</p></li>
+<li><p><strong>named_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, only properties with a title attribute will be
+included in the resulting namespace. Defaults to False.</p></li>
+<li><p><strong>schema_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Schema version. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.db_info_generator">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.db_info_generator" title="Link to this definition"></a></dt>
+<dd><p>Generates information about database connections.</p>
+<p>This function requires either a <cite>db_file</cite> argument or a <cite>DB_INFO_FILE</cite> environment variable.
+The argument or environment variable should be a path to a JSON file containing connection
+information for the databases. The keys should be the database names such as <cite>frontend</cite>,
+<cite>backend</cite>, <cite>expflow</cite>, and <cite>fireworks</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_file</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the database info JSON file. Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON object containing information about database connections.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="robotics-api-utils-processing-utils-module">
+<h2>robotics_api.utils.processing_utils module<a class="headerlink" href="#robotics-api-utils-processing-utils-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-robotics_api.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-robotics_api.utils" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="robotics_api.snapshots.html" class="btn btn-neutral float-left" title="robotics_api.snapshots package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, University of Kentucky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

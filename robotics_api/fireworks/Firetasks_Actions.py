@@ -193,10 +193,10 @@ class MeasureDensity(RoboticsBase):
             # Return extracted solution
             pipette_station.return_soln(vial=self.exp_vial)
         else:
-            # Discard extracted solution
-            pipette_station.pipette(volume=0)
             # Update vial contents
             self.exp_vial.extract_soln(extracted_mass=extracted_mass)
+            # Discard extracted solution
+            pipette_station.pipette(volume=0)
 
         return FWAction(update_spec=self.updated_specs())
 

@@ -682,7 +682,7 @@ class StirStation(StationStatus):
 
     Methods:
         place_vial(vial, raise_error=True): Places a vial on the stir station.
-        stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
+        stir(stir_time=None, stir_cmd="off", move_sleep=3): Operates the stirring mechanism.
         stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
 
@@ -699,7 +699,7 @@ class StirStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'stir'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
         if self.type != "stir":

@@ -3,6 +3,7 @@ import json
 import time
 import warnings
 import threading
+import numpy as np
 from argparse import Namespace
 from kortex_api.autogen.messages import Base_pb2
 from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
@@ -215,6 +216,71 @@ def move_hand(linear_x: float = 0, linear_y: float = 0, linear_z: float = 0,
     return finished
 
 
+def get_zone(angle, zone_dividers=ZONE_DIVIDERS):
+    """
+    Moves a given joint a specified range (in degrees).
+
+    Args:
+        angle (float): The angle in degrees.
+        zone_dividers (list): A list of zone divider angles in ascending order.
+    Returns:
+        int: The zone index (starting from 1) that the angle belongs to.
+    """
+    # Check if angle is above the last divider
+    if angle > zone_dividers[-1]:
+        return 1  # Belongs to Zone 1
+
+    # Find the zone
+    for idx in range(len(zone_dividers)):
+        if zone_dividers[idx] <= angle < (zone_dividers[(idx + 1) % len(zone_dividers)]):
+            return idx + 1  # Zone index starts from 1
+
+    raise ValueError(f"Zone not found for angle {angle} and dividers {zone_dividers}.")
+
+
+def current_zone(zone_dividers=ZONE_DIVIDERS):
+    """
+    Moves a given joint a specified range (in degrees).
+
+    Args:
+        zone_dividers (list): A list of zone divider angles in ascending order.
+    Returns:
+        int: The zone index (starting from 1) that the angle belongs to.
+    """
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+
+        current_joint_angles = base.GetMeasuredJointAngles()
+        joint_1_angle = current_joint_angles.joint_angles[0].value
+        return get_zone(joint_1_angle, zone_dividers=zone_dividers)
+
+
+def snapshot_zone(snapshot_file, zone_dividers=ZONE_DIVIDERS):
+    """
+    Moves a given joint a specified range (in degrees).
+
+    Args:
+        snapshot_file (str): A list of zone divider angles in ascending order.
+        zone_dividers (list): A list of zone divider angles in ascending order.
+    Returns:
+        int: The zone index (starting from 1) that the angle belongs to.
+    """
+    with open(snapshot_file, 'r') as fn:
+        master_data = json.load(fn)
+
+        if "jointAnglesGroup" in master_data.keys():
+            joint_angle_values = master_data["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"]["jointAngles"]
+            theta = joint_angle_values[0]["value"]
+        elif "poses" in master_data.keys():
+            coordinate_values = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]
+            x = coordinate_values["x"]
+            y = coordinate_values["y"]
+            theta = np.degrees(np.arctan2(y, x)) % 360
+    return get_zone(theta, zone_dividers=zone_dividers)
+
+
 def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_error: bool = True,
                   angle_error: float = 0.2, position_error: float = 0.1):
     """
@@ -234,7 +300,7 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
         warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
         return True
 
-    finished = True
+    finished = False
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
@@ -243,10 +309,7 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
             # Create required services
             base = BaseClient(router)
 
-            if snapshot_file:
-                # loads file
-                snapshot_file = open(snapshot_file, 'r')
-
+            with open(snapshot_file, 'r') as snapshot_file:
                 # converts JSON to nested dictionary
                 snapshot_file.dict = json.load(snapshot_file)
 
@@ -255,32 +318,11 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                     joint_angle_values = \
                         snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
                             "jointAngles"]
-                    move_type = "angular"
-                elif "poses" in snapshot_file.dict:
-                    # grabs the dictionary of coordinate values
-                    coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
-                    move_type = "cartesian"
-                else:
-                    print("invalid file type")
-                    move_type = "null"
-
-                # Move Robot
-                if move_type == "angular":
                     finished = snapshot_move_angular(base, joint_angle_values)
-                elif move_type == "cartesian":
-                    finished = snapshot_move_cartesian(base, coordinate_values)
-                else:
-                    finished = True
-                    if VERBOSE > 3:
-                        print("... and nothing happened")
-                snapshot_file.close()
 
-                if finished:
-                    if move_type == "angular":
-                        current_joint_angles_raw = base.GetMeasuredJointAngles()  # Assuming this method exists
-                        def _angle(a):
-                            return a if a < 360 else a-360
-                        current_joint_angles = {i.joint_identifier: _angle(i.value) for i in current_joint_angles_raw.joint_angles}
+                    if finished:
+                        current_joint_angles_raw = base.GetMeasuredJointAngles()
+                        current_joint_angles = {i.joint_identifier: i.value % 360 for i in current_joint_angles_raw.joint_angles}
                         joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
                         angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k in joint_angle_values_dict]
                         if not all([d < angle_error for d in angle_diffs]):
@@ -289,8 +331,13 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                                 finished = False
                                 if raise_error:
                                     raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
-                    elif move_type == "cartesian":
-                        current_pose_raw = base.GetMeasuredCartesianPose()  # Assuming this method exists
+                elif "poses" in snapshot_file.dict:
+                    # grabs the dictionary of coordinate values
+                    coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
+                    finished = snapshot_move_cartesian(base, coordinate_values)
+
+                    if finished:
+                        current_pose_raw = base.GetMeasuredCartesianPose()
                         current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
                                         "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y, "thetaZ": current_pose_raw.theta_z}
                         pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
@@ -300,12 +347,9 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                                                   f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
                                                   f" {pose_diffs}")
                             finished = False
-                    else:
-
-                        if raise_error:
-                            raise SystemError("Error: Unknown move type for confirmation.")
-                        finished = False
-
+                else:
+                    if raise_error:
+                        raise SystemError("Snapshot file type not suitable for robot movement")
     except Exception as e:
         raise Exception(e)
 
@@ -331,16 +375,13 @@ def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
     with utilities.DeviceConnection.createTcpConnection(connector) as router:
         # Create required services
         base = BaseClient(router)
-        current_joint_angles = base.GetMeasuredJointAngles()  # Assuming this method exists
-
-        def _angle(a):
-            return a if a < 360 else a - 360
+        current_joint_angles = base.GetMeasuredJointAngles()
 
         joint_angles = []
         for joint in current_joint_angles.joint_angles:
             i = joint.joint_identifier
             delta_value = joint_deltas.get(f"j{i+1}", 0) * (-1 if reverse else 1)
-            final_angle = _angle(joint.value + delta_value)
+            final_angle = (joint.value + delta_value) % 360
             if delta_value:
                 print(f"Moving joint {i+1} {delta_value} degrees to {final_angle}")
             joint_angles.append({"joint_identifier": i, "value": final_angle})
@@ -375,7 +416,7 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
 
 
 def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True,
-                   pre_position_only=False):
+                   pre_position_only=False, move_to_zone=True):
     """
     Executes an action to get or place a vial using snapshot movements.
 
@@ -387,6 +428,7 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         release_vial (bool): Whether to release the vial after placing (default is True).
         raise_error (bool): Whether to raise an error if movement fails (default is True).
         pre_position_only (bool): Only move to "above" position if True (default is True).
+        move_to_zone (bool):
     Returns:
         bool: True if the action was successful, False otherwise.
 
@@ -413,6 +455,12 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
     if go:
         # Start open if getting a vial
         success &= snapshot_move(target_position='open') if action_type == "get" else True
+
+        # If move_to_zone, go to the correct zone
+        target_zone = snapshot_zone(snapshot_file)
+        if current_zone() != snapshot_zone(snapshot_file):
+            success &= snapshot_move(os.path.join(SNAPSHOT_DIR, f"zone_{target_zone:02d}.json"))
+
         # If pre-position, go there
         if pre_position_file:
             success &= snapshot_move(pre_position_file)
@@ -482,5 +530,4 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
         success &= snapshot_move(snapshot_top)
 
     return success
-
 

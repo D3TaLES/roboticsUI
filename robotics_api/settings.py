@@ -126,7 +126,7 @@ POTENTIOSTAT_SETTINGS = {
 }
 
 # ---------  PROCESSING SETTINGS -------------
-RUN_ANODIC = False
+RUN_ANODIC = True
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
 MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"

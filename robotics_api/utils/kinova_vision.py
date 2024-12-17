@@ -1,12 +1,9 @@
 import cv2
 import warnings
 from pyzbar import pyzbar
-from argparse import Namespace
-from robotics_api.utils import kinova_utils as utilities
-from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
-from kortex_api.autogen.client_stubs.VisionConfigClientRpc import VisionConfigClient
 from kortex_api.autogen.messages import Base_pb2
-from robotics_api.settings import RUN_ROBOT, KINOVA_01_IP
+from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
+from robotics_api.settings import KINOVA_01_IP
 
 
 def get_qr_codes_from_camera(camera_ip=KINOVA_01_IP):
@@ -35,7 +32,7 @@ def get_qr_codes_from_camera(camera_ip=KINOVA_01_IP):
     return qr_codes, frame
 
 
-def select_qr_code(qr_codes, destination_station):
+def select_qr_code(qr_codes: list, destination_station):
     """
     Selects the QR code that matches the provided destination station.
 
@@ -53,7 +50,7 @@ def select_qr_code(qr_codes, destination_station):
     return None
 
 
-def calculate_robot_movement(qr_code, frame, target_qr_size):
+def calculate_robot_movement(qr_code: object, frame: object, target_qr_size: object) -> object:
     """
     Calculates the movement needed for the robot to align with the QR code and adjust to the target size.
 
@@ -113,48 +110,8 @@ def move_robot_to_qr(base, move_x, move_y, move_z):
     return True  # TODO add success validation
 
 
-def move_to_station_qr(destination_station: str, target_qr_size: float = 200):
-    """
-    Main function that coordinates the process of moving the Kinova robot to align with a QR code.
-
-    Args:
-        destination_station (str): The destination station that corresponds to the QR code data.
-        target_qr_size (float): The desired size of the QR code in pixels, used to adjust the robot's position.
-
-    Returns:
-        bool: Returns True if the robot did not move because RUN_ROBOT is set to False.
-    """
-    # Check if robot operation is enabled
-    if not RUN_ROBOT:
-        warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
-        return True
-
-    # Create connection to the device and get the router
-    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    with utilities.DeviceConnection.createTcpConnection(connector) as router:
-        # Create required services
-        base = BaseClient(router)
-        vision_config = VisionConfigClient(router)
-
-        # Get QR codes from the camera
-        qr_codes, frame = get_qr_codes_from_camera()
-
-        if not qr_codes:
-            warnings.warn(f"No QR codes detected. Robot did not move to {destination_station}.")
-            return
-
-        # Select the QR code that matches the destination
-        selected_qr = select_qr_code(qr_codes, destination_station)
-
-        if selected_qr is None:
-            warnings.warn(f"No matching QR code for {destination_station}.")
-            return
-
-        # Calculate the robot movement required to align the QR code
-        move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, target_qr_size)
-
-        # Move the robot
-        success = move_robot_to_qr(base, move_x, move_y, move_z)
-        print("Robot moved to align with QR code.")
-
-        return success
+if __name__ == "__main__":
+    # qr_codes, frame = get_qr_codes_from_camera(camera_ip=KINOVA_01_IP)
+    # selected_qr = select_qr_code(qr_codes, "A_04")
+    # move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, 200)
+    pass

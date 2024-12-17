@@ -11,12 +11,13 @@ from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.actions.db_manipulations import VialStatus
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
-from robotics_api.utils.kinova_vision import move_to_station_qr
+from kortex_api.autogen.client_stubs.VisionConfigClientRpc import VisionConfigClient
+from robotics_api.utils.kinova_vision import move_robot_to_qr, get_qr_codes_from_camera, calculate_robot_movement, select_qr_code
 from robotics_api.settings import *
 
 # Maximum allowed waiting time during actions (in seconds)
 TIMEOUT_DURATION = 20
-VERBOSE = 1
+VERBOSE = 4
 
 
 # Create closure to set an event after an END or an ABORT
@@ -38,7 +39,7 @@ def check_for_end_or_abort(e):
     return check
 
 
-def snapshot_move_angular(base: BaseClient, joint_angle_values):
+def move_angular(base: BaseClient, joint_angle_values, angle_error: float = 0.2):
     if VERBOSE > 3:
         print("Starting angular action movement ...")
     action = Base_pb2.Action()
@@ -70,21 +71,31 @@ def snapshot_move_angular(base: BaseClient, joint_angle_values):
     base.Unsubscribe(notification_handle)
 
     if finished:
-        if VERBOSE > 3:
-            print("Angular movement completed")
+        current_joint_angles_raw = base.GetMeasuredJointAngles()
+        current_joint_angles = {i.joint_identifier: i.value % 360 for i in
+                                current_joint_angles_raw.joint_angles}
+        joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
+        angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k
+                       in joint_angle_values_dict]
+        if not all([d < angle_error for d in angle_diffs]):
+            error_diffs = [d for d in angle_diffs if d > angle_error]
+            if not all([round(abs(d - 360), 5) < angle_error for d in error_diffs]):
+                finished = False
+                raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
     else:
         if VERBOSE > 3:
             print("Timeout on action notification wait")
     return finished
 
 
-def snapshot_move_cartesian(base: BaseClient, coordinate_values: dict):
+def move_cartesian(base: BaseClient, coordinate_values: dict, position_error: float = 0.1):
     if VERBOSE > 3:
         print("Starting Cartesian action movement ...")
     action = Base_pb2.Action()
     action.name = "Example Cartesian action movement"
     action.application_data = ""
 
+    print(coordinate_values)
     cartesian_pose = action.reach_pose.target_pose
     cartesian_pose.x = coordinate_values["x"]  # (meters)
     cartesian_pose.y = coordinate_values["y"]  # (meters)
@@ -109,8 +120,15 @@ def snapshot_move_cartesian(base: BaseClient, coordinate_values: dict):
     base.Unsubscribe(notification_handle)
 
     if finished:
-        if VERBOSE > 1:
-            print("Cartesian movement completed")
+        current_pose_raw = base.GetMeasuredCartesianPose()
+        current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
+                        "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y,
+                        "thetaZ": current_pose_raw.theta_z}
+        pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in
+                      coordinate_values]
+        if not all([round(d < position_error, 5) for d in pose_diffs]):
+            raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
+                              f"({[coordinate_values.get(k, 0) for k in coordinate_values]}): {pose_diffs}")
     else:
         if VERBOSE > 1:
             print("Timeout on action notification wait")
@@ -289,8 +307,7 @@ def snapshot_zone(snapshot_file, zone_dividers=ZONE_DIVIDERS):
     return get_zone(theta, zone_dividers=zone_dividers)
 
 
-def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_error: bool = True,
-                  angle_error: float = 0.2, position_error: float = 0.1):
+def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_error: bool = True, **kwargs):
     """
 
     :param snapshot_file: str, path to snapshot file (JSON)
@@ -327,40 +344,11 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
                         joint_angle_values = \
                             snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
                                 "jointAngles"]
-                        finished = snapshot_move_angular(base, joint_angle_values)
-
-                        if finished:
-                            current_joint_angles_raw = base.GetMeasuredJointAngles()
-                            current_joint_angles = {i.joint_identifier: i.value % 360 for i in
-                                                    current_joint_angles_raw.joint_angles}
-                            joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
-                            angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k
-                                           in joint_angle_values_dict]
-                            if not all([d < angle_error for d in angle_diffs]):
-                                error_diffs = [d for d in angle_diffs if d > angle_error]
-                                if not all([abs(d - 360) < angle_error for d in error_diffs]):
-                                    finished = False
-                                    if raise_error:
-                                        raise SystemError("Error: Robot did not reach the desired joint angles: ",
-                                                          angle_diffs)
+                        finished = move_angular(base, joint_angle_values, **kwargs)
                     elif "poses" in snapshot_file.dict:
                         # grabs the dictionary of coordinate values
                         coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
-                        finished = snapshot_move_cartesian(base, coordinate_values)
-
-                        if finished:
-                            current_pose_raw = base.GetMeasuredCartesianPose()
-                            current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
-                                            "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y,
-                                            "thetaZ": current_pose_raw.theta_z}
-                            pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in
-                                          coordinate_values]
-                            if not all([d < position_error for d in pose_diffs]):
-                                if raise_error:
-                                    raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
-                                                      f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
-                                                      f" {pose_diffs}")
-                                finished = False
+                        finished = move_cartesian(base, coordinate_values, **kwargs)
                     else:
                         if raise_error:
                             raise SystemError("Snapshot file type not suitable for robot movement")
@@ -371,6 +359,38 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
         finished = move_gripper(target_position)
     print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     return finished
+
+
+def perturb_cartesian(wait_time=None, **coordinate_deltas):
+    """
+    Moves a given coordinate a specified range (in degrees).
+
+    Args:
+        wait_time : Wait time after move
+        coordinate_deltas : Key word arguments
+
+    Returns:
+        bool: True if the movement completed successfully, False otherwise.
+    """
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+
+        current_pose = base.GetMeasuredCartesianPose()
+        target_pose = {
+            "x": current_pose.x + coordinate_deltas.get("x", 0),
+            "y": current_pose.y + coordinate_deltas.get("y", 0),
+            "z": current_pose.z + coordinate_deltas.get("z", 0),
+            "thetaX": current_pose.theta_x + coordinate_deltas.get("thetaX", 0),
+            "thetaY": current_pose.theta_y + coordinate_deltas.get("thetaY", 0),
+            "thetaZ": current_pose.theta_z + coordinate_deltas.get("thetaZ", 0)
+        }
+
+        if wait_time:
+            time.sleep(wait_time)
+
+        return move_cartesian(base, target_pose)
 
 
 def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
@@ -403,7 +423,7 @@ def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
         if wait_time:
             time.sleep(wait_time)
 
-        return snapshot_move_angular(base, joint_angles)
+        return move_angular(base, joint_angles)
 
 
 def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, axis="z"):
@@ -429,8 +449,56 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
+def move_to_station_qr(destination_station: str, target_qr_size: float = 500):
+    """
+    Main function that coordinates the process of moving the Kinova robot to align with a QR code.
+
+    Args:
+        destination_station (str): The destination station that corresponds to the QR code data.
+        target_qr_size (float): The desired size of the QR code in pixels, used to adjust the robot's position.
+
+    Returns:
+        bool: Returns True if the robot did not move because RUN_ROBOT is set to False.
+    """
+    # Check if robot operation is enabled
+    if not RUN_ROBOT:
+        warnings.warn("Robot NOT run because RUN_ROBOT is set to False.")
+        return True
+
+    # Create connection to the device and get the router
+    connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+    with utilities.DeviceConnection.createTcpConnection(connector) as router:
+        # Create required services
+        base = BaseClient(router)
+        vision_config = VisionConfigClient(router)
+
+        # Get QR codes from the camera
+        qr_codes, frame = get_qr_codes_from_camera()
+
+        if not qr_codes:
+            warnings.warn(f"No QR codes detected. Robot did not move to {destination_station}.")
+            return
+
+        # Select the QR code that matches the destination
+        selected_qr = select_qr_code(qr_codes, destination_station)
+
+        if selected_qr is None:
+            warnings.warn(f"No matching QR code for {destination_station}.")
+            return
+
+        # Calculate the robot movement required to align the QR code
+        move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, target_qr_size)
+        print(move_x, move_y, move_z)
+
+        # Move the robot
+        success = 0#perturb_cartesian(x=move_x, y=move_y, z=move_z)
+        print("Robot moved to align with QR code.")
+
+        return success
+
+
 def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True,
-                   pre_position_only=False, move_to_zone=True):
+                   pre_position_only=False):
     """
     Executes an action to get or place a vial using snapshot movements.
 
@@ -442,7 +510,6 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         release_vial (bool): Whether to release the vial after placing (default is True).
         raise_error (bool): Whether to raise an error if movement fails (default is True).
         pre_position_only (bool): Only move to "above" position if True (default is True).
-        move_to_zone (bool):
     Returns:
         bool: True if the action was successful, False otherwise.
 
@@ -457,14 +524,6 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
     destination_name = station.id
     starting_snapshot = station.pre_location_snapshot
     raise_amount = station.raise_amount
-    if isinstance(station, VialStatus):
-        snapshot_file = station.home_snapshot
-        pre_position_file = None
-    else:
-        snapshot_file = station.location_snapshot
-        pre_position_file = station.pre_location_snapshot
-
-    snapshot_file_above = perturbed_snapshot(snapshot_file, perturb_amount=raise_amount)
 
     success = True
 
@@ -550,8 +609,11 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
 
 
 if __name__ == "__main__":
-    print(snapshot_zone(SNAPSHOT_DIR / "cv_potentiostat_A_01.json"))
-    print(snapshot_zone(SNAPSHOT_DIR / "ca_potentiostat_B_01.json"))
-    print(snapshot_zone(SNAPSHOT_DIR / "VialHome_A_01.json"))
-    print(snapshot_zone(SNAPSHOT_DIR / "solvent_01.json"))
-    print(snapshot_zone(SNAPSHOT_DIR / "balance_01.json"))
+    # print(snapshot_zone(SNAPSHOT_DIR / "cv_potentiostat_A_01.json"))
+    # print(snapshot_zone(SNAPSHOT_DIR / "ca_potentiostat_B_01.json"))
+    # print(snapshot_zone(SNAPSHOT_DIR / "VialHome_A_01.json"))
+    # print(snapshot_zone(SNAPSHOT_DIR / "solvent_01.json"))
+    # print(snapshot_zone(SNAPSHOT_DIR / "balance_01.json"))
+    move_to_station_qr("A_04")
+    # perturb_cartesian(z=0.1)
+

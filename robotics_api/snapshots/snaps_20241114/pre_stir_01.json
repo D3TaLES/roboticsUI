@@ -4,7 +4,7 @@
       {
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10040,
+          "identifier": 10041,
           "permission": 7,
           "actionType": 7
         },
@@ -12,27 +12,27 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 60,
+                "value": 40,
                 "jointIdentifier": 0
               },
               {
-                "value": 70,
+                "value": 62,
                 "jointIdentifier": 1
               },
               {
-                "value": 225,
+                "value": 238,
                 "jointIdentifier": 2
               },
               {
-                "value": 0,
+                "value": 12,
                 "jointIdentifier": 3
               },
               {
-                "value": 115,
+                "value": 92,
                 "jointIdentifier": 4
               },
               {
-                "value": 90,
+                "value": 91,
                 "jointIdentifier": 5
               }
             ]
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "PrePipette"
+        "name": "PreStir"
       }
     ]
   }

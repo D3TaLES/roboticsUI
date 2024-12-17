@@ -11,14 +11,14 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
+RUN_POTENT = False
+DISPENSE = False
 STIR = True
 WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-CALIB_DATE = ''  # '2024_06_25'  Date used in testing to gather calibration data (should be blank for a real run)
+CALIB_DATE = '2024_11_20'  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -126,7 +126,7 @@ POTENTIOSTAT_SETTINGS = {
 }
 
 # ---------  PROCESSING SETTINGS -------------
-RUN_ANODIC = False
+RUN_ANODIC = True
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
 MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"

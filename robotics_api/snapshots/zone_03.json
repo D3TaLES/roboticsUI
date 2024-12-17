@@ -1,0 +1,49 @@
+{
+  "jointAnglesGroup": {
+    "jointAngles": [
+      {
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10019,
+          "permission": 7,
+          "actionType": 7
+        },
+        "reachJointAngles": {
+          "jointAngles": {
+            "jointAngles": [
+              {
+                "value": 315,
+                "jointIdentifier": 0
+              },
+              {
+                "value": 50,
+                "jointIdentifier": 1
+              },
+              {
+                "value": 225,
+                "jointIdentifier": 2
+              },
+              {
+                "value": 0,
+                "jointIdentifier": 3
+              },
+              {
+                "value": 90,
+                "jointIdentifier": 4
+              },
+              {
+                "value": 90,
+                "jointIdentifier": 5
+              }
+            ]
+          },
+          "constraint": {
+            "type": 0,
+            "value": 0
+          }
+        },
+        "name": "Home_angular"
+      }
+    ]
+  }
+}

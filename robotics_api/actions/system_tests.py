@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(test_potent.get_temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
-    test_pip.pipette(volume=0)  # mL
+    # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
     # test_stir.stir_vial(test_vial, stir_time=15)
     # test_bal.weigh(test_vial)

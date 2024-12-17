@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.658,
-            "y": 0.162,
-            "z": 0.188,
+            "x": 0,
+            "y": 0,
+            "z": 0,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 90
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
@@ -18,7 +18,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_A_04"
+        "name": "VialHome_master"
       }
     ]
   }

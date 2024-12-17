@@ -11,14 +11,14 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
+RUN_POTENT = False
+DISPENSE = False
 STIR = True
 WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-CALIB_DATE = ''  # '2024_06_25'  Date used in testing to gather calibration data (should be blank for a real run)
+CALIB_DATE = '2024_11_20'  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -48,7 +48,7 @@ KINOVA_01_IP = "192.168.1.10"
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 40
 PERTURB_AMOUNT = 0.07
-STIR_PERTURB = 0.003
+ZONE_DIVIDERS = [30, 180, 330]
 
 # ---------  INSTRUMENT SETTINGS -------------
 MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
@@ -126,7 +126,7 @@ POTENTIOSTAT_SETTINGS = {
 }
 
 # ---------  PROCESSING SETTINGS -------------
-RUN_ANODIC = False
+RUN_ANODIC = True
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
 MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"

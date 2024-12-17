@@ -91,7 +91,7 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
-                success &= snapshot_move(SNAPSHOT_HOME)
+                # success &= snapshot_move(SNAPSHOT_HOME)
             else:
                 station = station_from_name(self.current_location)
                 print(f"Retrieving vial from station {station}...")
@@ -682,7 +682,7 @@ class StirStation(StationStatus):
 
     Methods:
         place_vial(vial, raise_error=True): Places a vial on the stir station.
-        stir(stir_time=None, stir_cmd="off", perturb_amount=STIR_PERTURB, move_sleep=3): Operates the stirring mechanism.
+        stir(stir_time=None, stir_cmd="off", move_sleep=3): Operates the stirring mechanism.
         stir_vial(vial, stir_time=None, **kwargs): Places a vial, stirs it, and retrieves it from the station.
     """
 
@@ -699,7 +699,7 @@ class StirStation(StationStatus):
         Raises:
             Exception: If no station ID is provided or if the station type is not 'stir'.
         """
-        super().__init__(_id=_id, **kwargs)
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if not self.id:
             raise Exception("To operate the Stir-Heat station, a Stir-Heat name must be provided.")
         if self.type != "stir":
@@ -919,12 +919,12 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
                             f"because vial {vial_id} is not located in this potentiostat")
         success = self.end_pot()
-        success &= snapshot_move(SNAPSHOT_HOME)
+        # success &= snapshot_move(SNAPSHOT_HOME)
         success &= get_place_vial(self, action_type='get')
         if success:
             vial.update_position("robot_grip")
             self.empty()
-        success &= snapshot_move(SNAPSHOT_HOME)
+        # success &= snapshot_move(SNAPSHOT_HOME)
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
@@ -948,7 +948,7 @@ class PotentiostatStation(StationStatus):
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
             success &= vial.retrieve(raise_error=True)
-            success &= snapshot_move(SNAPSHOT_HOME)
+            # success &= snapshot_move(SNAPSHOT_HOME)
             success &= vial.place_station(self, raise_error=raise_error)
 
             return success

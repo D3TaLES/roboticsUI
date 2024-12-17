@@ -4,9 +4,9 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.551,
-            "y": 0.266,
-            "z": 0.173,
+            "x": 0.584,
+            "y": 0.164,
+            "z": 0.22799999999999998,
             "thetaX": 90,
             "thetaY": 0,
             "thetaZ": 103
@@ -18,7 +18,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_S_01"
+        "name": "VHome_A_02"
       }
     ]
   }

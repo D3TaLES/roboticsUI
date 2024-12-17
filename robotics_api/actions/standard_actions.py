@@ -91,7 +91,7 @@ class VialMove(VialStatus):
             if self.current_location == "home":
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
-                success &= snapshot_move(SNAPSHOT_HOME)
+                # success &= snapshot_move(SNAPSHOT_HOME)
             else:
                 station = station_from_name(self.current_location)
                 print(f"Retrieving vial from station {station}...")
@@ -919,12 +919,12 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Cannot retrieve vial {vial_id} from potentiostat {self.id}"
                             f"because vial {vial_id} is not located in this potentiostat")
         success = self.end_pot()
-        success &= snapshot_move(SNAPSHOT_HOME)
+        # success &= snapshot_move(SNAPSHOT_HOME)
         success &= get_place_vial(self, action_type='get')
         if success:
             vial.update_position("robot_grip")
             self.empty()
-        success &= snapshot_move(SNAPSHOT_HOME)
+        # success &= snapshot_move(SNAPSHOT_HOME)
         return success
 
     def place_vial(self, vial: VialMove, raise_error=True, **move_kwargs):
@@ -948,7 +948,7 @@ class PotentiostatStation(StationStatus):
             if self.state == "up":
                 success &= self.move_elevator(endpoint="down")
             success &= vial.retrieve(raise_error=True)
-            success &= snapshot_move(SNAPSHOT_HOME)
+            # success &= snapshot_move(SNAPSHOT_HOME)
             success &= vial.place_station(self, raise_error=raise_error)
 
             return success

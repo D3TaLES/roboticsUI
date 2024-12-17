@@ -226,6 +226,12 @@ def get_zone(angle, zone_dividers=ZONE_DIVIDERS):
     Returns:
         int: The zone index (starting from 1) that the angle belongs to.
     """
+
+    # Make sure zone_dividers starts with 0
+    zone_dividers = list(set([0] + zone_dividers))
+    zone_dividers.sort()
+
+    print("ZONES: ", angle, zone_dividers)
     # Check if angle is above the last divider
     if angle > zone_dividers[-1]:
         return 1  # Belongs to Zone 1
@@ -238,7 +244,7 @@ def get_zone(angle, zone_dividers=ZONE_DIVIDERS):
     raise ValueError(f"Zone not found for angle {angle} and dividers {zone_dividers}.")
 
 
-def current_zone(zone_dividers=ZONE_DIVIDERS):
+def get_current_zone(zone_dividers=ZONE_DIVIDERS):
     """
     Moves a given joint a specified range (in degrees).
 
@@ -271,13 +277,14 @@ def snapshot_zone(snapshot_file, zone_dividers=ZONE_DIVIDERS):
         master_data = json.load(fn)
 
         if "jointAnglesGroup" in master_data.keys():
-            joint_angle_values = master_data["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"]["jointAngles"]
+            joint_angle_values = master_data["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
+                "jointAngles"]
             theta = joint_angle_values[0]["value"]
         elif "poses" in master_data.keys():
             coordinate_values = master_data["poses"]["pose"][0]["reachPose"]["targetPose"]
             x = coordinate_values["x"]
             y = coordinate_values["y"]
-            theta = np.degrees(np.arctan2(y, x)) % 360
+            theta = -np.degrees(np.arctan2(y, x)) % 360
     return get_zone(theta, zone_dividers=zone_dividers)
 
 
@@ -304,57 +311,63 @@ def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    try:
-        with utilities.DeviceConnection.createTcpConnection(connector) as router:
-            # Create required services
-            base = BaseClient(router)
+    if snapshot_file:
+        try:
+            with utilities.DeviceConnection.createTcpConnection(connector) as router:
+                # Create required services
+                base = BaseClient(router)
 
-            with open(snapshot_file, 'r') as snapshot_file:
-                # converts JSON to nested dictionary
-                snapshot_file.dict = json.load(snapshot_file)
+                with open(snapshot_file, 'r') as snapshot_file:
+                    # converts JSON to nested dictionary
+                    snapshot_file.dict = json.load(snapshot_file)
 
-                if "jointAnglesGroup" in snapshot_file.dict:
-                    # grabs the list of joint angle values
-                    joint_angle_values = \
-                        snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
-                            "jointAngles"]
-                    finished = snapshot_move_angular(base, joint_angle_values)
+                    if "jointAnglesGroup" in snapshot_file.dict:
+                        # grabs the list of joint angle values
+                        joint_angle_values = \
+                            snapshot_file.dict["jointAnglesGroup"]["jointAngles"][0]["reachJointAngles"]["jointAngles"][
+                                "jointAngles"]
+                        finished = snapshot_move_angular(base, joint_angle_values)
 
-                    if finished:
-                        current_joint_angles_raw = base.GetMeasuredJointAngles()
-                        current_joint_angles = {i.joint_identifier: i.value % 360 for i in current_joint_angles_raw.joint_angles}
-                        joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
-                        angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k in joint_angle_values_dict]
-                        if not all([d < angle_error for d in angle_diffs]):
-                            error_diffs = [d for d in angle_diffs if d > angle_error]
-                            if not all([abs(d-360) < angle_error for d in error_diffs]):
-                                finished = False
+                        if finished:
+                            current_joint_angles_raw = base.GetMeasuredJointAngles()
+                            current_joint_angles = {i.joint_identifier: i.value % 360 for i in
+                                                    current_joint_angles_raw.joint_angles}
+                            joint_angle_values_dict = {i["jointIdentifier"]: i["value"] for i in joint_angle_values}
+                            angle_diffs = [abs(current_joint_angles.get(k, 0) - joint_angle_values_dict.get(k, 0)) for k
+                                           in joint_angle_values_dict]
+                            if not all([d < angle_error for d in angle_diffs]):
+                                error_diffs = [d for d in angle_diffs if d > angle_error]
+                                if not all([abs(d - 360) < angle_error for d in error_diffs]):
+                                    finished = False
+                                    if raise_error:
+                                        raise SystemError("Error: Robot did not reach the desired joint angles: ",
+                                                          angle_diffs)
+                    elif "poses" in snapshot_file.dict:
+                        # grabs the dictionary of coordinate values
+                        coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
+                        finished = snapshot_move_cartesian(base, coordinate_values)
+
+                        if finished:
+                            current_pose_raw = base.GetMeasuredCartesianPose()
+                            current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
+                                            "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y,
+                                            "thetaZ": current_pose_raw.theta_z}
+                            pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in
+                                          coordinate_values]
+                            if not all([d < position_error for d in pose_diffs]):
                                 if raise_error:
-                                    raise SystemError("Error: Robot did not reach the desired joint angles: ", angle_diffs)
-                elif "poses" in snapshot_file.dict:
-                    # grabs the dictionary of coordinate values
-                    coordinate_values = snapshot_file.dict["poses"]["pose"][0]["reachPose"]["targetPose"]
-                    finished = snapshot_move_cartesian(base, coordinate_values)
-
-                    if finished:
-                        current_pose_raw = base.GetMeasuredCartesianPose()
-                        current_pose = {"x": current_pose_raw.x, "y": current_pose_raw.y, "z": current_pose_raw.z,
-                                        "thetaX": current_pose_raw.theta_x, "thetaY": current_pose_raw.theta_y, "thetaZ": current_pose_raw.theta_z}
-                        pose_diffs = [abs(current_pose.get(k, 0) - coordinate_values.get(k, 0)) for k in coordinate_values]
-                        if not all([d < position_error for d in pose_diffs]):
-                            if raise_error:
-                                raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
-                                                  f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
-                                                  f" {pose_diffs}")
-                            finished = False
-                else:
-                    if raise_error:
-                        raise SystemError("Snapshot file type not suitable for robot movement")
-    except Exception as e:
-        raise Exception(e)
+                                    raise SystemError(f"Error: Robot did not reach the desired Cartesian pose "
+                                                      f"({[coordinate_values.get(k, 0) for k in coordinate_values]}):"
+                                                      f" {pose_diffs}")
+                                finished = False
+                    else:
+                        if raise_error:
+                            raise SystemError("Snapshot file type not suitable for robot movement")
+        except Exception as e:
+            raise Exception(e)
 
     if target_position:
-        move_gripper(target_position)
+        finished = move_gripper(target_position)
     print("Snapshot successfully executed!" if finished else "Error! Snapshot was not successfully executed.")
     return finished
 
@@ -380,10 +393,10 @@ def perturb_angular(reverse=False, wait_time=None, **joint_deltas):
         joint_angles = []
         for joint in current_joint_angles.joint_angles:
             i = joint.joint_identifier
-            delta_value = joint_deltas.get(f"j{i+1}", 0) * (-1 if reverse else 1)
+            delta_value = joint_deltas.get(f"j{i + 1}", 0) * (-1 if reverse else 1)
             final_angle = (joint.value + delta_value) % 360
             if delta_value:
-                print(f"Moving joint {i+1} {delta_value} degrees to {final_angle}")
+                print(f"Moving joint {i + 1} {delta_value} degrees to {final_angle}")
             joint_angles.append({"joint_identifier": i, "value": final_angle})
 
         if wait_time:
@@ -458,7 +471,9 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
 
         # If move_to_zone, go to the correct zone
         target_zone = snapshot_zone(snapshot_file)
-        if current_zone() != snapshot_zone(snapshot_file):
+        current_zone = get_current_zone()
+        if current_zone != target_zone:
+            success &= snapshot_move(os.path.join(SNAPSHOT_DIR, f"zone_{current_zone:02d}.json"))
             success &= snapshot_move(os.path.join(SNAPSHOT_DIR, f"zone_{target_zone:02d}.json"))
 
         # If pre-position, go there
@@ -531,3 +546,10 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
 
     return success
 
+
+if __name__ == "__main__":
+    print(snapshot_zone(SNAPSHOT_DIR / "cv_potentiostat_A_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "ca_potentiostat_B_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "VialHome_A_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "solvent_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "balance_01.json"))

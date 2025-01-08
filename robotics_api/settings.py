@@ -180,6 +180,7 @@ DATA_DIR = PARENT_DIR / "data"
 LAUNCH_DIR = PARENT_DIR / 'launch_dir'
 TEST_DATA_DIR = HOME_DIR / "test_data"
 ROBOTICS_API = HOME_DIR / "robotics_api"
+DB_INFO_FILE = HOME_DIR / 'db_infos.json'
 
 SNAPSHOT_DIR = ROBOTICS_API / "snapshots"
 SNAPSHOT_HOME = SNAPSHOT_DIR / "home.json"
@@ -201,7 +202,7 @@ if __name__ == "__main__":
     # Set environment variables with HOME_DIR
     py_path = f"{HOME_DIR}:{PARENT_DIR/'Packages'/'d3tales_api'}:{PARENT_DIR/'Packages'/'hardpotato'/'src'}"
     os.environ['FW_CONFIG_FILE'] = os.path.abspath(FW_CONFIG_DIR / 'FW_config.yaml')
-    os.environ['DB_INFO_FILE'] = os.path.abspath(HOME_DIR / 'db_infos.json')
+    os.environ['DB_INFO_FILE'] = os.path.abspath(DB_INFO_FILE)
     os.environ['PYTHONPATH'] = py_path
 
     print(os.environ['FW_CONFIG_FILE'])

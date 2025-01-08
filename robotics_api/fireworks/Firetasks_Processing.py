@@ -1,7 +1,6 @@
 # FireTasks for individual experiment processing
 # Copyright 2024, University of Kentucky
 import traceback
-from fireworks import LaunchPad
 from atomate.utils.utils import env_chk
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.back2front import CV2Front
@@ -559,5 +558,5 @@ class EndWorkflow(FiretaskBase):
         if robot_content:
             VialMove(_id=robot_content).place_home()
         # success = snapshot_move(SNAPSHOT_HOME)
-        success &= snapshot_move(SNAPSHOT_END_HOME)
+        success = snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

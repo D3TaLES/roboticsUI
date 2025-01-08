@@ -8,9 +8,10 @@ from dotty_dict import dotty
 from pymongo import MongoClient
 from monty.json import jsanitize
 import python_jsonschema_objects as pjs
+from robotics_api.settings import DB_INFO_FILE
 
 
-def db_info_generator(db_file=None):
+def db_info_generator(db_file=DB_INFO_FILE):
     """
     Generates information about database connections.
 
@@ -45,6 +46,7 @@ def db_info_generator(db_file=None):
 
 
 DB_INFO = db_info_generator()
+print(DB_INFO)
 
 
 class Schema2Class:

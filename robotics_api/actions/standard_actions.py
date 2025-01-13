@@ -672,6 +672,44 @@ class BalanceStation(StationStatus):
                 time.sleep(1)
 
 
+class TemperatureStation(StationStatus):
+    """
+    A class representing a temperature probe.
+
+    Attributes:
+        serial_name (str): The serial name of the balance used for communication with hardware.
+
+    Methods:
+        temperature(): Gets current temperature
+    """
+
+    def __init__(self, _id="temperature_01", **kwargs):
+        """
+        Initializes a TemperatureStation instance with an ID and raise amount.
+
+        Args:
+            _id (str): The ID of the balance station.
+            **kwargs: Additional keyword arguments passed to the parent class.
+
+        """
+        super().__init__(_id=_id, pre_snapshot=False, **kwargs)
+        if self.type != "temperature":
+            raise Exception(f"Station {self.id} is not a temperature probe.")
+        self.serial_name = self.serial_name = "L{:01d}".format(int(self.id.split("_")[-1]))
+
+    def temperature(self):
+        """
+        Gets the temperature associated with this potentiostat station.
+
+        Returns:
+            dict: A dictionary with the temperature value in Kelvin and its unit.
+        """
+
+        arduino_result = send_arduino_cmd(self.serial_name, "", return_txt=True)
+        if arduino_result:
+            return {"value": sig_figs(float(arduino_result.split(":")[1].strip()) + 273.15, 5), "unit": "K"}
+
+
 class StirStation(StationStatus):
     """
     A class representing a stir station for stirring vials.
@@ -789,7 +827,6 @@ class PotentiostatStation(StationStatus):
         current_experiment (str or None): The current experiment being performed at this station.
         pot_model (str): The model of the potentiostat.
         serial_name (str): The serial name for the elevator control.
-        temp_serial_name (str): The serial name for temperature control.
         raise_amount (float): The amount to raise or lower the vial when interacting with the station.
 
     Methods:
@@ -825,7 +862,6 @@ class PotentiostatStation(StationStatus):
 
         elevator = ELEVATOR_DICT.get(f"{self.pot}_{self.p_channel}")
         self.serial_name = f"E{elevator:1d}"
-        self.temp_serial_name = f"T{elevator:1d}"
         self.raise_amount = raise_amount
 
         self.electrode_radius = self.settings("working_electrode_radius", raise_error=False)
@@ -985,18 +1021,6 @@ class PotentiostatStation(StationStatus):
             raise Exception(f"Potentiostat {self} elevator not successfully raised")
         return success
 
-    def get_temperature(self):
-        """
-        Gets the temperature associated with this potentiostat station.
-
-        Returns:
-            dict: A dictionary with the temperature value in Kelvin and its unit.
-        """
-
-        arduino_result = send_arduino_cmd(self.temp_serial_name, "", return_txt=True)
-        if arduino_result:
-            return {"value": sig_figs(float(arduino_result.split(":")[1].strip()) + 273.15, 5), "unit": "K"}
-
     @staticmethod
     def generate_volts(voltage_sequence: str, volt_unit="V"):
         """
@@ -1072,7 +1096,7 @@ class CVPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_cv(self, data_path, voltage_sequence=None, scan_rate=None, resistance=0,
-               sample_interval=None, sens=None, **kwargs):
+               sample_interval=None, sens=None, quiet_time=None, **kwargs):
         """
         Runs a cyclic voltammetry (CV) experiment with the potentiostat and saves the data.
 
@@ -1083,6 +1107,7 @@ class CVPotentiostatStation(PotentiostatStation):
             resistance (float, optional): The solution resistance for iR compensation (default is 0, in Ohms).
             sample_interval (float, optional): The potential increment (default is CV_SAMPLE_INTERVAL, in Volts).
             sens (float, optional): The current sensitivity (default is CV_SENSITIVITY, in A/V).
+            quiet_time (float, optional): Quiet time before run (in s)
             **kwargs: Additional arguments for running the experiment (e.g., potentiostat-specific parameters).
 
         Returns:
@@ -1093,6 +1118,7 @@ class CVPotentiostatStation(PotentiostatStation):
         """
         voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
         sample_interval = unit_conversion(sample_interval or self.settings("sample_interval"), default_unit="V")
+        quiet_time = unit_conversion(quiet_time or self.settings("quiet_time"), default_unit="s")
         sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
         if not RUN_POTENT:
             print(
@@ -1109,7 +1135,7 @@ class CVPotentiostatStation(PotentiostatStation):
             collect_params = self.generate_col_params(voltage_sequence, scan_rate)
             expt = CvExperiment([voltage_step(**p) for p in collect_params], record_every_de=sample_interval,
                                 potentiostat_address=self.p_address, potentiostat_channel=int(self.p_channel),
-                                exe_path=self.p_exe_path, run_iR=True, **kwargs)
+                                exe_path=self.p_exe_path, run_iR=True, qt=quiet_time **kwargs)
             # Run CV and save data
             expt.run_experiment()
             time.sleep(self.settings("time_after"))
@@ -1139,7 +1165,7 @@ class CVPotentiostatStation(PotentiostatStation):
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=None, high_freq=None,
-                        amplitude=None, sens=None):
+                        amplitude=None, sens=None, quiet_time=None):
         """
         Runs an iR compensation test to determine the solution resistance and saves the data.
 
@@ -1150,6 +1176,7 @@ class CVPotentiostatStation(PotentiostatStation):
             high_freq (float, optional): The high frequency for the test (default is FINAL_FREQUENCY).
             amplitude (float, optional): The amplitude of the AC signal (default is AMPLITUDE, in Volts).
             sens (float, optional): The current sensitivity (default is CV_SENSITIVITY, in A/V).
+            quiet_time (float, optional): Quiet time before run (in s)
 
         Returns:
             bool: True if the test is successfully run.
@@ -1181,6 +1208,7 @@ class CVPotentiostatStation(PotentiostatStation):
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             eis = hp.potentiostat.EIS(Eini=e_ini, low_freq=low_freq or self.settings("low_freq"),
                                       high_freq=high_freq or self.settings("high_freq"),
+                                      qt=quiet_time or self.settings("quiet_time"),
                                       amplitude=amplitude or self.settings("amplitude"),
                                       sens=sens or self.settings("sensitivity"), fileName=f_name,
                                       header="iRComp " + f_name)
@@ -1202,7 +1230,7 @@ class CAPotentiostatStation(PotentiostatStation):
 
     Methods:
         run_ca(data_path, voltage_sequence=None, si=None, pw=None, sens=None, steps=None,
-               volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT, run_delay=CA_RUN_DELAY):
+               volt_min=MIN_CA_VOLT, volt_max=MAX_CA_VOLT):
             Runs a CA experiment and saves the data.
     """
 
@@ -1221,7 +1249,7 @@ class CAPotentiostatStation(PotentiostatStation):
         super().__init__(_id=_id, raise_amount=raise_amount, **kwargs)
 
     def run_ca(self, data_path, voltage_sequence=None, si=None, pw=None, sens=None,
-               steps=None, volt_min=None, volt_max=None, run_delay=None):
+               steps=None, volt_min=None, volt_max=None, quiet_time=None):
         """
         Runs a chronoamperometry (CA) experiment with the potentiostat and saves the data.
 
@@ -1234,7 +1262,7 @@ class CAPotentiostatStation(PotentiostatStation):
             steps (float, optional): The number of steps to run in the experiment (default is CA_STEPS).
             volt_min (float, optional): The minimum voltage for the CA experiment (default is MIN_CA_VOLT).
             volt_max (float, optional): The maximum voltage for the CA experiment (default is MAX_CA_VOLT).
-            run_delay (float, optional): The time to wait before starting the CA experiment, in seconds (default is CA_RUN_DELAY).
+            quiet_time (float, optional): Quiet time before run (in s)
 
         Returns:
             bool: True if the experiment is successfully run.
@@ -1242,13 +1270,14 @@ class CAPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CA experiment.
         """
-        run_delay = run_delay or self.settings("run_delay")
         si = unit_conversion(si or self.settings("sample_interval"), default_unit="s")
         sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
         pw = unit_conversion(pw or self.settings("pulse_width"), default_unit="s")
         steps = steps or self.settings("steps")
         volt_min = volt_min or self.settings("volt_min")
         volt_max = volt_max or self.settings("volt_max")
+        quiet_time = unit_conversion(quiet_time or self.settings("quiet_time"), default_unit="s")
+        voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
 
         if not RUN_POTENT:
             print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
@@ -1256,8 +1285,7 @@ class CAPotentiostatStation(PotentiostatStation):
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CA WITH {voltage_sequence} VOLTAGES. Waiting {run_delay} sec before performing experiment...")
-        time.sleep(run_delay)
+        print(f"RUN CA WITH {voltage_sequence} VOLTAGES.")
         if "chi" in self.pot_model:
             import hardpotato as hp
             # Set CV parameters
@@ -1270,7 +1298,7 @@ class CAPotentiostatStation(PotentiostatStation):
             # Install potentiostat and run CA
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
             ca = hp.potentiostat.CA(Eini=0, Ev1=max_volt, Ev2=min_volt, dE=si, nSweeps=steps, pw=pw,
-                                    sens=sens, fileName=f_name, header="CA " + f_name)
+                                    sens=sens, fileName=f_name, header="CA " + f_name, qt=quiet_time)
             ca.run()
             time.sleep(self.settings("time_after"))
         else:

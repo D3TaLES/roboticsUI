@@ -548,8 +548,8 @@ def screw_lid(screw=True, starting_position="vial-screw_test.json", linear_z=0.0
 
 
 if __name__ == "__main__":
-    print(snapshot_zone(SNAPSHOT_DIR / "cv_potentiostat_A_01.json"))
-    print(snapshot_zone(SNAPSHOT_DIR / "ca_potentiostat_B_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "cvUM_potentiostat_A_01.json"))
+    print(snapshot_zone(SNAPSHOT_DIR / "ca_potentiostat_C_01.json"))
     print(snapshot_zone(SNAPSHOT_DIR / "VialHome_A_01.json"))
     print(snapshot_zone(SNAPSHOT_DIR / "solvent_01.json"))
     print(snapshot_zone(SNAPSHOT_DIR / "balance_01.json"))

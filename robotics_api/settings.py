@@ -51,11 +51,11 @@ PERTURB_AMOUNT = 0.07
 ZONE_DIVIDERS = [30, 180, 330]
 
 # ---------  INSTRUMENT SETTINGS -------------
-MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
+MICRO_ELECTRODES_MAX_RADIUS = 0.0009  # max radius of a ultra micro electrode, cm
 
 # NOTE: A potentiostat setting cannot be None
 POTENTIOSTAT_SETTINGS = {
-    "cv_potentiostat_A_01": dict(
+    "cvUM_potentiostat_A_01": dict(
         address="COM6",
         exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
@@ -67,6 +67,7 @@ POTENTIOSTAT_SETTINGS = {
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-6,  # A/V, current sensitivity
+        quiet_time=2,  # s
 
         # IR Compensation settings
         ir_comp=False,  # Perform IR Compensation
@@ -83,11 +84,11 @@ POTENTIOSTAT_SETTINGS = {
         # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
 
     ),
-    "cv_potentiostat_A_02": dict(
+    "cv_potentiostat_B_01": dict(
         address="COM6",
         exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
-        working_electrode_radius=0.07,  # radius in cm
+        working_electrode_radius=0.002 / 2,  # radius in cm
         dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
         # CV settings
@@ -95,6 +96,7 @@ POTENTIOSTAT_SETTINGS = {
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-6,  # A/V, current sensitivity
+        quiet_time=2,  # s
 
         # IR Compensation settings
         ir_comp=False,  # Perform IR Compensation
@@ -110,17 +112,18 @@ POTENTIOSTAT_SETTINGS = {
         benchmark_buffer=0.25,  # volts, buffer used in setting voltage range from benchmark peaks
 
     ),
-    "ca_potentiostat_B_01": dict(
+    "ca_potentiostat_C_01": dict(
         address="COM4",
         exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
-        run_delay=60,  # seconds
+        quiet_time=60,  # s
         sample_interval=1e-6,  # seconds
         sensitivity=1e-4,  # A/V, current sensitivity
         pulse_width=1e-4,  # sec, pulse width for CA
         steps=200,  # number of steps for CA
         volt_min=False,  # V, minimum acceptable voltage for CA experiment
         volt_max=False,  # V, maximum acceptable voltage for CA experiment
+        voltage_sequence="0.025, -0.025 V",  # V, maximum acceptable voltage for CA experiment
         time_after=5,  # seconds
     ),
 }
@@ -161,7 +164,7 @@ BALANCE_PORT = "COM5"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
-MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01", "balance_01", "pipette_01"]
+MEASUREMENT_STATIONS = ["cvUM_potentiostat_A_01", "ca_potentiostat_C_01", "balance_01", "pipette_01", "temperature_01"]
 ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
@@ -170,8 +173,8 @@ VIALS = [
     "B_01", "B_02", "B_03", "B_04",
     "C_01", "C_02", "C_03", "C_04",
 ]
-RINSE_VIALS = {"cv_potentiostat_A_01": "S_01", "ca_potentiostat_B_01": "S_02"}
-ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "A_02": 3}
+RINSE_VIALS = {"cvUM_potentiostat_A_01": "S_01", "cv_potentiostat_B_01": "S_02", "ca_potentiostat_C_01": "S_03"}
+ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "C_01": 3}
 
 # ---------  PATH VARIABLES -------------
 HOME_DIR = Path(__file__).resolve().parent.parent

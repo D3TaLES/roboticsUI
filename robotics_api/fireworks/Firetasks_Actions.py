@@ -22,23 +22,12 @@ class RoboticsBase(FiretaskBase):
         processing_data (dict): Dictionary of data related to processing.
         exp_vial (VialMove): Instance representing a vial in the experiment.
         end_experiment (bool): Flag indicating whether the experiment is ending.
-        exit (bool): Flag to exit workflow sequence.
     """
 
     _fw_name = "RoboticsBase"
+    success = False
 
     def setup_task(self, fw_spec, get_exp_vial=True):
-        self.wflow_name = ""
-        self.exp_name = ""
-        self.full_name = ""
-        self.end_experiment = False
-        self.metadata = {}
-        self.collection_data = []
-        self.processing_data = {}
-        self.exp_vial = None
-
-        self.success = True
-        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         """Sets up the task with the provided fireworks spec.
 
         Args:
@@ -48,13 +37,23 @@ class RoboticsBase(FiretaskBase):
         Returns:
             bool: False if exiting the workflow, True otherwise.
         """
+        self.wflow_name = ""
+        self.exp_name = ""
+        self.full_name = ""
+        self.end_experiment = False
+        self.metadata = {}
+        self.collection_data = []
+        self.processing_data = {}
+        self.exp_vial = None
+        self.success = True
+
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
         self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
-
 
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data", [])
@@ -302,6 +301,12 @@ class SetupCVPotentiostat(SetupPotentiostat):
 
 
 @explicit_serialize
+class SetupCVUMPotentiostat(SetupPotentiostat):
+    """FireTask setting up CV potentiostat"""
+    method = "cvUM"
+
+
+@explicit_serialize
 class SetupCAPotentiostat(SetupPotentiostat):
     """FireTask setting up CA potentiostat"""
     method = "ca"
@@ -403,7 +408,9 @@ class RunCV(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  # TODO figure out if we want to propogate voltage sequence
+        return FWAction(
+            update_spec=self.updated_specs(voltage_sequence=voltage_sequence)
+        )  # TODO Do we want to propagate voltage sequence??
 
 
 @explicit_serialize
@@ -435,7 +442,7 @@ class RunCA(RoboticsBase):
                                       pw=pulse_width, sens=sens, steps=steps)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
-        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        temperature = TemperatureStation().temperature() or self.metadata.get("temperature")
         print("RECORDED TEMPERATURE: ", temperature)
 
         self.metadata.update({"ca_idx": ca_idx + 1, "temperature": temperature})
@@ -453,8 +460,7 @@ class CollectTemp(RoboticsBase):
         self.setup_task(fw_spec)
 
         # Collect temperature
-        potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
-        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        temperature = TemperatureStation().temperature()
         print("RECORDED TEMPERATURE: ", temperature)
 
         self.metadata.update({"temperature": temperature})

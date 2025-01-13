@@ -18,8 +18,8 @@ def reset_stations(end_home=False):
     # Rest all stations
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
     if MOVE_ELEVATORS:
-        PotentiostatStation("cv_potentiostat_A_01").move_elevator(endpoint="down")
-        PotentiostatStation("ca_potentiostat_B_01").move_elevator(endpoint="down")
+        PotentiostatStation("cvUM_potentiostat_A_01").move_elevator(endpoint="down")
+        PotentiostatStation("ca_potentiostat_C_01").move_elevator(endpoint="down")
     if PIPETTE:
         PipetteStation("pipette_01").pipette(volume=0)
     if end_home:
@@ -46,12 +46,13 @@ if __name__ == "__main__":
     """
 
     test_vial = VialMove(_id="A_02")
-    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
+    cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
+    ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
     test_pip = PipetteStation("pipette_01")
     test_stir = StirStation("stir_01")
-    d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # RESET TESTING
     # reset_test_db()
@@ -68,10 +69,11 @@ if __name__ == "__main__":
     # test_vial.extract_soln(extracted_mass=0.506)
 
     # POTENTIOSTAT TESTING
-    # test_potent.place_vial(test_vial)
-    # test_potent.move_elevator(endpoint="down")
-    # test_potent.move_elevator(endpoint="up")
-    # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
+    # ca_potent.place_vial(test_vial)
+    # ca_potent.move_elevator(endpoint="down")
+    cvUM_potent.move_elevator(endpoint="up")
+    # cvUM_potent.run_cv(os.path.join(TEST_DATA_DIR, "CV_Test_43.csv"), voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
@@ -81,7 +83,7 @@ if __name__ == "__main__":
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    # print(test_potent.get_temperature())
+    # TemperatureStations().temperature()
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL

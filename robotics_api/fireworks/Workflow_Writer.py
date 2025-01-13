@@ -69,16 +69,11 @@ class EF2Experiment:
     @staticmethod
     def instrument_task(collect_task, tag="setup", default_analysis=""):
         """Generates setup or finish tasks"""
-        if "_cv_" in collect_task.name:
-            analysis = "cv"
-        elif "_ca_" in collect_task.name:
-            analysis = "ca"
-        elif "_temp" in collect_task.name:
-            analysis = "ca"  # TODO change if independent temperature probe set up
-        elif "_ir_" in collect_task.name:
-            analysis = "ir"
-        else:
-            analysis = default_analysis
+        analysis_methods = ["cv", "cvUM", "ca", "ir", ]
+        analysis = default_analysis
+        for method in analysis_methods:
+            if f"_{method}_" in collect_task.name:
+                analysis = method
         task_dict = copy.deepcopy(collect_task.__dict__)
         task_dict["name"] = f"{tag}_{analysis}"
         new_task = dict2obj(task_dict)
@@ -267,6 +262,7 @@ class EF2Experiment:
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
+            "collect_cvUM_data": [RunCV],
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
@@ -274,6 +270,7 @@ class EF2Experiment:
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],
+            "setup_cvUM": [SetupCVUMPotentiostat],
             "setup_ca": [SetupCAPotentiostat],
             "finish_cv": [FinishPotentiostat],
             "finish_ca": [FinishPotentiostat],
@@ -344,9 +341,9 @@ if __name__ == "__main__":
     # experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
     # tc = experiment.task_clusters
     ex_params = {"experiment_vials": {"exp01": "A_01", "exp02": "A_02"},
-                "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
-                             {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
-                             {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
+                 "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
+                              {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
+                              {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
                  }
     wf_obj = run_expflow_wf(expflow_experiment, exp_params=ex_params)
     LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf_obj)

@@ -28,11 +28,11 @@
                 "jointIdentifier": 3
               },
               {
-                "value": 92,
+                "value": 90,
                 "jointIdentifier": 4
               },
               {
-                "value": 91,
+                "value": 90,
                 "jointIdentifier": 5
               }
             ]
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "PreStir"
+        "name": "Zone 2"
       }
     ]
   }

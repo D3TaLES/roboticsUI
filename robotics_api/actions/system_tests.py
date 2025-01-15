@@ -17,11 +17,11 @@ def vial_col_test(col):
 def reset_stations(end_home=False):
     # Rest all stations
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    if MOVE_ELEVATORS:
-        PotentiostatStation("cvUM_potentiostat_A_01").move_elevator(endpoint="down")
-        PotentiostatStation("ca_potentiostat_C_01").move_elevator(endpoint="down")
-    if PIPETTE:
-        PipetteStation("pipette_01").pipette(volume=0)
+    for station in MEASUREMENT_STATIONS:
+        if "potentiostat" in station and MOVE_ELEVATORS:
+            PotentiostatStation(station).move_elevator(endpoint="down")
+        if "pipette" in station and PIPETTE:
+            PipetteStation(station).pipette(volume=0)
     if end_home:
         snapshot_move(target_position=10)
         snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
@@ -70,8 +70,9 @@ if __name__ == "__main__":
 
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
-    # ca_potent.move_elevator(endpoint="down")
-    cvUM_potent.move_elevator(endpoint="up")
+    ca_potent.move_elevator(endpoint="down")
+    # ca_potent.move_elevator(endpoint="up")
+    # cvUM_potent.move_elevator(endpoint="down")
     # cvUM_potent.run_cv(os.path.join(TEST_DATA_DIR, "CV_Test_43.csv"), voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
     # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
@@ -83,11 +84,12 @@ if __name__ == "__main__":
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    # TemperatureStations().temperature()
+    # print(TemperatureStation().temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.stir_vial(test_vial, stir_time=15)
+    # test_stir.stir(stir_time=15)
+    # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)

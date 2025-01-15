@@ -30,6 +30,7 @@ EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment b
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 RETURN_EXTRACTED_SOLN = True  # Return solution extracted via pipette after measurement made.
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
+MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -164,7 +165,9 @@ BALANCE_PORT = "COM5"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
-MEASUREMENT_STATIONS = ["cvUM_potentiostat_A_01", "ca_potentiostat_C_01", "balance_01", "pipette_01", "temperature_01"]
+MEASUREMENT_STATIONS = ["cvUM_potentiostat_A_01", "cv_potentiostat_B_01", "ca_potentiostat_C_01",
+                        "balance_01", "pipette_01", "temperature_01"
+                        ]
 ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [

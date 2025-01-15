@@ -1,0 +1,2441 @@
+{
+    "_id": "c90f855d-a540-4b90-846a-c468b4852932",
+    "name": "Cond3_all_TEMPO",
+    "parent_uuid": "b116a31c-d712-4c1c-be8c-508444c93480",
+    "parent_name": "ConcStudy_Cond3_5C",
+    "author": 3,
+    "experiments": [
+        {
+            "_id": "2eb10280-f479-4d4b-a2d6-74bea9cac859",
+            "name": "Experiment_01",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "name": "potentiostat__UK Robotics CHI 620E",
+                    "type": "instrument",
+                    "notes": null
+                },
+                {
+                    "_id": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "name": "potentiostat__UK Robotics CHI 650E",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                    "name": "TBAPF6",
+                    "smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC",
+                    "source": "sigma_aldrich",
+                    "type": "electrolyte",
+                    "description": "supporting electrolyte",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "330391e4-855b-4a1d-851e-59445c65fad0",
+                    "name": "1-hydroxy-2,2,6,6-tetramethylpiperidine",
+                    "smiles": "CC1(C)CCCC(C)(C)N1[O]",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Ag/Ag+ wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "UME counter",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Carbon UME",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "vial that will hold solution",
+                    "reusable": "on",
+                    "name": "solution vial",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": 1,
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "330391e4-855b-4a1d-851e-59445c65fad0",
+                    "start_position": "1-hydroxy-2,2,6,6-tetramethylpiperidine",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "160.2",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 2,
+                    "description": "add SE",
+                    "name": "transfer_solid",
+                    "start_uuid": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                    "start_position": "TBAPF6",
+                    "start_type": "electrolyte",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "1985.6",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 3,
+                    "description": "measure solvent conc1",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "4.10",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 4,
+                    "description": "stir conc1",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 5,
+                    "description": "measure density conc1",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 6,
+                    "description": "collect ca conc1",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 7,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 8,
+                    "description": "collect cv conc1",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 9,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 10,
+                    "description": "collect cvUM conc1",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.010",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "0.000010",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 11,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 12,
+                    "description": "dilute to conc2",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "1.03",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 13,
+                    "description": "stir conc2",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 14,
+                    "description": "measure density conc2",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 15,
+                    "description": "collect ca conc2",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 16,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 17,
+                    "description": "collect cv conc2",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 18,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 19,
+                    "description": "collect cvUM conc2",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "0.000010",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 20,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 21,
+                    "description": "dilute to conc3",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "1.71",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 22,
+                    "description": "stir conc3",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 23,
+                    "description": "measure density conc3",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 24,
+                    "description": "collect ca conc3",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 25,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 26,
+                    "description": "collect cv conc3",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 27,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 28,
+                    "description": "collect cvUM conc3",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 29,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 30,
+                    "description": "dilute to conc4",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "3.42",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 31,
+                    "description": "stir conc4",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 32,
+                    "description": "measure density conc4",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 33,
+                    "description": "collect ca conc4",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 34,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 35,
+                    "description": "collect cv conc4",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 36,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 37,
+                    "description": "collect UMcv conc4",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 38,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 39,
+                    "description": "dilute to conc5",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "8.39",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 40,
+                    "description": "stir conc5",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 41,
+                    "description": "measure density conc5",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 42,
+                    "description": "collect ca conc5",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 43,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 44,
+                    "description": "collect cv conc5",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 45,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 46,
+                    "description": "collect cvUM conc5",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 47,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                }
+            ],
+            "author": null
+        },
+        {
+            "_id": "2eb10280-f479-4d4b-a2d6-74bea9cac859",
+            "name": "Experiment_01",
+            "parent_uuid": null,
+            "parent_name": "",
+            "instruments": [
+                {
+                    "_id": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "name": "potentiostat__UK Robotics CHI 620E",
+                    "type": "instrument",
+                    "notes": null
+                },
+                {
+                    "_id": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "name": "potentiostat__UK Robotics CHI 650E",
+                    "type": "instrument",
+                    "notes": null
+                }
+            ],
+            "reagents": [
+                {
+                    "_id": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "name": "Acetonitrile",
+                    "smiles": "CC#N",
+                    "source": "sigma_aldrich",
+                    "type": "solvent",
+                    "description": "solvent",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                    "name": "TBAPF6",
+                    "smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC",
+                    "source": "sigma_aldrich",
+                    "type": "electrolyte",
+                    "description": "supporting electrolyte",
+                    "notes": "",
+                    "purity": ""
+                },
+                {
+                    "_id": "330391e4-855b-4a1d-851e-59445c65fad0",
+                    "name": "1-hydroxy-2,2,6,6-tetramethylpiperidine",
+                    "smiles": "CC1(C)CCCC(C)(C)N1[O]",
+                    "source": "sigma_aldrich",
+                    "type": "redox_molecule",
+                    "description": "redox active molecule(s) (a.k.a. redox core)",
+                    "notes": "",
+                    "purity": ""
+                }
+            ],
+            "apparatus": [
+                {
+                    "_id": "44978a42-d4c4-4f01-babc-49871970e3ef",
+                    "type": "electrode_reference",
+                    "description": "reference electrode",
+                    "reusable": "on",
+                    "name": "Ag/Ag+ wire electrode",
+                    "notes": ""
+                },
+                {
+                    "_id": "3d196ae4-c250-42bc-83b7-39e82c08d19c",
+                    "type": "electrode_counter",
+                    "description": "counter electrode",
+                    "reusable": "on",
+                    "name": "UME counter",
+                    "notes": ""
+                },
+                {
+                    "_id": "cb91236a-0be7-4724-aa6a-1237980d0b9d",
+                    "type": "electrode_working",
+                    "description": "working electrode",
+                    "reusable": "on",
+                    "name": "Carbon UME",
+                    "notes": ""
+                },
+                {
+                    "_id": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "type": "beaker",
+                    "description": "vial that will hold solution",
+                    "reusable": "on",
+                    "name": "solution vial",
+                    "notes": ""
+                }
+            ],
+            "workflow": [
+                {
+                    "sequence": 1,
+                    "description": "measure redox-active molecule",
+                    "name": "transfer_solid",
+                    "start_uuid": "330391e4-855b-4a1d-851e-59445c65fad0",
+                    "start_position": "1-hydroxy-2,2,6,6-tetramethylpiperidine",
+                    "start_type": "redox_molecule",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "6.4",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 2,
+                    "description": "add SE",
+                    "name": "transfer_solid",
+                    "start_uuid": "f12e7ae7-e893-44b9-8fee-51787f23fbdb",
+                    "start_position": "TBAPF6",
+                    "start_type": "electrolyte",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "mass",
+                            "value": "79.4",
+                            "unit": "mg"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 3,
+                    "description": "measure solvent conc1",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "4.10",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 4,
+                    "description": "stir conc1",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "60",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 5,
+                    "description": "measure density conc1",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 6,
+                    "description": "collect ca conc1",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 7,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 8,
+                    "description": "collect cv conc1",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 9,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 10,
+                    "description": "collect cvUM conc1",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.010",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "0.000001",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 11,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 12,
+                    "description": "dilute to conc2",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "16.40",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 13,
+                    "description": "stir conc2",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 14,
+                    "description": "measure density conc2",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 15,
+                    "description": "collect ca conc2",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 16,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 17,
+                    "description": "collect cv conc2",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 18,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 19,
+                    "description": "collect cvUM conc2",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "0.000001",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 20,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 21,
+                    "description": "dilute to conc3",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.00",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 22,
+                    "description": "stir conc3",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 23,
+                    "description": "measure density conc3",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 24,
+                    "description": "collect ca conc3",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 25,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 26,
+                    "description": "collect cv conc3",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 27,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 28,
+                    "description": "collect cvUM conc3",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 29,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 30,
+                    "description": "dilute to conc4",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.00",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 31,
+                    "description": "stir conc4",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 32,
+                    "description": "measure density conc4",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 33,
+                    "description": "collect ca conc4",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 34,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 35,
+                    "description": "collect cv conc4",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 36,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 37,
+                    "description": "collect UMcv conc4",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 38,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 39,
+                    "description": "dilute to conc5",
+                    "name": "transfer_liquid",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.00",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 40,
+                    "description": "stir conc5",
+                    "name": "heat_stir",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "temperature",
+                            "value": "293",
+                            "unit": "K"
+                        },
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 41,
+                    "description": "measure density conc5",
+                    "name": "measure_density",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "end_position": "solution vial",
+                    "end_type": "beaker",
+                    "parameters": [
+                        {
+                            "description": "volume",
+                            "value": "0.5",
+                            "unit": "mL"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 42,
+                    "description": "collect ca conc5",
+                    "name": "collect_ca_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0.025, -0.025",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        },
+                        {
+                            "description": "pulse_width",
+                            "value": "",
+                            "unit": "s"
+                        },
+                        {
+                            "description": "steps",
+                            "value": "",
+                            "unit": ""
+                        }
+                    ]
+                },
+                {
+                    "sequence": 43,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "2582936d-6ec5-4949-a80f-f0da2ea224c9",
+                    "end_position": "potentiostat__UK Robotics CHI 650E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 44,
+                    "description": "collect cv conc5",
+                    "name": "collect_multi_cv_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 45,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 46,
+                    "description": "collect cvUM conc5",
+                    "name": "collect_cvUM_data",
+                    "start_uuid": "b9a8d0da-6053-407a-9232-fc8d8b66701d",
+                    "start_position": "solution vial",
+                    "start_type": "beaker",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "voltage_sequence",
+                            "value": "0, 0.7, 0",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "scan_rate",
+                            "value": "0.01",
+                            "unit": "V/s"
+                        },
+                        {
+                            "description": "sample_interval",
+                            "value": "",
+                            "unit": "V"
+                        },
+                        {
+                            "description": "sensitivity",
+                            "value": "",
+                            "unit": "A/V"
+                        }
+                    ]
+                },
+                {
+                    "sequence": 47,
+                    "description": "rinse electrode",
+                    "name": "rinse_electrode",
+                    "start_uuid": "29690ed4-bf85-4945-9c2d-907eb942515d",
+                    "start_position": "Acetonitrile",
+                    "start_type": "solvent",
+                    "end_uuid": "88e9ccd5-6988-4fe9-8db4-703903a1bc16",
+                    "end_position": "potentiostat__UK Robotics CHI 620E",
+                    "end_type": "instrument",
+                    "parameters": [
+                        {
+                            "description": "time",
+                            "value": "20",
+                            "unit": "s"
+                        }
+                    ]
+                }
+            ],
+            "author": null
+        }
+    ],
+    "variable_props": [
+        "Reagents--redox_active_molecule(s)_(a.k.a._redox_core)",
+        "Action1--measure_redox-active_molecule--mass",
+        "Action2--add_SE--mass",
+        "Action3--measure_solvent_conc1--volume",
+        "Action10--collect_cvUM_conc1--sensitivity",
+        "Action12--dilute_to_conc2--volume",
+        "Action19--collect_cvUM_conc2--sensitivity",
+        "Action21--dilute_to_conc3--volume",
+        "Action30--dilute_to_conc4--volume",
+        "Action39--dilute_to_conc5--volume"
+    ]
+}

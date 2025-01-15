@@ -12,27 +12,27 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 60,
+                "value": 62,
                 "jointIdentifier": 0
               },
               {
-                "value": 70,
+                "value": 64,
                 "jointIdentifier": 1
               },
               {
-                "value": 225,
+                "value": 219,
                 "jointIdentifier": 2
               },
               {
-                "value": 0,
+                "value": 350,
                 "jointIdentifier": 3
               },
               {
-                "value": 115,
+                "value": 112,
                 "jointIdentifier": 4
               },
               {
-                "value": 90,
+                "value": 84,
                 "jointIdentifier": 5
               }
             ]

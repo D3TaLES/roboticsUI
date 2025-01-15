@@ -116,40 +116,50 @@ def snapshot_move_cartesian(base: BaseClient, coordinate_values: dict):
     return finished
 
 
-def move_gripper(target_position=None):
+def move_gripper(target_position=None, max_gripper_attempts=5):
     """
     Move gripper
     :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
     :return: bool, True if action a success
     """
-    finished = True
 
     # Create connection to the device and get the router
     connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
-    try:
-        with utilities.DeviceConnection.createTcpConnection(connector) as router:
+
+    def _try_gripper(conn=connector, target=target_position):
+        finished = True
+        with utilities.DeviceConnection.createTcpConnection(conn) as router:
             # Create connection to the device and get the router
-            with utilities.DeviceConnection.createUdpConnection(connector) as router_real_time:
+            with utilities.DeviceConnection.createUdpConnection(conn) as router_real_time:
                 action = GripperMove(router, router_real_time, 2)
 
-                if target_position == 'open':
+                if target == 'open':
                     if VERBOSE > 2:
                         print("Moving gripper open...")
                     finished &= action.gripper_move(OPEN_GRIP_TARGET)
                     action.cleanup()
-                elif target_position == 'closed':
+                elif target == 'closed':
                     if VERBOSE > 2:
                         print("Moving gripper closed...")
                     finished &= action.gripper_move(90)
                     action.cleanup()
-                elif target_position:
+                elif target:
                     if VERBOSE > 2:
-                        print("Moving gripper to {}...".format(target_position))
-                    finished &= action.gripper_move(target_position)
+                        print("Moving gripper to {}...".format(target))
+                    finished &= action.gripper_move(target)
                     action.cleanup()
+        return finished
 
-    except Exception as e:
-        raise Exception("Gripper movement failed with exception ", e)
+    gripper_tries = 0
+    while True:
+        try:
+            finished = _try_gripper()
+            break
+        except Exception as e:
+            if gripper_tries > max_gripper_attempts:
+                raise e
+            print(f"WARNING. Gripper movement {gripper_tries} ended in error: ", e)
+            gripper_tries += 1
 
     print("Gripper movement successfully executed!" if finished else "Error! Gripper was not successfully moved.")
     return finished
@@ -288,7 +298,7 @@ def snapshot_zone(snapshot_file, zone_dividers=ZONE_DIVIDERS):
     return get_zone(theta, zone_dividers=zone_dividers)
 
 
-def snapshot_move(snapshot_file: str = None, target_position: str = None, raise_error: bool = True,
+def snapshot_move(snapshot_file: str = None, target_position: str or int = None, raise_error: bool = True,
                   angle_error: float = 0.2, position_error: float = 0.1):
     """
 
@@ -473,6 +483,7 @@ def get_place_vial(station, action_type="get", go=True, leave=True, release_vial
         target_zone = snapshot_zone(snapshot_file)
         current_zone = get_current_zone()
         if current_zone != target_zone:
+            print(f"--------- Moving from zone {current_zone} to zone {target_zone} ---------")
             success &= snapshot_move(os.path.join(SNAPSHOT_DIR, f"zone_{current_zone:02d}.json"))
             success &= snapshot_move(os.path.join(SNAPSHOT_DIR, f"zone_{target_zone:02d}.json"))
 

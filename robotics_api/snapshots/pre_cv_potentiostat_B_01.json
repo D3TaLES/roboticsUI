@@ -12,7 +12,7 @@
           "jointAngles": {
             "jointAngles": [
               {
-                "value": 325,
+                "value": 316,
                 "jointIdentifier": 0
               },
               {
@@ -42,7 +42,7 @@
             "value": 0
           }
         },
-        "name": "Pre CV UM Elevator"
+        "name": "Pre CV Elevator"
       }
     ]
   }

@@ -410,12 +410,12 @@ class RobotStatusDB(MongoDatabase):
         """
         return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
-    def update_status(self, new_status, status_name: str = "location"):
+    def update_status(self, new_status: str or float, status_name: str = "location"):
         """
         Updates the status for a vial location or station vial.
 
         Args:
-            new_status (str): New status, such as the new vial location or new vial in the station.
+            new_status (str or float): New status, such as the new vial location or new vial in the station.
             status_name (str, optional): Name of the status property. Defaults to "location".
         """
         current_status = self.get_prop("current_" + status_name)

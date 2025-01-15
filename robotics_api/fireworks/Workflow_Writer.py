@@ -43,13 +43,12 @@ class EF2Experiment:
 
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
-        super().__init__(expflow_obj, source_group, redox_id_error=False, try_restapi=True, **kwargs)
-        expflow_parser = ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False)
+        expflow_parser = ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False, try_restapi=True, **kwargs)
         self.fw_parents = fw_parents or []
         self.priority = priority if priority > 2 else 2
         self.mol_id = expflow_parser.molecule_id or getattr(expflow_parser.redox_mol, "smiles", None)
         self.rom_name = getattr(expflow_parser.redox_mol, "name", "no_redox_mol_name")
-        self.full_name = "{}_{}".format(exp_name, self.rom_name)
+        self.full_name = "{}_{}".format(exp_name, self.mol_id)
         self.wflow_name = wflow_name
 
         self.rom_id = get_id(expflow_parser.redox_mol) or "no_redox_mol"
@@ -243,6 +242,8 @@ class EF2Experiment:
     def get_firetask(self, task):
         """Retrieves associated Firetasks for the given ExpFlow task."""
         firetasks = self.task_dictionary.get(task.name)
+        if not firetasks:
+            raise KeyError(f"Firetask {task.name} not found in task_dictionary.")
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
             if param.value:
@@ -262,7 +263,7 @@ class EF2Experiment:
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
-            "collect_cvUM_data": [RunCV],
+            "collect_cvUM_data": [RunCVUM],
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
@@ -273,6 +274,7 @@ class EF2Experiment:
             "setup_cvUM": [SetupCVUMPotentiostat],
             "setup_ca": [SetupCAPotentiostat],
             "finish_cv": [FinishPotentiostat],
+            "finish_cvUM": [FinishPotentiostat],
             "finish_ca": [FinishPotentiostat],
 
             # TODO Deprecated. Remove eventually
@@ -336,9 +338,9 @@ def run_ex_processing(experiment_dir=None, molecule_id="test", name_tag="", **kw
 
 if __name__ == "__main__":
     # run_ex_processing()
-    expflow_file = TEST_DATA_DIR / 'workflows' / 'TEST_Density_workflow.json'
+    expflow_file = TEST_DATA_DIR / 'workflows' / 'Cond3_all_TEMPO_workflow.json'
     expflow_experiment = loadfn(expflow_file)
-    # experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
+    # experiment = EF2Experiment(expflow_experiment.get("experiments")[1], "Robotics", data_type='cv')
     # tc = experiment.task_clusters
     ex_params = {"experiment_vials": {"exp01": "A_01", "exp02": "A_02"},
                  "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
@@ -346,4 +348,4 @@ if __name__ == "__main__":
                               {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
                  }
     wf_obj = run_expflow_wf(expflow_experiment, exp_params=ex_params)
-    LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf_obj)
+    # LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf_obj)

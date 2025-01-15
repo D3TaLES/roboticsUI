@@ -21,6 +21,7 @@ def station_from_name(station_name):
 
     return station
 
+
 class VialMove(VialStatus):
     """
     A class for managing the movement of a vial between various stations and locations using a robot arm.
@@ -411,7 +412,7 @@ class PipetteStation(StationStatus):
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
 
-    def __init__(self, _id, raise_amount: float = -0.08, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.05, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -459,6 +460,7 @@ class PipetteStation(StationStatus):
         Raises:
             Exception: If the pipetting operation fails and raise_error is True.
         """
+        send_arduino_cmd(self.serial_name, 0)  # Return pipette to 0 before beginning opertation
         if vial:
             self.place_vial(vial, raise_error=raise_error)
 
@@ -577,13 +579,14 @@ class BalanceStation(StationStatus):
             return vial.current_weight
         return self.weigh(vial, raise_error=raise_error)
 
-    def weigh(self, vial: VialMove, raise_error=True):
+    def weigh(self, vial: VialMove, raise_error=True, max_balance_reads=MAX_BALANCE_READS):
         """
         Weighs a vial by taring the balance and placing the vial on the station.
 
         Args:
             vial (VialMove): The vial to be weighed.
             raise_error (bool): Whether to raise an error if weighing fails (default is True).
+            max_balance_reads (int): Maximum number of balance reads
 
         Returns:
             float: The weight of the vial.
@@ -594,7 +597,16 @@ class BalanceStation(StationStatus):
             vial.retrieve()
         self.tare()
         self.place_vial(vial, raise_error=raise_error)
-        mass = self.read_mass()
+        balance_reads = 0
+        while True:
+            try:
+                mass = self.read_mass()
+                break
+            except Exception as e:
+                if balance_reads > max_balance_reads:
+                    raise e
+                print(f"WARNING. Balance reading {balance_reads} ended in error: ", e)
+                balance_reads += 1
         time.sleep(1)
         self._retrieve_vial(vial)
         vial.update_status(mass, "weight")
@@ -695,7 +707,7 @@ class TemperatureStation(StationStatus):
         super().__init__(_id=_id, pre_snapshot=False, **kwargs)
         if self.type != "temperature":
             raise Exception(f"Station {self.id} is not a temperature probe.")
-        self.serial_name = self.serial_name = "L{:01d}".format(int(self.id.split("_")[-1]))
+        self.serial_name = self.serial_name = "T{:01d}".format(int(self.id.split("_")[-1]))
 
     def temperature(self):
         """
@@ -1122,7 +1134,7 @@ class CVPotentiostatStation(PotentiostatStation):
         sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
         if not RUN_POTENT:
             print(
-                f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY * 5} second CV_DELAY.")
+                f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY * 2} second CV_DELAY.")
             write_test(data_path, test_type="cv")
             time.sleep(POT_DELAY * 5)
             return True
@@ -1280,7 +1292,7 @@ class CAPotentiostatStation(PotentiostatStation):
         voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
 
         if not RUN_POTENT:
-            print(f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second CV_DELAY.")
+            print(f"CA is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second delay.")
             write_test(data_path, test_type="ca")
             time.sleep(POT_DELAY)
             return True

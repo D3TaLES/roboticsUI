@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.512,
-            "y": 0.351,
-            "z": 0.049,
+            "x": 0.428,
+            "y": 0.449,
+            "z": 0.038,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 130
+            "thetaZ": 135
           },
           "constraint": {
             "speed": {
@@ -24,7 +24,7 @@
           "permission": 7,
           "actionType": 6
         },
-        "name": "CV UM Elevator"
+        "name": "CV Elevator"
       }
     ]
   }

@@ -11,14 +11,14 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
+RUN_POTENT = True
+DISPENSE = True
 STIR = True
 WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-CALIB_DATE = '2024_11_20'  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
+CALIB_DATE = ''  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -52,7 +52,7 @@ PERTURB_AMOUNT = 0.07
 ZONE_DIVIDERS = [30, 180, 330]
 
 # ---------  INSTRUMENT SETTINGS -------------
-MICRO_ELECTRODES_MAX_RADIUS = 0.0009  # max radius of a ultra micro electrode, cm
+ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrode, cm
 
 # NOTE: A potentiostat setting cannot be None
 POTENTIOSTAT_SETTINGS = {
@@ -86,11 +86,11 @@ POTENTIOSTAT_SETTINGS = {
 
     ),
     "cv_potentiostat_B_01": dict(
-        address="COM6",
-        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
+        address="COM8",
+        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
-        working_electrode_radius=0.002 / 2,  # radius in cm
-        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
+        working_electrode_radius=0.2 / 2,  # radius in cm
+        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode TODO
 
         # CV settings
         scan_rate=0.1,  # V/s
@@ -114,7 +114,7 @@ POTENTIOSTAT_SETTINGS = {
 
     ),
     "ca_potentiostat_C_01": dict(
-        address="COM4",
+        address="COM7",
         exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
         quiet_time=60,  # s
@@ -211,10 +211,11 @@ if __name__ == "__main__":
     os.environ['DB_INFO_FILE'] = os.path.abspath(DB_INFO_FILE)
     os.environ['PYTHONPATH'] = py_path
 
-    print(os.environ['FW_CONFIG_FILE'])
-    print(os.environ['DB_INFO_FILE'])
-    print(os.environ['PYTHONPATH'])
+    # print(os.environ['FW_CONFIG_FILE'])
+    # print(os.environ['DB_INFO_FILE'])
+    # print(os.environ['PYTHONPATH'])
 
+    print("conda activate d3tales_robotics")
     print(f"export FW_CONFIG_FILE={FW_CONFIG_DIR / 'FW_config.yaml'}".replace('\\', "/").replace("C:", "/c"))
     print(f"export DB_INFO_FILE={HOME_DIR / 'db_infos.json'}".replace('\\', "/").replace("C:", "/c"))
     print(f"export PYTHONPATH={py_path}".replace('\\', "/").replace("C:", "/c"))

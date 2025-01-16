@@ -878,7 +878,7 @@ class PotentiostatStation(StationStatus):
 
         self.electrode_radius = self.settings("working_electrode_radius", raise_error=False)
         if self.electrode_radius:
-            self.micro_electrode = True if self.electrode_radius <= MICRO_ELECTRODES_MAX_RADIUS else False
+            self.micro_electrode = True if self.electrode_radius <= ULTRA_MICRO_ELECTRODES_MAX_RADIUS else False
 
     @property
     def _settings_dict(self):
@@ -1128,6 +1128,7 @@ class CVPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CV experiment.
         """
+        data_path = str(data_path) if data_path else None
         voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
         sample_interval = unit_conversion(sample_interval or self.settings("sample_interval"), default_unit="V")
         quiet_time = unit_conversion(quiet_time or self.settings("quiet_time"), default_unit="s")
@@ -1196,6 +1197,7 @@ class CVPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the iR compensation test.
         """
+        data_path = str(data_path) if data_path else None
         if not RUN_POTENT:
             print(f"iR Comp Test is NOT running because RUN_POTENT is set to False. "
                   f"Observing the {POT_DELAY} second CV_DELAY.")
@@ -1282,6 +1284,7 @@ class CAPotentiostatStation(PotentiostatStation):
         Raises:
             Exception: If the potentiostat model is unsupported for the CA experiment.
         """
+        data_path = str(data_path) if data_path else None
         si = unit_conversion(si or self.settings("sample_interval"), default_unit="s")
         sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
         pw = unit_conversion(pw or self.settings("pulse_width"), default_unit="s")

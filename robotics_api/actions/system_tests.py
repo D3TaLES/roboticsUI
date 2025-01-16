@@ -70,16 +70,16 @@ if __name__ == "__main__":
 
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
-    ca_potent.move_elevator(endpoint="down")
-    # ca_potent.move_elevator(endpoint="up")
-    # cvUM_potent.move_elevator(endpoint="down")
-    # cvUM_potent.run_cv(os.path.join(TEST_DATA_DIR, "CV_Test_43.csv"), voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    # cv_potent.move_elevator(endpoint="up")
+    # cv_potent.move_elevator(endpoint="down")
+    # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test01.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1)
+    cvUM_potent.run_cv(TEST_DATA_DIR / "cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
     # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(8, vial_id="B_04", solv_id="solvent_02", go_home=False)
+    # flush_solvent(0, vial_id="B_04", solv_id="solvent_02", go_home=True)
     # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING

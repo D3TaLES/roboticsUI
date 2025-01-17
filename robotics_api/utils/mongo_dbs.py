@@ -8,9 +8,10 @@ from dotty_dict import dotty
 from pymongo import MongoClient
 from monty.json import jsanitize
 import python_jsonschema_objects as pjs
+from robotics_api.settings import DB_INFO_FILE
 
 
-def db_info_generator(db_file=None):
+def db_info_generator(db_file=DB_INFO_FILE):
     """
     Generates information about database connections.
 
@@ -45,6 +46,7 @@ def db_info_generator(db_file=None):
 
 
 DB_INFO = db_info_generator()
+print(DB_INFO)
 
 
 class Schema2Class:
@@ -408,12 +410,12 @@ class RobotStatusDB(MongoDatabase):
         """
         return (self.coll.find_one({"_id": self.id}) or {}).get(prop)
 
-    def update_status(self, new_status, status_name: str = "location"):
+    def update_status(self, new_status: str or float, status_name: str = "location"):
         """
         Updates the status for a vial location or station vial.
 
         Args:
-            new_status (str): New status, such as the new vial location or new vial in the station.
+            new_status (str or float): New status, such as the new vial location or new vial in the station.
             status_name (str, optional): Name of the status property. Defaults to "location".
         """
         current_status = self.get_prop("current_" + status_name)

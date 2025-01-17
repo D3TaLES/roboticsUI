@@ -1,0 +1,31 @@
+{
+  "jointAnglesGroup": {
+    "jointAngles": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.324,
+            "y": 0.468,
+            "z": 0.061,
+            "thetaX": 90,
+            "thetaY": 0,
+            "thetaZ": 150
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10040,
+          "permission": 7,
+          "actionType": 7
+        },
+        "name": "CA Elevator"
+      }
+    ]
+  }
+}

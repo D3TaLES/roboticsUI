@@ -131,17 +131,18 @@ def kcl_cell_constant(conductance_measured, temperature, di_water_conductivity=D
     return (get_kcl_conductivity(temp) + di_cond) / cond
 
 
-def get_cell_constant(raise_error=True):
+def get_cell_constant(collection_time: str, raise_error=True):
     """
     Get cell constant from conductivity calibration data for the current day.
 
     Args:
+        collection_time (str): Time data was collected.
         raise_error (bool, optional): Whether to raise an error if calibration data is not found. Defaults to True.
 
     Returns:
         tuple: Tuple containing lists of measured and true conductivity calibration values.
     """
-    date = CALIB_DATE or datetime.now().strftime('%Y_%m_%d')
+    date = datetime.strptime(collection_time, '%Y-%m-%d %H:%M:%S.%f').strftime('%Y_%m_%d')
     if KCL_CALIB:
         query = ChemStandardsDB(standards_type="CACalib").coll.find({'$and': [
             {"date_updated": date},

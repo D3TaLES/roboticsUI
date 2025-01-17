@@ -1,15 +1,15 @@
 {
-  "jointAnglesGroup": {
-    "jointAngles": [
+  "poses": {
+    "pose": [
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.512,
-            "y": 0.346,
-            "z": 0.045,
+            "x": 0.428,
+            "y": 0.449,
+            "z": 0.038,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 130
+            "thetaZ": 135
           },
           "constraint": {
             "speed": {
@@ -20,9 +20,9 @@
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10040,
+          "identifier": 10003,
           "permission": 7,
-          "actionType": 7
+          "actionType": 6
         },
         "name": "CV Elevator"
       }

@@ -50,7 +50,7 @@ The hardware should be arranged on the table according to the desired layout.
 (http://192.168.1.10/). This position should be the 
 position of the robot arm *when the action happens* (i.e., when the liquid is dispensed or when the
 robot releases the vial at its home). The `raise_amount` for each station can be set in the Robotics API
-{ref}`standard actions <actions:standard actions>`. Previous
+{ref}`standard actions <actions:2. standard actions>`. Previous
 snapshots can be found and uploaded at `robotics_api/snapshots/`
 
  * Set up Kinova protection zones (again, on the Kinova web interface, 

@@ -2,7 +2,7 @@
 # Copyright 2024, University of Kentucky
 
 # Import necessary modules
-from fireworks import Firework, ScriptTask
+from fireworks import Firework
 from robotics_api.fireworks.Firetasks_Processing import *
 
 

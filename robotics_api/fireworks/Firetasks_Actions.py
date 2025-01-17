@@ -1,5 +1,6 @@
 # Copyright 2024, University of Kentucky
 import abc
+from datetime import datetime
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -22,23 +23,12 @@ class RoboticsBase(FiretaskBase):
         processing_data (dict): Dictionary of data related to processing.
         exp_vial (VialMove): Instance representing a vial in the experiment.
         end_experiment (bool): Flag indicating whether the experiment is ending.
-        exit (bool): Flag to exit workflow sequence.
     """
 
     _fw_name = "RoboticsBase"
+    success = False
 
     def setup_task(self, fw_spec, get_exp_vial=True):
-        self.wflow_name = ""
-        self.exp_name = ""
-        self.full_name = ""
-        self.end_experiment = False
-        self.metadata = {}
-        self.collection_data = []
-        self.processing_data = {}
-        self.exp_vial = None
-
-        self.success = True
-        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         """Sets up the task with the provided fireworks spec.
 
         Args:
@@ -48,13 +38,23 @@ class RoboticsBase(FiretaskBase):
         Returns:
             bool: False if exiting the workflow, True otherwise.
         """
+        self.wflow_name = ""
+        self.exp_name = ""
+        self.full_name = ""
+        self.end_experiment = False
+        self.metadata = {}
+        self.collection_data = []
+        self.processing_data = {}
+        self.exp_vial = None
+        self.success = True
+
+        self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD))
         self.wflow_name = fw_spec.get("wflow_name", self.get("wflow_name"))
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
         self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
-
 
         self.metadata = fw_spec.get("metadata", {})
         self.collection_data = fw_spec.get("collection_data", [])
@@ -273,6 +273,8 @@ class SetupPotentiostat(RoboticsBase):
                 print(f"This experiment already uses instrument {potentiostat}")
                 self.success = potentiostat.wait_till_available()
                 print("WAITING ", self.success)
+                if not self.success:
+                    return self.self_fizzle()
             else:
                 available_pot = StationStatus().get_first_available(pot_type)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
@@ -299,6 +301,12 @@ class SetupPotentiostat(RoboticsBase):
 class SetupCVPotentiostat(SetupPotentiostat):
     """FireTask setting up CV potentiostat"""
     method = "cv"
+
+
+@explicit_serialize
+class SetupCVUMPotentiostat(SetupPotentiostat):
+    """FireTask setting up CV UM potentiostat"""
+    method = "cvUM"
 
 
 @explicit_serialize
@@ -359,20 +367,23 @@ class BenchmarkCV(RoboticsBase):
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
         self.metadata.update({"resistance": resistance})
         return FWAction(update_spec=self.updated_specs())
 
 
-@explicit_serialize
-class RunCV(RoboticsBase):
-    """FireTask for running CV"""
+@add_metaclass(abc.ABCMeta)
+class RunCVBase(RoboticsBase):
+    """Base FireTask for running CV"""
+    method: str
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
@@ -387,23 +398,39 @@ class RunCV(RoboticsBase):
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
         active_vial_id = self.metadata.get("active_vial_id")
-        cv_idx = self.metadata.get("cv_idx", 1)
+        cv_idx = self.metadata.get(f"{self.method}_idx", 1)
         data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.txt"))
 
         # Run CV experiment
-        potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
+        potent = CVPotentiostatStation(self.metadata.get(f"{self.method}_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
-        self.metadata.update({"cv_idx": cv_idx + 1})
+        self.metadata.update({f"{self.method}_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  # TODO figure out if we want to propogate voltage sequence
+        return FWAction(
+            update_spec=self.updated_specs(voltage_sequence=voltage_sequence)
+        )  # TODO Do we want to propagate voltage sequence??
+
+
+@explicit_serialize
+class RunCV(RunCVBase):
+    """FireTask running CV potentiostat"""
+    method = "cv"
+
+
+@explicit_serialize
+class RunCVUM(RunCVBase):
+    """FireTask running CV UM potentiostat"""
+    method = "cvUM"
 
 
 @explicit_serialize
@@ -431,15 +458,17 @@ class RunCA(RoboticsBase):
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
-        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        temperature = TemperatureStation().temperature() or self.metadata.get("temperature")
         print("RECORDED TEMPERATURE: ", temperature)
 
         self.metadata.update({"ca_idx": ca_idx + 1, "temperature": temperature})
         self.collection_data.append({"collect_tag": collect_tag,
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "temperature": temperature,
                                      "data_location": data_path})
@@ -453,8 +482,7 @@ class CollectTemp(RoboticsBase):
         self.setup_task(fw_spec)
 
         # Collect temperature
-        potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
-        temperature = potent.get_temperature() or self.metadata.get("temperature")
+        temperature = TemperatureStation().temperature()
         print("RECORDED TEMPERATURE: ", temperature)
 
         self.metadata.update({"temperature": temperature})

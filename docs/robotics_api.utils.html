@@ -45,7 +45,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_run_checklist.html">Robot Run Checklist</a></li>
@@ -274,8 +274,25 @@ otherwise.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.get_current_zone">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">get_current_zone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zone_dividers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">180,</span> <span class="pre">330]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#get_current_zone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.get_current_zone" title="Link to this definition"></a></dt>
+<dd><p>Moves a given joint a specified range (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>zone_dividers</strong> (<em>list</em>) – A list of zone divider angles in ascending order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The zone index (starting from 1) that the angle belongs to.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.utils.kinova_move.get_place_vial">
-<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">get_place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'get'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">go</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release_vial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#get_place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.get_place_vial" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">get_place_vial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'get'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">go</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release_vial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_position_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_to_zone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#get_place_vial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.get_place_vial" title="Link to this definition"></a></dt>
 <dd><p>Executes an action to get or place a vial using snapshot movements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -286,6 +303,8 @@ otherwise.</p>
 <li><p><strong>leave</strong> (<em>bool</em>) – Whether to leave the snapshot file location after the action (default is True).</p></li>
 <li><p><strong>release_vial</strong> (<em>bool</em>) – Whether to release the vial after placing (default is True).</p></li>
 <li><p><strong>raise_error</strong> (<em>bool</em>) – Whether to raise an error if movement fails (default is True).</p></li>
+<li><p><strong>pre_position_only</strong> (<em>bool</em>) – Only move to “above” position if True (default is True).</p></li>
+<li><p><strong>move_to_zone</strong> (<em>bool</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -301,8 +320,28 @@ otherwise.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.get_zone">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">get_zone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zone_dividers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">180,</span> <span class="pre">330]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#get_zone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.get_zone" title="Link to this definition"></a></dt>
+<dd><p>Moves a given joint a specified range (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle</strong> (<em>float</em>) – The angle in degrees.</p></li>
+<li><p><strong>zone_dividers</strong> (<em>list</em>) – A list of zone divider angles in ascending order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The zone index (starting from 1) that the angle belongs to.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.utils.kinova_move.move_gripper">
-<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">move_gripper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#move_gripper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.move_gripper" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">move_gripper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gripper_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#move_gripper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.move_gripper" title="Link to this definition"></a></dt>
 <dd><p>Move gripper
 :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
 :return: bool, True if action a success</p>
@@ -421,6 +460,26 @@ otherwise.</p>
 <dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_move_cartesian">
 <span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_move_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_move_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_move_cartesian" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="robotics_api.utils.kinova_move.snapshot_zone">
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.kinova_move.</span></span><span class="sig-name descname"><span class="pre">snapshot_zone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zone_dividers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">180,</span> <span class="pre">330]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/kinova_move.html#snapshot_zone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.kinova_move.snapshot_zone" title="Link to this definition"></a></dt>
+<dd><p>Moves a given joint a specified range (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_file</strong> (<em>str</em>) – A list of zone divider angles in ascending order.</p></li>
+<li><p><strong>zone_dividers</strong> (<em>list</em>) – A list of zone divider angles in ascending order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The zone index (starting from 1) that the angle belongs to.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-robotics_api.utils.kinova_utils">
@@ -734,7 +793,7 @@ appropriate workflow name. Defaults to None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_status</strong> (<em>str</em>) – New status, such as the new vial location or new vial in the station.</p></li>
+<li><p><strong>new_status</strong> (<em>str</em><em> or </em><em>float</em>) – New status, such as the new vial location or new vial in the station.</p></li>
 <li><p><strong>status_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the status property. Defaults to “location”.</p></li>
 </ul>
 </dd>
@@ -771,7 +830,7 @@ included in the resulting namespace. Defaults to False.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.utils.mongo_dbs.db_info_generator">
-<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.db_info_generator" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">robotics_api.utils.mongo_dbs.</span></span><span class="sig-name descname"><span class="pre">db_info_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">WindowsPath('C:/Users/Lab/D3talesRobotics/roboticsUI/db_infos.json')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/utils/mongo_dbs.html#db_info_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.utils.mongo_dbs.db_info_generator" title="Link to this definition"></a></dt>
 <dd><p>Generates information about database connections.</p>
 <p>This function requires either a <cite>db_file</cite> argument or a <cite>DB_INFO_FILE</cite> environment variable.
 The argument or environment variable should be a path to a JSON file containing connection

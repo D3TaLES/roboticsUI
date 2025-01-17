@@ -17,11 +17,11 @@ def vial_col_test(col):
 def reset_stations(end_home=False):
     # Rest all stations
     snapshot_move(snapshot_file=SNAPSHOT_HOME)
-    if MOVE_ELEVATORS:
-        PotentiostatStation("cv_potentiostat_A_01").move_elevator(endpoint="down")
-        PotentiostatStation("ca_potentiostat_B_01").move_elevator(endpoint="down")
-    if PIPETTE:
-        PipetteStation("pipette_01").pipette(volume=0)
+    for station in MEASUREMENT_STATIONS:
+        if "potentiostat" in station and MOVE_ELEVATORS:
+            PotentiostatStation(station).move_elevator(endpoint="down")
+        if "pipette" in station and PIPETTE:
+            PipetteStation(station).pipette(volume=0)
     if end_home:
         snapshot_move(target_position=10)
         snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
@@ -46,12 +46,13 @@ if __name__ == "__main__":
     """
 
     test_vial = VialMove(_id="A_02")
-    test_potent = PotentiostatStation("ca_potentiostat_B_01")  # cv_potentiostat_A_01, ca_potentiostat_B_01
+    cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
+    cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
+    ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
     test_bal = BalanceStation("balance_01")
     test_solv = LiquidStation("solvent_01")
     test_pip = PipetteStation("pipette_01")
     test_stir = StirStation("stir_01")
-    d_path = os.path.join(TEST_DATA_DIR, "PotentiostatStation_Test.csv")
 
     # RESET TESTING
     # reset_test_db()
@@ -68,24 +69,27 @@ if __name__ == "__main__":
     # test_vial.extract_soln(extracted_mass=0.506)
 
     # POTENTIOSTAT TESTING
-    # test_potent.place_vial(test_vial)
-    # test_potent.move_elevator(endpoint="down")
-    # test_potent.move_elevator(endpoint="up")
-    # test_potent.run_cv(d_path, voltage_sequence="0, 0.5, 0V", scan_rate=0.1)
+    # ca_potent.place_vial(test_vial)
+    # cv_potent.move_elevator(endpoint="up")
+    # cv_potent.move_elevator(endpoint="down")
+    # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test01.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1)
+    cvUM_potent.run_cv(TEST_DATA_DIR / "cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(8, vial_id="B_04", solv_id="solvent_02", go_home=False)
+    # flush_solvent(0, vial_id="B_04", solv_id="solvent_02", go_home=True)
     # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
-    # print(test_potent.get_temperature())
+    # print(TemperatureStation().temperature())
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # test_stir.stir_vial(test_vial, stir_time=15)
+    # test_stir.stir(stir_time=15)
+    # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)
     # test_vial.update_weight(14.0)
     # test_bal.existing_weight(test_vial)

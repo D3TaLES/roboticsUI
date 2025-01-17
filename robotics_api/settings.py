@@ -11,14 +11,13 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
+RUN_POTENT = True
+DISPENSE = True
 STIR = True
 WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-CALIB_DATE = '2024_11_20'  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -30,6 +29,7 @@ EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment b
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 RETURN_EXTRACTED_SOLN = True  # Return solution extracted via pipette after measurement made.
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
+MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -51,11 +51,11 @@ PERTURB_AMOUNT = 0.07
 ZONE_DIVIDERS = [30, 180, 330]
 
 # ---------  INSTRUMENT SETTINGS -------------
-MICRO_ELECTRODES_MAX_RADIUS = 0.1  # max radius of a ultra micro electrode, cm
+ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrode, cm
 
 # NOTE: A potentiostat setting cannot be None
 POTENTIOSTAT_SETTINGS = {
-    "cv_potentiostat_A_01": dict(
+    "cvUM_potentiostat_A_01": dict(
         address="COM6",
         exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
@@ -66,7 +66,8 @@ POTENTIOSTAT_SETTINGS = {
         scan_rate=0.01,  # V/s
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
-        sensitivity=1e-6,  # A/V, current sensitivity
+        sensitivity=1e-4,  # A/V, current sensitivity
+        quiet_time=2,  # s
 
         # IR Compensation settings
         ir_comp=False,  # Perform IR Compensation
@@ -83,18 +84,19 @@ POTENTIOSTAT_SETTINGS = {
         # volts, additional buffer for setting voltage range from benchmark E1/2 for micro electrodes
 
     ),
-    "cv_potentiostat_A_02": dict(
-        address="COM6",
-        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
+    "cv_potentiostat_B_01": dict(
+        address="COM8",
+        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
-        working_electrode_radius=0.07,  # radius in cm
-        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
+        working_electrode_radius=0.2 / 2,  # radius in cm
+        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode TODO
 
         # CV settings
         scan_rate=0.1,  # V/s
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
-        sensitivity=1e-6,  # A/V, current sensitivity
+        sensitivity=1e-4,  # A/V, current sensitivity
+        quiet_time=2,  # s
 
         # IR Compensation settings
         ir_comp=False,  # Perform IR Compensation
@@ -110,17 +112,18 @@ POTENTIOSTAT_SETTINGS = {
         benchmark_buffer=0.25,  # volts, buffer used in setting voltage range from benchmark peaks
 
     ),
-    "ca_potentiostat_B_01": dict(
-        address="COM4",
+    "ca_potentiostat_C_01": dict(
+        address="COM7",
         exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
-        run_delay=60,  # seconds
+        quiet_time=60,  # s
         sample_interval=1e-6,  # seconds
         sensitivity=1e-4,  # A/V, current sensitivity
         pulse_width=1e-4,  # sec, pulse width for CA
         steps=200,  # number of steps for CA
         volt_min=False,  # V, minimum acceptable voltage for CA experiment
         volt_max=False,  # V, maximum acceptable voltage for CA experiment
+        voltage_sequence="0.025, -0.025 V",  # V, maximum acceptable voltage for CA experiment
         time_after=5,  # seconds
     ),
 }
@@ -161,7 +164,9 @@ BALANCE_PORT = "COM5"
 
 # ---------  STATIONS -------------
 DISPENSE_STATIONS = ["solvent_01", "solvent_02", "solvent_03", "solvent_04"]
-MEASUREMENT_STATIONS = ["cv_potentiostat_A_01", "ca_potentiostat_B_01", "balance_01", "pipette_01"]
+MEASUREMENT_STATIONS = ["cvUM_potentiostat_A_01", "cv_potentiostat_B_01", "ca_potentiostat_C_01",
+                        "balance_01", "pipette_01", "temperature_01"
+                        ]
 ACTION_STATIONS = ["robot_grip", "stir_01"]
 STATIONS = DISPENSE_STATIONS + MEASUREMENT_STATIONS + ACTION_STATIONS
 VIALS = [
@@ -170,8 +175,8 @@ VIALS = [
     "B_01", "B_02", "B_03", "B_04",
     "C_01", "C_02", "C_03", "C_04",
 ]
-RINSE_VIALS = {"cv_potentiostat_A_01": "S_01", "ca_potentiostat_B_01": "S_02"}
-ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "A_02": 3}
+RINSE_VIALS = {"cvUM_potentiostat_A_01": "S_01", "cv_potentiostat_B_01": "S_02", "ca_potentiostat_C_01": "S_03"}
+ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "C_01": 3}
 
 # ---------  PATH VARIABLES -------------
 HOME_DIR = Path(__file__).resolve().parent.parent
@@ -180,6 +185,7 @@ DATA_DIR = PARENT_DIR / "data"
 LAUNCH_DIR = PARENT_DIR / 'launch_dir'
 TEST_DATA_DIR = HOME_DIR / "test_data"
 ROBOTICS_API = HOME_DIR / "robotics_api"
+DB_INFO_FILE = HOME_DIR / 'db_infos.json'
 
 SNAPSHOT_DIR = ROBOTICS_API / "snapshots"
 SNAPSHOT_HOME = SNAPSHOT_DIR / "home.json"
@@ -201,13 +207,14 @@ if __name__ == "__main__":
     # Set environment variables with HOME_DIR
     py_path = f"{HOME_DIR}:{PARENT_DIR/'Packages'/'d3tales_api'}:{PARENT_DIR/'Packages'/'hardpotato'/'src'}"
     os.environ['FW_CONFIG_FILE'] = os.path.abspath(FW_CONFIG_DIR / 'FW_config.yaml')
-    os.environ['DB_INFO_FILE'] = os.path.abspath(HOME_DIR / 'db_infos.json')
+    os.environ['DB_INFO_FILE'] = os.path.abspath(DB_INFO_FILE)
     os.environ['PYTHONPATH'] = py_path
 
-    print(os.environ['FW_CONFIG_FILE'])
-    print(os.environ['DB_INFO_FILE'])
-    print(os.environ['PYTHONPATH'])
+    # print(os.environ['FW_CONFIG_FILE'])
+    # print(os.environ['DB_INFO_FILE'])
+    # print(os.environ['PYTHONPATH'])
 
+    print("conda activate d3tales_robotics")
     print(f"export FW_CONFIG_FILE={FW_CONFIG_DIR / 'FW_config.yaml'}".replace('\\', "/").replace("C:", "/c"))
     print(f"export DB_INFO_FILE={HOME_DIR / 'db_infos.json'}".replace('\\', "/").replace("C:", "/c"))
     print(f"export PYTHONPATH={py_path}".replace('\\', "/").replace("C:", "/c"))

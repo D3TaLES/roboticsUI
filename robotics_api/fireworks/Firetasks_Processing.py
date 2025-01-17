@@ -1,7 +1,8 @@
 # FireTasks for individual experiment processing
 # Copyright 2024, University of Kentucky
 import traceback
-from fireworks import LaunchPad
+from abc import ABC
+
 from atomate.utils.utils import env_chk
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.D3database.back2front import CV2Front
@@ -24,12 +25,6 @@ class InitializeRobot(FiretaskBase):
 
     This task initializes a robot by creating a connection to the device and
     resetting stations to their default status.
-
-    Args:
-        fw_spec (dict): Fireworks spec that contains information for the task.
-
-    Returns:
-        FWAction: An action that updates the Fireworks spec indicating success.
     """
 
     def run_task(self, fw_spec):
@@ -54,11 +49,6 @@ class InitializeStatusDB(FiretaskBase):
 
     This task resets and initializes the reagent, experiment, and station databases.
 
-    Args:
-        fw_spec (dict): Fireworks spec that contains information for the task.
-
-    Returns:
-        FWAction: An action that updates the Fireworks spec indicating success.
     """
 
     def run_task(self, fw_spec):
@@ -75,7 +65,7 @@ class InitializeStatusDB(FiretaskBase):
         return FWAction(update_spec={"success": True})
 
 
-class ProcessBase(RoboticsBase):
+class ProcessBase(RoboticsBase, ABC):
     """Abstract base class for processing experiment data.
 
     This class provides common methods for processing experiment data such as
@@ -256,7 +246,8 @@ class ProcessBase(RoboticsBase):
         if not self.check_file(file_loc):
             return None
 
-        self.metadata.update({"cell_constant": get_cell_constant(raise_error=cell_constant_error)})
+        self.metadata.update({"cell_constant": get_cell_constant(collection_time=raw_data["collection_time"],
+                                                                 raise_error=cell_constant_error)})
         metadata.update(self.instrument._settings_dict)
         metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
@@ -414,11 +405,12 @@ class DataProcessor(ProcessBase):
                 multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
                 CVPlotter(connector={"scan_data": "data.scan_data",
                                      "variable_prop": "data.conditions.scan_rate.value",
-                                     "we_surface_area": "data.conditions.working_electrode_surface_area"}).live_plot_multi(
-                    processed_data, fig_path=multi_path, title=f"Multi CV Plot for {self.mol_id}",
-                    xlabel=MULTI_PLOT_XLABEL,
-                    ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND, current_density=PLOT_CURRENT_DENSITY,
-                    a_to_ma=CONVERT_A_TO_MA)
+                                     "we_surface_area": "data.conditions.working_electrode_surface_area"}
+                          ).live_plot_multi(processed_data, fig_path=multi_path,
+                                            title=f"Multi CV Plot for {self.mol_id}",
+                                            xlabel=MULTI_PLOT_XLABEL,
+                                            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND,
+                                            current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)
 
                 # CV Meta Properties
                 print("Calculating metadata...")
@@ -432,7 +424,6 @@ class DataProcessor(ProcessBase):
                     fn.write(json.dumps(processed_data))
                 with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
                     fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
-
 
         # Process CA data for cycle
         elif self.active_method == "ca":
@@ -470,9 +461,9 @@ class SendToStorage(FiretaskBase):
     """
     FireTask for securely transferring a file to a remote storage server using SFTP.
 
-    This task handles the process of transferring a file to a remote storage server, creating the necessary directory structure,
-    retrying the transfer in case of failure, and optionally ignoring errors. Once transferred, it updates the Firework
-    specification with the stored file's location.
+    This task handles the process of transferring a file to a remote storage server, creating the necessary
+    directory structure, retrying the transfer in case of failure, and optionally ignoring errors. Once transferred,
+    it updates the Firework specification with the stored file's location.
     """
     _fw_name = "SendToStorage"
 
@@ -551,13 +542,13 @@ class EndWorkflow(FiretaskBase):
     """
     FireTask responsible for ending a workflow by performing final robotic and data management tasks.
 
-    This task checks the current contents of the robot's grip, ensures that the vial (if any) is returned to its home position,
-    and triggers the final data snapshots to be moved to their designated locations.
+    This task checks the current contents of the robot's grip, ensures that the vial (if any) is returned to its home
+    position, and triggers the final data snapshots to be moved to their designated locations.
     """
     def run_task(self, fw_spec):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:
             VialMove(_id=robot_content).place_home()
         # success = snapshot_move(SNAPSHOT_HOME)
-        success &= snapshot_move(SNAPSHOT_END_HOME)
+        success = snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

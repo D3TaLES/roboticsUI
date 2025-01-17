@@ -6,15 +6,13 @@ import os.path
 from functools import reduce
 from operator import iconcat
 from fireworks import Workflow
-from fireworks import LaunchPad
-from monty.serialization import loadfn
-from d3tales_api.Processors.expflow_parser import ProcessExpFlowObj, ProcessExperimentRun, get_id
+from d3tales_api.Processors.expflow_parser import ProcessExperimentRun, get_id
 
 from robotics_api.fireworks.Fireworks import *
 from robotics_api.fireworks.Firetasks_Actions import *
 
 
-class EF2Experiment(ProcessExpFlowObj):
+class EF2Experiment:
     """
     Class for converting an ExpFlow robotics workflow into a Fireworks Workflow that
     can be run on the robotic setup.
@@ -45,18 +43,18 @@ class EF2Experiment(ProcessExpFlowObj):
 
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
-        super().__init__(expflow_obj, source_group, redox_id_error=False, **kwargs)
+        expflow_parser = ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False, try_restapi=True, **kwargs)
         self.fw_parents = fw_parents or []
         self.priority = priority if priority > 2 else 2
-        self.mol_id = self.molecule_id or getattr(self.redox_mol, "smiles", None)
-        self.rom_name = getattr(self.redox_mol, "name", "no_redox_mol_name")
-        self.full_name = "{}_{}".format(exp_name, self.rom_name)
+        self.mol_id = expflow_parser.molecule_id or getattr(expflow_parser.redox_mol, "smiles", None)
+        self.rom_name = getattr(expflow_parser.redox_mol, "name", "no_redox_mol_name")
+        self.full_name = "{}_{}".format(exp_name, self.mol_id)
         self.wflow_name = wflow_name
-        self.rom_id = get_id(self.redox_mol) or "no_redox_mol"
-        self.solv_id = get_id(self.solvent) or "no_solvent"
-        self.elect_id = get_id(self.electrolyte) or "no_electrolyte"
-        self.metadata = getattr(ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False),
-                                data_type + "_metadata", {})
+
+        self.rom_id = get_id(expflow_parser.redox_mol) or "no_redox_mol"
+        self.solv_id = get_id(expflow_parser.solvent) or "no_solvent"
+        self.elect_id = get_id(expflow_parser.electrolyte) or "no_electrolyte"
+        self.metadata = getattr(expflow_parser, data_type + "_metadata", {})
         self.end_exps = []
 
         self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
@@ -65,21 +63,16 @@ class EF2Experiment(ProcessExpFlowObj):
 
         # Check for multi tasks
         self.workflow = []
-        [self.workflow.extend(self.check_multi_task(t)) for t in self.expflow_obj.workflow]
+        [self.workflow.extend(self.check_multi_task(t)) for t in expflow_parser.expflow_obj.workflow]
 
     @staticmethod
     def instrument_task(collect_task, tag="setup", default_analysis=""):
         """Generates setup or finish tasks"""
-        if "_cv_" in collect_task.name:
-            analysis = "cv"
-        elif "_ca_" in collect_task.name:
-            analysis = "ca"
-        elif "_temp" in collect_task.name:
-            analysis = "ca"  # TODO change if independent temperature probe set up
-        elif "_ir_" in collect_task.name:
-            analysis = "ir"
-        else:
-            analysis = default_analysis
+        analysis_methods = ["cv", "cvUM", "ca", "ir", ]
+        analysis = default_analysis
+        for method in analysis_methods:
+            if f"_{method}_" in collect_task.name:
+                analysis = method
         task_dict = copy.deepcopy(collect_task.__dict__)
         task_dict["name"] = f"{tag}_{analysis}"
         new_task = dict2obj(task_dict)
@@ -249,6 +242,8 @@ class EF2Experiment(ProcessExpFlowObj):
     def get_firetask(self, task):
         """Retrieves associated Firetasks for the given ExpFlow task."""
         firetasks = self.task_dictionary.get(task.name)
+        if not firetasks:
+            raise KeyError(f"Firetask {task.name} not found in task_dictionary.")
         parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
             if param.value:
@@ -268,6 +263,7 @@ class EF2Experiment(ProcessExpFlowObj):
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
+            "collect_cvUM_data": [RunCVUM],
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
@@ -275,8 +271,10 @@ class EF2Experiment(ProcessExpFlowObj):
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],
+            "setup_cvUM": [SetupCVUMPotentiostat],
             "setup_ca": [SetupCAPotentiostat],
             "finish_cv": [FinishPotentiostat],
+            "finish_cvUM": [FinishPotentiostat],
             "finish_ca": [FinishPotentiostat],
 
             # TODO Deprecated. Remove eventually
@@ -320,17 +318,17 @@ def run_expflow_wf(expflow_wf: dict, name_tag='', exp_params=None, **kwargs):
     return wf
 
 
-def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
+def run_ex_processing(experiment_dir=None, molecule_id="test", name_tag="", **kwargs):
     """
     FOR TESTING ONLY
     Establishes Fireworks workflow for running an example basic CV processing job.
     Args:
-        cv_dir (str): path the directory containing experimental CV files
+        experiment_dir (str): path the directory containing experimental CV files
         molecule_id (str): D3TaLES ID for redox active molecule
         name_tag (str): tame tag for workflow
         **kwargs: Additional keyword arguments.
     """
-    cv_locations = [f for f in os.listdir(cv_dir) if f.endswith(".csv")]
+    cv_locations = [f for f in os.listdir(experiment_dir) if f.endswith(".csv")]
 
     fws = [ProcessingFirework(mol_id=molecule_id, cv_locations=cv_locations, **kwargs)]
 
@@ -340,14 +338,14 @@ def run_ex_processing(cv_dir=None, molecule_id="test", name_tag="", **kwargs):
 
 if __name__ == "__main__":
     # run_ex_processing()
-    expflow_file = TEST_DATA_DIR / 'workflows' / 'TEST_Density_workflow.json'
-    expflow_exp = loadfn(expflow_file)
-    # experiment = EF2Experiment(expflow_exp.get("experiments")[1], "Robotics", data_type='cv')
+    expflow_file = TEST_DATA_DIR / 'workflows' / 'Cond3_all_TEMPO_workflow.json'
+    expflow_experiment = loadfn(expflow_file)
+    # experiment = EF2Experiment(expflow_experiment.get("experiments")[1], "Robotics", data_type='cv')
     # tc = experiment.task_clusters
     ex_params = {"experiment_vials": {"exp01": "A_01", "exp02": "A_02"},
-                "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
-                             {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
-                             {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
+                 "reagents": [{"_id": "29690ed4-bf85-4945-9c2d-907eb942515d","description": "solvent","location": "solvent_02","name": "Acetonitrile","notes": "","purity": "","smiles": "CC#N","source": "sigma_aldrich","type": "solvent"},
+                              {"_id": "f12e7ae7-e893-44b9-8fee-51787f23fbdb","description": "supporting electrolyte","location": "experiment_vial","name": "TBAPF6","notes": "","purity": "","smiles": " F[P-](F)(F)(F)(F)F.CCCC[N+](CCCC)(CCCC)CCCC","source": "sigma_aldrich","type": "electrolyte"},
+                              {"_id": "330391e4-855b-4a1d-851e-59445c65fad0","description": "redox active molecule(s) (a.k.a. redox core)","location": "experiment_vial","name": "TEMPO","notes": "","purity": "","smiles": "CC1(C)CCCC(C)(C)N1[O]","source": "uk_lab","type": "redox_molecule"}]
                  }
-    wf = run_expflow_wf(expflow_exp, exp_params=ex_params)
-    LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf)
+    wf_obj = run_expflow_wf(expflow_experiment, exp_params=ex_params)
+    # LaunchPad().from_file(os.path.abspath(LAUNCHPAD)).add_wf(wf_obj)

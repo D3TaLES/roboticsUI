@@ -31,13 +31,13 @@ tags:
 #### Prepare materials:
   * Measure and dispense solids into experiment vials
   * Place stir bars in experiment vials.
+  * Fill rinsing vials (Vials `S1`, `S2`, etc.)
   * Fill solvent jars, bubble argon in solvent, place jars in liquid dispensing stations with the tube cap screwed on. 
     > **Note**: When bubbling argon in the solvent, open the cylinder valve, then adjust the delivery pressure valve so
     > the delivery presure is ~10 psi. Then, slowly open the flow control valve and place the gas flow tube in the 
     > solvent. Adjust the flow control valve so there is steady Argon bubbling in the solvent. Bubble for at least 
     > 10 minutes. To finish, close the cylinder valve, the delivery pressure valve, then the flow valve. Ensure
     > no more bubbles appear in the solvent. 
-  * Fill rinsing vials (Vials `S1`, `S2`, etc.)
  
 #### Prepare Stations
   * Flush liquid dispensing tubes with 8 mL solution

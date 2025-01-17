@@ -189,14 +189,34 @@ class MeasureDensity(RoboticsBase):
         print("--> SOLUTION DENSITY: ", soln_density)
         self.metadata.update({"soln_density": soln_density})
 
-        if RETURN_EXTRACTED_SOLN:
-            # Return extracted solution
-            pipette_station.return_soln(vial=self.exp_vial)
-        else:
-            # Update vial contents
-            self.exp_vial.extract_soln(extracted_mass=extracted_mass)
-            # Discard extracted solution
-            pipette_station.pipette(volume=0)
+        # Return extracted solution
+        pipette_station.return_soln(vial=self.exp_vial)
+
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class Extract(RoboticsBase):
+    """FireTask for extracting and discarding solution"""
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+        volume = unit_conversion(self.get("volume", 0), default_unit=VOLUME_UNIT)
+
+        # Establish stations
+        bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+        pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
+
+        # Extract solution and measure extracted mass
+        initial_mass = bal_station.existing_weight(self.exp_vial)
+        pipette_station.pipette(volume=volume, vial=self.exp_vial)
+        final_mass = bal_station.weigh(self.exp_vial)
+        extracted_mass = initial_mass - final_mass
+
+        # Update vial contents
+        self.exp_vial.extract_soln(extracted_mass=extracted_mass)
+        # Discard extracted solution
+        pipette_station.pipette(volume=0)
 
         return FWAction(update_spec=self.updated_specs())
 

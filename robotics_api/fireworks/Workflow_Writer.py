@@ -260,6 +260,7 @@ class EF2Experiment:
             "heat": [Heat],  # needs: TEMPERATURE
             "stir": [Stir],  # needs: TIME
             "measure_density": [MeasureDensity],
+            "extract": [Extract],
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],

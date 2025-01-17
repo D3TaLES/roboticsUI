@@ -43,7 +43,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../robot_run_checklist.html">Robot Run Checklist</a></li>
@@ -98,6 +98,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">kortex_api.autogen.messages</span> <span class="kn">import</span> <span class="n">Base_pb2</span>
 <span class="kn">from</span> <span class="nn">kortex_api.autogen.client_stubs.BaseClientRpc</span> <span class="kn">import</span> <span class="n">BaseClient</span>
@@ -221,40 +222,50 @@
 
 <div class="viewcode-block" id="move_gripper">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.move_gripper">[docs]</a>
-<span class="k">def</span> <span class="nf">move_gripper</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">move_gripper</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_gripper_attempts</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Move gripper</span>
 <span class="sd">    :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)</span>
 <span class="sd">    :return: bool, True if action a success</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># Create connection to the device and get the router</span>
     <span class="n">connector</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">KINOVA_01_IP</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">_try_gripper</span><span class="p">(</span><span class="n">conn</span><span class="o">=</span><span class="n">connector</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target_position</span><span class="p">):</span>
+        <span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
             <span class="c1"># Create connection to the device and get the router</span>
-            <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createUdpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router_real_time</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createUdpConnection</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span> <span class="k">as</span> <span class="n">router_real_time</span><span class="p">:</span>
                 <span class="n">action</span> <span class="o">=</span> <span class="n">GripperMove</span><span class="p">(</span><span class="n">router</span><span class="p">,</span> <span class="n">router_real_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">target_position</span> <span class="o">==</span> <span class="s1">&#39;open&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;open&#39;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">VERBOSE</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moving gripper open...&quot;</span><span class="p">)</span>
                     <span class="n">finished</span> <span class="o">&amp;=</span> <span class="n">action</span><span class="o">.</span><span class="n">gripper_move</span><span class="p">(</span><span class="n">OPEN_GRIP_TARGET</span><span class="p">)</span>
                     <span class="n">action</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">target_position</span> <span class="o">==</span> <span class="s1">&#39;closed&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;closed&#39;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">VERBOSE</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moving gripper closed...&quot;</span><span class="p">)</span>
                     <span class="n">finished</span> <span class="o">&amp;=</span> <span class="n">action</span><span class="o">.</span><span class="n">gripper_move</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
                     <span class="n">action</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">target_position</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">target</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">VERBOSE</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moving gripper to </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_position</span><span class="p">))</span>
-                    <span class="n">finished</span> <span class="o">&amp;=</span> <span class="n">action</span><span class="o">.</span><span class="n">gripper_move</span><span class="p">(</span><span class="n">target_position</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moving gripper to </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+                    <span class="n">finished</span> <span class="o">&amp;=</span> <span class="n">action</span><span class="o">.</span><span class="n">gripper_move</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
                     <span class="n">action</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">finished</span>
 
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Gripper movement failed with exception &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">gripper_tries</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">finished</span> <span class="o">=</span> <span class="n">_try_gripper</span><span class="p">()</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gripper_tries</span> <span class="o">&gt;</span> <span class="n">max_gripper_attempts</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING. Gripper movement </span><span class="si">{</span><span class="n">gripper_tries</span><span class="si">}</span><span class="s2"> ended in error: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="n">gripper_tries</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gripper movement successfully executed!&quot;</span> <span class="k">if</span> <span class="n">finished</span> <span class="k">else</span> <span class="s2">&quot;Error! Gripper was not successfully moved.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">finished</span></div>
@@ -325,9 +336,90 @@
 
 
 
+<div class="viewcode-block" id="get_zone">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.get_zone">[docs]</a>
+<span class="k">def</span> <span class="nf">get_zone</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">zone_dividers</span><span class="o">=</span><span class="n">ZONE_DIVIDERS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves a given joint a specified range (in degrees).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        angle (float): The angle in degrees.</span>
+<span class="sd">        zone_dividers (list): A list of zone divider angles in ascending order.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The zone index (starting from 1) that the angle belongs to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Make sure zone_dividers starts with 0</span>
+    <span class="n">zone_dividers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">zone_dividers</span><span class="p">))</span>
+    <span class="n">zone_dividers</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ZONES: &quot;</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">zone_dividers</span><span class="p">)</span>
+    <span class="c1"># Check if angle is above the last divider</span>
+    <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="n">zone_dividers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># Belongs to Zone 1</span>
+
+    <span class="c1"># Find the zone</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">zone_dividers</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">zone_dividers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">zone_dividers</span><span class="p">[(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">zone_dividers</span><span class="p">)]):</span>
+            <span class="k">return</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Zone index starts from 1</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Zone not found for angle </span><span class="si">{</span><span class="n">angle</span><span class="si">}</span><span class="s2"> and dividers </span><span class="si">{</span><span class="n">zone_dividers</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_current_zone">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.get_current_zone">[docs]</a>
+<span class="k">def</span> <span class="nf">get_current_zone</span><span class="p">(</span><span class="n">zone_dividers</span><span class="o">=</span><span class="n">ZONE_DIVIDERS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves a given joint a specified range (in degrees).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        zone_dividers (list): A list of zone divider angles in ascending order.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The zone index (starting from 1) that the angle belongs to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connector</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">KINOVA_01_IP</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
+        <span class="c1"># Create required services</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">BaseClient</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
+
+        <span class="n">current_joint_angles</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredJointAngles</span><span class="p">()</span>
+        <span class="n">joint_1_angle</span> <span class="o">=</span> <span class="n">current_joint_angles</span><span class="o">.</span><span class="n">joint_angles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">get_zone</span><span class="p">(</span><span class="n">joint_1_angle</span><span class="p">,</span> <span class="n">zone_dividers</span><span class="o">=</span><span class="n">zone_dividers</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="snapshot_zone">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_zone">[docs]</a>
+<span class="k">def</span> <span class="nf">snapshot_zone</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">zone_dividers</span><span class="o">=</span><span class="n">ZONE_DIVIDERS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves a given joint a specified range (in degrees).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        snapshot_file (str): A list of zone divider angles in ascending order.</span>
+<span class="sd">        zone_dividers (list): A list of zone divider angles in ascending order.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The zone index (starting from 1) that the angle belongs to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+        <span class="n">master_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;jointAnglesGroup&quot;</span> <span class="ow">in</span> <span class="n">master_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">joint_angle_values</span> <span class="o">=</span> <span class="n">master_data</span><span class="p">[</span><span class="s2">&quot;jointAnglesGroup&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachJointAngles&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;jointAngles&quot;</span><span class="p">]</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">joint_angle_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;poses&quot;</span> <span class="ow">in</span> <span class="n">master_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">coordinate_values</span> <span class="o">=</span> <span class="n">master_data</span><span class="p">[</span><span class="s2">&quot;poses&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachPose&quot;</span><span class="p">][</span><span class="s2">&quot;targetPose&quot;</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">coordinate_values</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">coordinate_values</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span> <span class="o">%</span> <span class="mi">360</span>
+    <span class="k">return</span> <span class="n">get_zone</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">zone_dividers</span><span class="o">=</span><span class="n">zone_dividers</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="snapshot_move">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.snapshot_move">[docs]</a>
-<span class="k">def</span> <span class="nf">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">raise_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_position</span><span class="p">:</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">raise_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                   <span class="n">angle_error</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">position_error</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -346,83 +438,67 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Robot NOT run because RUN_ROBOT is set to False.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Create connection to the device and get the router</span>
     <span class="n">connector</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">KINOVA_01_IP</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
-            <span class="c1"># Create required services</span>
-            <span class="n">base</span> <span class="o">=</span> <span class="n">BaseClient</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">snapshot_file</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
+                <span class="c1"># Create required services</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">BaseClient</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">snapshot_file</span><span class="p">:</span>
-                <span class="c1"># loads file</span>
-                <span class="n">snapshot_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">snapshot_file</span><span class="p">:</span>
+                    <span class="c1"># converts JSON to nested dictionary</span>
+                    <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
 
-                <span class="c1"># converts JSON to nested dictionary</span>
-                <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s2">&quot;jointAnglesGroup&quot;</span> <span class="ow">in</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
+                        <span class="c1"># grabs the list of joint angle values</span>
+                        <span class="n">joint_angle_values</span> <span class="o">=</span> \
+                            <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;jointAnglesGroup&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachJointAngles&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span>
+                                <span class="s2">&quot;jointAngles&quot;</span><span class="p">]</span>
+                        <span class="n">finished</span> <span class="o">=</span> <span class="n">snapshot_move_angular</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">joint_angle_values</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="s2">&quot;jointAnglesGroup&quot;</span> <span class="ow">in</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
-                    <span class="c1"># grabs the list of joint angle values</span>
-                    <span class="n">joint_angle_values</span> <span class="o">=</span> \
-                        <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;jointAnglesGroup&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachJointAngles&quot;</span><span class="p">][</span><span class="s2">&quot;jointAngles&quot;</span><span class="p">][</span>
-                            <span class="s2">&quot;jointAngles&quot;</span><span class="p">]</span>
-                    <span class="n">move_type</span> <span class="o">=</span> <span class="s2">&quot;angular&quot;</span>
-                <span class="k">elif</span> <span class="s2">&quot;poses&quot;</span> <span class="ow">in</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
-                    <span class="c1"># grabs the dictionary of coordinate values</span>
-                    <span class="n">coordinate_values</span> <span class="o">=</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;poses&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachPose&quot;</span><span class="p">][</span><span class="s2">&quot;targetPose&quot;</span><span class="p">]</span>
-                    <span class="n">move_type</span> <span class="o">=</span> <span class="s2">&quot;cartesian&quot;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;invalid file type&quot;</span><span class="p">)</span>
-                    <span class="n">move_type</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>
+                        <span class="k">if</span> <span class="n">finished</span><span class="p">:</span>
+                            <span class="n">current_joint_angles_raw</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredJointAngles</span><span class="p">()</span>
+                            <span class="n">current_joint_angles</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="o">.</span><span class="n">joint_identifier</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">value</span> <span class="o">%</span> <span class="mi">360</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                                                    <span class="n">current_joint_angles_raw</span><span class="o">.</span><span class="n">joint_angles</span><span class="p">}</span>
+                            <span class="n">joint_angle_values_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;jointIdentifier&quot;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">joint_angle_values</span><span class="p">}</span>
+                            <span class="n">angle_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">current_joint_angles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">joint_angle_values_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span>
+                                           <span class="ow">in</span> <span class="n">joint_angle_values_dict</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">angle_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">angle_diffs</span><span class="p">]):</span>
+                                <span class="n">error_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">angle_diffs</span> <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">angle_error</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">360</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">error_diffs</span><span class="p">]):</span>
+                                    <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
+                                    <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
+                                        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;Error: Robot did not reach the desired joint angles: &quot;</span><span class="p">,</span>
+                                                          <span class="n">angle_diffs</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="s2">&quot;poses&quot;</span> <span class="ow">in</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
+                        <span class="c1"># grabs the dictionary of coordinate values</span>
+                        <span class="n">coordinate_values</span> <span class="o">=</span> <span class="n">snapshot_file</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s2">&quot;poses&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;reachPose&quot;</span><span class="p">][</span><span class="s2">&quot;targetPose&quot;</span><span class="p">]</span>
+                        <span class="n">finished</span> <span class="o">=</span> <span class="n">snapshot_move_cartesian</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">coordinate_values</span><span class="p">)</span>
 
-                <span class="c1"># Move Robot</span>
-                <span class="k">if</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
-                    <span class="n">finished</span> <span class="o">=</span> <span class="n">snapshot_move_angular</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">joint_angle_values</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;cartesian&quot;</span><span class="p">:</span>
-                    <span class="n">finished</span> <span class="o">=</span> <span class="n">snapshot_move_cartesian</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">coordinate_values</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">finished</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">VERBOSE</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... and nothing happened&quot;</span><span class="p">)</span>
-                <span class="n">snapshot_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-                <span class="k">if</span> <span class="n">finished</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
-                        <span class="n">current_joint_angles_raw</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredJointAngles</span><span class="p">()</span>  <span class="c1"># Assuming this method exists</span>
-                        <span class="k">def</span> <span class="nf">_angle</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">360</span> <span class="k">else</span> <span class="n">a</span><span class="o">-</span><span class="mi">360</span>
-                        <span class="n">current_joint_angles</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="o">.</span><span class="n">joint_identifier</span><span class="p">:</span> <span class="n">_angle</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">current_joint_angles_raw</span><span class="o">.</span><span class="n">joint_angles</span><span class="p">}</span>
-                        <span class="n">joint_angle_values_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;jointIdentifier&quot;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">joint_angle_values</span><span class="p">}</span>
-                        <span class="n">angle_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">current_joint_angles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">joint_angle_values_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">joint_angle_values_dict</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">angle_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">angle_diffs</span><span class="p">]):</span>
-                            <span class="n">error_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">angle_diffs</span> <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">angle_error</span><span class="p">]</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="o">-</span><span class="mi">360</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">angle_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">error_diffs</span><span class="p">]):</span>
-                                <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">finished</span><span class="p">:</span>
+                            <span class="n">current_pose_raw</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredCartesianPose</span><span class="p">()</span>
+                            <span class="n">current_pose</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+                                            <span class="s2">&quot;thetaX&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_x</span><span class="p">,</span> <span class="s2">&quot;thetaY&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_y</span><span class="p">,</span>
+                                            <span class="s2">&quot;thetaZ&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_z</span><span class="p">}</span>
+                            <span class="n">pose_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">current_pose</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">coordinate_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
+                                          <span class="n">coordinate_values</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">position_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">pose_diffs</span><span class="p">]):</span>
                                 <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
-                                    <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;Error: Robot did not reach the desired joint angles: &quot;</span><span class="p">,</span> <span class="n">angle_diffs</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;cartesian&quot;</span><span class="p">:</span>
-                        <span class="n">current_pose_raw</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredCartesianPose</span><span class="p">()</span>  <span class="c1"># Assuming this method exists</span>
-                        <span class="n">current_pose</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
-                                        <span class="s2">&quot;thetaX&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_x</span><span class="p">,</span> <span class="s2">&quot;thetaY&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_y</span><span class="p">,</span> <span class="s2">&quot;thetaZ&quot;</span><span class="p">:</span> <span class="n">current_pose_raw</span><span class="o">.</span><span class="n">theta_z</span><span class="p">}</span>
-                        <span class="n">pose_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">current_pose</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">coordinate_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">coordinate_values</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">position_error</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">pose_diffs</span><span class="p">]):</span>
-                            <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Robot did not reach the desired Cartesian pose &quot;</span>
-                                                  <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="p">[</span><span class="n">coordinate_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">coordinate_values</span><span class="p">]</span><span class="si">}</span><span class="s2">):&quot;</span>
-                                                  <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">pose_diffs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                            <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
+                                    <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Robot did not reach the desired Cartesian pose &quot;</span>
+                                                      <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="p">[</span><span class="n">coordinate_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">coordinate_values</span><span class="p">]</span><span class="si">}</span><span class="s2">):&quot;</span>
+                                                      <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">pose_diffs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                                <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">else</span><span class="p">:</span>
-
                         <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;Error: Unknown move type for confirmation.&quot;</span><span class="p">)</span>
-                        <span class="n">finished</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;Snapshot file type not suitable for robot movement&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">target_position</span><span class="p">:</span>
-        <span class="n">move_gripper</span><span class="p">(</span><span class="n">target_position</span><span class="p">)</span>
+        <span class="n">finished</span> <span class="o">=</span> <span class="n">move_gripper</span><span class="p">(</span><span class="n">target_position</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Snapshot successfully executed!&quot;</span> <span class="k">if</span> <span class="n">finished</span> <span class="k">else</span> <span class="s2">&quot;Error! Snapshot was not successfully executed.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">finished</span></div>
 
@@ -446,18 +522,15 @@
     <span class="k">with</span> <span class="n">utilities</span><span class="o">.</span><span class="n">DeviceConnection</span><span class="o">.</span><span class="n">createTcpConnection</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span> <span class="k">as</span> <span class="n">router</span><span class="p">:</span>
         <span class="c1"># Create required services</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">BaseClient</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
-        <span class="n">current_joint_angles</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredJointAngles</span><span class="p">()</span>  <span class="c1"># Assuming this method exists</span>
-
-        <span class="k">def</span> <span class="nf">_angle</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">360</span> <span class="k">else</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">360</span>
+        <span class="n">current_joint_angles</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">GetMeasuredJointAngles</span><span class="p">()</span>
 
         <span class="n">joint_angles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">joint</span> <span class="ow">in</span> <span class="n">current_joint_angles</span><span class="o">.</span><span class="n">joint_angles</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">joint</span><span class="o">.</span><span class="n">joint_identifier</span>
-            <span class="n">delta_value</span> <span class="o">=</span> <span class="n">joint_deltas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;j</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">reverse</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">final_angle</span> <span class="o">=</span> <span class="n">_angle</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">delta_value</span><span class="p">)</span>
+            <span class="n">delta_value</span> <span class="o">=</span> <span class="n">joint_deltas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;j</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">reverse</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">final_angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">delta_value</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
             <span class="k">if</span> <span class="n">delta_value</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving joint </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">delta_value</span><span class="si">}</span><span class="s2"> degrees to </span><span class="si">{</span><span class="n">final_angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving joint </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">delta_value</span><span class="si">}</span><span class="s2"> degrees to </span><span class="si">{</span><span class="n">final_angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">joint_angles</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;joint_identifier&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">final_angle</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="n">wait_time</span><span class="p">:</span>
@@ -495,7 +568,8 @@
 
 <div class="viewcode-block" id="get_place_vial">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.kinova_move.get_place_vial">[docs]</a>
-<span class="k">def</span> <span class="nf">get_place_vial</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">go</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">release_vial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_place_vial</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">action_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">go</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">release_vial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">pre_position_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">move_to_zone</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Executes an action to get or place a vial using snapshot movements.</span>
 
@@ -506,6 +580,8 @@
 <span class="sd">        leave (bool): Whether to leave the snapshot file location after the action (default is True).</span>
 <span class="sd">        release_vial (bool): Whether to release the vial after placing (default is True).</span>
 <span class="sd">        raise_error (bool): Whether to raise an error if movement fails (default is True).</span>
+<span class="sd">        pre_position_only (bool): Only move to &quot;above&quot; position if True (default is True).</span>
+<span class="sd">        move_to_zone (bool):</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if the action was successful, False otherwise.</span>
 
@@ -532,6 +608,15 @@
     <span class="k">if</span> <span class="n">go</span><span class="p">:</span>
         <span class="c1"># Start open if getting a vial</span>
         <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">target_position</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">action_type</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span> <span class="k">else</span> <span class="kc">True</span>
+
+        <span class="c1"># If move_to_zone, go to the correct zone</span>
+        <span class="n">target_zone</span> <span class="o">=</span> <span class="n">snapshot_zone</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">)</span>
+        <span class="n">current_zone</span> <span class="o">=</span> <span class="n">get_current_zone</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_zone</span> <span class="o">!=</span> <span class="n">target_zone</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--------- Moving from zone </span><span class="si">{</span><span class="n">current_zone</span><span class="si">}</span><span class="s2"> to zone </span><span class="si">{</span><span class="n">target_zone</span><span class="si">}</span><span class="s2"> ---------&quot;</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;zone_</span><span class="si">{</span><span class="n">current_zone</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">))</span>
+            <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;zone_</span><span class="si">{</span><span class="n">target_zone</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">))</span>
+
         <span class="c1"># If pre-position, go there</span>
         <span class="k">if</span> <span class="n">pre_position_file</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">pre_position_file</span><span class="p">)</span>
@@ -545,10 +630,11 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to </span><span class="si">{</span><span class="n">raise_amount</span><span class="si">}</span><span class="s2"> above target before snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Go to target position</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">VIAL_GRIP_TARGET</span> <span class="k">if</span> <span class="n">action_type</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span> <span class="k">else</span> <span class="s1">&#39;open&#39;</span> <span class="k">if</span> <span class="n">release_vial</span> <span class="k">else</span> <span class="n">VIAL_GRIP_TARGET</span>
-        <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">target_position</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pre_position_only</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">VIAL_GRIP_TARGET</span> <span class="k">if</span> <span class="n">action_type</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span> <span class="k">else</span> <span class="s1">&#39;open&#39;</span> <span class="k">if</span> <span class="n">release_vial</span> <span class="k">else</span> <span class="n">VIAL_GRIP_TARGET</span>
+            <span class="n">success</span> <span class="o">&amp;=</span> <span class="n">snapshot_move</span><span class="p">(</span><span class="n">snapshot_file</span><span class="p">,</span> <span class="n">target_position</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to move robot arm to snapshot </span><span class="si">{</span><span class="n">snapshot_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">leave</span><span class="p">:</span>
         <span class="c1"># Go to above target position after target</span>
@@ -606,6 +692,12 @@
 
 
 
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">snapshot_zone</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span> <span class="o">/</span> <span class="s2">&quot;cvUM_potentiostat_A_01.json&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">snapshot_zone</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span> <span class="o">/</span> <span class="s2">&quot;ca_potentiostat_C_01.json&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">snapshot_zone</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span> <span class="o">/</span> <span class="s2">&quot;VialHome_A_01.json&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">snapshot_zone</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span> <span class="o">/</span> <span class="s2">&quot;solvent_01.json&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">snapshot_zone</span><span class="p">(</span><span class="n">SNAPSHOT_DIR</span> <span class="o">/</span> <span class="s2">&quot;balance_01.json&quot;</span><span class="p">))</span>
 </pre></div>
 
            </div>

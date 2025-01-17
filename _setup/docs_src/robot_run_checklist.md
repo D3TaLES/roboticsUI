@@ -31,8 +31,13 @@ tags:
 #### Prepare materials:
   * Measure and dispense solids into experiment vials
   * Place stir bars in experiment vials.
-  * Bubble argon in solvent
-  * Fill rinsing vials
+  * Fill solvent jars, bubble argon in solvent, place jars in liquid dispensing stations with the tube cap screwed on. 
+    > **Note**: When bubbling argon in the solvent, open the cylinder valve, then adjust the delivery pressure valve so
+    > the delivery presure is ~10 psi. Then, slowly open the flow control valve and place the gas flow tube in the 
+    > solvent. Adjust the flow control valve so there is steady Argon bubbling in the solvent. Bubble for at least 
+    > 10 minutes. To finish, close the cylinder valve, the delivery pressure valve, then the flow valve. Ensure
+    > no more bubbles appear in the solvent. 
+  * Fill rinsing vials (Vials `S1`, `S2`, etc.)
  
 #### Prepare Stations
   * Flush liquid dispensing tubes with 8 mL solution
@@ -48,14 +53,15 @@ tags:
   * If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
 
 #### Prepare Software
-  * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` &#8594; `System` &#8594; Anodic Positive)
+  * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` &#8594; `System` &#8594; `Anodic Positive` and `Positive Right`)
   * Check your settings in settings.py!
   * Launch Fireworks WebGUI (through command line or Robotics App.)
     > **Note**: If managing workflows through the command line, be sure to activate the environment in any new terminal.   
 
   * Ensure there is *only one* READY firework: the `init_` firework for the workflow you'd like to run.
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally
-     > run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.
+     > run, pause all READY Fireworks (`lpad pause_fws -s READY`). Then, rerun the initialization Firework for the 
+     > the workflow you want to run (`lpad rerun_fws -i <init_fw_id>`). 
 
 #### Start Experiment
   * Start instrument jobs. Through the Robotics App, `Run Instruments` -> `Run Jobs Continuously`
@@ -80,5 +86,4 @@ tags:
    * Cap all experiment vials.
    * Place secure cap on liquid dispensing solvent jars.
    * Remove and clean electrodes.
-   * Rinse and wipe down temperature probe.
 ```

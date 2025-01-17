@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installations &mdash; D3TaLES Robotics 0.2.0 documentation</title>
+  <title>Installation and Setup &mdash; D3TaLES Robotics 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -46,13 +46,21 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#clone-this-github-repository">Clone this GitHub Repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-environment">Create Environment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#get-d3tales-fork-of-hardpotato">Get D3TaLES fork of hardpotato</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#software-installation">Software Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clone-this-github-repository">Clone this GitHub Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-environment">Create Environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-d3tales-fork-of-hardpotato">Get D3TaLES fork of hardpotato</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#activate-environment">Activate Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#activate-environment">Activate Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-setup">Hardware Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#robot-setup">Robot Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#station-setup">Station Setup</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
@@ -93,7 +101,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Installations</li>
+      <li class="breadcrumb-item active">Installation and Setup</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/installation.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,19 +111,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installations">
-<h1>Installations<a class="headerlink" href="#installations" title="Link to this heading"></a></h1>
+  <section id="installation-and-setup">
+<h1>Installation and Setup<a class="headerlink" href="#installation-and-setup" title="Link to this heading"></a></h1>
 <p>The Robotics API is for installation on the workstation controlling a robotic setup.
 There should be no need to install this unless setting up a new robotic setup.</p>
+<section id="software-installation">
+<h2>Software Installation<a class="headerlink" href="#software-installation" title="Link to this heading"></a></h2>
 <section id="clone-this-github-repository">
-<h2>Clone this GitHub Repository<a class="headerlink" href="#clone-this-github-repository" title="Link to this heading"></a></h2>
+<h3>Clone this GitHub Repository<a class="headerlink" href="#clone-this-github-repository" title="Link to this heading"></a></h3>
 <p>Clone this repository on the robotics workstation. Ensure you have SSH privileges.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:D3TaLES/roboticsUI.git
 </pre></div>
 </div>
 </section>
 <section id="create-environment">
-<h2>Create Environment<a class="headerlink" href="#create-environment" title="Link to this heading"></a></h2>
+<h3>Create Environment<a class="headerlink" href="#create-environment" title="Link to this heading"></a></h3>
 <p>The primary package this repo requires is the <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API</a>.
 It is recommended that you create an environment to host the required packages.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>d3tales_robotics
@@ -125,7 +135,7 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 </pre></div>
 </div>
 <section id="get-d3tales-fork-of-hardpotato">
-<h3>Get D3TaLES fork of hardpotato<a class="headerlink" href="#get-d3tales-fork-of-hardpotato" title="Link to this heading"></a></h3>
+<h4>Get D3TaLES fork of hardpotato<a class="headerlink" href="#get-d3tales-fork-of-hardpotato" title="Link to this heading"></a></h4>
 <p>The Robotics API uses a forked version of the <a class="reference external" href="https://github.com/D3TaLES/hardpotato">hardpotato</a> software for interacting with CHI potentiostats. This must be cloned and added to the PYTHONPATH (see next section). On the current Robotics Workstation, that would look like:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="s1">&#39;C:\Users\Lab\D3talesRobotics\Packages\&#39;</span>
 git<span class="w"> </span>clone<span class="w"> </span>git@github.com:D3TaLES/hardpotato.git
@@ -134,7 +144,7 @@ git<span class="w"> </span>clone<span class="w"> </span>git@github.com:D3TaLES/h
 </section>
 </section>
 <section id="activate-environment">
-<h2>Activate Environment<a class="headerlink" href="#activate-environment" title="Link to this heading"></a></h2>
+<h3>Activate Environment<a class="headerlink" href="#activate-environment" title="Link to this heading"></a></h3>
 <p>Note that you must set the <code class="docutils literal notranslate"><span class="pre">DB_INFO_FILE</span></code> environment variable as stipulated in the
 <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API Docs</a>.You will also
 need to set the fireworks variable <code class="docutils literal notranslate"><span class="pre">FW_CONFIG_FILE</span></code> and a <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. For robotics PC (WINDOWS),
@@ -146,6 +156,29 @@ set environment variables:</p>
 <span class="nb">cd</span><span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\L</span>ab<span class="se">\D</span>3talesRobotics<span class="se">\l</span>aunch_dir
 </pre></div>
 </div>
+</section>
+</section>
+<section id="hardware-setup">
+<h2>Hardware Setup<a class="headerlink" href="#hardware-setup" title="Link to this heading"></a></h2>
+<p>The hardware should be arranged on the table according to the desired layout.</p>
+<section id="robot-setup">
+<h3>Robot Setup<a class="headerlink" href="#robot-setup" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make a snapshot of where the robot arm should be at each station via the Kinova web interface
+(http://192.168.1.10/). This position should be the
+position of the robot arm <em>when the action happens</em> (i.e., when the liquid is dispensed or when the
+robot releases the vial at its home). The <code class="docutils literal notranslate"><span class="pre">raise_amount</span></code> for each station can be set in the Robotics API
+<span class="xref std std-ref">standard actions</span>. Previous
+snapshots can be found and uploaded at <code class="docutils literal notranslate"><span class="pre">robotics_api/snapshots/</span></code></p></li>
+<li><p>Set up Kinova protection zones (again, on the Kinova web interface,
+http://192.168.1.10/) for any place you do not want the robot traveling. Previous
+protection zones can be found and uploaded at <code class="docutils literal notranslate"><span class="pre">robotics_api/snapshots/protection_zones/</span></code></p></li>
+</ul>
+</section>
+<section id="station-setup">
+<h3>Station Setup<a class="headerlink" href="#station-setup" title="Link to this heading"></a></h3>
+<p><em>Documentation in progress</em></p>
+</section>
 </section>
 </section>
 

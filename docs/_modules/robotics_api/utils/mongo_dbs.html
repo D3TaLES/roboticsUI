@@ -43,7 +43,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../robot_run_checklist.html">Robot Run Checklist</a></li>
@@ -103,11 +103,12 @@
 <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
 <span class="kn">from</span> <span class="nn">monty.json</span> <span class="kn">import</span> <span class="n">jsanitize</span>
 <span class="kn">import</span> <span class="nn">python_jsonschema_objects</span> <span class="k">as</span> <span class="nn">pjs</span>
+<span class="kn">from</span> <span class="nn">robotics_api.settings</span> <span class="kn">import</span> <span class="n">DB_INFO_FILE</span>
 
 
 <div class="viewcode-block" id="db_info_generator">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.mongo_dbs.db_info_generator">[docs]</a>
-<span class="k">def</span> <span class="nf">db_info_generator</span><span class="p">(</span><span class="n">db_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">db_info_generator</span><span class="p">(</span><span class="n">db_file</span><span class="o">=</span><span class="n">DB_INFO_FILE</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates information about database connections.</span>
 
@@ -143,6 +144,7 @@
 
 
 <span class="n">DB_INFO</span> <span class="o">=</span> <span class="n">db_info_generator</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">DB_INFO</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Schema2Class">
@@ -561,12 +563,12 @@
 
 <div class="viewcode-block" id="RobotStatusDB.update_status">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.mongo_dbs.RobotStatusDB.update_status">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="nb">str</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span> <span class="n">status_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">,</span> <span class="n">status_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the status for a vial location or station vial.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            new_status (str): New status, such as the new vial location or new vial in the station.</span>
+<span class="sd">            new_status (str or float): New status, such as the new vial location or new vial in the station.</span>
 <span class="sd">            status_name (str, optional): Name of the status property. Defaults to &quot;location&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;current_&quot;</span> <span class="o">+</span> <span class="n">status_name</span><span class="p">)</span>

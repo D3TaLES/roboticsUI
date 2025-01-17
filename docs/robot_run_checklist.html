@@ -46,7 +46,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">QuickStart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminology_setup.html">Terminology and Structure</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Run Checklist</a><ul>
@@ -122,8 +122,15 @@ on a day when you run conductivity experiments.</p>
 <h4>Prepare materials:</h4>
 <p><input type="checkbox"> Measure and dispense solids into experiment vials<br>
 <input type="checkbox"> Place stir bars in experiment vials.<br>
-<input type="checkbox"> Bubble argon in solvent<br>
-<input type="checkbox"> Fill rinsing vials<br></p>
+<input type="checkbox"> Fill solvent jars, bubble argon in solvent, place jars in liquid dispensing stations with the tube cap screwed on.<br></p>
+<blockquote>
+<p><strong>Note</strong>: When bubbling argon in the solvent, open the cylinder valve, then adjust the delivery pressure valve so
+the delivery presure is ~10 psi. Then, slowly open the flow control valve and place the gas flow tube in the
+solvent. Adjust the flow control valve so there is steady Argon bubbling in the solvent. Bubble for at least
+10 minutes. To finish, close the cylinder valve, the delivery pressure valve, then the flow valve. Ensure
+no more bubbles appear in the solvent.
+<input type="checkbox"> Fill rinsing vials (Vials <code>S1</code>, <code>S2</code>, etc.)<br></p>
+</blockquote>
 <h4>Prepare Stations</h4>
 <p><input type="checkbox"> Flush liquid dispensing tubes with 8 mL solution<br>
 <input type="checkbox"> Place electrodes in elevator holders<br>
@@ -136,7 +143,7 @@ on a day when you run conductivity experiments.</p>
 <h4>Ensure any necessary calibration workflows have been completed.</h4>
 <p><input type="checkbox"> If you need to run a calibration, complete the next several items for the calibrations, then return to this step.<br></p>
 <h4>Prepare Software</h4>
-<p><input type="checkbox"> Check that the CHI software is set to produce IUPAC convention CV plots. (<code>Setup</code> --&gt; <code>System</code> --&gt; Anodic Positive)<br>
+<p><input type="checkbox"> Check that the CHI software is set to produce IUPAC convention CV plots. (<code>Setup</code> → <code>System</code> → <code>Anodic Positive</code> and <code>Positive Right</code>)<br>
 <input type="checkbox"> Check your settings in settings.py!<br>
 <input type="checkbox"> Launch Fireworks WebGUI (through command line or Robotics App.)<br></p>
 <blockquote>
@@ -145,7 +152,8 @@ on a day when you run conductivity experiments.</p>
 <p><input type="checkbox"> Ensure there is <em>only one</em> READY firework: the <code>init_</code> firework for the workflow you'd like to run.<br></p>
 <blockquote>
 <p><strong>Important!</strong> <em>Only one</em> workflow may be initiated at a time. To ensure no other workflows accidentally
-run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
+run, pause all READY Fireworks (<code>lpad pause_fws -s READY</code>). Then, rerun the initialization Firework for the
+the workflow you want to run (<code>lpad rerun_fws -i &lt;init_fw_id&gt;</code>).</p>
 </blockquote>
 <h4>Start Experiment</h4>
 <p><input type="checkbox"> Start instrument jobs. Through the Robotics App, <code>Run Instruments</code> -&gt; <code>Run Jobs Continuously</code><br>
@@ -171,8 +179,7 @@ run, make sure all other workflows are PAUSED, DEFUSED, or COMPLETED.</p>
 <h4>Clean up materials.</h4>
 <p><input type="checkbox"> Cap all experiment vials.<br>
 <input type="checkbox"> Place secure cap on liquid dispensing solvent jars.<br>
-<input type="checkbox"> Remove and clean electrodes.<br>
-<input type="checkbox"> Rinse and wipe down temperature probe.<br></p>
+<input type="checkbox"> Remove and clean electrodes.<br></p>
 </div>
 </section>
 </section>

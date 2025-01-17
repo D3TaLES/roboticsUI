@@ -207,16 +207,21 @@ class Extract(RoboticsBase):
         bal_station = BalanceStation(StationStatus().get_first_available("balance"))
         pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
 
-        # Extract solution and measure extracted mass
+        # Extract solution
         initial_mass = bal_station.existing_weight(self.exp_vial)
-        pipette_station.pipette(volume=volume, vial=self.exp_vial)
+        while volume > 0:
+            pipette_volume = MAX_PIPETTE_VOL if volume > MAX_PIPETTE_VOL else volume
+            pipette_station.pipette(volume=pipette_volume, vial=self.exp_vial)  # Extract pipette volume
+            pipette_station.leave_station(vial=self.exp_vial)
+            pipette_station.pipette(volume=0)  # Discard the extracted volume
+            volume -= pipette_volume
+
+        # Find extracted mass
         final_mass = bal_station.weigh(self.exp_vial)
         extracted_mass = initial_mass - final_mass
 
         # Update vial contents
         self.exp_vial.extract_soln(extracted_mass=extracted_mass)
-        # Discard extracted solution
-        pipette_station.pipette(volume=0)
 
         return FWAction(update_spec=self.updated_specs())
 

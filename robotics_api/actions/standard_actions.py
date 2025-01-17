@@ -465,7 +465,11 @@ class PipetteStation(StationStatus):
             self.place_vial(vial, raise_error=raise_error)
 
         if PIPETTE:
-            arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+            vol_mL = unit_conversion(volume, default_unit="mL")
+            if vol_mL > MAX_PIPETTE_VOL:
+                raise ValueError(f"Cannot pipette {vol_mL} mL because it is greater than the max "
+                                 f"pipette volume {MAX_PIPETTE_VOL} mL.")
+            arduino_vol = vol_mL * 1000  # send volume in micro liter
             send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
@@ -480,6 +484,21 @@ class PipetteStation(StationStatus):
 
         vial.update_status(None, status_name="weight")
         vial.leave_station(self, raise_error=raise_error)
+
+    def leave_station(self, vial: VialMove, raise_error=True):
+        """
+        Leaves pipette station so extracted solution can be discarded
+
+        Args:
+            vial (VialMove, optional): The vial to pipette into (default is None).
+            raise_error (bool): Whether to raise an error if the operation fails (default is True).
+
+        Raises:
+            Exception: If the operation fails and raise_error is True.
+        """
+        vial.leave_station(self, raise_error=raise_error)
+        joint_deltas = dict(j1=-3)
+        perturb_angular(reverse=False, **joint_deltas)
 
 
 class BalanceStation(StationStatus):

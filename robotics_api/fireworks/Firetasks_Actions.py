@@ -1,5 +1,6 @@
 # Copyright 2024, University of Kentucky
 import abc
+from datetime import datetime
 from six import add_metaclass
 from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
@@ -366,11 +367,13 @@ class BenchmarkCV(RoboticsBase):
         potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.collection_data.append({"collect_tag": "benchmark_cv",
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
         self.metadata.update({"resistance": resistance})
@@ -403,12 +406,14 @@ class RunCVBase(RoboticsBase):
         # Run CV experiment
         potent = CVPotentiostatStation(self.metadata.get(f"{self.method}_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_cv(data_path=data_path, voltage_sequence=voltage_sequence, scan_rate=scan_rate,
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
         self.metadata.update({f"{self.method}_idx": cv_idx + 1})
         self.collection_data.append({"collect_tag": collect_tag,
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})
         return FWAction(
@@ -453,6 +458,7 @@ class RunCA(RoboticsBase):
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
+        collection_time = str(datetime.now())
         self.success &= potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
@@ -462,6 +468,7 @@ class RunCA(RoboticsBase):
 
         self.metadata.update({"ca_idx": ca_idx + 1, "temperature": temperature})
         self.collection_data.append({"collect_tag": collect_tag,
+                                     "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "temperature": temperature,
                                      "data_location": data_path})

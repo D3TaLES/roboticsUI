@@ -18,7 +18,6 @@ WEIGH = True
 PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
-CALIB_DATE = ''  # '2024_06_25'  Date used in testing for calibration data (should be blank for a real run)
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -67,7 +66,7 @@ POTENTIOSTAT_SETTINGS = {
         scan_rate=0.01,  # V/s
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
-        sensitivity=1e-6,  # A/V, current sensitivity
+        sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
 
         # IR Compensation settings
@@ -96,7 +95,7 @@ POTENTIOSTAT_SETTINGS = {
         scan_rate=0.1,  # V/s
         voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
-        sensitivity=1e-6,  # A/V, current sensitivity
+        sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
 
         # IR Compensation settings

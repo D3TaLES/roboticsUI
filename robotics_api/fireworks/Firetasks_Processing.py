@@ -255,7 +255,8 @@ class ProcessBase(RoboticsBase):
         if not self.check_file(file_loc):
             return None
 
-        self.metadata.update({"cell_constant": get_cell_constant(raise_error=cell_constant_error)})
+        self.metadata.update({"cell_constant": get_cell_constant(collection_time=raw_data["collection_time"],
+                                                                 raise_error=cell_constant_error)})
         metadata.update(self.instrument._settings_dict)
         metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),

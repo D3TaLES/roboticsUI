@@ -99,7 +99,7 @@ POTENTIOSTAT_SETTINGS = {
         quiet_time=2,  # s
 
         # IR Compensation settings
-        ir_comp=False,  # Perform IR Compensation
+        ir_comp=True,  # Perform IR Compensation
         rcomp_level=0.85,  # percentage as decimal of solution resistance to use
         low_freq=10000,
         high_freq=100000,

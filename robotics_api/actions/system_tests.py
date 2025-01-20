@@ -72,8 +72,11 @@ if __name__ == "__main__":
     # ca_potent.place_vial(test_vial)
     # cv_potent.move_elevator(endpoint="up")
     # cv_potent.move_elevator(endpoint="down")
-    # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test01.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1)
-    cvUM_potent.run_cv(TEST_DATA_DIR / "cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
+    print(resistance)
+    cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
+                     resistance=resistance)
+    # cvUM_potent.run_cv(TEST_DATA_DIR / "cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
     # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
     # SOLVENT TESTING

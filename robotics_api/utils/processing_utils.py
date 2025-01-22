@@ -64,10 +64,9 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
                               "but it does not have a density.")
                 return None
             r_mass = unit_conversion(reagent["amount"], default_unit="g", density=r_density) * ureg.gram
-            print(r_mass, r_mw)
             total_mols += r_mass/r_mw
         x = solute_mols / total_mols
-        print(f"MOL FRACTION: {x}")
+        print(f"MOL FRACTION: {x.magnitude:.5f}")
         return x.magnitude
     else:
         if soln_density:
@@ -78,13 +77,13 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
             soln_volume = unit_conversion(solv_amt, default_unit="L", density=solv_density) * ureg.liter
 
         concentration = solute_mass / solute_mw / soln_volume
-        print(f"CONCENTRATION: {concentration}")
+        print(f"CONCENTRATION: {concentration:.5f}")
         return "{}{}".format(sig_figs(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 
 def get_kcl_conductivity(temp):
     """
-    Returns the conductivity of a KCl solution based on the temperature.
+    Returns the conductivity of a 0.01M KCl solution based on the temperature.
 
     Args:
         temp (float): The temperature at which the conductivity is measured. Expected in Celsius or other convertible units.
@@ -166,10 +165,11 @@ def get_cell_constant(collection_time: str, raise_error=True):
                          f"workflow today before preceding with CA experiments.")
 
 
-def print_prop(prop_dict, num_sig_figs=5):
+def print_prop(prop_dict: dict, num_sig_figs: int = 5):
     """Print property value and unit from dictionary"""
     if prop_dict:
-        return "{} {}".format(sig_figs(prop_dict.get("value", prop_dict), num_sig_figs), prop_dict.get("unit", ""))
+        return "{} {}".format(sig_figs(float(prop_dict.get("value", prop_dict)), num_sig_figs),
+                              prop_dict.get("unit", ""))
     return ""
 
 

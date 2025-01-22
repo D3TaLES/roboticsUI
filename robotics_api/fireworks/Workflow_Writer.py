@@ -199,6 +199,7 @@ class EF2Experiment:
         collect_parent = None
         for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
+
             # Turn tasks into Firetasks and flatten resulting list
             tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             if "process" in fw_type:
@@ -244,7 +245,7 @@ class EF2Experiment:
         firetasks = self.task_dictionary.get(task.name)
         if not firetasks:
             raise KeyError(f"Firetask {task.name} not found in task_dictionary.")
-        parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
+        parameters_dict = {"firetask_id": str(uuid.uuid4()), "start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
             if param.value:
                 parameters_dict[param.description] = "{}{}".format(param.value, param.unit)

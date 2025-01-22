@@ -53,6 +53,7 @@ class RoboticsBase(FiretaskBase):
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
         self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
+        self.ftask_id = self.get("firetask_id")
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
 
@@ -108,12 +109,17 @@ class DispenseLiquid(RoboticsBase):
             return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         if solvent.type != "solvent":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
-        if solvent.location != "experiment_vial":
-            solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
-            if WEIGH_SOLVENTS:
-                solv_station.dispense_mass(self.exp_vial, volume)
-            else:
-                solv_station.dispense_volume(self.exp_vial, volume)
+
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
+            if solvent.location != "experiment_vial":
+                solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
+                if WEIGH_SOLVENTS:
+                    solv_station.dispense_mass(self.exp_vial, volume, addition_id=self.ftask_id)
+                else:
+                    solv_station.dispense_volume(self.exp_vial, volume, addition_id=self.ftask_id)
+        else:
+            warnings.warn(f"ADDITION NOT MADE! Addition of {volume} of {solvent.name} to vial {self} not added to "
+                          f"the vial because addition id {self.ftask_id} already exists in content history ")
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -125,12 +131,15 @@ class DispenseSolid(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         mass = self.get("mass")
-
         reagent = ReagentStatus(_id=self.get("start_uuid"))
-        if reagent.location != "experiment_vial":
-            pass  # TODO Dispense solid
-        self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
 
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
+            if reagent.location != "experiment_vial":
+                pass  # TODO Dispense solid
+            self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT, addition_id=self.ftask_id)
+        else:
+            warnings.warn(f"ADDITION NOT MADE! Addition of {mass} of {reagent.name} to vial {self} not added to "
+                          f"the vial because addition id {self.ftask_id} already exists in content history ")
         return FWAction(update_spec=self.updated_specs())
 
 

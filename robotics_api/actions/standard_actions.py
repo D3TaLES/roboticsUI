@@ -345,7 +345,7 @@ class LiquidStation(StationStatus):
         vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
-    def dispense_volume(self, vial: VialMove, volume, raise_error=True):
+    def dispense_volume(self, vial: VialMove, volume, raise_error=True, addition_id=None):
         """
         Dispenses a specified volume of liquid into a vial and updates the vial's reagent information.
 
@@ -353,6 +353,7 @@ class LiquidStation(StationStatus):
             vial (VialMove): The vial to be filled with liquid.
             volume (float): The volume of liquid to dispense.
             raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Returns:
             float: The actual volume of liquid dispensed.
@@ -361,10 +362,10 @@ class LiquidStation(StationStatus):
             Exception: If the dispensing fails and raise_error is True.
         """
         actual_volume = self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
-        vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT)
+        vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT, addition_id=addition_id)
         return actual_volume
 
-    def dispense_mass(self, vial: VialMove, volume, raise_error=True):
+    def dispense_mass(self, vial: VialMove, volume, raise_error=True, addition_id=None):
         """
         Dispenses a specified volume of liquid into a vial and updates the vial's content with solvent mass using pre- and post-dispense weighing.
 
@@ -372,6 +373,7 @@ class LiquidStation(StationStatus):
             vial (VialMove): The vial to be filled with liquid.
             volume (float): The volume of liquid to dispense.
             raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Returns:
             str: The mass of the liquid dispensed, in the default mass unit.
@@ -392,7 +394,7 @@ class LiquidStation(StationStatus):
         final_mass = post_mass - pre_mass
 
         # Update vial contents
-        vial.add_reagent(self.solvent_id, amount=final_mass, default_unit=MASS_UNIT)
+        vial.add_reagent(self.solvent_id, amount=final_mass, default_unit=MASS_UNIT, addition_id=addition_id)
         vial.update_weight(post_mass)
 
         return f"{final_mass}{MASS_UNIT}"
@@ -1097,10 +1099,20 @@ class PotentiostatStation(StationStatus):
         scan_rate = ureg(scan_rate).to(scan_unit).magnitude
         return [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
 
+    @staticmethod
+    def check_data_path(datapath="", raise_error=True):
+        if os.path.isfile(datapath):
+            return True
+        else:
+            if raise_error:
+                raise FileNotFoundError(f"The datafile {datapath} was not found.")
+            return False
+
 
 class CVPotentiostatStation(PotentiostatStation):
     """
-    A class representing a cyclic voltammetry (CV) potentiostat station, which runs CV experiments and iR compensation tests.
+    A class representing a cyclic voltammetry (CV) potentiostat station, which runs CV experiments and
+    iR compensation tests.
 
     Inherits from PotentiostatStation.
 
@@ -1186,14 +1198,18 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
+            soln_resistance = resistance * self.settings("rcomp_level") if self.settings("ir_comp") else None
             cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
                                     nSweeps=nSweeps, dE=sample_interval, sens=sens,
                                     fileName=f_name, header="CV " + f_name,
-                                    resistance=resistance * self.settings("rcomp_level"))
+                                    resistance=soln_resistance)
             cv.run()
             time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
+
+        self.check_data_path(data_path)
+
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=None, high_freq=None,
@@ -1246,6 +1262,7 @@ class CVPotentiostatStation(PotentiostatStation):
                                       sens=sens or self.settings("sensitivity"), fileName=f_name,
                                       header="iRComp " + f_name)
             eis.run()
+            self.check_data_path(data_path)
 
             # Load recently acquired data
             data = ProcessChiESI(os.path.join(out_folder, f_name + ".txt"))
@@ -1337,4 +1354,7 @@ class CAPotentiostatStation(PotentiostatStation):
             time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
+
+        self.check_data_path(data_path)
+
         return True

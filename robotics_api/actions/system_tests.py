@@ -24,6 +24,7 @@ def reset_stations(end_home=False):
             PipetteStation(station).pipette(volume=0)
     if end_home:
         snapshot_move(target_position=10)
+        snapshot_move(snapshot_file=SNAPSHOT_HOME)
         snapshot_move(snapshot_file=SNAPSHOT_END_HOME, target_position=10)
 
 
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_02")
+    test_vial = VialMove(_id="B_01")
     cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
     cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
     ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
@@ -63,8 +64,8 @@ if __name__ == "__main__":
 
     # VIAL TESTING
     # vial_col_test("A")
-    # test_vial.place_home()
     # test_vial.retrieve()
+    # test_vial.place_home()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 
@@ -72,17 +73,16 @@ if __name__ == "__main__":
     # ca_potent.place_vial(test_vial)
     # cv_potent.move_elevator(endpoint="up")
     # cv_potent.move_elevator(endpoint="down")
-    resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
-    print(resistance)
-    cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
-                     resistance=resistance)
-    # cvUM_potent.run_cv(TEST_DATA_DIR / "cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
+    # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
+    #                  resistance=resistance)
+    # cvUM_potent.run_cv(TEST_DATA_DIR/"cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
     # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(0, vial_id="B_04", solv_id="solvent_02", go_home=True)
+    # flush_solvent(8, vial_id="B_04", solv_id="solvent_02", go_home=True)
     # LiquidStation("solvent_02").dispense_only(2)
 
     # OTHER STATION TESTING

@@ -38,6 +38,8 @@ class InitializeRobot(FiretaskBase):
                 BaseClient(router)
                 BaseCyclicClient(router)
 
+            snapshot_move(SNAPSHOT_HOME)
+
         reset_stations()
 
         return FWAction(update_spec={"success": True})
@@ -111,6 +113,8 @@ class ProcessBase(RoboticsBase, ABC):
         self.active_method = self.metadata.get("active_method", "")
         if self.active_method == "cv":
             self.instrument = CVPotentiostatStation(self.metadata.get(f"{self.active_method}_potentiostat"))
+        elif self.active_method == "cvUM":
+            self.instrument = CVPotentiostatStation(self.metadata.get(f"{self.active_method}_potentiostat"))
         elif self.active_method == "ca":
             self.instrument = CAPotentiostatStation(self.metadata.get(f"{self.active_method}_potentiostat"))
         else:
@@ -146,7 +150,7 @@ class ProcessBase(RoboticsBase, ABC):
             "upload_time": datetime.now().isoformat(),
             "file_type": file_type,
             "data_category": "experimentation",
-            "data_type": "cv",
+            "data_type": self.active_method,
         }
 
     def conc_info(self, vial_contents: list):
@@ -266,16 +270,15 @@ class ProcessBase(RoboticsBase, ABC):
         for d in solv_data:
             p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False,
                                            processing_class=ProcessChiCV)
-            if not self.instrument.micro_electrode:
-                image_path = ".".join(d.get("data_location").split(".")[:-1]) + "_plot.png"
-                CVPlotter(connector={"scan_data": "data.scan_data",
-                                     "we_surface_area": "data.conditions.working_electrode_surface_area"
-                                     }).live_plot(p_data, fig_path=image_path,
-                                                  title=f"CV Plot for Solvent",
-                                                  xlabel=MULTI_PLOT_XLABEL,
-                                                  ylabel=MULTI_PLOT_YLABEL,
-                                                  current_density=PLOT_CURRENT_DENSITY,
-                                                  a_to_ma=CONVERT_A_TO_MA)
+            image_path = ".".join(d.get("data_location").split(".")[:-1]) + "_plot.png"
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
+                                 }).live_plot(p_data, fig_path=image_path,
+                                              title=f"CV Plot for Solvent",
+                                              xlabel=MULTI_PLOT_XLABEL,
+                                              ylabel=MULTI_PLOT_YLABEL,
+                                              current_density=PLOT_CURRENT_DENSITY,
+                                              a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
                 dirty = dirty_calc.calculate(p_data, max_current_range=self.instrument.settings("dirty_electrode_current"))
@@ -425,6 +428,25 @@ class DataProcessor(ProcessBase):
                 with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
                     fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
 
+        # Process CV data for cycle
+        if self.active_method == "cvUM":
+            cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cvUM", [])
+            processed_data = [self.process_cv_data(d) for d in cv_data]
+            processed_data = [p for p in processed_data if p is not None]
+
+            if processed_data:
+                # CV Meta Properties
+                print("Calculating metadata...")
+                if self.mol_id:
+                    metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
+                                                  micro_electrodes=self.instrument.micro_electrode).meta_dict)
+
+                # Record all data
+                with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
+                    fn.write(json.dumps(processed_data))
+                with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
+                    fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
+
         # Process CA data for cycle
         elif self.active_method == "ca":
             ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
@@ -549,6 +571,6 @@ class EndWorkflow(FiretaskBase):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:
             VialMove(_id=robot_content).place_home()
-        # success = snapshot_move(SNAPSHOT_HOME)
-        success = snapshot_move(SNAPSHOT_END_HOME)
+        success = snapshot_move(SNAPSHOT_HOME)
+        success += snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

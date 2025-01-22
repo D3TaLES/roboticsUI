@@ -11,13 +11,13 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
-STIR = True
-WEIGH = True
-PIPETTE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_POTENT = False
+DISPENSE = False
+STIR = False
+WEIGH = False
+PIPETTE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
@@ -48,7 +48,7 @@ KINOVA_01_IP = "192.168.1.10"
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 40
 PERTURB_AMOUNT = 0.07
-ZONE_DIVIDERS = [30, 180, 330]
+ZONE_DIVIDERS = [30, 180, 328]
 
 # ---------  INSTRUMENT SETTINGS -------------
 ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrode, cm
@@ -62,9 +62,9 @@ POTENTIOSTAT_SETTINGS = {
         working_electrode_radius=0.0011 / 2,  # radius in cm
         dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
-        # CV settings
+        # Default CV settings
         scan_rate=0.01,  # V/s
-        voltage_sequence="0, 0.7, 0V",
+        voltage_sequence="0.5, -0.2, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
@@ -88,12 +88,12 @@ POTENTIOSTAT_SETTINGS = {
         address="COM8",
         exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
-        working_electrode_radius=0.2 / 2,  # radius in cm
-        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode TODO
+        working_electrode_radius=0.3 / 2,  # radius in cm
+        dirty_electrode_current=1e-5,  # max current allowed (A) for a clean electrode
 
-        # CV settings
+        # Default CV settings
         scan_rate=0.1,  # V/s
-        voltage_sequence="0, 0.7, 0V",
+        voltage_sequence="0.5, -0.2, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
@@ -116,6 +116,7 @@ POTENTIOSTAT_SETTINGS = {
         address="COM7",
         exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
+        # Default CA settings
         quiet_time=60,  # s
         sample_interval=1e-6,  # seconds
         sensitivity=1e-4,  # A/V, current sensitivity
@@ -150,7 +151,6 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
 }
 FORMAL_POTENTIALS = {  # Formal potentials
     "CC1(C)CCCC(C)(C)N1[O]": "0.367 V",  # TEMPO, V vs. Ag/Ag+  TODO Figure out what value to actually use
-    "[Cl-].[K+]": "0 V",  # KCl, NOT REAL, just a stand in!
     "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]": "0 V",  # Fc, NOT REAL, just a stand in!
 }
 SOLVENT_DENSITIES = {  # Formal potentials

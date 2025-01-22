@@ -220,20 +220,19 @@ class ProcessBase(RoboticsBase, ABC):
         # Plot
         plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
                                  f"{self.metadata['electrolyte_concentration']} SE"
-        if not self.instrument.micro_electrode:
-            image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
-            CVPlotter(connector={"scan_data": "data.scan_data",
-                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
-                                 }).live_plot(p_data, fig_path=image_path,
-                                              title=f"{title_tag} CV Plot for {plot_name}",
-                                              xlabel=MULTI_PLOT_XLABEL,
-                                              ylabel=MULTI_PLOT_YLABEL,
-                                              current_density=PLOT_CURRENT_DENSITY,
-                                              a_to_ma=CONVERT_A_TO_MA)
+        image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
+        CVPlotter(connector={"scan_data": "data.scan_data",
+                             "we_surface_area": "data.conditions.working_electrode_surface_area"
+                             }).live_plot(p_data, fig_path=image_path,
+                                          title=f"{title_tag} CV Plot for {plot_name}",
+                                          xlabel=CV_PLOT_XLABEL,
+                                          ylabel=CV_PLOT_YLABEL,
+                                          current_density=PLOT_CURRENT_DENSITY,
+                                          a_to_ma=CONVERT_A_TO_MA)
 
         return p_data
 
-    def process_ca_data(self, raw_data, insert=True, cell_constant_error=True):
+    def process_ca_data(self, raw_data, insert=True, cell_constant_error=True, plot_name=None):
         """
         Processes CA data files.
 
@@ -262,6 +261,16 @@ class ProcessBase(RoboticsBase, ABC):
             MongoDatabase(database="robotics", collection_name="experimentation",
                           instance=p_data, validate_schema=False).insert(p_data["_id"])
         self.processed_locs.append(file_loc)
+
+        # Plot
+        plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
+                                 f"{self.metadata['electrolyte_concentration']} SE"
+        image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
+        CAPlotter(connector={"t_s": "data.time",
+                             "i_s": "data.current",
+                             }).live_plot(p_data, fig_path=image_path,
+                                          title=f"CA Plot for {plot_name}",
+                                          a_to_ma=CONVERT_A_TO_MA)
         return p_data
 
     def process_solv_data(self):
@@ -275,8 +284,8 @@ class ProcessBase(RoboticsBase, ABC):
                                  "we_surface_area": "data.conditions.working_electrode_surface_area"
                                  }).live_plot(p_data, fig_path=image_path,
                                               title=f"CV Plot for Solvent",
-                                              xlabel=MULTI_PLOT_XLABEL,
-                                              ylabel=MULTI_PLOT_YLABEL,
+                                              xlabel=CV_PLOT_XLABEL,
+                                              ylabel=CV_PLOT_YLABEL,
                                               current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
@@ -411,8 +420,8 @@ class DataProcessor(ProcessBase):
                                      "we_surface_area": "data.conditions.working_electrode_surface_area"}
                           ).live_plot_multi(processed_data, fig_path=multi_path,
                                             title=f"Multi CV Plot for {self.mol_id}",
-                                            xlabel=MULTI_PLOT_XLABEL,
-                                            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND,
+                                            xlabel=CV_PLOT_XLABEL,
+                                            ylabel=CV_PLOT_YLABEL, legend_title=CV_PLOT_LEGEND,
                                             current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)
 
                 # CV Meta Properties

@@ -5,7 +5,7 @@ from datetime import datetime
 from robotics_api.settings import *
 from robotics_api.utils.base_utils import unit_conversion, sig_figs
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
-from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA
+from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA, CAPlotter
 
 
 def collection_dict(coll_data: list):
@@ -331,8 +331,8 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
         image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
         CVPlotter(connector={"scan_data": "data.middle_sweep"}).live_plot(data, fig_path=image_path,
                                                                           title=f"CV Plot for Test",
-                                                                          xlabel=MULTI_PLOT_XLABEL,
-                                                                          ylabel=MULTI_PLOT_YLABEL)
+                                                                          xlabel=CV_PLOT_XLABEL,
+                                                                          ylabel=CV_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
     # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"
     #                      }).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True,

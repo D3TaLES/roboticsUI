@@ -438,7 +438,7 @@ Copyright 2024, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.add_reagent">
-<span class="sig-name descname"><span class="pre">add_reagent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.add_reagent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.add_reagent" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_reagent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addition_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.add_reagent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.add_reagent" title="Link to this definition"></a></dt>
 <dd><p>Add a reagent to the vial content.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -446,6 +446,7 @@ Copyright 2024, University of Kentucky</p>
 <li><p><strong>reagent</strong> (<em>str</em><em> or </em><em>obj</em>) – The reagent ID or instance.</p></li>
 <li><p><strong>amount</strong> (<em>str</em><em> or </em><em>float</em><em> or </em><em>dict</em>) – The amount of the reagent.</p></li>
 <li><p><strong>default_unit</strong> (<em>str</em>) – The default unit for the reagent amount.</p></li>
+<li><p><strong>addition_id</strong> (<em>str</em>) – A unique identifier for the reagent addition (Default is None)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -455,9 +456,36 @@ Copyright 2024, University of Kentucky</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.check_addition_id">
+<span class="sig-name descname"><span class="pre">check_addition_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addition_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.check_addition_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.check_addition_id" title="Link to this definition"></a></dt>
+<dd><p>Check if this addition has already been made
+:param addition_id: A unique identifier for the reagent addition (Default is None)
+:type addition_id: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>boolean</strong> – If the reagent does not exist in the reagent database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.clear_vial_content">
 <span class="sig-name descname"><span class="pre">clear_vial_content</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.clear_vial_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.clear_vial_content" title="Link to this definition"></a></dt>
 <dd><p>Clear the vial content.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.content_history">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.content_history" title="Link to this definition"></a></dt>
+<dd><p>Get the vial content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The vial content.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -604,7 +632,7 @@ Copyright 2024, University of Kentucky</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.reset_reagent_db">
-<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_reagent_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_densities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC#N':</span> <span class="pre">'0.786</span> <span class="pre">g/mL',</span> <span class="pre">'O':</span> <span class="pre">'0.997</span> <span class="pre">g/mL'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentials_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC1(C)CCCC(C)(C)N1[O]':</span> <span class="pre">'0.367</span> <span class="pre">V',</span> <span class="pre">'[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]':</span> <span class="pre">'0</span> <span class="pre">V',</span> <span class="pre">'[Cl-].[K+]':</span> <span class="pre">'0</span> <span class="pre">V'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_reagent_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_reagent_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">robotics_api.actions.db_manipulations.</span></span><span class="sig-name descname"><span class="pre">reset_reagent_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reagents_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_wflow_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_densities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC#N':</span> <span class="pre">'0.786</span> <span class="pre">g/mL',</span> <span class="pre">'O':</span> <span class="pre">'0.997</span> <span class="pre">g/mL'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentials_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'CC1(C)CCCC(C)(C)N1[O]':</span> <span class="pre">'0.367</span> <span class="pre">V',</span> <span class="pre">'[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]':</span> <span class="pre">'0</span> <span class="pre">V'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#reset_reagent_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.reset_reagent_db" title="Link to this definition"></a></dt>
 <dd><p>Reset the reagent database with the provided list of reagents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

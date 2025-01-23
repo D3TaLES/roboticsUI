@@ -95,6 +95,8 @@
   <h1>Source code for robotics_api.actions.db_manipulations</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.rdMolDescriptors</span> <span class="kn">import</span> <span class="n">CalcExactMolWt</span>
 <span class="kn">from</span> <span class="nn">robotics_api.settings</span> <span class="kn">import</span> <span class="o">*</span>
@@ -145,6 +147,16 @@
 <span class="sd">            list: The vial content.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;vial_content&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">content_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the vial content.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The vial content.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;content_history&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -232,7 +244,7 @@
 
 <div class="viewcode-block" id="VialStatus.add_reagent">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.add_reagent">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_reagent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reagent</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_reagent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reagent</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">default_unit</span><span class="p">,</span> <span class="n">addition_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a reagent to the vial content.</span>
 
@@ -240,13 +252,17 @@
 <span class="sd">            reagent (str or obj): The reagent ID or instance.</span>
 <span class="sd">            amount (str or float or dict): The amount of the reagent.</span>
 <span class="sd">            default_unit (str): The default unit for the reagent amount.</span>
+<span class="sd">            addition_id (str): A unique identifier for the reagent addition (Default is None)</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NameError: If the reagent does not exist in the reagent database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if reagent exists</span>
         <span class="n">reagent</span> <span class="o">=</span> <span class="n">ReagentStatus</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">reagent</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reagent</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">reagent</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">reagent</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;No reagent </span><span class="si">{}</span><span class="s2"> exists in the reagent database.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reagent</span><span class="p">))</span>
+
+        <span class="c1"># Get new vial contents</span>
         <span class="n">existing_reagent</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reagent_uuid&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
         <span class="n">other_reagents</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vial_content</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reagent_uuid&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">existing_reagent</span><span class="p">:</span>
@@ -259,10 +275,39 @@
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_amount</span><span class="si">}{</span><span class="n">default_unit</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">}]</span>
+
+        <span class="c1"># Update database</span>
+        <span class="n">current_addition</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;addition_id&quot;</span><span class="p">:</span> <span class="n">addition_id</span><span class="p">,</span>
+            <span class="s2">&quot;reagent_uuid&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="n">amount</span>
+        <span class="p">}</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;content_history&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_addition</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="n">other_reagents</span> <span class="o">+</span> <span class="n">new_vial_content</span><span class="p">,</span>
+            <span class="s2">&quot;content_history&quot;</span><span class="p">:</span> <span class="n">history</span>
         <span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_status</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VialStatus.check_addition_id">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.check_addition_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_addition_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addition_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this addition has already been made</span>
+<span class="sd">        Args:</span>
+<span class="sd">            addition_id (str): A unique identifier for the reagent addition (Default is None)</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            boolean: If the reagent does not exist in the reagent database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;content_history&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">existing_addition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;addition_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">history</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">addition_id</span> <span class="ow">in</span> <span class="n">existing_addition_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="VialStatus.extract_soln">

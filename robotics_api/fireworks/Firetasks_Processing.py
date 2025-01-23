@@ -86,6 +86,7 @@ class ProcessBase(RoboticsBase, ABC):
     data_path: str
     processed_locs: list
     instrument: PotentiostatStation
+    plot_name: str
 
     def setup_task(self, fw_spec, data_len_error=True, instrument_error=True):
         """Set up task parameters from the Fireworks spec.
@@ -128,9 +129,12 @@ class ProcessBase(RoboticsBase, ABC):
         if not self.collection_data and data_len_error:
             warnings.warn("WARNING! No data locations were found, so no file processing occurred.")
             return FWAction(update_spec=self.updated_specs())
-
         if self.collection_data:
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
+
+        ureg = pint.UnitRegistry()
+        self.plot_name = f"{self.full_name}, {ureg(self.metadata.get('redox_mol_concentration', 0)).magnitude:.4f} " \
+                         f"redox, {ureg(self.metadata.get('electrolyte_concentration', 0)).magnitude:.4f} SE"
 
     def submission_info(self, file_type):
         """
@@ -185,14 +189,13 @@ class ProcessBase(RoboticsBase, ABC):
             return False
         return True
 
-    def process_cv_data(self, raw_data, insert=True, plot_name="", title_tag=""):
+    def process_cv_data(self, raw_data, insert=True, title_tag=""):
         """
         Processes CV data files.
 
         Args:
             raw_data (dict): Raw data from measurement Firetask
             insert (bool): Whether to insert the processed data into the database (default: True).
-            plot_name (str): The name of the plot (default: "").
             title_tag (str): Additional tag to add to the plot title (default: "").
 
         Returns:
@@ -218,13 +221,11 @@ class ProcessBase(RoboticsBase, ABC):
         self.processed_locs.append(file_loc)
 
         # Plot
-        plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
-                                 f"{self.metadata['electrolyte_concentration']} SE"
         image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
         CVPlotter(connector={"scan_data": "data.scan_data",
                              "we_surface_area": "data.conditions.working_electrode_surface_area"
                              }).live_plot(p_data, fig_path=image_path,
-                                          title=f"{title_tag} CV Plot for {plot_name}",
+                                          title=f"{title_tag} CV Plot for {self.plot_name}",
                                           xlabel=CV_PLOT_XLABEL,
                                           ylabel=CV_PLOT_YLABEL,
                                           current_density=PLOT_CURRENT_DENSITY,
@@ -232,7 +233,7 @@ class ProcessBase(RoboticsBase, ABC):
 
         return p_data
 
-    def process_ca_data(self, raw_data, insert=True, cell_constant_error=True, plot_name=None):
+    def process_ca_data(self, raw_data, insert=True, cell_constant_error=True):
         """
         Processes CA data files.
 
@@ -263,13 +264,11 @@ class ProcessBase(RoboticsBase, ABC):
         self.processed_locs.append(file_loc)
 
         # Plot
-        plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
-                                 f"{self.metadata['electrolyte_concentration']} SE"
         image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
         CAPlotter(connector={"t_s": "data.time",
                              "i_s": "data.current",
                              }).live_plot(p_data, fig_path=image_path,
-                                          title=f"CA Plot for {plot_name}",
+                                          title=f"CA Plot for {self.plot_name}",
                                           a_to_ma=CONVERT_A_TO_MA)
         return p_data
 
@@ -314,7 +313,7 @@ class ProcessCVBenchmarking(ProcessBase):
 
         try:
             # Process benchmarking data
-            p_data = self.process_cv_data(cv_data[0], insert=False, plot_name="Benchmark")
+            p_data = self.process_cv_data(cv_data[0], insert=False, title_tag="Benchmark")
 
             # Calculate old voltage sequence
             if self.instrument.micro_electrode:

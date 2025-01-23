@@ -618,20 +618,29 @@ class BalanceStation(StationStatus):
             vial.retrieve()
         self.tare()
         self.place_vial(vial, raise_error=raise_error)
+        mass = self.try_read_mass(max_balance_reads=max_balance_reads)
+        time.sleep(1)
+        self._retrieve_vial(vial)
+        vial.update_status(mass, "weight")
+        return mass
+
+    def try_read_mass(self, max_balance_reads=MAX_BALANCE_READS):
+        """
+        Trt to read the mass from the balance via serial communication.
+
+        Returns:
+            float: The mass read from the balance.
+        """
         balance_reads = 0
         while True:
             try:
                 mass = self.read_mass()
-                break
+                return mass
             except Exception as e:
                 if balance_reads > max_balance_reads:
                     raise e
                 print(f"WARNING. Balance reading {balance_reads} ended in error: ", e)
                 balance_reads += 1
-        time.sleep(1)
-        self._retrieve_vial(vial)
-        vial.update_status(mass, "weight")
-        return mass
 
     def read_mass(self):
         """
@@ -671,7 +680,7 @@ class BalanceStation(StationStatus):
             print(f"WARNING! Balance returned {response}! Trying again...")
             time.sleep(1)
 
-    def _send_command(self, write_txt=None, read_response=False):
+    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=100):
         """
         Sends a command to the balance via serial communication and optionally reads the response.
 
@@ -696,7 +705,10 @@ class BalanceStation(StationStatus):
             start_time = time.time()
             while True:
                 data = balance.readline()
-                print("waiting for {} balance results for {:.1f} seconds...".format(self, time.time() - start_time))
+                elapsed_time = time.time() - start_time
+                if elapsed_time > max_balance_read_time:
+                    raise ValueError(f"Balance failed to respond after {max_balance_read_time} s.")
+                print("waiting for {} balance results for {:.1f} seconds...".format(self, elapsed_time))
                 if data:
                     result_txt = data.decode().strip()  # strip out the old lines
                     print("BALANCE RESULT: ", result_txt)

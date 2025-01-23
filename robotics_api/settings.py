@@ -16,7 +16,7 @@ DISPENSE = True
 STIR = True
 WEIGH = True
 PIPETTE = True
-RUN_ROBOT = True
+RUN_ROBOT = False
 MOVE_ELEVATORS = True
 POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 

@@ -40,6 +40,12 @@ class InitializeRobot(FiretaskBase):
 
             snapshot_move(SNAPSHOT_HOME)
 
+        # Test Balance connection
+        if WEIGH:
+            for balance in [b for b in MEASUREMENT_STATIONS if "balance" in b]:
+                mass = BalanceStation(balance).try_read_mass()
+                print(f"Successfully read mass {mass} from balance {balance}!")
+
         reset_stations()
 
         return FWAction(update_spec={"success": True})

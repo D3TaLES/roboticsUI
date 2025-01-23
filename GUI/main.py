@@ -213,9 +213,10 @@ class AddJob(tk.Toplevel):
         info = self.lpad.add_wf(wf)
         fw_id = list(info.values())[0]
 
-        # # Pause READY jobs
-        # p = subprocess.Popen("lpad pause_fws -s READY", stdout=subprocess.PIPE, shell=True)
-        # p.communicate()
+        # Pause READY initialization jobs
+        fw_ids = self.lpad.fireworks.find({"state": "READY", "spec._category": "initialize"}).distinct("fw_id")
+        for fw_id in fw_ids:
+            self.lpad.pause_fw(fw_id)
 
         AlertDialog(self, alert_msg="Your workflow was successfully submitted!\nAll READY jobs have "
                                     "been paused. \nWorkflow ID: " + str(fw_id))

@@ -26,7 +26,6 @@ class VialStatus(RobotStatusDB):
         """
         super().__init__(apparatus_type='vials', _id=_id, **kwargs)
         if exp_name:
-            print(exp_name)
             self.id = (self.coll.find_one({"experiment_name": exp_name}) or {}).get("_id")
             if not self.id:
                 raise NameError(f"No vial is associated with experiment name {exp_name}.")

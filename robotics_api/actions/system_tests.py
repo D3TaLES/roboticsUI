@@ -47,7 +47,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="B_01")
+    test_vial = VialMove(_id="A_02")
     cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
     cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
     ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
@@ -72,8 +72,8 @@ if __name__ == "__main__":
 
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
-    # ca_potent.move_elevator(endpoint="up")
-    cvUM_potent.move_elevator(endpoint="down")
+    # cv_potent.move_elevator(endpoint="up")
+    cv_potent.move_elevator(endpoint="down")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
     #                  resistance=resistance)

@@ -28,7 +28,11 @@ def sig_figs(number: float or str, num_sig_figs=3):
     magnitude = math.floor(math.log10(abs(number)))
     # Scale the number to round at the desired decimal place
     scale = 10 ** (magnitude - num_sig_figs + 1)
-    return round(number / scale) * scale
+    # Scale the number, round it, and scale it back
+    rounded = round(number / scale) * scale
+
+    # Avoid floating-point representation issues by formatting
+    return float(f"{rounded:.{num_sig_figs - 1}e}")
 
 
 def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):

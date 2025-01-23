@@ -424,7 +424,6 @@ class DataProcessor(ProcessBase):
                 # CV Meta Properties
                 print("Calculating metadata...")
                 if self.mol_id:
-                    print(self.mol_id)
                     metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
                                                   micro_electrodes=self.instrument.micro_electrode).meta_dict)
 

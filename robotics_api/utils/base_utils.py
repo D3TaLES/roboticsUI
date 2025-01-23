@@ -4,7 +4,7 @@ import serial
 from robotics_api.settings import *
 
 
-def sig_figs(number, num_sig_figs=3):
+def sig_figs(number: float or str, num_sig_figs=3):
     """
     Round a number to the specified number of significant figures.
 
@@ -15,6 +15,9 @@ def sig_figs(number, num_sig_figs=3):
     Returns:
         float: The number rounded to the given significant figures.
     """
+    if isinstance(number, str):
+        ureg = pint.UnitRegistry()
+        number = ureg(number).magnitude
     if number == 0:
         return 0  # Zero remains zero regardless of sig figs
     if num_sig_figs <= 0:

@@ -86,7 +86,6 @@ class ProcessBase(RoboticsBase, ABC):
     data_path: str
     processed_locs: list
     instrument: PotentiostatStation
-    plot_name: str
 
     def setup_task(self, fw_spec, data_len_error=True, instrument_error=True):
         """Set up task parameters from the Fireworks spec.
@@ -131,10 +130,6 @@ class ProcessBase(RoboticsBase, ABC):
             return FWAction(update_spec=self.updated_specs())
         if self.collection_data:
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
-
-        ureg = pint.UnitRegistry()
-        self.plot_name = f"{self.full_name}, {ureg(self.metadata.get('redox_mol_concentration', 0)).magnitude:.4f} " \
-                         f"redox, {ureg(self.metadata.get('electrolyte_concentration', 0)).magnitude:.4f} SE"
 
     def submission_info(self, file_type):
         """
@@ -189,6 +184,11 @@ class ProcessBase(RoboticsBase, ABC):
             return False
         return True
 
+    @property
+    def plot_name(self):
+        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration', 0))} " \
+                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration', 0))} SE"
+
     def process_cv_data(self, raw_data, insert=True, title_tag=""):
         """
         Processes CV data files.
@@ -204,15 +204,14 @@ class ProcessBase(RoboticsBase, ABC):
         file_loc = raw_data.get("data_location")
         if not self.check_file(file_loc):
             return None
-        metadata = self.metadata
         e_ref = ReagentStatus(_id=self.rom_id).formal_potential
         if self.mol_id and e_ref is None:
             raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
-        metadata.update({"e_ref": e_ref})
-        metadata.update(self.instrument._settings_dict)
-        metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update({"e_ref": e_ref})
+        self.metadata.update(self.instrument._settings_dict)
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCV(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
-                              metadata=metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
+                              metadata=self.metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
 
         # Insert data into database
         if self.mol_id and insert:
@@ -245,17 +244,16 @@ class ProcessBase(RoboticsBase, ABC):
         Returns:
             dict: The processed data as a dictionary, or None if the file is not found or already processed.
         """
-        metadata = self.metadata
         file_loc = raw_data.get("data_location")
         if not self.check_file(file_loc):
             return None
 
         self.metadata.update({"cell_constant": get_cell_constant(collection_time=raw_data["collection_time"],
                                                                  raise_error=cell_constant_error)})
-        metadata.update(self.instrument._settings_dict)
-        metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update(self.instrument._settings_dict)
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
-                              metadata=metadata).data_dict
+                              metadata=self.metadata).data_dict
 
         # Insert data into database
         if self.mol_id and insert:
@@ -418,7 +416,7 @@ class DataProcessor(ProcessBase):
                                      "variable_prop": "data.conditions.scan_rate.value",
                                      "we_surface_area": "data.conditions.working_electrode_surface_area"}
                           ).live_plot_multi(processed_data, fig_path=multi_path,
-                                            title=f"Multi CV Plot for {self.mol_id}",
+                                            title=f"Multi CV Plot for {self.plot_name}",
                                             xlabel=CV_PLOT_XLABEL,
                                             ylabel=CV_PLOT_YLABEL, legend_title=CV_PLOT_LEGEND,
                                             current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)

@@ -79,10 +79,15 @@ class EF2Experiment:
         return new_task
 
     @staticmethod
-    def process_task(collect_task):
+    def process_task(collect_task, default_analysis=""):
         """Generates a processing task"""
+        analysis_methods = ["cv", "cvUM", "ca", "ir", ]
+        analysis = default_analysis
+        for method in analysis_methods:
+            if f"_{method}_" in collect_task.name:
+                analysis = method
         task_dict = copy.deepcopy(collect_task.__dict__)
-        task_dict["name"] = f"process_data"
+        task_dict["name"] = f"process_{analysis}_data"
         new_task = dict2obj(task_dict)
         return new_task
 
@@ -269,7 +274,9 @@ class EF2Experiment:
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
-            "process_data": [DataProcessor],
+            "process_cv_data": [DataProcessor],
+            "process_cvUM_data": [DataProcessor],
+            "process_ca_data": [DataProcessor],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],
@@ -284,7 +291,6 @@ class EF2Experiment:
             "heat_stir": [Stir],  # needs: TEMPERATURE, TIME
             "process_cv_benchmarking": [ProcessCVBenchmarking],
             "measure_working_electrode_area": [],
-            "process_cv_data": [DataProcessor],
             "collect_electrode_test": [RunCV],
             "collect_electrode_test_data": [RunCV],
             "finish_": [FinishPotentiostat],

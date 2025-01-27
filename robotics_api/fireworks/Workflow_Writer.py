@@ -274,9 +274,9 @@ class EF2Experiment:
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
-            "process_cv_data": [DataProcessor],
-            "process_cvUM_data": [DataProcessor],
-            "process_ca_data": [DataProcessor],
+            "process_cv_data": [DataProcessorCV],
+            "process_cvUM_data": [DataProcessorCVUM],
+            "process_ca_data": [DataProcessorCA],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],

@@ -207,7 +207,7 @@ def all_cvs_data(multi_data, verbose=1):
     return single_cvs
 
 
-def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
+def print_cv_analysis(multi_data, metadata_dict, run_anodic=RUN_ANODIC, **kwargs):
     """
     Generate text analysis of CV data.
 
@@ -253,7 +253,7 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     return str(out_txt)
 
 
-def print_ca_analysis(multi_data, verbose=1):
+def print_ca_analysis(multi_data, verbose=1, **kwargs):
     """
     Generate text analysis of CA data.
 

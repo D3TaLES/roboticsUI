@@ -60,6 +60,9 @@ POTENTIOSTAT_SETTINGS = {
         exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
         working_electrode_radius=0.0011 / 2,  # radius in cm
+        electrode_working="11 micrometer carbon micro electrode",
+        electrode_counter="Pt coil counter",
+        electrode_reference="Ag/Ag+ reference",
         dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
         # Default CV settings
@@ -89,6 +92,9 @@ POTENTIOSTAT_SETTINGS = {
         exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
         working_electrode_radius=0.3 / 2,  # radius in cm
+        electrode_working="3 mm glassy carbon electrode",
+        electrode_counter="Pt coil counter",
+        electrode_reference="Ag/Ag+ reference",
         dirty_electrode_current=1e-5,  # max current allowed (A) for a clean electrode
 
         # Default CV settings

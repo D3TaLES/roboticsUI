@@ -476,7 +476,7 @@ class PipetteStation(StationStatus):
 
         if vial:
             vial.update_status(None, status_name="weight")
-            vial.leave_station(self, raise_error=raise_error)
+            self.leave_station(vial, raise_error=raise_error)
 
     def return_soln(self, vial: VialMove, raise_error=True):
         vial.go_to_station(self, raise_error=raise_error, pre_position_only=True)
@@ -486,6 +486,9 @@ class PipetteStation(StationStatus):
 
         vial.update_status(None, status_name="weight")
         vial.leave_station(self, raise_error=raise_error)
+
+    def discard_soln(self):
+        send_arduino_cmd(self.serial_name, 0)
 
     def leave_station(self, vial: VialMove, raise_error=True):
         """
@@ -499,7 +502,7 @@ class PipetteStation(StationStatus):
             Exception: If the operation fails and raise_error is True.
         """
         vial.leave_station(self, raise_error=raise_error)
-        joint_deltas = dict(j1=-3)
+        joint_deltas = dict(j1=-5)
         perturb_angular(reverse=False, **joint_deltas)
 
 

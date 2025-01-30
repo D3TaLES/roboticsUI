@@ -191,13 +191,14 @@ class VialStatus(RobotStatusDB):
             return False
         return True
 
-    def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT):
+    def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT, addition_id=None):
         """
         Add a reagent to the vial content.
 
         Args:
             extracted_mass (str or obj): Mass extracted from solution
             default_mass_unit (str): The default mass unit for the reagent amount.
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Raises:
             NameError: If the reagent does not exist in the reagent database.
@@ -217,8 +218,19 @@ class VialStatus(RobotStatusDB):
                     "name": reagent.name,
                     "amount": f"{new_amount}{default_mass_unit}"
                 })
+
+            # Update database
+            current_addition = {
+                "addition_id": addition_id,
+                "reagent_uuid": None,
+                "name": "extraction",
+                "amount": extracted_mass
+            }
+            history = self.get_prop("content_history") or []
+            history.append(current_addition)
             self.insert(self.id, override_lists=True, instance={
                 "vial_content": new_vial_content,
+                "content_history": history
             })
             print(f"Successfully extracted {extract_perc*100:.2f}% of the mass from vial {self}.")
 

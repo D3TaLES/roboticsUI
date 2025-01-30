@@ -41,6 +41,31 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
         vial.place_home()
 
 
+def density_test(volume, pipette_id="pipette_01", vial_id="S_01"):
+    bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+    pipette_station = PipetteStation(pipette_id)
+    vial = VialMove(_id=vial_id)
+
+    # Get initial mass
+    initial_mass = bal_station.existing_weight(vial)
+    # Extract solution
+    pipette_station.pipette(volume=volume, vial=vial)
+    # Get final mass
+    final_mass = bal_station.weigh(vial)
+
+    # Calculate solution density
+    extracted_mass = initial_mass - final_mass
+    raw_density = f"{extracted_mass / volume} {MASS_UNIT}/{VOLUME_UNIT}"
+    soln_density = "{:.3f}{}".format(unit_conversion(raw_density, default_unit=DENSITY_UNIT), DENSITY_UNIT)
+    print(f"Raw Density: {extracted_mass:.3f} / {volume:.3f} {MASS_UNIT}/{VOLUME_UNIT}")
+    print(f"--> SOLUTION DENSITY: {soln_density} {DENSITY_UNIT}")
+
+    # Return extracted solution
+    pipette_station.return_soln(vial=vial)
+
+    return soln_density
+
+
 if __name__ == "__main__":
     """
     The code below contains test functions for all stations. To implement a test, uncomment the line with 
@@ -73,7 +98,7 @@ if __name__ == "__main__":
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
     # cv_potent.move_elevator(endpoint="up")
-    cv_potent.move_elevator(endpoint="down")
+    # cv_potent.move_elevator(endpoint="down")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
     #                  resistance=resistance)
@@ -92,6 +117,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
+    print(density_test(0.5, pipette_id="pipette_01", vial_id="A_01"))
     # test_stir.stir(stir_time=15)
     # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)

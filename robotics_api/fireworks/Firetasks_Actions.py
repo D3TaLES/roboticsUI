@@ -103,15 +103,13 @@ class DispenseLiquid(RoboticsBase):
         self.setup_task(fw_spec)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
-        if not volume and EXIT_ZERO_VOLUME:
-            print(" \n \n!!!!!!!!! \n ATTENTION! This FW and all subsequent FWs will be exited. "
-                  "DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. \n !!!!!!!!! \n \n")
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         if solvent.type != "solvent":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
 
         if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
-            if solvent.location != "experiment_vial":
+            if solvent.location == "experiment_vial":
+                self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT, addition_id=self.ftask_id)
+            else:
                 solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
                 if WEIGH_SOLVENTS:
                     solv_station.dispense_mass(self.exp_vial, volume, addition_id=self.ftask_id)
@@ -212,25 +210,27 @@ class Extract(RoboticsBase):
         self.setup_task(fw_spec)
         volume = unit_conversion(self.get("volume", 0), default_unit=VOLUME_UNIT)
 
-        # Establish stations
-        bal_station = BalanceStation(StationStatus().get_first_available("balance"))
-        pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
 
-        # Extract solution
-        initial_mass = bal_station.existing_weight(self.exp_vial)
-        while volume > 0:
-            pipette_volume = MAX_PIPETTE_VOL if volume > MAX_PIPETTE_VOL else volume
-            pipette_station.pipette(volume=pipette_volume, vial=self.exp_vial)  # Extract pipette volume
-            pipette_station.leave_station(vial=self.exp_vial)
-            pipette_station.pipette(volume=0)  # Discard the extracted volume
-            volume -= pipette_volume
+            # Establish stations
+            bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+            pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
 
-        # Find extracted mass
-        final_mass = bal_station.weigh(self.exp_vial)
-        extracted_mass = initial_mass - final_mass
+            # Extract solution
+            initial_mass = bal_station.existing_weight(self.exp_vial)
+            while volume > 0:
+                pipette_volume = MAX_PIPETTE_VOL if volume > MAX_PIPETTE_VOL else volume
+                print("PIPETTING VOLUME ", pipette_volume)
+                pipette_station.pipette(volume=pipette_volume, vial=self.exp_vial)  # Extract pipette volume
+                pipette_station.discard_soln()  # Discard the extracted volume
+                volume -= pipette_volume
 
-        # Update vial contents
-        self.exp_vial.extract_soln(extracted_mass=extracted_mass)
+            # Find extracted mass
+            final_mass = bal_station.weigh(self.exp_vial)
+            extracted_mass = initial_mass - final_mass
+
+            # Update vial contents
+            self.exp_vial.extract_soln(extracted_mass=extracted_mass)
 
         return FWAction(update_spec=self.updated_specs())
 

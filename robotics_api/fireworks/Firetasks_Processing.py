@@ -197,8 +197,8 @@ class ProcessBase(RoboticsBase, ABC):
 
     @property
     def plot_name(self):
-        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration', 0))} " \
-                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration', 0))} SE"
+        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)} " \
+                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
 
     def process_cv_data(self, raw_data, insert=True, title_tag="", plot_dir=False):
         """
@@ -234,7 +234,8 @@ class ProcessBase(RoboticsBase, ABC):
         # Plot
         image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
         if plot_dir:
-            image_dir = "_".join(file_loc.split("_")[:-1])
+            data_dir = os.path.dirname(file_loc)
+            image_dir = os.path.join(data_dir, os.path.basename(file_loc).split("_")[0])
             os.makedirs(image_dir, exist_ok=True)
             image_path = os.path.join(image_dir, os.path.basename(image_path))
         CVPlotter(connector={"scan_data": "data.scan_data",
@@ -331,6 +332,9 @@ class ProcessCVBenchmarking(ProcessBase):
     This task processes CV data, calculates the appropriate voltage sequence based on benchmarking peaks,
     and updates the FireWorks specifications with this information.
     """
+
+    processing_method = "cv"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
 
@@ -376,6 +380,8 @@ class ProcessCalibration(ProcessBase):
     and updates the calibration database with the processed information.
     """
 
+    processing_method = "ca"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
@@ -419,6 +425,8 @@ class DataProcessorCV(ProcessBase):
         - Plots individual and multi-CV graphs.
         - Stores CV metadata in a database.
     """
+
+    processing_method = "cv"
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
@@ -470,6 +478,8 @@ class DataProcessorCVUM(ProcessBase):
         - Stores CV metadata in a database.
     """
 
+    processing_method = "cvUM"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
@@ -507,6 +517,8 @@ class DataProcessorCA(ProcessBase):
         - Stores CA metadata and data in a database.
     """
 
+    processing_method = "ca"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         metadata_dict = {}
@@ -527,6 +539,13 @@ class DataProcessorCA(ProcessBase):
         self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data, print_func=print_ca_analysis)
 
         return FWAction(update_spec=self.updated_specs(), propagate=True)
+
+
+@explicit_serialize
+class DataProcessor(ProcessBase):
+
+    def run_task(self, fw_spec):
+        raise NotImplementedError
 
 
 @explicit_serialize

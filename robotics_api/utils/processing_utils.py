@@ -213,13 +213,13 @@ def print_cv_analysis(multi_data, metadata_dict, run_anodic=RUN_ANODIC, **kwargs
 
     Args:
         multi_data (list): List of dictionaries representing data from multiple CVs.
-        metadata (dict): Metadata for the CV analysis.
+        metadata_dict (dict): Metadata for the CV analysis.
         run_anodic (bool, optional): Whether to run anodic analysis. Defaults to RUN_ANODIC.
 
     Returns:
         str: Text analysis of the CV data.
     """
-    e_halfs = metadata.get("oxidation_potential", [])
+    e_halfs = metadata_dict.get("oxidation_potential", [])
 
     out_txt = ""
 
@@ -231,15 +231,15 @@ def print_cv_analysis(multi_data, metadata_dict, run_anodic=RUN_ANODIC, **kwargs
         out_txt += "SE Conc:         {}\n".format(print_prop(se_conc))
         out_txt += "E1/2 at {}: \t{}\n".format(print_prop(cond.get("scan_rate", {})), print_prop(e_half))
 
-        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
+        diff_coef = prop_by_order(metadata_dict.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
         out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
-        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
+        trans_rate = prop_by_order(metadata_dict.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
         out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} \n".format(print_prop(trans_rate))
 
         if run_anodic:
-            diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="anodic")
+            diff_coef = prop_by_order(metadata_dict.get("diffusion_coefficient"), order=i + 1, notes="anodic")
             out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
-            trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="anodic")
+            trans_rate = prop_by_order(metadata_dict.get("charge_transfer_rate"), order=i + 1, notes="anodic")
             out_txt += "Anodic Charge Transfer Rate: \t\t\t{}\n".format(print_prop(trans_rate))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"

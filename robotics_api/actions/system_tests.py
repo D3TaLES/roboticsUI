@@ -72,7 +72,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_02")
+    test_vial = VialMove(_id="A_03")
     cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
     cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
     ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
@@ -97,8 +97,9 @@ if __name__ == "__main__":
 
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
-    # cv_potent.move_elevator(endpoint="up")
-    # cv_potent.move_elevator(endpoint="down")
+    # ca_potent.move_elevator(endpoint="down")
+    # ca_potent.move_elevator(endpoint="up")
+    # cvUM_potent.move_elevator(endpoint="up")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
     #                  resistance=resistance)
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
     # flush_solvent(8, vial_id="A_04", solv_id="solvent_02", go_home=True)
-    # LiquidStation("solvent_02").dispense_only(2)
+    # LiquidStation("solvent_02").dispense_only(1)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
@@ -117,7 +118,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    print(density_test(0.5, pipette_id="pipette_01", vial_id="A_01"))
+    # print(density_test(0.5, pipette_id="pipette_01", vial_id="A_01"))
     # test_stir.stir(stir_time=15)
     # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)

@@ -214,13 +214,13 @@ class EF2Experiment:
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
                     [SetupRinsePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
-                    name=f"{self.full_name}_setup", parents=parent, priority=self.priority + 2,
+                    name=f"{self.full_name}_setup", parents=parent, priority=self.priority + 3,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
                 r2 = AnalysisFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=[r1],
-                                      priority=self.priority + 1, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                                      priority=self.priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 r3 = RobotFirework([FinishPotentiostat()], name=f"{self.full_name}_finish", parents=[r2],
-                                   priority=self.priority + 3, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                                   priority=self.priority + 5, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 fireworks.extend([r1, r2, r3])
                 self.end_exps.append(r3)
                 continue
@@ -235,7 +235,7 @@ class EF2Experiment:
                 parent = fw
                 collect_parent = fw
             else:
-                p = self.priority + 2 if "finish" in fw_type else self.priority - 2 if "transfer" in fw_type else self.priority
+                p = self.priority + 3 if "finish" in fw_type else self.priority - 2 if "transfer" in fw_type else self.priority
                 fw = RobotFirework(tasks, name=f"{self.full_name}_{fw_type}", wflow_name=self.wflow_name,
                                    priority=p, parents=parent, fw_specs=self.fw_specs)
                 parent = fw

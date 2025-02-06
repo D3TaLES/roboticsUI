@@ -1,4 +1,6 @@
 import math
+import time
+
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
 from robotics_api.utils.base_utils import *
@@ -644,6 +646,7 @@ class BalanceStation(StationStatus):
                     raise e
                 print(f"WARNING. Balance reading {balance_reads} ended in error: ", e)
                 balance_reads += 1
+                time.sleep(10)
 
     def read_mass(self):
         """

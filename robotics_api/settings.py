@@ -57,7 +57,7 @@ ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrod
 POTENTIOSTAT_SETTINGS = {
     "cvUM_potentiostat_A_01": dict(
         address="COM6",
-        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
+        exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
         working_electrode_radius=0.0011 / 2,  # radius in cm
         electrode_working="11 micrometer carbon micro electrode",
@@ -88,8 +88,8 @@ POTENTIOSTAT_SETTINGS = {
 
     ),
     "cv_potentiostat_B_01": dict(
-        address="COM8",
-        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
+        address="COM1",
+        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
         working_electrode_radius=0.3 / 2,  # radius in cm
         electrode_working="3 mm glassy carbon electrode",
@@ -120,7 +120,7 @@ POTENTIOSTAT_SETTINGS = {
     ),
     "ca_potentiostat_C_01": dict(
         address="COM7",
-        exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
+        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
         # Default CA settings
         quiet_time=90,  # s

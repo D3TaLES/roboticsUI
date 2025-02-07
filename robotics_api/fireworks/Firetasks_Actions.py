@@ -270,6 +270,7 @@ class RinseElectrode(RoboticsBase):
         potentiostat.initiate_pot(vial=RINSE_VIALS.get(potentiostat.id))
         print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
         time.sleep(rinse_time)
+        potentiostat.update_clean(True)
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -305,13 +306,21 @@ class SetupPotentiostat(RoboticsBase):
             if self.metadata.get(pot_type):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 print(f"This experiment already uses instrument {potentiostat}")
+
+                # Check if potentiostat is clean
+                if not potentiostat.clean:
+                    print(f"WARNING. Potentiostat {potentiostat} is not clean.")
+                    return self.self_fizzle()
+
+                # Wait till potentiostat is available
                 self.success = potentiostat.wait_till_available()
                 print("WAITING ", self.success)
                 if not self.success:
                     return self.self_fizzle()
             else:
-                available_pot = StationStatus().get_first_available(pot_type)
+                available_pot = StationStatus().get_first_available(pot_type, check_clean=True)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
+
             print("SUCCESS, POTENT: ", self.success, potentiostat)
             # If potentiostat not available, return current vial home and fizzle.
             if not (self.success and potentiostat):

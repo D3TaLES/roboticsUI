@@ -973,6 +973,7 @@ class PotentiostatStation(StationStatus):
         elif self.state == "down":
             if self.move_elevator(endpoint="up"):
                 time.sleep(5)
+                self.update_clean(False)
                 return True
 
     def end_pot(self):

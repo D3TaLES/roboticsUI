@@ -24,6 +24,7 @@ POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN
 WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation
 RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
 FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
+CHECK_CLEAN_ELECTRODES = True  # Check stations database for electrode cleanliness
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment by skipping all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again

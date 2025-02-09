@@ -308,7 +308,7 @@ class SetupPotentiostat(RoboticsBase):
                 print(f"This experiment already uses instrument {potentiostat}")
 
                 # Check if potentiostat is clean
-                if not potentiostat.clean:
+                if CHECK_CLEAN_ELECTRODES and not potentiostat.clean:
                     print(f"WARNING. Potentiostat {potentiostat} is not clean.")
                     return self.self_fizzle()
 
@@ -318,7 +318,7 @@ class SetupPotentiostat(RoboticsBase):
                 if not self.success:
                     return self.self_fizzle()
             else:
-                available_pot = StationStatus().get_first_available(pot_type, check_clean=True)
+                available_pot = StationStatus().get_first_available(pot_type, check_clean=CHECK_CLEAN_ELECTRODES)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
 
             print("SUCCESS, POTENT: ", self.success, potentiostat)

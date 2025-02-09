@@ -6,3 +6,4 @@ logs/
 db_infos.json
 workflows/actions/examples/
 .idea/
+ robotics_api/snapshots/_temp_perturbed.json

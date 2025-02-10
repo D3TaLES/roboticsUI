@@ -65,6 +65,18 @@ class RoboticsBase(FiretaskBase):
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
 
+    def rerun_fizzed_robot(self):
+        """
+        When updating specs, check for fizzled robot jobs and rerun
+        """
+        if RERUN_FIZZLED_ROBOT:
+            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
+                {"name": {"$regex": "_setup_"}},
+                {"name": {"$regex": "robot"}}
+            ]}).distinct("fw_id")
+            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
+            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
+
     def updated_specs(self, **kwargs):
         """Updates the fireworks spec with current task data.
 
@@ -74,14 +86,6 @@ class RoboticsBase(FiretaskBase):
         Returns:
             dict: Updated specifications dictionary.
         """
-        # When updating specs, check for fizzled robot jobs and rerun
-        if RERUN_FIZZLED_ROBOT:
-            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
-                {"name": {"$regex": "_setup_"}},
-                {"name": {"$regex": "robot"}}
-            ]}).distinct("fw_id")
-            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
-            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
 
         # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
@@ -270,6 +274,7 @@ class RinseElectrode(RoboticsBase):
         potentiostat.initiate_pot(vial=RINSE_VIALS.get(potentiostat.id))
         print(f"RINSING POTENTIOSTAT {potentiostat} FOR {rinse_time} SECONDS.")
         time.sleep(rinse_time)
+        potentiostat.update_clean(True)
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -305,13 +310,21 @@ class SetupPotentiostat(RoboticsBase):
             if self.metadata.get(pot_type):
                 potentiostat = PotentiostatStation(self.metadata.get(pot_type))
                 print(f"This experiment already uses instrument {potentiostat}")
+
+                # Check if potentiostat is clean
+                if CHECK_CLEAN_ELECTRODES and not potentiostat.clean:
+                    print(f"WARNING. Potentiostat {potentiostat} is not clean.")
+                    return self.self_fizzle()
+
+                # Wait till potentiostat is available
                 self.success = potentiostat.wait_till_available()
                 print("WAITING ", self.success)
                 if not self.success:
                     return self.self_fizzle()
             else:
-                available_pot = StationStatus().get_first_available(pot_type)
+                available_pot = StationStatus().get_first_available(pot_type, check_clean=CHECK_CLEAN_ELECTRODES)
                 potentiostat = PotentiostatStation(available_pot) if available_pot else None
+
             print("SUCCESS, POTENT: ", self.success, potentiostat)
             # If potentiostat not available, return current vial home and fizzle.
             if not (self.success and potentiostat):
@@ -371,6 +384,8 @@ class FinishPotentiostat(RoboticsBase):
                     active_vial.place_home()
             else:
                 print(f"Active vial {active_vial} has already been collected from {potentiostat}")
+
+        self.rerun_fizzed_robot()
 
         if self.end_experiment:
             potentiostat.update_experiment(None)

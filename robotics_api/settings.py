@@ -11,20 +11,21 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
-STIR = True
-WEIGH = True
-PIPETTE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
-POT_DELAY = 10  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
+RUN_POTENT = False
+DISPENSE = False
+STIR = False
+WEIGH = False
+PIPETTE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
+POT_DELAY = 2  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------
 WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation
 RERUN_FIZZLED_ROBOT = True  # Rerun FIZZLED robot jobs at the end of a robot job.
 FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration determination fails
-FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
+CHECK_CLEAN_ELECTRODES = True  # Check stations database for electrode cleanliness
+FIZZLE_DIRTY_ELECTRODE = True  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment by skipping all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response

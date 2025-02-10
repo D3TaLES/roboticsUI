@@ -281,6 +281,16 @@ class StationStatus(RobotStatusDB):
         return self.get_prop("state")
 
     @property
+    def clean(self):
+        """
+        Get the cleanliness.
+
+        Returns:
+            str: The state.
+        """
+        return self.get_prop("clean")
+
+    @property
     def current_content(self):
         """
         Get the current content.
@@ -319,28 +329,29 @@ class StationStatus(RobotStatusDB):
         """
         raise NotImplementedError
 
-    def get_all_available(self, name_str: str, exp_name=None):
+    def get_all_available(self, name_str: str, exp_name=None, check_clean=False):
         """
         Get all available stations with a specified name string.
 
         Args:
             name_str (str): The name string to search for.
             exp_name (str, optional): The experiment name. Defaults to None.
+            check_clean (bool, optional): Check if clean in True. Default False.
 
         Returns:
             list: List of available station IDs.
         """
+        query = {"_id": {"$regex": name_str}, "available": True}
         if exp_name:
-            return self.coll.find({
-                "_id": {"$regex": name_str},
-                "available": True,
-                # "$or": [
+            query.update({
+                # "$or": [  TODO figure out
                 #     {"current_experiment": exp_name},
                 #     {"current_experiment": None},
                 # ]
-            }).distinct("_id")
-        else:
-            return self.coll.find({"_id": {"$regex": name_str}, "available": True}).distinct("_id")
+            })
+        if check_clean:
+            query.update({"clean": True})
+        return self.coll.find(query).distinct("_id")
 
     def get_first_available(self, name_str, wait=True, max_time=MAX_DB_WAIT_TIME, wait_interval=2, **kwargs):
         """
@@ -366,7 +377,7 @@ class StationStatus(RobotStatusDB):
             total_time += wait_interval
             if max_time and (total_time >= max_time):
                 return None
-            available_stations = self.get_all_available(name_str)
+            available_stations = self.get_all_available(name_str, **kwargs)
         return available_stations[0]
 
     def wait_till_available(self, max_time=MAX_DB_WAIT_TIME, wait_interval=2):
@@ -411,6 +422,16 @@ class StationStatus(RobotStatusDB):
             new_state (str): The new state for the station.
         """
         self.coll.update_one({"_id": self.id}, {"$set": {"state": new_state}})
+
+    def update_clean(self, clean_status: bool):
+        """
+        Update the station cleanliness.
+
+        Args:
+            clean_status (bool): The new cleanliness status for the station.
+        """
+        self.coll.update_one({"_id": self.id}, {"$set": {"clean": clean_status}})
+        print(f"Potentiostat {self} updated to clean is {clean_status}.")
 
     def update_content(self, new_content):
         """
@@ -593,6 +614,7 @@ def reset_station_db(current_wflow_name=""):
             "current_wflow_name": current_wflow_name,
             "available": True,
             "state": state,
+            "clean": True,
             "current_content": "",
             "content_history": [],
         })

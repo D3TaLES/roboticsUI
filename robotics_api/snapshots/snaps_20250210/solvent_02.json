@@ -4,21 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.582,
-            "y": 0.064,
-            "z": 0.106,
+            "x": 0.385,
+            "y": -0.374,
+            "z": 0.250,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 38
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10000,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_B_02"
+        "name": "solvent_02"
       }
     ]
   }

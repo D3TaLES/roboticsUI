@@ -8,10 +8,14 @@ def check_usb():
         print("{}: {} [{}]".format(port, desc, hw_id))
 
 
-def vial_col_test(col):
+def vial_col_test(col, vial_id: str = None, ascending=True):
     # Move a vial to and from every vial home location in column 'col' in the vial holding grid station.
-    # TODO make new
-    return
+    vial = VialMove(_id=vial_id or f"{col}_04")
+    vial.retrieve()
+    for row in [1, 2, 3, 4][::1 if ascending else -1]:
+        get_place_vial(VialMove(f"{col}_{row:02}"), action_type="place")
+        get_place_vial(VialMove(f"{col}_{row:02}"), action_type="get")
+    vial.place_home()
 
 
 def reset_stations(end_home=False):
@@ -72,7 +76,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_03")
+    test_vial = VialMove(_id="A_02")
     cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
     cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
     ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
@@ -89,9 +93,10 @@ if __name__ == "__main__":
     # snapshot_move(target_position=VIAL_GRIP_TARGET)
 
     # VIAL TESTING
-    # vial_col_test("A")
-    # test_vial.retrieve()
+    # test_bal.place_vial(test_vial)
     # test_vial.place_home()
+    vial_col_test("B", vial_id="A_02")
+    # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 

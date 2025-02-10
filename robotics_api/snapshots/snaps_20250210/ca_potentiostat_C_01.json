@@ -4,21 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.584,
-            "y": -0.033,
-            "z": 0.108,
+            "x": 0.323,
+            "y": 0.464,
+            "z": 0.059,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 150
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0,
+              "orientation": 0
+            }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10006,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_C_02"
+        "name": "CA Elevator"
       }
     ]
   }

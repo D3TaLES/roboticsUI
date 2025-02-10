@@ -12,7 +12,7 @@ from robotics_api.actions.db_manipulations import VialStatus
 from robotics_api.utils import kinova_utils as utilities
 from robotics_api.utils.kinova_gripper import GripperMove
 from kortex_api.autogen.client_stubs.VisionConfigClientRpc import VisionConfigClient
-from robotics_api.utils.kinova_vision import move_robot_to_qr, get_qr_codes_from_camera, calculate_robot_movement, select_qr_code
+from robotics_api.utils.kinova_vision import get_qr_codes_from_camera, calculate_robot_movement, select_qr_code
 from robotics_api.settings import *
 
 # Maximum allowed waiting time during actions (in seconds)
@@ -317,15 +317,12 @@ def snapshot_zone(snapshot_file, zone_dividers=ZONE_DIVIDERS):
     return get_zone(theta, zone_dividers=zone_dividers)
 
 
-def snapshot_move(snapshot_file: str = None, target_position: str or int = None, raise_error: bool = True,
-                  angle_error: float = 0.2, position_error: float = 0.1):
+def snapshot_move(snapshot_file: str = None, target_position: str or int = None, raise_error: bool = True, **kwargs):
     """
 
     :param snapshot_file: str, path to snapshot file (JSON)
     :param target_position: target position for the gripper: open, closed, or percentage closed (e.g., 90)
     :param raise_error:
-    :param angle_error:
-    :param position_error:
     :return: bool, True if movement was a success
 
     Args:
@@ -460,7 +457,7 @@ def perturbed_snapshot(snapshot_file, perturb_amount: float = PERTURB_AMOUNT, ax
     return os.path.join(SNAPSHOT_DIR, "_temp_perturbed.json")
 
 
-def move_to_station_qr(destination_station: str, target_qr_size: float = 500):
+def move_to_station_qr(destination_station: str, **kwargs):
     """
     Main function that coordinates the process of moving the Kinova robot to align with a QR code.
 
@@ -498,14 +495,14 @@ def move_to_station_qr(destination_station: str, target_qr_size: float = 500):
             return
 
         # Calculate the robot movement required to align the QR code
-        move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, target_qr_size)
+        move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, **kwargs)
         print(move_x, move_y, move_z)
 
         # Move the robot
-        success = 0#perturb_cartesian(x=move_x, y=move_y, z=move_z)
-        print("Robot moved to align with QR code.")
+    success = perturb_cartesian(x=move_x, y=move_y, z=move_z)
+    print("Robot moved to align with QR code.")
 
-        return success
+    return success
 
 
 def get_place_vial(station, action_type="get", go=True, leave=True, release_vial=True, raise_error=True,
@@ -626,6 +623,6 @@ if __name__ == "__main__":
     # print(snapshot_zone(SNAPSHOT_DIR / "VialHome_A_01.json"))
     # print(snapshot_zone(SNAPSHOT_DIR / "solvent_01.json"))
     # print(snapshot_zone(SNAPSHOT_DIR / "balance_01.json"))
-    move_to_station_qr("A_04")
+    move_to_station_qr("Vial_A_01")
     # perturb_cartesian(z=0.1)
-
+    # perturb_cartesian(x=0.0185, )

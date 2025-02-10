@@ -1,8 +1,7 @@
 import cv2
+import numpy as np
 import warnings
 from pyzbar import pyzbar
-from kortex_api.autogen.messages import Base_pb2
-from kortex_api.autogen.client_stubs.BaseClientRpc import BaseClient
 from robotics_api.settings import KINOVA_01_IP
 
 
@@ -50,14 +49,16 @@ def select_qr_code(qr_codes: list, destination_station):
     return None
 
 
-def calculate_robot_movement(qr_code: object, frame: object, target_qr_size: object) -> object:
+def calculate_robot_movement(qr_code: pyzbar.Decoded, vision_frame: np.ndarray, qr_size_ratio: float = 0.2,
+                             movement_scale_factor: float = 0.001) -> object:
     """
     Calculates the movement needed for the robot to align with the QR code and adjust to the target size.
 
     Args:
         qr_code (pyzbar.Decoded): The selected QR code.
-        frame (numpy.ndarray): The frame in which the QR code was detected.
-        target_qr_size (float): The target size for the QR code in pixels.
+        vision_frame (numpy.ndarray): The frame in which the QR code was detected.
+        qr_size_ratio (float, optional): The target QR code size as a percentage of the frame width. Default is 0.2 (20%).
+        movement_scale_factor (float, optional): Scaling factor for movement calculations. Default is 0.001.
 
     Returns:
         tuple: A tuple containing:
@@ -66,7 +67,7 @@ def calculate_robot_movement(qr_code: object, frame: object, target_qr_size: obj
             - move_z (float): The movement in the z-axis to adjust the size of the QR code.
     """
     # Frame size
-    height, width, _ = frame.shape
+    height, width, _ = vision_frame.shape
 
     # QR code center
     (x, y, w, h) = qr_code.rect
@@ -81,37 +82,43 @@ def calculate_robot_movement(qr_code: object, frame: object, target_qr_size: obj
     offset_x = qr_center_x - image_center_x
     offset_y = qr_center_y - image_center_y
 
+    # Target QR code width based on frame size and percentage
+    target_qr_size = width * qr_size_ratio
+
     # Calculate movement commands (example: adjust by ratio)
-    move_x = -offset_x * 0.01  # Scale factor for robot movement
-    move_y = -offset_y * 0.01
-    move_z = (target_qr_size - w) * 0.01
+    move_x = -offset_x * movement_scale_factor
+    move_y = -offset_y * movement_scale_factor
+    move_z = (target_qr_size - w) * movement_scale_factor
 
     return move_x, move_y, move_z
 
 
-def move_robot_to_qr(base, move_x, move_y, move_z):
-    """
-    Moves the Kinova robot based on the calculated movement to align with the QR code.
-
-    Args:
-        base (BaseClient): The base client for controlling the Kinova robot.
-        move_x (float): The movement in the x-axis to center the QR code.
-        move_y (float): The movement in the y-axis to center the QR code.
-        move_z (float): The movement in the z-axis to adjust the size of the QR code.
-    """
-    # Create a move command
-    move_command = Base_pb2.TwistCommand()
-    move_command.twist.linear_x = move_x
-    move_command.twist.linear_y = move_y
-    move_command.twist.linear_z = move_z
-
-    # Send the command to the robot
-    base.SendTwistCommand(move_command)
-    return True  # TODO add success validation
+# def move_robot_to_qr(base, move_x, move_y, move_z):
+#     """
+#     Moves the Kinova robot based on the calculated movement to align with the QR code.
+#
+#     Args:
+#         base (BaseClient): The base client for controlling the Kinova robot.
+#         move_x (float): The movement in the x-axis to center the QR code.
+#         move_y (float): The movement in the y-axis to center the QR code.
+#         move_z (float): The movement in the z-axis to adjust the size of the QR code.
+#     """
+#     # Create a move command
+#     move_command = Base_pb2.TwistCommand()
+#     move_command.twist.linear_x = move_x
+#     move_command.twist.linear_y = move_y
+#     move_command.twist.linear_z = move_z
+#
+#     # Send the command to the robot
+#     base.SendTwistCommand(move_command)
+#     return True  # TODO add success validation
 
 
 if __name__ == "__main__":
-    # qr_codes, frame = get_qr_codes_from_camera(camera_ip=KINOVA_01_IP)
-    # selected_qr = select_qr_code(qr_codes, "A_04")
-    # move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame, 200)
+    qr_codes, frame = get_qr_codes_from_camera(camera_ip=KINOVA_01_IP)
+    print(qr_codes)
+    selected_qr = select_qr_code(qr_codes, "Vial_A_01")
+    print(selected_qr)
+    move_x, move_y, move_z = calculate_robot_movement(selected_qr, frame)
+    print(move_x, move_y, move_z)
     pass

@@ -65,6 +65,18 @@ class RoboticsBase(FiretaskBase):
             self.exp_vial = VialMove(exp_name=self.exp_name, wflow_name=self.wflow_name)
             print(f"VIAL: {self.exp_vial}")
 
+    def rerun_fizzed_robot(self):
+        """
+        When updating specs, check for fizzled robot jobs and rerun
+        """
+        if RERUN_FIZZLED_ROBOT:
+            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
+                {"name": {"$regex": "_setup_"}},
+                {"name": {"$regex": "robot"}}
+            ]}).distinct("fw_id")
+            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
+            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
+
     def updated_specs(self, **kwargs):
         """Updates the fireworks spec with current task data.
 
@@ -74,14 +86,6 @@ class RoboticsBase(FiretaskBase):
         Returns:
             dict: Updated specifications dictionary.
         """
-        # When updating specs, check for fizzled robot jobs and rerun
-        if RERUN_FIZZLED_ROBOT:
-            fizzled_fws = self.lpad.fireworks.find({"state": "FIZZLED", "$or": [
-                {"name": {"$regex": "_setup_"}},
-                {"name": {"$regex": "robot"}}
-            ]}).distinct("fw_id")
-            [self.lpad.rerun_fw(fw) for fw in fizzled_fws]
-            print(f"Fireworks {str(fizzled_fws)} released from fizzled state.")
 
         # Update main spec categories: success, metadata, collection_data, and processing_data
         specs = {"success": self.success, "metadata": self.metadata, "collection_data": self.collection_data,
@@ -380,6 +384,8 @@ class FinishPotentiostat(RoboticsBase):
                     active_vial.place_home()
             else:
                 print(f"Active vial {active_vial} has already been collected from {potentiostat}")
+
+        self.rerun_fizzed_robot()
 
         if self.end_experiment:
             potentiostat.update_experiment(None)

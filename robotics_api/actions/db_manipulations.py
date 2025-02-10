@@ -378,7 +378,7 @@ class StationStatus(RobotStatusDB):
             total_time += wait_interval
             if max_time and (total_time >= max_time):
                 return None
-            available_stations = self.get_all_available(name_str)
+            available_stations = self.get_all_available(name_str, **kwargs)
         return available_stations[0]
 
     def wait_till_available(self, max_time=MAX_DB_WAIT_TIME, wait_interval=2):
@@ -432,6 +432,7 @@ class StationStatus(RobotStatusDB):
             clean_status (bool): The new cleanliness status for the station.
         """
         self.coll.update_one({"_id": self.id}, {"$set": {"clean": clean_status}})
+        print(f"Potentiostat {self} updated to clean is {clean_status}.")
 
     def update_content(self, new_content):
         """

@@ -505,7 +505,8 @@ class PipetteStation(StationStatus):
         """
         vial.leave_station(self, raise_error=raise_error)
         joint_deltas = dict(j1=-5)
-        perturb_angular(reverse=False, **joint_deltas)
+        if RUN_ROBOT:
+            perturb_angular(reverse=False, **joint_deltas)
 
 
 class BalanceStation(StationStatus):

@@ -1,5 +1,7 @@
 import time
 import uuid
+import warnings
+
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
@@ -24,7 +26,6 @@ class VialStatus(RobotStatusDB):
         """
         super().__init__(apparatus_type='vials', _id=_id, **kwargs)
         if exp_name:
-            print(exp_name)
             self.id = (self.coll.find_one({"experiment_name": exp_name}) or {}).get("_id")
             if not self.id:
                 raise NameError(f"No vial is associated with experiment name {exp_name}.")
@@ -45,6 +46,16 @@ class VialStatus(RobotStatusDB):
             list: The vial content.
         """
         return self.get_prop("vial_content") or []
+
+    @property
+    def content_history(self):
+        """
+        Get the vial content.
+
+        Returns:
+            list: The vial content.
+        """
+        return self.get_prop("content_history") or []
 
     @property
     def current_weight(self):
@@ -118,7 +129,7 @@ class VialStatus(RobotStatusDB):
         """Clear the vial content."""
         self.insert(self.id, override_lists=True, instance={"vial_content": []})
 
-    def add_reagent(self, reagent, amount, default_unit):
+    def add_reagent(self, reagent, amount, default_unit, addition_id=None):
         """
         Add a reagent to the vial content.
 
@@ -126,13 +137,17 @@ class VialStatus(RobotStatusDB):
             reagent (str or obj): The reagent ID or instance.
             amount (str or float or dict): The amount of the reagent.
             default_unit (str): The default unit for the reagent amount.
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Raises:
             NameError: If the reagent does not exist in the reagent database.
         """
+        # Check if reagent exists
         reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
         if not reagent:
             raise NameError("No reagent {} exists in the reagent database.".format(reagent))
+
+        # Get new vial contents
         existing_reagent = [i for i in self.vial_content if i.get("reagent_uuid") == reagent.id]
         other_reagents = [i for i in self.vial_content if i.get("reagent_uuid") != reagent.id]
         if existing_reagent:
@@ -145,18 +160,45 @@ class VialStatus(RobotStatusDB):
             "name": reagent.name,
             "amount": f"{new_amount}{default_unit}"
         }]
+
+        # Update database
+        current_addition = {
+            "addition_id": addition_id,
+            "reagent_uuid": reagent.id,
+            "name": reagent.name,
+            "amount": amount
+        }
+        history = self.get_prop("content_history") or []
+        history.append(current_addition)
         self.insert(self.id, override_lists=True, instance={
             "vial_content": other_reagents + new_vial_content,
+            "content_history": history
         })
         self.update_status(None, "weight")
 
-    def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT):
+    def check_addition_id(self, addition_id):
+        """
+        Check if this addition has already been made
+        Args:
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
+
+        Raises:
+            boolean: If the reagent does not exist in the reagent database.
+        """
+        history = self.get_prop("content_history") or []
+        existing_addition_ids = [a["addition_id"] for a in history]
+        if addition_id in existing_addition_ids:
+            return False
+        return True
+
+    def extract_soln(self, extracted_mass, default_mass_unit=MASS_UNIT, addition_id=None):
         """
         Add a reagent to the vial content.
 
         Args:
             extracted_mass (str or obj): Mass extracted from solution
             default_mass_unit (str): The default mass unit for the reagent amount.
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Raises:
             NameError: If the reagent does not exist in the reagent database.
@@ -176,8 +218,19 @@ class VialStatus(RobotStatusDB):
                     "name": reagent.name,
                     "amount": f"{new_amount}{default_mass_unit}"
                 })
+
+            # Update database
+            current_addition = {
+                "addition_id": addition_id,
+                "reagent_uuid": None,
+                "name": "extraction",
+                "amount": extracted_mass
+            }
+            history = self.get_prop("content_history") or []
+            history.append(current_addition)
             self.insert(self.id, override_lists=True, instance={
                 "vial_content": new_vial_content,
+                "content_history": history
             })
             print(f"Successfully extracted {extract_perc*100:.2f}% of the mass from vial {self}.")
 

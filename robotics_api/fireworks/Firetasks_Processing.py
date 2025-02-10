@@ -38,6 +38,14 @@ class InitializeRobot(FiretaskBase):
                 BaseClient(router)
                 BaseCyclicClient(router)
 
+            snapshot_move(SNAPSHOT_HOME)
+
+        # Test Balance connection
+        if WEIGH:
+            for balance in [b for b in MEASUREMENT_STATIONS if "balance" in b]:
+                mass = BalanceStation(balance).try_read_mass()
+                print(f"Successfully read mass {mass} from balance {balance}!")
+
         reset_stations()
 
         return FWAction(update_spec={"success": True})
@@ -84,6 +92,7 @@ class ProcessBase(RoboticsBase, ABC):
     data_path: str
     processed_locs: list
     instrument: PotentiostatStation
+    processing_method: str
 
     def setup_task(self, fw_spec, data_len_error=True, instrument_error=True):
         """Set up task parameters from the Fireworks spec.
@@ -94,6 +103,13 @@ class ProcessBase(RoboticsBase, ABC):
             instrument_error (bool): Flag to raise a warning if instrument is found. Default is True.
         """
         super().setup_task(fw_spec, get_exp_vial=False)
+
+        # Check active method
+        self.active_method = self.metadata.get("active_method", "")
+        if self.processing_method != self.active_method:
+            raise ValueError(f"Processing {self.processing_method} cannot be performed with active "
+                             f"method {self.active_method}.")
+
         # General info
         self.processing_id = str(fw_spec.get("fw_id") or self.get("fw_id"))
         self.processed_locs = self.processing_data.get("processed_locs") or []
@@ -108,8 +124,7 @@ class ProcessBase(RoboticsBase, ABC):
 
         # Measurement info
         self.collect_tag = self.metadata.get("collect_tag", f"UnknownCycle")
-        self.active_method = self.metadata.get("active_method", "")
-        if self.active_method == "cv":
+        if "cv" in self.active_method:
             self.instrument = CVPotentiostatStation(self.metadata.get(f"{self.active_method}_potentiostat"))
         elif self.active_method == "ca":
             self.instrument = CAPotentiostatStation(self.metadata.get(f"{self.active_method}_potentiostat"))
@@ -124,7 +139,6 @@ class ProcessBase(RoboticsBase, ABC):
         if not self.collection_data and data_len_error:
             warnings.warn("WARNING! No data locations were found, so no file processing occurred.")
             return FWAction(update_spec=self.updated_specs())
-
         if self.collection_data:
             self.data_path = os.path.join("\\".join(self.collection_data[0].get("data_location").split("\\")[:-1]))
 
@@ -146,7 +160,7 @@ class ProcessBase(RoboticsBase, ABC):
             "upload_time": datetime.now().isoformat(),
             "file_type": file_type,
             "data_category": "experimentation",
-            "data_type": "cv",
+            "data_type": self.active_method,
         }
 
     def conc_info(self, vial_contents: list):
@@ -181,15 +195,20 @@ class ProcessBase(RoboticsBase, ABC):
             return False
         return True
 
-    def process_cv_data(self, raw_data, insert=True, plot_name="", title_tag=""):
+    @property
+    def plot_name(self):
+        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)} " \
+                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
+
+    def process_cv_data(self, raw_data, insert=True, title_tag="", plot_dir=False):
         """
         Processes CV data files.
 
         Args:
             raw_data (dict): Raw data from measurement Firetask
             insert (bool): Whether to insert the processed data into the database (default: True).
-            plot_name (str): The name of the plot (default: "").
             title_tag (str): Additional tag to add to the plot title (default: "").
+            plot_dir (bool): Place plots in their own directory if True.
 
         Returns:
             dict: The processed data as a dictionary, or None if the file is not found or already processed.
@@ -197,15 +216,14 @@ class ProcessBase(RoboticsBase, ABC):
         file_loc = raw_data.get("data_location")
         if not self.check_file(file_loc):
             return None
-        metadata = self.metadata
         e_ref = ReagentStatus(_id=self.rom_id).formal_potential
         if self.mol_id and e_ref is None:
             raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
-        metadata.update({"e_ref": e_ref})
-        metadata.update(self.instrument._settings_dict)
-        metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update({"e_ref": e_ref})
+        self.metadata.update(self.instrument._settings_dict)
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCV(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
-                              metadata=metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
+                              metadata=self.metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
 
         # Insert data into database
         if self.mol_id and insert:
@@ -214,18 +232,20 @@ class ProcessBase(RoboticsBase, ABC):
         self.processed_locs.append(file_loc)
 
         # Plot
-        plot_name = plot_name or f"{self.full_name}, {self.metadata['redox_mol_concentration']} redox, " \
-                                 f"{self.metadata['electrolyte_concentration']} SE"
-        if not self.instrument.micro_electrode:
-            image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
-            CVPlotter(connector={"scan_data": "data.scan_data",
-                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
-                                 }).live_plot(p_data, fig_path=image_path,
-                                              title=f"{title_tag} CV Plot for {plot_name}",
-                                              xlabel=MULTI_PLOT_XLABEL,
-                                              ylabel=MULTI_PLOT_YLABEL,
-                                              current_density=PLOT_CURRENT_DENSITY,
-                                              a_to_ma=CONVERT_A_TO_MA)
+        image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
+        if plot_dir:
+            data_dir = os.path.dirname(file_loc)
+            image_dir = os.path.join(data_dir, os.path.basename(file_loc).split("_")[0])
+            os.makedirs(image_dir, exist_ok=True)
+            image_path = os.path.join(image_dir, os.path.basename(image_path))
+        CVPlotter(connector={"scan_data": "data.scan_data",
+                             "we_surface_area": "data.conditions.working_electrode_surface_area"
+                             }).live_plot(p_data, fig_path=image_path,
+                                          title=f"{title_tag} CV Plot for {self.plot_name}",
+                                          xlabel=CV_PLOT_XLABEL,
+                                          ylabel=CV_PLOT_YLABEL,
+                                          current_density=PLOT_CURRENT_DENSITY,
+                                          a_to_ma=CONVERT_A_TO_MA)
 
         return p_data
 
@@ -241,23 +261,30 @@ class ProcessBase(RoboticsBase, ABC):
         Returns:
             dict: The processed data as a dictionary, or None if the file is not found or already processed.
         """
-        metadata = self.metadata
         file_loc = raw_data.get("data_location")
         if not self.check_file(file_loc):
             return None
 
         self.metadata.update({"cell_constant": get_cell_constant(collection_time=raw_data["collection_time"],
                                                                  raise_error=cell_constant_error)})
-        metadata.update(self.instrument._settings_dict)
-        metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update(self.instrument._settings_dict)
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
-                              metadata=metadata).data_dict
+                              metadata=self.metadata).data_dict
 
         # Insert data into database
         if self.mol_id and insert:
             MongoDatabase(database="robotics", collection_name="experimentation",
                           instance=p_data, validate_schema=False).insert(p_data["_id"])
         self.processed_locs.append(file_loc)
+
+        # Plot
+        image_path = ".".join(file_loc.split(".")[:-1]) + "_plot.png"
+        CAPlotter(connector={"t_s": "data.time",
+                             "i_s": "data.current",
+                             }).live_plot(p_data, fig_path=image_path,
+                                          title=f"CA Plot for {self.plot_name}",
+                                          a_to_ma=CONVERT_A_TO_MA)
         return p_data
 
     def process_solv_data(self):
@@ -266,22 +293,35 @@ class ProcessBase(RoboticsBase, ABC):
         for d in solv_data:
             p_data = self.process_pot_data(d.get("data_location"), metadata=self.metadata, insert=False,
                                            processing_class=ProcessChiCV)
-            if not self.instrument.micro_electrode:
-                image_path = ".".join(d.get("data_location").split(".")[:-1]) + "_plot.png"
-                CVPlotter(connector={"scan_data": "data.scan_data",
-                                     "we_surface_area": "data.conditions.working_electrode_surface_area"
-                                     }).live_plot(p_data, fig_path=image_path,
-                                                  title=f"CV Plot for Solvent",
-                                                  xlabel=MULTI_PLOT_XLABEL,
-                                                  ylabel=MULTI_PLOT_YLABEL,
-                                                  current_density=PLOT_CURRENT_DENSITY,
-                                                  a_to_ma=CONVERT_A_TO_MA)
+            image_path = ".".join(d.get("data_location").split(".")[:-1]) + "_plot.png"
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"
+                                 }).live_plot(p_data, fig_path=image_path,
+                                              title=f"CV Plot for Solvent",
+                                              xlabel=CV_PLOT_XLABEL,
+                                              ylabel=CV_PLOT_YLABEL,
+                                              current_density=PLOT_CURRENT_DENSITY,
+                                              a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
                 dirty = dirty_calc.calculate(p_data, max_current_range=self.instrument.settings("dirty_electrode_current"))
                 if dirty:
                     raise SystemError("WARNING! Electrode may be dirty!")
             print(f"Solvent {d} processed.")
+
+    def record_metadata(self, metadata_dict, processed_data, print_func=print_cv_analysis):
+        # Record all data
+        with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
+            fn.write(json.dumps(processed_data))
+        with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
+            fn.write(print_func(multi_data=processed_data, metadata_dict=metadata_dict, verbose=VERBOSE))
+
+        metadata_id = str(uuid.uuid4())
+        MongoDatabase(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
+                      validate_schema=False).insert(metadata_id)
+        self.processing_data.update({'processed_data': processed_data, "metadata_id": metadata_id,
+                                     'processing_ids': [d.get("_id") for d in processed_data],
+                                     'processed_locs': self.processed_locs})
 
 
 @explicit_serialize
@@ -292,6 +332,9 @@ class ProcessCVBenchmarking(ProcessBase):
     This task processes CV data, calculates the appropriate voltage sequence based on benchmarking peaks,
     and updates the FireWorks specifications with this information.
     """
+
+    processing_method = "cv"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec, data_len_error=False)
 
@@ -302,7 +345,7 @@ class ProcessCVBenchmarking(ProcessBase):
 
         try:
             # Process benchmarking data
-            p_data = self.process_cv_data(cv_data[0], insert=False, plot_name="Benchmark")
+            p_data = self.process_cv_data(cv_data[0], insert=False, title_tag="Benchmark")
 
             # Calculate old voltage sequence
             if self.instrument.micro_electrode:
@@ -337,6 +380,8 @@ class ProcessCalibration(ProcessBase):
     and updates the calibration database with the processed information.
     """
 
+    processing_method = "ca"
+
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
@@ -369,91 +414,138 @@ class ProcessCalibration(ProcessBase):
 
 # noinspection PyTypeChecker
 @explicit_serialize
-class DataProcessor(ProcessBase):
+class DataProcessorCV(ProcessBase):
     """
-    FireTask for processing cyclic voltammetry (CV) and chronoamperometry (CA) data files.
+    FireTask for processing cyclic voltammetry (CV) data files.
 
-    This class is responsible for the processing of CV and CA data, performing various calculations, plotting graphs,
-    and storing the results in a database. It also calculates metadata and processes potentiometric data.
-
-    Processes:
-        1. CV data:
-            - Retrieves and processes CV data.
-            - Performs meta calculations and records the data.
-            - Plots individual and multi-CV graphs.
-            - Stores CV metadata in a database.
-        2. CA data:
-            - Retrieves and processes CA data.
-            - Calculates conductivity, resistance, and other properties.
-            - Stores CA metadata and data in a database.
+    This class is responsible for the processing of CV data, performing various calculations, plotting graphs,
+    and storing the results in a database. It also calculates metadata.
+        - Retrieves and processes CV data.
+        - Performs meta calculations and records the data.
+        - Plots individual and multi-CV graphs.
+        - Stores CV metadata in a database.
     """
+
+    processing_method = "cv"
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+
+        # Check size of electrode
+        if self.instrument.micro_electrode:
+            raise ValueError(f"CV processing cannot be performed on data from instrument {self.instrument} with "
+                             f"electrode size {self.instrument.electrode_radius} because this is a UM electrode.")
+
+        metadata_dict = {}
+        self.process_solv_data()
+
+        cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cv", [])
+        processed_data = [self.process_cv_data(d, plot_dir=True) for d in cv_data]
+        processed_data = [p for p in processed_data if p is not None]
+
+        if processed_data:
+            # Plot all CVs
+            multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
+            CVPlotter(connector={"scan_data": "data.scan_data",
+                                 "variable_prop": "data.conditions.scan_rate.value",
+                                 "we_surface_area": "data.conditions.working_electrode_surface_area"}
+                      ).live_plot_multi(processed_data, fig_path=multi_path,
+                                        title=f"Multi CV Plot for {self.plot_name}",
+                                        xlabel=CV_PLOT_XLABEL,
+                                        ylabel=CV_PLOT_YLABEL, legend_title=CV_PLOT_LEGEND,
+                                        current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)
+
+            # CV Meta Properties
+            print("Calculating metadata...")
+            if self.mol_id:
+                metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
+                                              micro_electrodes=self.instrument.micro_electrode).meta_dict)
+
+        self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data)
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
+
+
+@explicit_serialize
+class DataProcessorCVUM(ProcessBase):
+    """
+    FireTask for processing cyclic voltammetry (CV) data files with ultra micro electrodes.
+
+    This class is responsible for the processing of CV data, performing various calculations, plotting graphs,
+    and storing the results in a database. It also calculates metadata.
+        - Retrieves and processes CV data.
+        - Performs meta calculations and records the data.
+        - Plots individual and multi-CV graphs.
+        - Stores CV metadata in a database.
+    """
+
+    processing_method = "cvUM"
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+
+        # Check size of electrode
+        if not self.instrument.micro_electrode:
+            raise ValueError(f"CV UM processing cannot be performed on data from instrument {self.instrument} with "
+                             f"electrode size {self.instrument.electrode_radius} because this is not a UM electrode.")
+
+        metadata_dict = {}
+        # Process CV data for cycle
+        cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cvUM", [])
+        processed_data = [self.process_cv_data(d) for d in cv_data]
+        processed_data = [p for p in processed_data if p is not None]
+
+        if processed_data:
+            # CV Meta Properties
+            print("Calculating metadata...")
+            if self.mol_id:
+                metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
+                                              micro_electrodes=self.instrument.micro_electrode).meta_dict)
+
+        self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data)
+        return FWAction(update_spec=self.updated_specs(), propagate=True)
+
+
+@explicit_serialize
+class DataProcessorCA(ProcessBase):
+    """
+    FireTask for processing chronoamperometry (CA) data files.
+
+    This class is responsible for the processing of CA data, performing various calculations, plotting graphs,
+    and storing the results in a database. It also calculates metadata.
+        - Retrieves and processes CA data.
+        - Calculates conductivity, resistance, and other properties.
+        - Stores CA metadata and data in a database.
+    """
+
+    processing_method = "ca"
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         metadata_dict = {}
 
-        # Process CV data for cycle
-        if self.active_method == "cv":
-            self.process_solv_data()
-
-            cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cv", [])
-            processed_data = [self.process_cv_data(d) for d in cv_data]
-            processed_data = [p for p in processed_data if p is not None]
-
-            if processed_data:
-                # Plot all CVs
-                multi_path = os.path.join(self.data_path, f"{self.collect_tag}_multi_cv_plot.png")
-                CVPlotter(connector={"scan_data": "data.scan_data",
-                                     "variable_prop": "data.conditions.scan_rate.value",
-                                     "we_surface_area": "data.conditions.working_electrode_surface_area"}
-                          ).live_plot_multi(processed_data, fig_path=multi_path,
-                                            title=f"Multi CV Plot for {self.mol_id}",
-                                            xlabel=MULTI_PLOT_XLABEL,
-                                            ylabel=MULTI_PLOT_YLABEL, legend_title=MULTI_PLOT_LEGEND,
-                                            current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)
-
-                # CV Meta Properties
-                print("Calculating metadata...")
-                if self.mol_id:
-                    print(self.mol_id)
-                    metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
-                                                  micro_electrodes=self.instrument.micro_electrode).meta_dict)
-
-                # Record all data
-                with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
-                    fn.write(json.dumps(processed_data))
-                with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
-                    fn.write(print_cv_analysis(processed_data, metadata_dict, verbose=VERBOSE))
-
         # Process CA data for cycle
-        elif self.active_method == "ca":
-            ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
-            processed_data = [self.process_ca_data(d) for d in ca_data]
-            processed_data = [p for p in processed_data if p is not None]
+        ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
+        processed_data = [self.process_ca_data(d) for d in ca_data]
+        processed_data = [p for p in processed_data if p is not None]
 
-            if processed_data:
-                print("---------- CA CALCULATION RESULTS ----------")
-                print("Conductivity: ", processed_data[-1].get("data", {}).get("conductivity"))
+        if processed_data:
+            print("---------- CA CALCULATION RESULTS ----------")
+            print("Conductivity: ", processed_data[-1].get("data", {}).get("conductivity"))
 
-                # CA Meta Properties
-                save_props = ["conductivity", "measured_conductance", "resistance", "measured_resistance"]
-                metadata_dict.update({p: processed_data[-1].get(p) for p in save_props})
-                # Record all data
-                with open(self.data_path + f"\\{self.collect_tag.strip('cycle')}_all_data.txt", 'w') as fn:
-                    fn.write(json.dumps(processed_data))
-                with open(self.data_path + f"\\summary_{self.collect_tag.strip('cycle')}.txt", 'w') as fn:
-                    fn.write(print_ca_analysis(processed_data, verbose=VERBOSE))
+            # CA Meta Properties
+            save_props = ["conductivity", "measured_conductance", "resistance", "measured_resistance"]
+            metadata_dict.update({p: processed_data[-1].get(p) for p in save_props})
 
-        else:
-            processed_data = []
+        self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data, print_func=print_ca_analysis)
 
-        metadata_id = str(uuid.uuid4())
-        MongoDatabase(database="robotics", collection_name="metadata", instance=dict(metadata=metadata_dict),
-                      validate_schema=False).insert(metadata_id)
-        self.processing_data.update({'processed_data': processed_data, "metadata_id": metadata_id,
-                                     'processing_ids': [d.get("_id") for d in processed_data],
-                                     'processed_locs': self.processed_locs})
         return FWAction(update_spec=self.updated_specs(), propagate=True)
+
+
+@explicit_serialize
+class DataProcessor(ProcessBase):
+
+    def run_task(self, fw_spec):
+        raise NotImplementedError
 
 
 @explicit_serialize
@@ -549,6 +641,6 @@ class EndWorkflow(FiretaskBase):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:
             VialMove(_id=robot_content).place_home()
-        # success = snapshot_move(SNAPSHOT_HOME)
-        success = snapshot_move(SNAPSHOT_END_HOME)
+        success = snapshot_move(SNAPSHOT_HOME)
+        success += snapshot_move(SNAPSHOT_END_HOME)
         return FWAction(update_spec={"success": success})

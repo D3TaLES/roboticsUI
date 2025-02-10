@@ -27,9 +27,9 @@ FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration
 FIZZLE_DIRTY_ELECTRODE = False  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment by skipping all children Fireworks
 WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
-RETURN_EXTRACTED_SOLN = True  # Return solution extracted via pipette after measurement made.
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
 MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
+MAX_PIPETTE_VOL = 0.6  # Maximum volume in mL the pipette can extract
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -48,7 +48,7 @@ KINOVA_01_IP = "192.168.1.10"
 VIAL_GRIP_TARGET = 60
 OPEN_GRIP_TARGET = 40
 PERTURB_AMOUNT = 0.07
-ZONE_DIVIDERS = [30, 180, 330]
+ZONE_DIVIDERS = [30, 180, 328]
 
 # ---------  INSTRUMENT SETTINGS -------------
 ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrode, cm
@@ -57,14 +57,17 @@ ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrod
 POTENTIOSTAT_SETTINGS = {
     "cvUM_potentiostat_A_01": dict(
         address="COM6",
-        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
+        exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
 
         working_electrode_radius=0.0011 / 2,  # radius in cm
+        electrode_working="11 micrometer carbon micro electrode",
+        electrode_counter="Pt coil counter",
+        electrode_reference="Ag/Ag+ reference",
         dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
-        # CV settings
+        # Default CV settings
         scan_rate=0.01,  # V/s
-        voltage_sequence="0, 0.7, 0V",
+        voltage_sequence="0.5, -0.2, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
@@ -85,21 +88,24 @@ POTENTIOSTAT_SETTINGS = {
 
     ),
     "cv_potentiostat_B_01": dict(
-        address="COM8",
-        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
+        address="COM1",
+        exe_path=r"C:\Users\Lab\Desktop\chi650e.exe",
 
-        working_electrode_radius=0.2 / 2,  # radius in cm
-        dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode TODO
+        working_electrode_radius=0.3 / 2,  # radius in cm
+        electrode_working="3 mm glassy carbon electrode",
+        electrode_counter="Pt coil counter",
+        electrode_reference="Ag/Ag+ reference",
+        dirty_electrode_current=1e-5,  # max current allowed (A) for a clean electrode
 
-        # CV settings
+        # Default CV settings
         scan_rate=0.1,  # V/s
-        voltage_sequence="0, 0.7, 0V",
+        voltage_sequence="0.5, -0.2, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
 
         # IR Compensation settings
-        ir_comp=False,  # Perform IR Compensation
+        ir_comp=True,  # Perform IR Compensation
         rcomp_level=0.85,  # percentage as decimal of solution resistance to use
         low_freq=10000,
         high_freq=100000,
@@ -109,14 +115,15 @@ POTENTIOSTAT_SETTINGS = {
         # Processing settings
         cut_beginning=0.0,  # percentage as decimal of front of CV to cut
         cut_end=0.0,  # percentage as decimal of end of CV to cut
-        benchmark_buffer=0.25,  # volts, buffer used in setting voltage range from benchmark peaks
+        benchmark_buffer=0.3,  # volts, buffer used in setting voltage range from benchmark peaks
 
     ),
     "ca_potentiostat_C_01": dict(
         address="COM7",
-        exe_path=r"C:\Users\Lab\Desktop\chi620e.exe",
+        exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
-        quiet_time=60,  # s
+        # Default CA settings
+        quiet_time=90,  # s
         sample_interval=1e-6,  # seconds
         sensitivity=1e-4,  # A/V, current sensitivity
         pulse_width=1e-4,  # sec, pulse width for CA
@@ -132,9 +139,9 @@ POTENTIOSTAT_SETTINGS = {
 RUN_ANODIC = True
 CONVERT_A_TO_MA = True
 PLOT_CURRENT_DENSITY = True
-MULTI_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"
-MULTI_PLOT_YLABEL = None  # uses default D3TaLES API y label
-MULTI_PLOT_LEGEND = "Scan Rate (V/s)"
+CV_PLOT_XLABEL = "Potential (V) vs Ag/$Ag^+$"
+CV_PLOT_YLABEL = None  # uses default D3TaLES API y label
+CV_PLOT_LEGEND = "Scan Rate (V/s)"
 
 PEAK_WIDTH = 0.5
 
@@ -150,7 +157,6 @@ CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
 }
 FORMAL_POTENTIALS = {  # Formal potentials
     "CC1(C)CCCC(C)(C)N1[O]": "0.367 V",  # TEMPO, V vs. Ag/Ag+  TODO Figure out what value to actually use
-    "[Cl-].[K+]": "0 V",  # KCl, NOT REAL, just a stand in!
     "[CH-]1C=CC=C1.[CH-]1C=CC=C1.[Fe+2]": "0 V",  # Fc, NOT REAL, just a stand in!
 }
 SOLVENT_DENSITIES = {  # Formal potentials

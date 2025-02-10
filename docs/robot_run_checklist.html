@@ -140,8 +140,6 @@ no more bubbles appear in the solvent.</p>
 <input type="checkbox"> Set temperature probe (NOT in the vial solution)<br>
 <input type="checkbox"> Place dispensing waste beaker below pipette.<br>
 <input type="checkbox"> Set all vials (make sure they are uncapped)<br></p>
-<h4>Ensure any necessary calibration workflows have been completed.</h4>
-<p><input type="checkbox"> If you need to run a calibration, complete the next several items for the calibrations, then return to this step.<br></p>
 <h4>Prepare Software</h4>
 <p><input type="checkbox"> Check that the CHI software is set to produce IUPAC convention CV plots. (<code>Setup</code> → <code>System</code> → <code>Anodic Positive</code> and <code>Positive Right</code>)<br>
 <input type="checkbox"> Check your settings in settings.py!<br>
@@ -155,6 +153,8 @@ no more bubbles appear in the solvent.</p>
 run, pause all READY Fireworks (<code>lpad pause_fws -s READY</code>). Then, rerun the initialization Firework for the
 the workflow you want to run (<code>lpad rerun_fws -i &lt;init_fw_id&gt;</code>).</p>
 </blockquote>
+<h4>Ensure any necessary calibration workflows have been completed.</h4>
+<p><input type="checkbox"> If you need to run a calibration, complete the next several items for the calibrations, then return to this step.<br></p>
 <h4>Start Experiment</h4>
 <p><input type="checkbox"> Start instrument jobs. Through the Robotics App, <code>Run Instruments</code> -&gt; <code>Run Jobs Continuously</code><br>
 <input type="checkbox"> Start processing jobs. Through the Robotics App, <code>Run Process</code> -&gt; <code>Run Jobs Continuously</code><br>

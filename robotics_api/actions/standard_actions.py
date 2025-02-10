@@ -1,4 +1,6 @@
 import math
+import time
+
 from d3tales_api.Processors.parser_echem import ProcessChiESI
 from robotics_api.utils.kinova_move import *
 from robotics_api.utils.base_utils import *
@@ -345,7 +347,7 @@ class LiquidStation(StationStatus):
         vial.leave_station(self, raise_error=raise_error)
         return actual_volume
 
-    def dispense_volume(self, vial: VialMove, volume, raise_error=True):
+    def dispense_volume(self, vial: VialMove, volume, raise_error=True, addition_id=None):
         """
         Dispenses a specified volume of liquid into a vial and updates the vial's reagent information.
 
@@ -353,6 +355,7 @@ class LiquidStation(StationStatus):
             vial (VialMove): The vial to be filled with liquid.
             volume (float): The volume of liquid to dispense.
             raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Returns:
             float: The actual volume of liquid dispensed.
@@ -361,10 +364,10 @@ class LiquidStation(StationStatus):
             Exception: If the dispensing fails and raise_error is True.
         """
         actual_volume = self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
-        vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT)
+        vial.add_reagent(self.solvent_id, amount=volume, default_unit=VOLUME_UNIT, addition_id=addition_id)
         return actual_volume
 
-    def dispense_mass(self, vial: VialMove, volume, raise_error=True):
+    def dispense_mass(self, vial: VialMove, volume, raise_error=True, addition_id=None):
         """
         Dispenses a specified volume of liquid into a vial and updates the vial's content with solvent mass using pre- and post-dispense weighing.
 
@@ -372,6 +375,7 @@ class LiquidStation(StationStatus):
             vial (VialMove): The vial to be filled with liquid.
             volume (float): The volume of liquid to dispense.
             raise_error (bool): Whether to raise an error if the dispensing fails (default is True).
+            addition_id (str): A unique identifier for the reagent addition (Default is None)
 
         Returns:
             str: The mass of the liquid dispensed, in the default mass unit.
@@ -392,7 +396,7 @@ class LiquidStation(StationStatus):
         final_mass = post_mass - pre_mass
 
         # Update vial contents
-        vial.add_reagent(self.solvent_id, amount=final_mass, default_unit=MASS_UNIT)
+        vial.add_reagent(self.solvent_id, amount=final_mass, default_unit=MASS_UNIT, addition_id=addition_id)
         vial.update_weight(post_mass)
 
         return f"{final_mass}{MASS_UNIT}"
@@ -465,12 +469,16 @@ class PipetteStation(StationStatus):
             self.place_vial(vial, raise_error=raise_error)
 
         if PIPETTE:
-            arduino_vol = unit_conversion(volume, default_unit="mL") * 1000  # send volume in micro liter
+            vol_mL = unit_conversion(volume, default_unit="mL")
+            if vol_mL > MAX_PIPETTE_VOL:
+                raise ValueError(f"Cannot pipette {vol_mL} mL because it is greater than the max "
+                                 f"pipette volume {MAX_PIPETTE_VOL} mL.")
+            arduino_vol = vol_mL * 1000  # send volume in micro liter
             send_arduino_cmd(self.serial_name, arduino_vol)
 
         if vial:
             vial.update_status(None, status_name="weight")
-            vial.leave_station(self, raise_error=raise_error)
+            self.leave_station(vial, raise_error=raise_error)
 
     def return_soln(self, vial: VialMove, raise_error=True):
         vial.go_to_station(self, raise_error=raise_error, pre_position_only=True)
@@ -480,6 +488,24 @@ class PipetteStation(StationStatus):
 
         vial.update_status(None, status_name="weight")
         vial.leave_station(self, raise_error=raise_error)
+
+    def discard_soln(self):
+        send_arduino_cmd(self.serial_name, 0)
+
+    def leave_station(self, vial: VialMove, raise_error=True):
+        """
+        Leaves pipette station so extracted solution can be discarded
+
+        Args:
+            vial (VialMove, optional): The vial to pipette into (default is None).
+            raise_error (bool): Whether to raise an error if the operation fails (default is True).
+
+        Raises:
+            Exception: If the operation fails and raise_error is True.
+        """
+        vial.leave_station(self, raise_error=raise_error)
+        joint_deltas = dict(j1=-5)
+        perturb_angular(reverse=False, **joint_deltas)
 
 
 class BalanceStation(StationStatus):
@@ -597,20 +623,30 @@ class BalanceStation(StationStatus):
             vial.retrieve()
         self.tare()
         self.place_vial(vial, raise_error=raise_error)
+        mass = self.try_read_mass(max_balance_reads=max_balance_reads)
+        time.sleep(1)
+        self._retrieve_vial(vial)
+        vial.update_status(mass, "weight")
+        return mass
+
+    def try_read_mass(self, max_balance_reads=MAX_BALANCE_READS):
+        """
+        Trt to read the mass from the balance via serial communication.
+
+        Returns:
+            float: The mass read from the balance.
+        """
         balance_reads = 0
         while True:
             try:
                 mass = self.read_mass()
-                break
+                return mass
             except Exception as e:
                 if balance_reads > max_balance_reads:
                     raise e
                 print(f"WARNING. Balance reading {balance_reads} ended in error: ", e)
                 balance_reads += 1
-        time.sleep(1)
-        self._retrieve_vial(vial)
-        vial.update_status(mass, "weight")
-        return mass
+                time.sleep(10)
 
     def read_mass(self):
         """
@@ -650,7 +686,7 @@ class BalanceStation(StationStatus):
             print(f"WARNING! Balance returned {response}! Trying again...")
             time.sleep(1)
 
-    def _send_command(self, write_txt=None, read_response=False):
+    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=100):
         """
         Sends a command to the balance via serial communication and optionally reads the response.
 
@@ -675,7 +711,10 @@ class BalanceStation(StationStatus):
             start_time = time.time()
             while True:
                 data = balance.readline()
-                print("waiting for {} balance results for {:.1f} seconds...".format(self, time.time() - start_time))
+                elapsed_time = time.time() - start_time
+                if elapsed_time > max_balance_read_time:
+                    raise ValueError(f"Balance failed to respond after {max_balance_read_time} s.")
+                print("waiting for {} balance results for {:.1f} seconds...".format(self, elapsed_time))
                 if data:
                     result_txt = data.decode().strip()  # strip out the old lines
                     print("BALANCE RESULT: ", result_txt)
@@ -1078,10 +1117,20 @@ class PotentiostatStation(StationStatus):
         scan_rate = ureg(scan_rate).to(scan_unit).magnitude
         return [dict(voltage=v, scan_rate=scan_rate) for v in voltages]
 
+    @staticmethod
+    def check_data_path(datapath="", raise_error=True):
+        if os.path.isfile(datapath):
+            return True
+        else:
+            if raise_error:
+                raise FileNotFoundError(f"The datafile {datapath} was not found.")
+            return False
+
 
 class CVPotentiostatStation(PotentiostatStation):
     """
-    A class representing a cyclic voltammetry (CV) potentiostat station, which runs CV experiments and iR compensation tests.
+    A class representing a cyclic voltammetry (CV) potentiostat station, which runs CV experiments and
+    iR compensation tests.
 
     Inherits from PotentiostatStation.
 
@@ -1167,14 +1216,18 @@ class CVPotentiostatStation(PotentiostatStation):
 
             # Install potentiostat and run CV
             hp.potentiostat.Setup(self.pot_model, self.p_exe_path, out_folder, port=self.p_address)
+            soln_resistance = resistance * self.settings("rcomp_level") if self.settings("ir_comp") else None
             cv = hp.potentiostat.CV(Eini=volts[0], Ev1=max(volts), Ev2=min(volts), Efin=volts[-1], sr=sr,
                                     nSweeps=nSweeps, dE=sample_interval, sens=sens,
                                     fileName=f_name, header="CV " + f_name,
-                                    resistance=resistance * self.settings("rcomp_level"))
+                                    resistance=soln_resistance)
             cv.run()
             time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
+
+        self.check_data_path(data_path)
+
         return True
 
     def run_ircomp_test(self, data_path, e_ini=0, low_freq=None, high_freq=None,
@@ -1227,6 +1280,7 @@ class CVPotentiostatStation(PotentiostatStation):
                                       sens=sens or self.settings("sensitivity"), fileName=f_name,
                                       header="iRComp " + f_name)
             eis.run()
+            self.check_data_path(data_path)
 
             # Load recently acquired data
             data = ProcessChiESI(os.path.join(out_folder, f_name + ".txt"))
@@ -1318,4 +1372,7 @@ class CAPotentiostatStation(PotentiostatStation):
             time.sleep(self.settings("time_after"))
         else:
             raise Exception(f"CV not performed. No procedure for running a CV on {self.pot_model} model.")
+
+        self.check_data_path(data_path)
+
         return True

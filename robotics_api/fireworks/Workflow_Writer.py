@@ -79,10 +79,15 @@ class EF2Experiment:
         return new_task
 
     @staticmethod
-    def process_task(collect_task):
+    def process_task(collect_task, default_analysis=""):
         """Generates a processing task"""
+        analysis_methods = ["cv", "cvUM", "ca", "ir", ]
+        analysis = default_analysis
+        for method in analysis_methods:
+            if f"_{method}_" in collect_task.name:
+                analysis = method
         task_dict = copy.deepcopy(collect_task.__dict__)
-        task_dict["name"] = f"process_data"
+        task_dict["name"] = f"process_{analysis}_data"
         new_task = dict2obj(task_dict)
         return new_task
 
@@ -199,6 +204,7 @@ class EF2Experiment:
         collect_parent = None
         for i, cluster in enumerate(self.task_clusters):
             fw_type = cluster[0].name
+
             # Turn tasks into Firetasks and flatten resulting list
             tasks = reduce(iconcat, [self.get_firetask(task) for task in cluster], [])
             if "process" in fw_type:
@@ -208,13 +214,13 @@ class EF2Experiment:
             elif "rinse" in fw_type:
                 r1 = RobotFirework(
                     [SetupRinsePotentiostat(start_uuid=cluster[0].start_uuid, end_uuid=cluster[0].end_uuid)],
-                    name=f"{self.full_name}_setup", parents=parent, priority=self.priority + 2,
+                    name=f"{self.full_name}_setup", parents=parent, priority=self.priority + 3,
                     wflow_name=self.wflow_name, fw_specs=self.fw_specs
                 )
                 r2 = AnalysisFirework(tasks, name=f"{self.full_name}_{fw_type}", parents=[r1],
-                                      priority=self.priority + 1, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                                      priority=self.priority + 2, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 r3 = RobotFirework([FinishPotentiostat()], name=f"{self.full_name}_finish", parents=[r2],
-                                   priority=self.priority + 3, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
+                                   priority=self.priority + 5, wflow_name=self.wflow_name, fw_specs=self.fw_specs)
                 fireworks.extend([r1, r2, r3])
                 self.end_exps.append(r3)
                 continue
@@ -229,7 +235,7 @@ class EF2Experiment:
                 parent = fw
                 collect_parent = fw
             else:
-                p = self.priority + 2 if "finish" in fw_type else self.priority - 2 if "transfer" in fw_type else self.priority
+                p = self.priority + 3 if "finish" in fw_type else self.priority - 2 if "transfer" in fw_type else self.priority
                 fw = RobotFirework(tasks, name=f"{self.full_name}_{fw_type}", wflow_name=self.wflow_name,
                                    priority=p, parents=parent, fw_specs=self.fw_specs)
                 parent = fw
@@ -244,7 +250,7 @@ class EF2Experiment:
         firetasks = self.task_dictionary.get(task.name)
         if not firetasks:
             raise KeyError(f"Firetask {task.name} not found in task_dictionary.")
-        parameters_dict = {"start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
+        parameters_dict = {"firetask_id": str(uuid.uuid4()), "start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
             if param.value:
                 parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
@@ -260,6 +266,7 @@ class EF2Experiment:
             "heat": [Heat],  # needs: TEMPERATURE
             "stir": [Stir],  # needs: TIME
             "measure_density": [MeasureDensity],
+            "extract": [Extract],
             "rinse_electrode": [RinseElectrode],  # needs: TIME
             "clean_electrode": [CleanElectrode],
             "collect_cv_data": [RunCV],
@@ -267,7 +274,9 @@ class EF2Experiment:
             "collect_ca_data": [RunCA],
             "collect_temperature": [CollectTemp],
             "process_calibration": [ProcessCalibration],
-            "process_data": [DataProcessor],
+            "process_cv_data": [DataProcessorCV],
+            "process_cvUM_data": [DataProcessorCVUM],
+            "process_ca_data": [DataProcessorCA],
             "collect_cv_benchmark_data": [BenchmarkCV, ProcessCVBenchmarking],
 
             "setup_cv": [SetupCVPotentiostat],
@@ -282,7 +291,6 @@ class EF2Experiment:
             "heat_stir": [Stir],  # needs: TEMPERATURE, TIME
             "process_cv_benchmarking": [ProcessCVBenchmarking],
             "measure_working_electrode_area": [],
-            "process_cv_data": [DataProcessor],
             "collect_electrode_test": [RunCV],
             "collect_electrode_test_data": [RunCV],
             "finish_": [FinishPotentiostat],

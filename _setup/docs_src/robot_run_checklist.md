@@ -49,9 +49,6 @@ tags:
   * Place dispensing waste beaker below pipette. 
   * Set all vials (make sure they are uncapped)
   
-#### Ensure any necessary calibration workflows have been completed. 
-  * If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
-
 #### Prepare Software
   * Check that the CHI software is set to produce IUPAC convention CV plots. (`Setup` &#8594; `System` &#8594; `Anodic Positive` and `Positive Right`)
   * Check your settings in settings.py!
@@ -62,6 +59,9 @@ tags:
      >**Important!** *Only one* workflow may be initiated at a time. To ensure no other workflows accidentally
      > run, pause all READY Fireworks (`lpad pause_fws -s READY`). Then, rerun the initialization Firework for the 
      > the workflow you want to run (`lpad rerun_fws -i <init_fw_id>`). 
+  
+#### Ensure any necessary calibration workflows have been completed. 
+  * If you need to run a calibration, complete the next several items for the calibrations, then return to this step. 
 
 #### Start Experiment
   * Start instrument jobs. Through the Robotics App, `Run Instruments` -> `Run Jobs Continuously`

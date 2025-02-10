@@ -5,7 +5,7 @@ from datetime import datetime
 from robotics_api.settings import *
 from robotics_api.utils.base_utils import unit_conversion, sig_figs
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
-from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA
+from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA, CAPlotter
 
 
 def collection_dict(coll_data: list):
@@ -64,10 +64,9 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
                               "but it does not have a density.")
                 return None
             r_mass = unit_conversion(reagent["amount"], default_unit="g", density=r_density) * ureg.gram
-            print(r_mass, r_mw)
             total_mols += r_mass/r_mw
         x = solute_mols / total_mols
-        print(f"MOL FRACTION: {x}")
+        print(f"MOL FRACTION: {x.magnitude:.5f}")
         return x.magnitude
     else:
         if soln_density:
@@ -78,13 +77,13 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
             soln_volume = unit_conversion(solv_amt, default_unit="L", density=solv_density) * ureg.liter
 
         concentration = solute_mass / solute_mw / soln_volume
-        print(f"CONCENTRATION: {concentration}")
+        print(f"CONCENTRATION: {concentration:.5f}")
         return "{}{}".format(sig_figs(concentration.to(CONCENTRATION_UNIT).magnitude, precision), CONCENTRATION_UNIT)
 
 
 def get_kcl_conductivity(temp):
     """
-    Returns the conductivity of a KCl solution based on the temperature.
+    Returns the conductivity of a 0.01M KCl solution based on the temperature.
 
     Args:
         temp (float): The temperature at which the conductivity is measured. Expected in Celsius or other convertible units.
@@ -166,10 +165,11 @@ def get_cell_constant(collection_time: str, raise_error=True):
                          f"workflow today before preceding with CA experiments.")
 
 
-def print_prop(prop_dict, num_sig_figs=5):
+def print_prop(prop_dict: dict, num_sig_figs: int = 5):
     """Print property value and unit from dictionary"""
     if prop_dict:
-        return "{} {}".format(sig_figs(prop_dict.get("value", prop_dict), num_sig_figs), prop_dict.get("unit", ""))
+        return "{} {}".format(sig_figs(float(prop_dict.get("value", prop_dict)), num_sig_figs),
+                              prop_dict.get("unit", ""))
     return ""
 
 
@@ -207,19 +207,19 @@ def all_cvs_data(multi_data, verbose=1):
     return single_cvs
 
 
-def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
+def print_cv_analysis(multi_data, metadata_dict, run_anodic=RUN_ANODIC, **kwargs):
     """
     Generate text analysis of CV data.
 
     Args:
         multi_data (list): List of dictionaries representing data from multiple CVs.
-        metadata (dict): Metadata for the CV analysis.
+        metadata_dict (dict): Metadata for the CV analysis.
         run_anodic (bool, optional): Whether to run anodic analysis. Defaults to RUN_ANODIC.
 
     Returns:
         str: Text analysis of the CV data.
     """
-    e_halfs = metadata.get("oxidation_potential", [])
+    e_halfs = metadata_dict.get("oxidation_potential", [])
 
     out_txt = ""
 
@@ -231,15 +231,15 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
         out_txt += "SE Conc:         {}\n".format(print_prop(se_conc))
         out_txt += "E1/2 at {}: \t{}\n".format(print_prop(cond.get("scan_rate", {})), print_prop(e_half))
 
-        diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
+        diff_coef = prop_by_order(metadata_dict.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
         out_txt += "\nCathodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
-        trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
+        trans_rate = prop_by_order(metadata_dict.get("charge_transfer_rate"), order=i + 1, notes="cathodic")
         out_txt += "Cathodic Charge Transfer Rate: \t\t\t{} \n".format(print_prop(trans_rate))
 
         if run_anodic:
-            diff_coef = prop_by_order(metadata.get("diffusion_coefficient"), order=i + 1, notes="anodic")
+            diff_coef = prop_by_order(metadata_dict.get("diffusion_coefficient"), order=i + 1, notes="anodic")
             out_txt += "\nAnodic Diffusion Coefficient (fitted): \t{}\n".format(print_prop(diff_coef))
-            trans_rate = prop_by_order(metadata.get("charge_transfer_rate"), order=i + 1, notes="anodic")
+            trans_rate = prop_by_order(metadata_dict.get("charge_transfer_rate"), order=i + 1, notes="anodic")
             out_txt += "Anodic Charge Transfer Rate: \t\t\t{}\n".format(print_prop(trans_rate))
 
     out_txt += "\n\n------------- Processing IDs -------------\n"
@@ -253,7 +253,7 @@ def print_cv_analysis(multi_data, metadata, run_anodic=RUN_ANODIC, **kwargs):
     return str(out_txt)
 
 
-def print_ca_analysis(multi_data, verbose=1):
+def print_ca_analysis(multi_data, verbose=1, **kwargs):
     """
     Generate text analysis of CA data.
 
@@ -331,8 +331,8 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
         image_path = ".".join(cv_location.split(".")[:-1]) + "_plot.png"
         CVPlotter(connector={"scan_data": "data.middle_sweep"}).live_plot(data, fig_path=image_path,
                                                                           title=f"CV Plot for Test",
-                                                                          xlabel=MULTI_PLOT_XLABEL,
-                                                                          ylabel=MULTI_PLOT_YLABEL)
+                                                                          xlabel=CV_PLOT_XLABEL,
+                                                                          ylabel=CV_PLOT_YLABEL)
     # multi_path = os.path.join("\\".join(cv_locations[0].split("\\")[:-1]), "multi_cv_plot.png")
     # CVPlotter(connector={"scan_data": "data.middle_sweep", "variable_prop": "data.conditions.scan_rate.value"
     #                      }).live_plot_multi(processed_data, fig_path=multi_path, self_standard=True,

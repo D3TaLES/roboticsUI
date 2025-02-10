@@ -213,9 +213,10 @@ class AddJob(tk.Toplevel):
         info = self.lpad.add_wf(wf)
         fw_id = list(info.values())[0]
 
-        # # Pause READY jobs
-        # p = subprocess.Popen("lpad pause_fws -s READY", stdout=subprocess.PIPE, shell=True)
-        # p.communicate()
+        # Pause READY initialization jobs
+        fw_ids = self.lpad.fireworks.find({"state": "READY", "spec._category": "initialize"}).distinct("fw_id")
+        for fw_id in fw_ids:
+            self.lpad.pause_fw(fw_id)
 
         AlertDialog(self, alert_msg="Your workflow was successfully submitted!\nAll READY jobs have "
                                     "been paused. \nWorkflow ID: " + str(fw_id))
@@ -491,6 +492,8 @@ class ManageJobs(tk.Toplevel):
 
 
 class RunBase(tk.Toplevel):
+    launch_multiple: bool
+
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -532,18 +535,19 @@ class RunBase(tk.Toplevel):
             row=1)
 
         # buttons
-        self.run_txt.set("Run a Job")
-        self.run_all_txt.set("Run All Ready Jobs")
-        self.run_cont_txt.set("Run Jobs Continuously")
+        self.run_txt.set("Run a Single Ready Job")
         tk.Button(self, text="View Workflows", command=self.view_fw_workflows, font=("Raleway", 10), bg=theme_color_2,
                   fg='white', height=1, width=15).grid(column=0, row=2)
         tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=theme_color_1, command=self.run_job,
                   fg='white',
                   height=2, width=30).grid(column=0, row=3)
-        tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=theme_color_1, command=self.run_job_all,
-                  fg='white', height=2, width=30).grid(column=0, row=4)
-        tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=theme_color_1,
-                  command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
+        if self.launch_multiple:
+            self.run_all_txt.set("Run All Ready Jobs")
+            self.run_cont_txt.set("Run Ready Jobs Continuously")
+            tk.Button(self, textvariable=self.run_all_txt, font=("Raleway", 14), bg=theme_color_1,
+                      command=self.run_job_all, fg='white', height=2, width=30).grid(column=0, row=4)
+            tk.Button(self, textvariable=self.run_cont_txt, font=("Raleway", 14), bg=theme_color_1,
+                      command=self.run_job_continuous, fg='white', height=2, width=30).grid(column=0, row=5)
 
         tk.Canvas(self, width=400, height=50).grid(columnspan=3)
 
@@ -574,6 +578,7 @@ class RunBase(tk.Toplevel):
 
 class RunInit(RunBase):
     def __init__(self, parent):
+        self.launch_multiple = False
         super().__init__(parent)
         self.parent = parent
 
@@ -585,6 +590,7 @@ class RunInit(RunBase):
 
 class RunRobot(RunBase):
     def __init__(self, parent):
+        self.launch_multiple = True
         super().__init__(parent)
         self.parent = parent
 
@@ -596,6 +602,7 @@ class RunRobot(RunBase):
 
 class RunProcess(RunBase):
     def __init__(self, parent):
+        self.launch_multiple = True
         super().__init__(parent)
         self.parent = parent
 
@@ -607,6 +614,7 @@ class RunProcess(RunBase):
 
 class RunInstrument(RunBase):
     def __init__(self, parent):
+        self.launch_multiple = True
         super().__init__(parent)
         self.parent = parent
 

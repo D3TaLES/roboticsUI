@@ -53,6 +53,7 @@ class RoboticsBase(FiretaskBase):
         self.exp_name = fw_spec.get("exp_name", self.get("exp_name"))
         self.full_name = fw_spec.get("full_name", self.get("full_name"))
         self.end_experiment = fw_spec.get("end_experiment", self.get("end_experiment", False))
+        self.ftask_id = self.get("firetask_id")
         print(f"WORKFLOW: {self.wflow_name}")
         print(f"EXPERIMENT: {self.exp_name}")
 
@@ -102,18 +103,21 @@ class DispenseLiquid(RoboticsBase):
         self.setup_task(fw_spec)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
-        if not volume and EXIT_ZERO_VOLUME:
-            print(" \n \n!!!!!!!!! \n ATTENTION! This FW and all subsequent FWs will be exited. "
-                  "DispenseLiquid task has volume 0 and EXIT_ZERO_VOLUME is set to True. \n !!!!!!!!! \n \n")
-            return FWAction(update_spec=self.updated_specs(exit=True), exit=True)
         if solvent.type != "solvent":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
-        if solvent.location != "experiment_vial":
-            solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
-            if WEIGH_SOLVENTS:
-                solv_station.dispense_mass(self.exp_vial, volume)
+
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
+            if solvent.location == "experiment_vial":
+                self.exp_vial.add_reagent(solvent, amount=volume, default_unit=VOLUME_UNIT, addition_id=self.ftask_id)
             else:
-                solv_station.dispense_volume(self.exp_vial, volume)
+                solv_station = LiquidStation(_id=solvent.location, wflow_name=self.wflow_name)
+                if WEIGH_SOLVENTS:
+                    solv_station.dispense_mass(self.exp_vial, volume, addition_id=self.ftask_id)
+                else:
+                    solv_station.dispense_volume(self.exp_vial, volume, addition_id=self.ftask_id)
+        else:
+            warnings.warn(f"ADDITION NOT MADE! Addition of {volume} of {solvent.name} to vial {self} not added to "
+                          f"the vial because addition id {self.ftask_id} already exists in content history ")
 
         return FWAction(update_spec=self.updated_specs())
 
@@ -125,12 +129,15 @@ class DispenseSolid(RoboticsBase):
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
         mass = self.get("mass")
-
         reagent = ReagentStatus(_id=self.get("start_uuid"))
-        if reagent.location != "experiment_vial":
-            pass  # TODO Dispense solid
-        self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT)
 
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
+            if reagent.location != "experiment_vial":
+                pass  # TODO Dispense solid
+            self.exp_vial.add_reagent(reagent, amount=mass, default_unit=MASS_UNIT, addition_id=self.ftask_id)
+        else:
+            warnings.warn(f"ADDITION NOT MADE! Addition of {mass} of {reagent.name} to vial {self} not added to "
+                          f"the vial because addition id {self.ftask_id} already exists in content history ")
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -189,14 +196,41 @@ class MeasureDensity(RoboticsBase):
         print("--> SOLUTION DENSITY: ", soln_density)
         self.metadata.update({"soln_density": soln_density})
 
-        if RETURN_EXTRACTED_SOLN:
-            # Return extracted solution
-            pipette_station.return_soln(vial=self.exp_vial)
-        else:
+        # Return extracted solution
+        pipette_station.return_soln(vial=self.exp_vial)
+
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class Extract(RoboticsBase):
+    """FireTask for extracting and discarding solution"""
+
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+        volume = unit_conversion(self.get("volume", 0), default_unit=VOLUME_UNIT)
+
+        if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made
+
+            # Establish stations
+            bal_station = BalanceStation(StationStatus().get_first_available("balance"))
+            pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
+
+            # Extract solution
+            initial_mass = bal_station.existing_weight(self.exp_vial)
+            while volume > 0:
+                pipette_volume = MAX_PIPETTE_VOL if volume > MAX_PIPETTE_VOL else volume
+                print("PIPETTING VOLUME ", pipette_volume)
+                pipette_station.pipette(volume=pipette_volume, vial=self.exp_vial)  # Extract pipette volume
+                pipette_station.discard_soln()  # Discard the extracted volume
+                volume -= pipette_volume
+
+            # Find extracted mass
+            final_mass = bal_station.weigh(self.exp_vial)
+            extracted_mass = initial_mass - final_mass
+
             # Update vial contents
             self.exp_vial.extract_soln(extracted_mass=extracted_mass)
-            # Discard extracted solution
-            pipette_station.pipette(volume=0)
 
         return FWAction(update_spec=self.updated_specs())
 

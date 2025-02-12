@@ -16,7 +16,8 @@ RoboticsUI Contents
 
 The `roboticsUI repository <https://github.com/D3TaLES/roboticsUI>`_ contains several directories:
 
-- ``_kbio``: Python API for the Kinova robot. These files are taken directly from the commercial `Kinova Python API <https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L>`_. They should not be edited.
+- ``_setup``: Files for setting up the repo including setting up the conda environment and documentation source files.
+- ``docs``: Automatically produced documentation HTML files.
 - ``GUI``: Code for the robotics Robotics App. Uses Tkinter.
 - ``robotics_api``: Robotics API that manages robotic workflows. (More discussion below.)
 - ``test_data``: Example, standard, and test experimental data.

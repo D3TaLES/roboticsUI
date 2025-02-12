@@ -32,7 +32,16 @@ git clone git@github.com:D3TaLES/hardpotato.git
 Note that you must set the `DB_INFO_FILE` environment variable as stipulated in the
 [D<sup>3</sup>TaLES API Docs](https://github.com/D3TaLES/d3tales_api).You will also
 need to set the fireworks variable `FW_CONFIG_FILE` and a `PYTHONPATH`. For robotics PC (WINDOWS),
-set environment variables:
+set environment variables run the command:
+
+```bash
+python robotics_api/settings.py
+```
+Then, copy the output and run that in your path terminal.
+
+ALTERNATIVELY, set the environment variables manually with the following 
+commands, making sure to insert the correct paths. 
+
 ```bash
 conda activate d3tales_robotics
 $env:PYTHONPATH='C:\Users\Lab\D3talesRobotics\roboticsUI;C:\Users\Lab\D3talesRobotics\Packages\d3tales_api;C:\Users\Lab\D3talesRobotics\Packages\hardpotato\src'
@@ -40,6 +49,7 @@ $env:FW_CONFIG_FILE='C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\manage
 $env:DB_INFO_FILE='C:\Users\Lab\D3talesRobotics\roboticsUI\db_infos.json'
 cd C:\Users\Lab\D3talesRobotics\launch_dir
 ```
+
 
 ## Hardware Setup
 

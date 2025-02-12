@@ -95,7 +95,7 @@ if __name__ == "__main__":
     # VIAL TESTING
     # test_bal.place_vial(test_vial)
     # test_vial.place_home()
-    vial_col_test("B", vial_id="A_02")
+    # vial_col_test("B", vial_id="A_02")
     # test_vial.retrieve()
     # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)

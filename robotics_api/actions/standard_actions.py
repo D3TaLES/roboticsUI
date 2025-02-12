@@ -1122,6 +1122,7 @@ class PotentiostatStation(StationStatus):
     @staticmethod
     def check_data_path(datapath="", raise_error=True):
         if os.path.isfile(datapath):
+            print(f"Datafile {datapath} found. ")
             return True
         else:
             if raise_error:

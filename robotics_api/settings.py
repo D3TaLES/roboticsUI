@@ -11,13 +11,13 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
-DISPENSE = False
-STIR = False
-WEIGH = False
-PIPETTE = False
-RUN_ROBOT = False
-MOVE_ELEVATORS = False
+RUN_POTENT = True
+DISPENSE = True
+STIR = True
+WEIGH = True
+PIPETTE = True
+RUN_ROBOT = True
+MOVE_ELEVATORS = True
 POT_DELAY = 2  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
 
 # ---------  OPERATION SETTING -------------

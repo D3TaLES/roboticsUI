@@ -106,7 +106,8 @@ hardware directly.</p>
 <h1>RoboticsUI Contents<a class="headerlink" href="#roboticsui-contents" title="Link to this heading"></a></h1>
 <p>The <a class="reference external" href="https://github.com/D3TaLES/roboticsUI">roboticsUI repository</a> contains several directories:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_kbio</span></code>: Python API for the Kinova robot. These files are taken directly from the commercial <a class="reference external" href="https://github.com/Kinovarobotics/Kinova-kortex2_Gen3_G3L">Kinova Python API</a>. They should not be edited.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_setup</span></code>: Files for setting up the repo including setting up the conda environment and documentation source files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: Automatically produced documentation HTML files.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">GUI</span></code>: Code for the robotics Robotics App. Uses Tkinter.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">robotics_api</span></code>: Robotics API that manages robotic workflows. (More discussion below.)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test_data</span></code>: Example, standard, and test experimental data.</p></li>
@@ -212,7 +213,10 @@ hardware directly.</p>
 <li class="toctree-l2"><a class="reference internal" href="actions.html#system-tests">3. System Tests</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Module - Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#note-about-robotic-motion">Note about Robotic Motion</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="databases.html#status-collections">Status Collections</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="databases.html#status-reagents"><em>status_reagents</em></a></li>

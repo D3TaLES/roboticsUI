@@ -250,6 +250,20 @@ Copyright 2024, University of Kentucky</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.clean">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.clean" title="Link to this definition"></a></dt>
+<dd><p>Get the cleanliness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The state.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.content_history">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_history</span></span><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.content_history" title="Link to this definition"></a></dt>
 <dd><p>Get the content history.</p>
@@ -285,13 +299,14 @@ Copyright 2024, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.get_all_available">
-<span class="sig-name descname"><span class="pre">get_all_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_all_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_all_available" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_all_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.get_all_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.get_all_available" title="Link to this definition"></a></dt>
 <dd><p>Get all available stations with a specified name string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name_str</strong> (<em>str</em>) – The name string to search for.</p></li>
 <li><p><strong>exp_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The experiment name. Defaults to None.</p></li>
+<li><p><strong>check_clean</strong> (<em>bool</em><em>, </em><em>optional</em>) – Check if clean in True. Default False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -367,6 +382,17 @@ Copyright 2024, University of Kentucky</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>prop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.StationStatus.update_clean">
+<span class="sig-name descname"><span class="pre">update_clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clean_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#StationStatus.update_clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.StationStatus.update_clean" title="Link to this definition"></a></dt>
+<dd><p>Update the station cleanliness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>clean_status</strong> (<em>bool</em>) – The new cleanliness status for the station.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -532,13 +558,14 @@ Copyright 2024, University of Kentucky</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="robotics_api.actions.db_manipulations.VialStatus.extract_soln">
-<span class="sig-name descname"><span class="pre">extract_soln</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_mass_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.extract_soln"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.extract_soln" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract_soln</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extracted_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_mass_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'g'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addition_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/robotics_api/actions/db_manipulations.html#VialStatus.extract_soln"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robotics_api.actions.db_manipulations.VialStatus.extract_soln" title="Link to this definition"></a></dt>
 <dd><p>Add a reagent to the vial content.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>extracted_mass</strong> (<em>str</em><em> or </em><em>obj</em>) – Mass extracted from solution</p></li>
 <li><p><strong>default_mass_unit</strong> (<em>str</em>) – The default mass unit for the reagent amount.</p></li>
+<li><p><strong>addition_id</strong> (<em>str</em>) – A unique identifier for the reagent addition (Default is None)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

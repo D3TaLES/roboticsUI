@@ -42,6 +42,7 @@ Tracks the status of different stations used in the robotics system. This includ
 * `_id`: Station name defined in the {ref}`settings:settings`
 * `available`: Whether or not the station is available (or in use)
 * `state`: Additional state information about station (not used for most station types)
+* `clean`: For potentiostat only. Indicates if electrodes are clean. 
 
 **Example Document (potentiostat station):**
 ```JSON
@@ -50,6 +51,7 @@ Tracks the status of different stations used in the robotics system. This includ
   "current_wflow_name": "test_workflow",        
   "available": false,                     
   "state": "up",                           
+  "clean": false,                           
   "current_content": "A_01",               
   "content_history": [                     
     "",

@@ -63,7 +63,10 @@
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings and Snapshots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fireworks.html">Module - Fireworks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actions.html">Module - Actions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Module - Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#note-about-robotic-motion">Note about Robotic Motion</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="databases.html">Robotics Databases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Raw API Code Docs</span></p>
@@ -108,6 +111,16 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">potentiostat_kbio</span></code>: (no longer used!) base functions and classes for interacting with kbio potentiostats</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">processing_utils</span></code>: functions for processing</p></li>
 </ul>
+<section id="note-about-robotic-motion">
+<h2>Note about Robotic Motion<a class="headerlink" href="#note-about-robotic-motion" title="Link to this heading"></a></h2>
+<p>The robotic workspace is divide into zones. When directing movement about the workspace, the Robot API considers current
+and target zones. In general, when moving to a station, the robot arm is directed to move to the <code class="docutils literal notranslate"><span class="pre">pre_</span></code> snapshot, then
+to the station snapshot (including a <code class="docutils literal notranslate"><span class="pre">rise_amount</span></code> where necessary). However, if the robot arm’s existing zone is
+different from its target zone, the arm will move to the exiting zone home position, then the target zone home position.
+Only then will it start the process of moving to the station. This process minimized the risk of the robot arm colliding
+with workspace hardware.</p>
+<img alt="Robot Zones" src="_images/robot_zones.png" />
+</section>
 </section>
 
 

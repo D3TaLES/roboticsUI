@@ -38,6 +38,7 @@ A researcher first builds an Robotic Workflow on ExpFlow. The researcher then do
 Stations:
 * **Liquid Dispensing Pumps**: Four pumps and tubing system for dispensing solvents / solutions
 * **Balance**: Balance for weight measurements with vial holder
+* **Pipette**: Pipette for extracting solution aliquots to reduce total volume or perform a solution density measurement.  
 * **Sir Plate**: Stir plate for mixing solutions. The Robotic API turns the plate on and off; the stir rate must be manually set before starting the experiment. **The experiment vials must contain stir bars!**
 * **Grid Vial Stand**: Home locations for all experiment vials. Black labels at the base of each holder denote the name of the vial based in that holder.
 * **Vial Elevators**: Elevators to precisely raise vials to electrodes and hold vials during measurements so the robot can complete other tasks.

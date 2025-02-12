@@ -148,7 +148,13 @@ git<span class="w"> </span>clone<span class="w"> </span>git@github.com:D3TaLES/h
 <p>Note that you must set the <code class="docutils literal notranslate"><span class="pre">DB_INFO_FILE</span></code> environment variable as stipulated in the
 <a class="reference external" href="https://github.com/D3TaLES/d3tales_api">D<sup>3</sup>TaLES API Docs</a>.You will also
 need to set the fireworks variable <code class="docutils literal notranslate"><span class="pre">FW_CONFIG_FILE</span></code> and a <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. For robotics PC (WINDOWS),
-set environment variables:</p>
+set environment variables run the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>robotics_api/settings.py
+</pre></div>
+</div>
+<p>Then, copy the output and run that in your path terminal.</p>
+<p>ALTERNATIVELY, set the environment variables manually with the following
+commands, making sure to insert the correct paths.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>d3tales_robotics
 <span class="nv">$env</span>:PYTHONPATH<span class="o">=</span><span class="s1">&#39;C:\Users\Lab\D3talesRobotics\roboticsUI;C:\Users\Lab\D3talesRobotics\Packages\d3tales_api;C:\Users\Lab\D3talesRobotics\Packages\hardpotato\src&#39;</span>
 <span class="nv">$env</span>:FW_CONFIG_FILE<span class="o">=</span><span class="s1">&#39;C:\Users\Lab\D3talesRobotics\roboticsUI\robotics_api\management\config\FW_config.yaml&#39;</span>

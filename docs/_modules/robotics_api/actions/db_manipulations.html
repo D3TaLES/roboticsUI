@@ -125,7 +125,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">apparatus_type</span><span class="o">=</span><span class="s1">&#39;vials&#39;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">exp_name</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">exp_name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;experiment_name&quot;</span><span class="p">:</span> <span class="n">exp_name</span><span class="p">})</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No vial is associated with experiment name </span><span class="si">{</span><span class="n">exp_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -312,13 +311,14 @@
 
 <div class="viewcode-block" id="VialStatus.extract_soln">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.VialStatus.extract_soln">[docs]</a>
-    <span class="k">def</span> <span class="nf">extract_soln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extracted_mass</span><span class="p">,</span> <span class="n">default_mass_unit</span><span class="o">=</span><span class="n">MASS_UNIT</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">extract_soln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extracted_mass</span><span class="p">,</span> <span class="n">default_mass_unit</span><span class="o">=</span><span class="n">MASS_UNIT</span><span class="p">,</span> <span class="n">addition_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a reagent to the vial content.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            extracted_mass (str or obj): Mass extracted from solution</span>
 <span class="sd">            default_mass_unit (str): The default mass unit for the reagent amount.</span>
+<span class="sd">            addition_id (str): A unique identifier for the reagent addition (Default is None)</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NameError: If the reagent does not exist in the reagent database.</span>
@@ -338,8 +338,19 @@
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_amount</span><span class="si">}{</span><span class="n">default_mass_unit</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">})</span>
+
+            <span class="c1"># Update database</span>
+            <span class="n">current_addition</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;addition_id&quot;</span><span class="p">:</span> <span class="n">addition_id</span><span class="p">,</span>
+                <span class="s2">&quot;reagent_uuid&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;extraction&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="n">extracted_mass</span>
+            <span class="p">}</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;content_history&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_addition</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">override_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;vial_content&quot;</span><span class="p">:</span> <span class="n">new_vial_content</span><span class="p">,</span>
+                <span class="s2">&quot;content_history&quot;</span><span class="p">:</span> <span class="n">history</span>
             <span class="p">})</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully extracted </span><span class="si">{</span><span class="n">extract_perc</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% of the mass from vial </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 </div>
@@ -398,6 +409,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the cleanliness.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="s2">&quot;clean&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current content.</span>
@@ -441,28 +462,29 @@
 
 <div class="viewcode-block" id="StationStatus.get_all_available">
 <a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.get_all_available">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exp_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_all_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exp_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check_clean</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all available stations with a specified name string.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name_str (str): The name string to search for.</span>
 <span class="sd">            exp_name (str, optional): The experiment name. Defaults to None.</span>
+<span class="sd">            check_clean (bool, optional): Check if clean in True. Default False.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list: List of available station IDs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">name_str</span><span class="p">},</span> <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">exp_name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span>
-                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">name_str</span><span class="p">},</span>
-                <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="c1"># &quot;$or&quot;: [</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="c1"># &quot;$or&quot;: [  TODO figure out</span>
                 <span class="c1">#     {&quot;current_experiment&quot;: exp_name},</span>
                 <span class="c1">#     {&quot;current_experiment&quot;: None},</span>
                 <span class="c1"># ]</span>
-            <span class="p">})</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$regex&quot;</span><span class="p">:</span> <span class="n">name_str</span><span class="p">},</span> <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span></div>
+            <span class="p">})</span>
+        <span class="k">if</span> <span class="n">check_clean</span><span class="p">:</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;clean&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StationStatus.get_first_available">
@@ -491,7 +513,7 @@
             <span class="n">total_time</span> <span class="o">+=</span> <span class="n">wait_interval</span>
             <span class="k">if</span> <span class="n">max_time</span> <span class="ow">and</span> <span class="p">(</span><span class="n">total_time</span> <span class="o">&gt;=</span> <span class="n">max_time</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="n">available_stations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_available</span><span class="p">(</span><span class="n">name_str</span><span class="p">)</span>
+            <span class="n">available_stations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_available</span><span class="p">(</span><span class="n">name_str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">available_stations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
@@ -545,6 +567,19 @@
 <span class="sd">            new_state (str): The new state for the station.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">new_state</span><span class="p">}})</span></div>
+
+
+<div class="viewcode-block" id="StationStatus.update_clean">
+<a class="viewcode-back" href="../../../robotics_api.actions.html#robotics_api.actions.db_manipulations.StationStatus.update_clean">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean_status</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the station cleanliness.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            clean_status (bool): The new cleanliness status for the station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coll</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;clean&quot;</span><span class="p">:</span> <span class="n">clean_status</span><span class="p">}})</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Potentiostat </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> updated to clean is </span><span class="si">{</span><span class="n">clean_status</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StationStatus.update_content">
@@ -758,6 +793,7 @@
             <span class="s2">&quot;current_wflow_name&quot;</span><span class="p">:</span> <span class="n">current_wflow_name</span><span class="p">,</span>
             <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;clean&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;current_content&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;content_history&quot;</span><span class="p">:</span> <span class="p">[],</span>
         <span class="p">})</span></div>

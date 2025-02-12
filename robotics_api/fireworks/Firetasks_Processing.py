@@ -354,8 +354,8 @@ class ProcessCVBenchmarking(ProcessBase):
             else:
                 descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
                 peaks_dict = descriptor_cal.peaks(p_data)
-                forward_peak = max([p[0] for p in peaks_dict.get("forward", [])])
-                reverse_peak = min([p[0] for p in peaks_dict.get("reverse", [])])
+                forward_peak = max(peaks_dict.get("forward", []), key=lambda x: x[1])[0]
+                reverse_peak = min(peaks_dict.get("reverse", []), key=lambda x: x[1])[0]
         except Exception as e:
             print(e)
             warnings.warn(f"WARNING! Error calculating benchmark peaks; DEFAULT VOLTAGE RANGES WILL BE USED.")

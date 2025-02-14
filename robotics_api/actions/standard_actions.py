@@ -1192,7 +1192,7 @@ class CVPotentiostatStation(PotentiostatStation):
             time.sleep(POT_DELAY * 5)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE WITH {resistance} SOLN RESISTANCE")
+        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE {sens} SENSITIVITY WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
             warnings.warn("WARNING! Kbio potentiostat command is DEPRECATED! Use with caution! ")
             from robotics_api.utils._depriciated.potentiostat_kbio import CvExperiment, voltage_step

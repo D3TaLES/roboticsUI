@@ -40,6 +40,7 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
    """
     solute_masses = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solute_id]
     solv_amounts = [r.get("amount") for r in vial_content if r.get("reagent_uuid") == solv_id]
+    total_masses = [r.get("amount") for r in vial_content]
     if not solute_masses or not solv_amounts:
         if FIZZLE_CONCENTRATION_FAILURE:
             raise Exception(f"Concentration calculation did not work...check all variables: solute_id={solute_id}, "
@@ -47,6 +48,7 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
         return DEFAULT_CONCENTRATION
 
     ureg = pint.UnitRegistry()
+    total_mass = sum([ureg(u) for u in total_masses])
     solute_mass = sum([ureg(u) for u in solute_masses])
     solv_amt = sum([ureg(u) for u in solv_amounts])
     solute_mw = float(ReagentStatus(_id=solute_id).molecular_weight) * ureg('g/mol')
@@ -70,7 +72,7 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
         return x.magnitude
     else:
         if soln_density:
-            soln_volume = unit_conversion(solv_mass + solute_mass, default_unit="L", density=soln_density) * ureg.liter
+            soln_volume = unit_conversion(total_mass, default_unit="L", density=soln_density) * ureg.liter
         else:
             warnings.warn("No solution density provided. The solution volume is assumed to be the solvent volume. "
                           "This may not be accurate if volume expansion is present. ")
@@ -227,8 +229,11 @@ def print_cv_analysis(multi_data, metadata_dict, run_anodic=RUN_ANODIC, **kwargs
         out_txt += "\n------------- Metadata for Oxidation {} -------------\n".format(i + 1)
         cond = e_half.get("conditions", {})
         redox_conc, se_conc = cond.get("redox_mol_concentration"), cond.get("electrolyte_concentration")
+        redox_frac, se_frac = cond.get("redox_mol_fraction"), cond.get("electrolyte_mol_fraction")
         out_txt += "Redox Mol Conc:  {}\n".format(print_prop(redox_conc))
         out_txt += "SE Conc:         {}\n".format(print_prop(se_conc))
+        out_txt += "Redox Mol Frac:  {}\n".format(sig_figs(redox_frac))
+        out_txt += "SE Mol Frac:         {}\n".format(sig_figs(se_frac))
         out_txt += "E1/2 at {}: \t{}\n".format(print_prop(cond.get("scan_rate", {})), print_prop(e_half))
 
         diff_coef = prop_by_order(metadata_dict.get("diffusion_coefficient"), order=i + 1, notes="cathodic")
@@ -274,8 +279,11 @@ def print_ca_analysis(multi_data, verbose=1, **kwargs):
         cond = data_dict.get("conditions", {})
         out_txt += "\n---------- CA {} ----------\n".format(i + 1)
         redox_conc, se_conc = cond.get("redox_mol_concentration"), cond.get("electrolyte_concentration")
+        redox_frac, se_frac = cond.get("redox_mol_fraction"), cond.get("electrolyte_mol_fraction")
         out_txt += "Redox Mol Conc:  {}\n".format(print_prop(redox_conc))
         out_txt += "SE Conc:         {}\n".format(print_prop(se_conc))
+        out_txt += "Redox Mol Frac:  {}\n".format(sig_figs(redox_frac))
+        out_txt += "SE Mol Frac:         {}\n".format(sig_figs(se_frac))
         out_txt += "\nConductivity: \t{}".format(print_prop(data_dict.get("conductivity")))
         out_txt += "\nMeasured Conductance: \t{}".format(print_prop(data_dict.get("measured_conductance")))
         out_txt += "\nMeasured Resistance: \t{}".format(print_prop(data_dict.get("measured_resistance")))

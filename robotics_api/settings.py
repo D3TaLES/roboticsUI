@@ -116,7 +116,7 @@ POTENTIOSTAT_SETTINGS = {
         # Processing settings
         cut_beginning=0.0,  # percentage as decimal of front of CV to cut
         cut_end=0.0,  # percentage as decimal of end of CV to cut
-        benchmark_buffer=0.3,  # volts, buffer used in setting voltage range from benchmark peaks
+        benchmark_buffer=0.35,  # volts, buffer used in setting voltage range from benchmark peaks
 
     ),
     "ca_potentiostat_C_01": dict(

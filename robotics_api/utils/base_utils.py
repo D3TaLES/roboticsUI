@@ -4,7 +4,7 @@ import serial
 from robotics_api.settings import *
 
 
-def sig_figs(number: float or str, num_sig_figs=3):
+def sig_figs(number: float or str, num_sig_figs=5):
     """
     Round a number to the specified number of significant figures.
 

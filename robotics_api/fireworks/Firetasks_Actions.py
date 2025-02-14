@@ -404,7 +404,7 @@ class BenchmarkCV(RoboticsBase):
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
         sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
-        sens = fw_spec.get("sens") or self.get("sens", "")
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
 
         # Prep output file info
         active_vial_id = self.metadata.get("active_vial_id")
@@ -493,7 +493,7 @@ class RunCA(RoboticsBase):
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
         pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", "")
-        sens = fw_spec.get("sens") or self.get("sens", "")
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
         steps = fw_spec.get("steps") or self.get("steps", "")
 
         # Prep output data file info

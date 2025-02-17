@@ -352,6 +352,41 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
     # print(p)
 
 
+class DefaultConditions:
+
+    def __init__(self, firetask_obj, fw_spec, method="cv"):
+        self.firetask_obj = firetask_obj
+        self.fw_spec = fw_spec
+        self.method = method
+        self.mol_id = fw_spec.get("mol_id") or firetask_obj.get("mol_id")
+        self.solv_id = fw_spec.get("solv_id") or firetask_obj.get("solv_id")
+        self.rom_id = fw_spec.get("rom_id") or firetask_obj.get("rom_id")
+        self.elect_id = fw_spec.get("elect_id") or firetask_obj.get("elect_id")
+        self.soln_density = firetask_obj.metadata.get("soln_density")
+
+    def conc_info(self, vial_contents: list):
+        """
+        Generates concentration information based on the vial contents.
+
+        Args:
+            vial_contents (dict): The contents of the vial being processed.
+
+        Returns:
+            dict: A dictionary with concentration information, including redox molecule and electrolyte concentrations
+            and mole fractions.
+        """
+        return {
+            "redox_mol_concentration": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+                                                         soln_density=self.soln_density),
+            "electrolyte_concentration": get_concentration(vial_contents, self.elect_id, self.solv_id,
+                                                           soln_density=self.soln_density),
+            "redox_mol_fraction": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+                                                    soln_density=self.soln_density, mol_fraction=True),
+            "electrolyte_mol_fraction": get_concentration(vial_contents, self.elect_id, self.solv_id,
+                                                          soln_density=self.soln_density, mol_fraction=True),
+        }
+
+
 if __name__ == "__main__":
     meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
                  "working_electrode_radius": 0.007}

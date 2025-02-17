@@ -438,9 +438,9 @@ class RunCVBase(RoboticsBase):
         self.setup_task(fw_spec)
 
         # CV parameters and keywords
+        resistance = self.metadata.get("resistance", 0)
         voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
         scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        resistance = self.metadata.get("resistance", 0)
         sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
         sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
 

@@ -6,6 +6,7 @@ from fireworks import LaunchPad
 from fireworks import FiretaskBase, explicit_serialize, FWAction
 from robotics_api.actions.standard_actions import *
 from robotics_api.actions.db_manipulations import *
+from robotics_api.utils.processing_utils import DefaultConditions
 
 
 @add_metaclass(abc.ABCMeta)
@@ -171,6 +172,20 @@ class Stir(RoboticsBase):
         else:
             print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")
 
+        return FWAction(update_spec=self.updated_specs())
+
+
+@explicit_serialize
+class CollectTemp(RoboticsBase):
+    """Firetask for collecting temperature. IN DEVELOPMENT!!!"""
+    def run_task(self, fw_spec):
+        self.setup_task(fw_spec)
+
+        # Collect temperature
+        temperature = TemperatureStation().temperature()
+        print("RECORDED TEMPERATURE: ", temperature)
+
+        self.metadata.update({"temperature": temperature})
         return FWAction(update_spec=self.updated_specs())
 
 
@@ -438,11 +453,12 @@ class RunCVBase(RoboticsBase):
         self.setup_task(fw_spec)
 
         # CV parameters and keywords
+        defaults = DefaultConditions(self, fw_spec, method=self.method)
         resistance = self.metadata.get("resistance", 0)
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
-        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -490,11 +506,12 @@ class RunCA(RoboticsBase):
         self.setup_task(fw_spec)
 
         # CA parameters and keywords
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
-        pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", "")
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
-        steps = fw_spec.get("steps") or self.get("steps", "")
+        defaults = DefaultConditions(self, fw_spec, method="ca")
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", defaults.pulse_width)
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
+        steps = fw_spec.get("steps") or self.get("steps", defaults.steps)
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -521,18 +538,4 @@ class RunCA(RoboticsBase):
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "temperature": temperature,
                                      "data_location": data_path})
-        return FWAction(update_spec=self.updated_specs())
-
-
-@explicit_serialize
-class CollectTemp(RoboticsBase):
-    """Firetask for collecting temperature. IN DEVELOPMENT!!!"""
-    def run_task(self, fw_spec):
-        self.setup_task(fw_spec)
-
-        # Collect temperature
-        temperature = TemperatureStation().temperature()
-        print("RECORDED TEMPERATURE: ", temperature)
-
-        self.metadata.update({"temperature": temperature})
         return FWAction(update_spec=self.updated_specs())

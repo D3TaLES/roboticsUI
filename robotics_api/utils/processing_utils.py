@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 from datetime import datetime
 from robotics_api.settings import *
+from robotics_api.actions.db_manipulations import VialStatus
 from robotics_api.utils.base_utils import unit_conversion, sig_figs
 from robotics_api.actions.db_manipulations import ReagentStatus, ChemStandardsDB
 from d3tales_api.Processors.parser_echem import CVDescriptorCalculator, CVPlotter, ProcessChiCV, ProcessChiCA, CAPlotter
@@ -363,28 +364,65 @@ class DefaultConditions:
         self.rom_id = fw_spec.get("rom_id") or firetask_obj.get("rom_id")
         self.elect_id = fw_spec.get("elect_id") or firetask_obj.get("elect_id")
         self.soln_density = firetask_obj.metadata.get("soln_density")
+        active_vial_id = firetask_obj.metadata.get("active_vial_id")
+        self.vial_contents = VialStatus(active_vial_id).vial_content
 
-    def conc_info(self, vial_contents: list):
-        """
-        Generates concentration information based on the vial contents.
+    @property
+    def redox_mol_concentration(self):
+        return get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+                                 soln_density=self.soln_density)
 
-        Args:
-            vial_contents (dict): The contents of the vial being processed.
+    @property
+    def electrolyte_concentration(self):
+        return get_concentration(self.vial_contents, self.elect_id, self.solv_id,
+                                 soln_density=self.soln_density)
 
-        Returns:
-            dict: A dictionary with concentration information, including redox molecule and electrolyte concentrations
-            and mole fractions.
-        """
-        return {
-            "redox_mol_concentration": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                                         soln_density=self.soln_density),
-            "electrolyte_concentration": get_concentration(vial_contents, self.elect_id, self.solv_id,
-                                                           soln_density=self.soln_density),
-            "redox_mol_fraction": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                                    soln_density=self.soln_density, mol_fraction=True),
-            "electrolyte_mol_fraction": get_concentration(vial_contents, self.elect_id, self.solv_id,
-                                                          soln_density=self.soln_density, mol_fraction=True),
-        }
+    @property
+    def redox_mol_fraction(self):
+        return get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+                                 soln_density=self.soln_density, mol_fraction=True)
+
+    @property
+    def electrolyte_mol_fraction(self):
+        return get_concentration(self.vial_contents, self.elect_id, self.solv_id,
+                                 soln_density=self.soln_density, mol_fraction=True),
+
+    @property
+    def voltage_sequence(self):
+        return None
+
+    @property
+    def scan_rate(self):
+        return None
+
+    @property
+    def sample_interval(self):
+        return None
+
+    @property
+    def sensitivity(self):
+        if self.method=="cv":
+            redox_conc= self.redox_mol_concentration or 0
+            if redox_conc <= 10:
+                return 1e-6,  # A/V, current sensitivity
+            elif redox_conc < 50:
+                return 1e-4,  # A/V, current sensitivity
+            else:
+                return 1e-3,  # A/V, current sensitivity
+        elif self.method=="ca":
+            redox_conc= self.redox_mol_concentration or 0
+            if redox_conc <= 10:
+                return 1e-6,  # A/V, current sensitivity
+            else:
+                return 1e-4,  # A/V, current sensitivity
+
+    @property
+    def pulse_width(self):
+        return None
+
+    @property
+    def steps(self):
+        return None
 
 
 if __name__ == "__main__":

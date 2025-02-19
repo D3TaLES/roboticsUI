@@ -421,7 +421,7 @@ class BenchmarkCV(RoboticsBase):
                                       resistance=resistance, sample_interval=sample_interval, sens=sens)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]
 
-        self.collection_data.append({"collect_tag": "benchmark_cv",
+        self.collection_data.append({"collect_tag": f"cycle{self.metadata.get('cycle', 0):02d}_benchmark_cv",
                                      "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
                                      "data_location": data_path})

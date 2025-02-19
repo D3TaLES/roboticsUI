@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    flush_solvent(8, vial_id="A_04", solv_id="solvent_02", go_home=True)
+    # flush_solvent(8, vial_id="A_04", solv_id="solvent_02", go_home=True)
     # LiquidStation("solvent_02").dispense_only(1)
 
     # OTHER STATION TESTING

@@ -339,7 +339,10 @@ class ProcessCVBenchmarking(ProcessBase):
         self.setup_task(fw_spec, data_len_error=False)
 
         # Check Benchmarking data file
-        cv_data = self.coll_dict.get("benchmark_cv")
+        benchmark_collect_tag = f"cycle{self.metadata.get('cycle', 0):02d}_benchmark_cv"
+        print("COLLECT TAG: ", benchmark_collect_tag)
+        cv_data = self.coll_dict.get(benchmark_collect_tag, [])
+
         if not isinstance(self.instrument, CVPotentiostatStation):
             raise Exception(f"Cannot perform CV processing for data with instrument {self.instrument}")
 
@@ -386,7 +389,7 @@ class ProcessCalibration(ProcessBase):
         self.setup_task(fw_spec)
 
         # Process CA calibration data
-        ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
+        ca_data = self.coll_dict.get(self.collect_tag, [])
         for d in ca_data:
             p_data = self.process_ca_data(d, cell_constant_error=False)
 
@@ -439,7 +442,7 @@ class DataProcessorCV(ProcessBase):
         metadata_dict = {}
         self.process_solv_data()
 
-        cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cv", [])
+        cv_data = self.coll_dict.get(self.collect_tag, [])
         processed_data = [self.process_cv_data(d, plot_dir=True) for d in cv_data]
         processed_data = [p for p in processed_data if p is not None]
 
@@ -490,7 +493,7 @@ class DataProcessorCVUM(ProcessBase):
 
         metadata_dict = {}
         # Process CV data for cycle
-        cv_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_cvUM", [])
+        cv_data = self.coll_dict.get(self.collect_tag, [])
         processed_data = [self.process_cv_data(d) for d in cv_data]
         processed_data = [p for p in processed_data if p is not None]
 
@@ -524,7 +527,7 @@ class DataProcessorCA(ProcessBase):
         metadata_dict = {}
 
         # Process CA data for cycle
-        ca_data = self.coll_dict.get(f"{self.collect_tag.split('_')[0]}_ca", [])
+        ca_data = self.coll_dict.get(self.collect_tag, [])
         processed_data = [self.process_ca_data(d) for d in ca_data]
         processed_data = [p for p in processed_data if p is not None]
 

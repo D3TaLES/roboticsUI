@@ -1185,6 +1185,7 @@ class CVPotentiostatStation(PotentiostatStation):
         sample_interval = unit_conversion(sample_interval or self.settings("sample_interval"), default_unit="V")
         quiet_time = unit_conversion(quiet_time or self.settings("quiet_time"), default_unit="s")
         sens = unit_conversion(sens or self.settings("sensitivity"), default_unit="A/V")
+        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE {sens} SENSITIVITY WITH {resistance} SOLN RESISTANCE")
         if not RUN_POTENT:
             print(
                 f"CV is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY * 2} second CV_DELAY.")
@@ -1192,7 +1193,6 @@ class CVPotentiostatStation(PotentiostatStation):
             time.sleep(POT_DELAY * 5)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CV WITH {voltage_sequence} VOLTAGES AT {scan_rate} SCAN RATE {sens} SENSITIVITY WITH {resistance} SOLN RESISTANCE")
         if "EC" in self.pot_model:
             warnings.warn("WARNING! Kbio potentiostat command is DEPRECATED! Use with caution! ")
             from robotics_api.utils._depriciated.potentiostat_kbio import CvExperiment, voltage_step
@@ -1248,7 +1248,7 @@ class CVPotentiostatStation(PotentiostatStation):
             quiet_time (float, optional): Quiet time before run (in s)
 
         Returns:
-            bool: True if the test is successfully run.
+            float: Calculated solution resistance
 
         Raises:
             Exception: If the potentiostat model is unsupported for the iR compensation test.
@@ -1259,7 +1259,7 @@ class CVPotentiostatStation(PotentiostatStation):
                   f"Observing the {POT_DELAY} second CV_DELAY.")
             write_test(data_path, test_type="iRComp")
             time.sleep(POT_DELAY)
-            return True
+            return 0
 
         if not self.settings("ir_comp"):
             print(f"iR Comp Test is NOT running because ir_comp in settings for {self} is False. "
@@ -1351,13 +1351,13 @@ class CAPotentiostatStation(PotentiostatStation):
         quiet_time = unit_conversion(quiet_time or self.settings("quiet_time"), default_unit="s")
         voltage_sequence = voltage_sequence or self.settings("voltage_sequence")
 
+        print(f"RUN CA WITH {voltage_sequence} VOLTAGES and {sens} SENSITIVITY.")
         if not RUN_POTENT:
             print(f"CA is NOT running because RUN_POTENT is set to False. Observing the {POT_DELAY} second delay.")
             write_test(data_path, test_type="ca")
             time.sleep(POT_DELAY)
             return True
         # Benchmark CV for voltage range
-        print(f"RUN CA WITH {voltage_sequence} VOLTAGES.")
         if "chi" in self.pot_model:
             import hardpotato as hp
             # Set CV parameters

@@ -54,7 +54,6 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
     solv_amt = sum([ureg(u) for u in solv_amounts])
     solute_mw = float(ReagentStatus(_id=solute_id).molecular_weight) * ureg('g/mol')
     solv_density = f"{ReagentStatus(_id=solv_id).density}{DENSITY_UNIT}"
-    solv_mass = unit_conversion(solv_amt, default_unit="g", density=solv_density) * ureg.gram
 
     if mol_fraction:
         solute_mols = solute_mass / solute_mw
@@ -67,17 +66,22 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
                               "but it does not have a density.")
                 return None
             r_mass = unit_conversion(reagent["amount"], default_unit="g", density=r_density) * ureg.gram
-            total_mols += r_mass/r_mw
+            total_mols += r_mass / r_mw
         x = solute_mols / total_mols
         print(f"MOL FRACTION: {x.magnitude:.5f}")
         return x.magnitude
     else:
-        if soln_density:
+        if soln_density and ureg(soln_density).magnitude:
             soln_volume = unit_conversion(total_mass, default_unit="L", density=soln_density) * ureg.liter
         else:
             warnings.warn("No solution density provided. The solution volume is assumed to be the solvent volume. "
                           "This may not be accurate if volume expansion is present. ")
             soln_volume = unit_conversion(solv_amt, default_unit="L", density=solv_density) * ureg.liter
+        if not soln_volume:
+            if FIZZLE_CONCENTRATION_FAILURE:
+                raise Exception(f"Concentration calculation did not work because solution volume was 0..check all "
+                                f"variables: solute_id={solute_id}, solv_id={solv_id}, solute_mass={solute_masses}")
+            return DEFAULT_CONCENTRATION
 
         concentration = solute_mass / solute_mw / soln_volume
         print(f"CONCENTRATION: {concentration:.5f}")
@@ -385,7 +389,11 @@ class DefaultConditions:
     @property
     def electrolyte_mol_fraction(self):
         return get_concentration(self.vial_contents, self.elect_id, self.solv_id,
-                                 soln_density=self.soln_density, mol_fraction=True),
+                                 soln_density=self.soln_density, mol_fraction=True)
+
+    @property
+    def total_mol_fraction(self):
+        return self.redox_mol_fraction + self.electrolyte_mol_fraction
 
     @property
     def voltage_sequence(self):
@@ -401,20 +409,26 @@ class DefaultConditions:
 
     @property
     def sensitivity(self):
-        if self.method=="cv":
-            redox_conc= self.redox_mol_concentration or 0
+        if self.method == "cv":
+            redox_conc = self.redox_mol_concentration or 0
             if redox_conc <= 10:
-                return 1e-6,  # A/V, current sensitivity
+                return 1e-6  # A/V, current sensitivity
             elif redox_conc < 50:
-                return 1e-4,  # A/V, current sensitivity
+                return 1e-4  # A/V, current sensitivity
             else:
-                return 1e-3,  # A/V, current sensitivity
-        elif self.method=="ca":
-            redox_conc= self.redox_mol_concentration or 0
+                return 1e-3  # A/V, current sensitivity
+        elif self.method == "cvUM":
+            redox_conc = self.redox_mol_concentration or 0
             if redox_conc <= 10:
-                return 1e-6,  # A/V, current sensitivity
+                return 1e-6  # A/V, current sensitivity
             else:
-                return 1e-4,  # A/V, current sensitivity
+                return 1e-4  # A/V, current sensitivity
+        elif self.method == "ca":
+            redox_conc = self.redox_mol_concentration or 0
+            if redox_conc <= 10:
+                return 1e-6  # A/V, current sensitivity
+            else:
+                return 1e-4  # A/V, current sensitivity
 
     @property
     def pulse_width(self):

@@ -411,15 +411,17 @@ class FinishPotentiostat(RoboticsBase):
 @explicit_serialize
 class BenchmarkCV(RoboticsBase):
     """FireTask performing CV benchmark measurement"""
+    method = "cv"
 
     def run_task(self, fw_spec):
         self.setup_task(fw_spec)
 
         # CV parameters and keywords
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", "")
-        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", "")
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", "")
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", "")
+        defaults = DefaultConditions(self, fw_spec, method=self.method)
+        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
+        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
 
         # Prep output file info
         active_vial_id = self.metadata.get("active_vial_id")
@@ -428,7 +430,7 @@ class BenchmarkCV(RoboticsBase):
         data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.txt"))
 
         # Run CV experiment
-        potent = CVPotentiostatStation(self.metadata.get("cv_potentiostat"))
+        potent = CVPotentiostatStation(self.metadata.get(f"{self.method}_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
         resistance = potent.run_ircomp_test(data_path=data_path.replace("benchmark_", "iRComp_"))
         collection_time = str(datetime.now())

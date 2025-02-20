@@ -214,6 +214,7 @@ class ProcessBase(RoboticsBase, ABC):
             dict: The processed data as a dictionary, or None if the file is not found or already processed.
         """
         file_loc = raw_data.get("data_location")
+        ume = self.instrument.micro_electrode
         if not self.check_file(file_loc):
             return None
         e_ref = ReagentStatus(_id=self.rom_id).formal_potential
@@ -223,7 +224,7 @@ class ProcessBase(RoboticsBase, ABC):
         self.metadata.update(self.instrument._settings_dict)
         self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
         p_data = ProcessChiCV(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
-                              metadata=self.metadata, micro_electrodes=self.instrument.micro_electrode).data_dict
+                              metadata=self.metadata, micro_electrodes=ume).data_dict
 
         # Insert data into database
         if self.mol_id and insert:
@@ -244,8 +245,8 @@ class ProcessBase(RoboticsBase, ABC):
                                           title=f"{title_tag} CV Plot for {self.plot_name}",
                                           xlabel=CV_PLOT_XLABEL,
                                           ylabel=CV_PLOT_YLABEL,
-                                          current_density=PLOT_CURRENT_DENSITY,
-                                          a_to_ma=CONVERT_A_TO_MA)
+                                          current_density=False if ume else PLOT_CURRENT_DENSITY,
+                                          a_to_ma=False if ume else CONVERT_A_TO_MA)
 
         return p_data
 
@@ -462,7 +463,8 @@ class DataProcessorCV(ProcessBase):
             print("Calculating metadata...")
             if self.mol_id:
                 metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
-                                              micro_electrodes=self.instrument.micro_electrode).meta_dict)
+                                              micro_electrodes=self.instrument.micro_electrode,
+                                              max_scan_rate=self.instrument.settings("max_scan_rate")).meta_dict)
 
         self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data)
         return FWAction(update_spec=self.updated_specs(), propagate=True)

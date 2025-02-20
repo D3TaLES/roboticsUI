@@ -411,21 +411,21 @@ class DefaultConditions:
     def sensitivity(self):
         if self.method == "cv":
             redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 10:
+            if redox_conc <= 11:
                 return 1e-6  # A/V, current sensitivity
-            elif redox_conc < 50:
+            elif redox_conc < 45:
                 return 1e-4  # A/V, current sensitivity
             else:
                 return 1e-3  # A/V, current sensitivity
         elif self.method == "cvUM":
             redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 10:
+            if redox_conc <= 11:
                 return 1e-6  # A/V, current sensitivity
             else:
                 return 1e-4  # A/V, current sensitivity
         elif self.method == "ca":
             redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 10:
+            if redox_conc <= 11:
                 return 1e-6  # A/V, current sensitivity
             else:
                 return 1e-4  # A/V, current sensitivity

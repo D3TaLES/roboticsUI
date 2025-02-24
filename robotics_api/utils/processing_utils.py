@@ -373,23 +373,27 @@ class DefaultConditions:
 
     @property
     def redox_mol_concentration(self):
-        return get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+        conc = get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
                                  soln_density=self.soln_density)
+        ureg = pint.UnitRegistry()
+        return ureg(conc).to("M").magnitude
 
     @property
     def electrolyte_concentration(self):
-        return get_concentration(self.vial_contents, self.elect_id, self.solv_id,
+        conc = get_concentration(self.vial_contents, self.elect_id, self.solv_id,
                                  soln_density=self.soln_density)
+        ureg = pint.UnitRegistry()
+        return ureg(conc).to("M").magnitude
 
     @property
     def redox_mol_fraction(self):
-        return get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                 soln_density=self.soln_density, mol_fraction=True)
+        return float(get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+                                       soln_density=self.soln_density, mol_fraction=True))
 
     @property
     def electrolyte_mol_fraction(self):
-        return get_concentration(self.vial_contents, self.elect_id, self.solv_id,
-                                 soln_density=self.soln_density, mol_fraction=True)
+        return float(get_concentration(self.vial_contents, self.elect_id, self.solv_id,
+                                       soln_density=self.soln_density, mol_fraction=True))
 
     @property
     def total_mol_fraction(self):
@@ -410,22 +414,16 @@ class DefaultConditions:
     @property
     def sensitivity(self):
         if self.method == "cv":
-            redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 11:
+            redox_conc = (self.redox_mol_concentration or 0) * 1000  # Concentration in mM
+            if 0 < redox_conc <= 11:
                 return 1e-6  # A/V, current sensitivity
             elif redox_conc < 45:
                 return 1e-4  # A/V, current sensitivity
             else:
                 return 1e-3  # A/V, current sensitivity
         elif self.method == "cvUM":
-            redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 11:
-                return 1e-6  # A/V, current sensitivity
-            else:
-                return 1e-4  # A/V, current sensitivity
-        elif self.method == "ca":
-            redox_conc = self.redox_mol_concentration or 0
-            if redox_conc <= 11:
+            redox_conc = (self.redox_mol_concentration or 0) * 1000  # Concentration in mM
+            if 0 < redox_conc <= 11:
                 return 1e-6  # A/V, current sensitivity
             else:
                 return 1e-4  # A/V, current sensitivity

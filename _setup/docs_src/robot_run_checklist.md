@@ -44,7 +44,7 @@ tags:
   * Place electrodes in elevator holders
   * Be sure the vial does not hit electrodes when risen 
   * Check secure connections for all electrodes
-  * **For conductivity probe**, soak in DI water for 15 min.
+  * **For conductivity probe**, soak in DI water for 15 min. **Be sure there are no bubbles in the electrode.**
   * Set temperature probe (NOT in the vial solution)
   * Place dispensing waste beaker below pipette. 
   * Set all vials (make sure they are uncapped)

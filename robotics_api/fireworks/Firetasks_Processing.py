@@ -120,7 +120,6 @@ class ProcessBase(RoboticsBase, ABC):
         self.solv_id = fw_spec.get("solv_id") or self.get("solv_id")
         self.rom_id = fw_spec.get("rom_id") or self.get("rom_id")
         self.elect_id = fw_spec.get("elect_id") or self.get("elect_id")
-        self.soln_density = self.metadata.get("soln_density")
 
         # Measurement info
         self.collect_tag = self.metadata.get("collect_tag", f"UnknownCycle")
@@ -163,12 +162,13 @@ class ProcessBase(RoboticsBase, ABC):
             "data_type": self.active_method,
         }
 
-    def conc_info(self, vial_contents: list):
+    def conc_info(self, vial_contents: list, soln_density: str or float):
         """
         Generates concentration information based on the vial contents.
 
         Args:
             vial_contents (dict): The contents of the vial being processed.
+            soln_density (str or float): Solution density.
 
         Returns:
             dict: A dictionary with concentration information, including redox molecule and electrolyte concentrations
@@ -176,13 +176,13 @@ class ProcessBase(RoboticsBase, ABC):
         """
         return {
             "redox_mol_concentration": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                                         soln_density=self.soln_density),
+                                                         soln_density=soln_density),
             "electrolyte_concentration": get_concentration(vial_contents, self.elect_id, self.solv_id,
-                                                           soln_density=self.soln_density),
+                                                           soln_density=soln_density),
             "redox_mol_fraction": get_concentration(vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                                    soln_density=self.soln_density, mol_fraction=True),
+                                                    soln_density=soln_density, mol_fraction=True),
             "electrolyte_mol_fraction": get_concentration(vial_contents, self.elect_id, self.solv_id,
-                                                          soln_density=self.soln_density, mol_fraction=True),
+                                                          soln_density=soln_density, mol_fraction=True),
         }
 
     def check_file(self, file_loc):
@@ -222,7 +222,8 @@ class ProcessBase(RoboticsBase, ABC):
             raise KeyError(f"No formal potential exists in the reagents database for {self.mol_id}")
         self.metadata.update({"e_ref": e_ref})
         self.metadata.update(self.instrument._settings_dict)
-        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents"),
+                                            raw_data.get("soln_density", self.metadata.get("soln_density"))))
         p_data = ProcessChiCV(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
                               metadata=self.metadata, micro_electrodes=ume).data_dict
 
@@ -269,7 +270,8 @@ class ProcessBase(RoboticsBase, ABC):
         self.metadata.update({"cell_constant": get_cell_constant(collection_time=raw_data["collection_time"],
                                                                  raise_error=cell_constant_error)})
         self.metadata.update(self.instrument._settings_dict)
-        self.metadata.update(self.conc_info(raw_data.get("vial_contents")))
+        self.metadata.update(self.conc_info(raw_data.get("vial_contents"),
+                                            raw_data.get("soln_density", self.metadata.get("soln_density"))))
         p_data = ProcessChiCA(file_loc, _id=self.mol_id, submission_info=self.submission_info(file_loc.split('.')[-1]),
                               metadata=self.metadata).data_dict
 

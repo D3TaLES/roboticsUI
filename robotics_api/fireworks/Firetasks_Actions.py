@@ -441,6 +441,7 @@ class BenchmarkCV(RoboticsBase):
         self.collection_data.append({"collect_tag": f"cycle{self.metadata.get('cycle', 0):02d}_benchmark_cv",
                                      "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
+                                     "soln_density": self.metadata.get("soln_density"),
                                      "data_location": data_path})
         self.metadata.update({"resistance": resistance})
         return FWAction(update_spec=self.updated_specs())
@@ -482,6 +483,7 @@ class RunCVBase(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag,
                                      "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
+                                     "soln_density": self.metadata.get("soln_density"),
                                      "data_location": data_path})
         return FWAction(
             update_spec=self.updated_specs(voltage_sequence=voltage_sequence)
@@ -538,6 +540,7 @@ class RunCA(RoboticsBase):
         self.collection_data.append({"collect_tag": collect_tag,
                                      "collection_time": collection_time,
                                      "vial_contents": VialStatus(active_vial_id).vial_content,
+                                     "soln_density": self.metadata.get("soln_density"),
                                      "temperature": temperature,
                                      "data_location": data_path})
         return FWAction(update_spec=self.updated_specs())

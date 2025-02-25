@@ -123,7 +123,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    print(density_test(0.5, pipette_id="pipette_01", vial_id="B_02"))
+    # print(density_test(0.5, pipette_id="pipette_01", vial_id="A_01"))
     # test_stir.stir(stir_time=15)
     # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)

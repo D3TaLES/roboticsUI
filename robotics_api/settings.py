@@ -11,7 +11,7 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 DISPENSE = True
 STIR = True
 WEIGH = True
@@ -31,6 +31,7 @@ WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
 MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
 MAX_PIPETTE_VOL = 0.6  # Maximum volume in mL the pipette can extract
+DISCARD_DENSITY_SOLN = True  # Discard solution extracted for density measurement if True
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"

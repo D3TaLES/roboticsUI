@@ -216,7 +216,11 @@ class MeasureDensity(RoboticsBase):
         self.metadata.update({"soln_density": soln_density})
 
         # Return extracted solution
-        pipette_station.return_soln(vial=self.exp_vial)
+        if DISCARD_DENSITY_SOLN:
+            pipette_station.discard_soln()
+            self.exp_vial.extract_soln(extracted_mass=extracted_mass)
+        else:
+            pipette_station.return_soln(vial=self.exp_vial)
 
         return FWAction(update_spec=self.updated_specs())
 

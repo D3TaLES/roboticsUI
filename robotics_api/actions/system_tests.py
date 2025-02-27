@@ -1,4 +1,7 @@
 from robotics_api.actions.standard_actions import *
+import matplotlib.pyplot as plt
+from datetime import datetime
+import pandas as pd
 
 
 def check_usb():
@@ -45,7 +48,7 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
         vial.place_home()
 
 
-def density_test(volume, pipette_id="pipette_01", vial_id="S_01"):
+def density_test(volume, pipette_id="pipette_01", vial_id="S_01", return_mass=False):
     bal_station = BalanceStation(StationStatus().get_first_available("balance"))
     pipette_station = PipetteStation(pipette_id)
     vial = VialMove(_id=vial_id)
@@ -67,7 +70,74 @@ def density_test(volume, pipette_id="pipette_01", vial_id="S_01"):
     # Return extracted solution
     pipette_station.return_soln(vial=vial)
 
-    return soln_density
+    return (extracted_mass / volume, extracted_mass) if return_mass else soln_density
+
+
+def generate_calibration_curve(calibration_df: pd.DataFrame, plot: bool = False):
+    """
+    Generate a calibration curve from the calibration data and calculate correction factor.
+
+    :param calibration_df: DataFrame containing calibration data
+    :param plot: Whether to save create and save a calibration plot
+    :return: Correction factor
+    """
+    expected_volumes = calibration_df["Expected Volume (L)"]
+    extracted_volumes = calibration_df["Extracted Volume (L)"]
+
+    correction_factor = (extracted_volumes / expected_volumes).mean()
+
+    if plot:
+        plt.figure(figsize=(8, 6))
+        plt.scatter(expected_volumes, extracted_volumes, label="Calibration Data")
+        plt.plot(expected_volumes * correction_factor, expected_volumes, label="Best Fit", linestyle="--", color="red")
+        plt.xlabel("Expected Volume (L)")
+        plt.ylabel("Extracted Volume (L)")
+        plt.title("Pipette Calibration Curve")
+        plt.legend()
+
+        plt.savefig("calibration_curve.png")
+
+    return correction_factor
+
+
+def pipette_calibration(test_vols: list, expected_density: float,
+                        trials_per_vol: int = 6, pipette_id="pipette_01", vial_id="S_01",
+                        return_dataframe: bool = True):
+    """
+    Perform a calibration for a pipette and return a correction factor.
+    Optionally, return all calibration data as a pandas DataFrame.
+
+    :param test_vols: List of test volumes in L
+    :param expected_density: Expected density in g/L
+    :param trials_per_vol: Number of trials per volume
+    :param pipette_id: Identifier for the pipette
+    :param vial_id: Identifier for the vial
+    :param return_dataframe: Whether to return calibration data as a DataFrame
+    :return: Correction factor (float) or calibration data (DataFrame)
+    """
+    result_data = []
+    for vol in test_vols:
+        for _ in range(0, trials_per_vol):
+            expected_mass = vol * expected_density
+            soln_density, extracted_mass = density_test(vol, pipette_id=pipette_id, vial_id=vial_id, return_mass=True)
+            print(f"\n\n\n DONE. Tried to extract {vol}. Expected mass was {expected_mass}, while extracted mass was "
+                  f"{extracted_mass}. Calculated solution density was {soln_density}. \n\n\n")
+            measurement_data = {
+                "date_collected": datetime.now().strftime('%Y_%m_%d'),  # Day
+                "Expected Volume (L)": vol,
+                "Extracted Volume (L)": extracted_mass / expected_density,
+                "Expected Mass (g)": expected_mass,
+                "Extracted Mass (g)": extracted_mass,
+                "Measured Density (g/L)": soln_density,
+            }
+            ChemStandardsDB(standards_type="PipetteCalib", instance=measurement_data)
+            result_data.append(measurement_data)
+
+    result_df = pd.DataFrame(result_data)
+    result_df.to_csv("pipette_calibration.csv")
+    correction_factor = generate_calibration_curve(result_df, plot=True)
+
+    return correction_factor, result_df if return_dataframe else correction_factor
 
 
 if __name__ == "__main__":
@@ -76,7 +146,7 @@ if __name__ == "__main__":
     the test you'd like to implement. Then run this file: `python system_tests.py`. 
     """
 
-    test_vial = VialMove(_id="A_02")
+    test_vial = VialMove(_id="A_01")
     cvUM_potent = CVPotentiostatStation("cvUM_potentiostat_A_01")
     cv_potent = CVPotentiostatStation("cv_potentiostat_B_01")
     ca_potent = CAPotentiostatStation("ca_potentiostat_C_01")
@@ -114,7 +184,7 @@ if __name__ == "__main__":
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
-    # flush_solvent(8, vial_id="A_04", solv_id="solvent_02", go_home=True)
+    # flush_solvent(8, vial_id="A_03", solv_id="solvent_02", go_home=True)
     # LiquidStation("solvent_02").dispense_only(1)
 
     # OTHER STATION TESTING
@@ -123,7 +193,8 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
-    # print(density_test(0.5, pipette_id="pipette_01", vial_id="A_01"))
+    # print(density_test(0.5, pipette_id="pipette_01", vial_id="B_02"))
+    # pipette_calibration([0.5], trials_per_vol=4, expected_density=0.786, vial_id="A_01")
     # test_stir.stir(stir_time=15)
     # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)

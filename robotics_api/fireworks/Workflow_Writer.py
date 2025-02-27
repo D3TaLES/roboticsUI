@@ -346,7 +346,7 @@ def run_ex_processing(experiment_dir=None, molecule_id="test", name_tag="", **kw
 
 if __name__ == "__main__":
     # run_ex_processing()
-    expflow_file = TEST_DATA_DIR / 'workflows' / 'Cond3_all_TEMPO_workflow.json'
+    expflow_file = TEST_DATA_DIR / 'workflows' / 'Cond3_all_TEMPO_NewLow_workflow_single.json'
     expflow_experiment = loadfn(expflow_file)
     # experiment = EF2Experiment(expflow_experiment.get("experiments")[1], "Robotics", data_type='cv')
     # tc = experiment.task_clusters

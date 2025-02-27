@@ -464,7 +464,7 @@ class PipetteStation(StationStatus):
         Raises:
             Exception: If the pipetting operation fails and raise_error is True.
         """
-        send_arduino_cmd(self.serial_name, 0)  # Return pipette to 0 before beginning opertation
+        self._pipette_vol(volume=0)  # Return pipette to 0 before beginning opertation
         if vial:
             self.place_vial(vial, raise_error=raise_error)
 
@@ -474,7 +474,7 @@ class PipetteStation(StationStatus):
                 raise ValueError(f"Cannot pipette {vol_mL} mL because it is greater than the max "
                                  f"pipette volume {MAX_PIPETTE_VOL} mL.")
             arduino_vol = vol_mL * 1000  # send volume in micro liter
-            send_arduino_cmd(self.serial_name, arduino_vol)
+            self._pipette_vol(arduino_vol)
 
         if vial:
             vial.update_status(None, status_name="weight")
@@ -484,13 +484,13 @@ class PipetteStation(StationStatus):
         vial.go_to_station(self, raise_error=raise_error, pre_position_only=True)
 
         if PIPETTE:
-            send_arduino_cmd(self.serial_name, 0)
+            self._pipette_vol(0)
 
         vial.update_status(None, status_name="weight")
         vial.leave_station(self, raise_error=raise_error)
 
     def discard_soln(self):
-        send_arduino_cmd(self.serial_name, 0)
+        self.pipette(0)
 
     def leave_station(self, vial: VialMove, raise_error=True):
         """
@@ -507,6 +507,10 @@ class PipetteStation(StationStatus):
         joint_deltas = dict(j1=-5)
         if RUN_ROBOT:
             perturb_angular(reverse=False, **joint_deltas)
+
+    def _pipette_vol(self, volume: float, correction_factor=1.019):
+        print("CORRECTION FACTOR: ", correction_factor)
+        send_arduino_cmd(self.serial_name, volume*correction_factor)
 
 
 class BalanceStation(StationStatus):

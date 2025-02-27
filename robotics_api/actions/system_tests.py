@@ -84,18 +84,18 @@ def generate_calibration_curve(calibration_df: pd.DataFrame, plot: bool = False)
     expected_volumes = calibration_df["Expected Volume (L)"]
     extracted_volumes = calibration_df["Extracted Volume (L)"]
 
-    correction_factor = (extracted_volumes / expected_volumes).mean()
+    correction_factor = (expected_volumes / extracted_volumes).mean()
 
     if plot:
         plt.figure(figsize=(8, 6))
         plt.scatter(expected_volumes, extracted_volumes, label="Calibration Data")
-        plt.plot(expected_volumes * correction_factor, expected_volumes, label="Best Fit", linestyle="--", color="red")
+        plt.plot(expected_volumes * (1/correction_factor), expected_volumes, label="Best Fit", linestyle="--", color="red")
         plt.xlabel("Expected Volume (L)")
         plt.ylabel("Extracted Volume (L)")
         plt.title("Pipette Calibration Curve")
         plt.legend()
 
-        plt.savefig("calibration_curve.png")
+        plt.savefig(TEST_DATA_DIR / "calibration_curve.png")
 
     return correction_factor
 
@@ -134,8 +134,9 @@ def pipette_calibration(test_vols: list, expected_density: float,
             result_data.append(measurement_data)
 
     result_df = pd.DataFrame(result_data)
-    result_df.to_csv("pipette_calibration.csv")
+    result_df.to_csv(TEST_DATA_DIR / "pipette_calibration.csv")
     correction_factor = generate_calibration_curve(result_df, plot=True)
+    print("CALCULATED CORRECTION FACTOR: ", correction_factor)
 
     return correction_factor, result_df if return_dataframe else correction_factor
 

@@ -43,7 +43,7 @@ class InitializeRobot(FiretaskBase):
         # Test Balance connection
         if WEIGH:
             for balance in [b for b in MEASUREMENT_STATIONS if "balance" in b]:
-                mass = BalanceStation(balance).try_read_mass()
+                mass = BalanceStation(balance).read_mass()
                 print(f"Successfully read mass {mass} from balance {balance}!")
 
         reset_stations()

@@ -628,13 +628,13 @@ class BalanceStation(StationStatus):
             vial.retrieve()
         self.tare()
         self.place_vial(vial, raise_error=raise_error)
-        mass = self.try_read_mass(max_balance_reads=max_balance_reads)
+        mass = self.read_mass(max_balance_reads=max_balance_reads)
         time.sleep(1)
         self._retrieve_vial(vial)
         vial.update_status(mass, "weight")
         return mass
 
-    def try_read_mass(self, max_balance_reads=MAX_BALANCE_READS):
+    def read_mass(self, max_balance_reads=MAX_BALANCE_READS):
         """
         Trt to read the mass from the balance via serial communication.
 
@@ -644,8 +644,13 @@ class BalanceStation(StationStatus):
         balance_reads = 0
         while True:
             try:
-                mass = self.read_mass()
-                return mass
+                result_txt = self._send_command(write_txt="S\n", read_response=True)
+                result_list = result_txt.split(" ")
+                response_status = result_list[1]
+                if response_status == "S":
+                    return float(result_list[-2])
+                else:
+                    raise SystemError(f"Balance reading returned {result_txt}")
             except Exception as e:
                 if balance_reads > max_balance_reads:
                     raise e
@@ -653,43 +658,28 @@ class BalanceStation(StationStatus):
                 balance_reads += 1
                 time.sleep(10)
 
-    def read_mass(self):
+    def tare(self, max_balance_reads=MAX_BALANCE_READS):
         """
-        Reads the mass from the balance via serial communication.
+        Trt to tare the balance via serial communication.
 
         Returns:
-            float: The mass read from the balance.
-
-        Raises:
-            SystemError: If the balance reading fails.
+            bool: True if taring successful
         """
-        result_txt = self._send_command(write_txt="S\n", read_response=True)
-        result_list = result_txt.split(" ")
-        response_status = result_list[1]
-        if response_status == "S":
-            return float(result_list[-2])
-        else:
-            raise SystemError(f"Balance reading returned {result_txt}")
-
-    def tare(self):
-        """
-        Tares the balance, resetting the weight measurement to zero.
-
-        Returns:
-            bool: True if the taring was successful.
-
-        Raises:
-            SystemError: If taring fails and the balance does not respond correctly.
-        """
+        balance_reads = 0
         while True:
-            response = self._send_command(write_txt="T\n", read_response=True)
-            if "S" in response:
-                print(f"Balance {self} tared.")
-                return True
-            elif not WAIT_FOR_BALANCE:
-                raise SystemError(f"Balance reading returned {response}")
-            print(f"WARNING! Balance returned {response}! Trying again...")
-            time.sleep(1)
+            try:
+                response = self._send_command(write_txt="T\n", read_response=True)
+                if "S" in response:
+                    print(f"Balance {self} tared.")
+                    return True
+                else:
+                    raise SystemError(f"Balance reading returned {response}")
+            except Exception as e:
+                if balance_reads > max_balance_reads:
+                    raise e
+                print(f"WARNING. Balance taring {balance_reads} ended in error: ", e)
+                balance_reads += 1
+                time.sleep(10)
 
     def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=100):
         """

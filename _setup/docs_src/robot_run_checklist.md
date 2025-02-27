@@ -41,6 +41,7 @@ tags:
  
 #### Prepare Stations
   * Flush liquid dispensing tubes with 8 mL solution
+  * Perform density test with pipette to wet pipette and check pipette calibration. 
   * Place electrodes in elevator holders
   * Be sure the vial does not hit electrodes when risen 
   * Check secure connections for all electrodes

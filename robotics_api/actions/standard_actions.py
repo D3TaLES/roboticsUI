@@ -508,7 +508,7 @@ class PipetteStation(StationStatus):
         if RUN_ROBOT:
             perturb_angular(reverse=False, **joint_deltas)
 
-    def _pipette_vol(self, volume: float, correction_factor=1.019):
+    def _pipette_vol(self, volume: float, correction_factor=PIPETTE_CORR_FACTOR):
         print("CORRECTION FACTOR: ", correction_factor)
         send_arduino_cmd(self.serial_name, volume*correction_factor)
 

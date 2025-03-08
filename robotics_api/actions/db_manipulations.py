@@ -596,6 +596,20 @@ def check_duplicates(test_list, exemptions=None):
         return ", ".join(duplicates)
 
 
+def test_soln_reagent(reagent):
+    soln_reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+    if soln_reagent.type == "solution":
+        smiles_list = [s.strip() for s in soln_reagent.smiles.strip().split(",")]
+        ratio_list = [float(r.strip()) for r in soln_reagent.purity.strip().split(",")]
+        if len(smiles_list) != len(ratio_list):
+            raise ValueError(f"Error adding solution. The number of component smiles ({smiles_list}) is not equal to "
+                             f"the number of component mass ratios ({ratio_list}).")
+        for smiles, ratio in zip(smiles_list, ratio_list):
+            component_reagent = ReagentStatus(r_smiles=smiles)
+            print(f"Successfully found reagent {component_reagent.name}")
+    return True
+
+
 def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOLVENT_DENSITIES, potentials_dict=FORMAL_POTENTIALS):
     """
     Reset the reagent database with the provided list of reagents.
@@ -618,6 +632,9 @@ def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOL
                   "density": unit_conversion(solvent_densities.get(smiles), default_unit=DENSITY_UNIT),
                   "formal_potential": unit_conversion(potentials_dict.get(smiles), default_unit=POTENTIAL_UNIT)})
         ReagentStatus(instance=r)
+
+    # Test for appropriately added solution reagents
+    [test_soln_reagent(r["_id"]) for r in reagents_list]
 
 
 def reset_station_db(current_wflow_name=""):

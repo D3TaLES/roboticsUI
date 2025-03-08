@@ -5,7 +5,7 @@ import warnings
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
-from robotics_api.utils.base_utils import unit_conversion
+from robotics_api.utils.base_utils import unit_conversion, is_mass_unit
 from robotics_api.utils.mongo_dbs import RobotStatusDB, MongoDatabase
 
 
@@ -129,6 +129,24 @@ class VialStatus(RobotStatusDB):
         """Clear the vial content."""
         self.insert(self.id, override_lists=True, instance={"vial_content": []})
 
+    def add_solution(self, reagent, amount, default_unit, addition_id=None):
+        if not is_mass_unit(default_unit):
+            raise ValueError(f"Cannot add a solution with amount units {default_unit}. Solution component ratio"
+                             f"is given as a mass ratio, so the solution amount must be a mass. ")
+        soln_reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+        smiles_list = [s.strip() for s in soln_reagent.smiles.strip().split(",")]
+        ratio_list = [float(r.strip()) for r in soln_reagent.purity.strip().split(",")]
+        if len(smiles_list) != len(ratio_list):
+            raise ValueError(f"Error adding solution. The number of component smiles ({smiles_list}) is not equal to "
+                             f"the number of component mass ratios ({ratio_list}).")
+        for smiles, ratio in zip(smiles_list, ratio_list):
+            component_reagent = ReagentStatus(r_smiles=smiles)
+            component_mass = amount * (ratio/sum(ratio_list))
+            self.add_reagent(component_reagent, component_mass, default_unit=default_unit, addition_id=addition_id)
+            print(f"Successfully added {component_mass} {default_unit} for {component_reagent.name} "
+                  f"part of the added solution.")
+        return None
+
     def add_reagent(self, reagent, amount, default_unit, addition_id=None):
         """
         Add a reagent to the vial content.
@@ -144,6 +162,8 @@ class VialStatus(RobotStatusDB):
         """
         # Check if reagent exists
         reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+        if reagent.type == "solution":
+            return self.add_solution(reagent=reagent, amount=amount, default_unit=default_unit, addition_id=addition_id)
         if not reagent:
             raise NameError("No reagent {} exists in the reagent database.".format(reagent))
 

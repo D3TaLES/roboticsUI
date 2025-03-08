@@ -119,6 +119,7 @@ POTENTIOSTAT_SETTINGS = {
         cut_end=0.0,  # percentage as decimal of end of CV to cut
         benchmark_buffer=0.4,  # volts, buffer used in setting voltage range from benchmark peaks
         max_scan_rate=0,  # max scan rate to use in meta calc processing
+        cathodic_peak_is_max=False,
 
     ),
     "ca_potentiostat_C_01": dict(
@@ -150,7 +151,7 @@ PEAK_WIDTH = 0.5
 
 # ---------  CALIBRATION SETTINGS -------------
 KCL_CALIB = True
-DI_WATER_COND = 10
+DI_WATER_COND = 10  # uS/cm
 CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "11JNLU": 1.299,  # KCl
     "06IGCB": 0,  # H2O

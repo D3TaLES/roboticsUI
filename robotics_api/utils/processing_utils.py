@@ -132,7 +132,7 @@ def kcl_cell_constant(conductance_measured, temperature, di_water_conductivity=D
         float: The calculated cell constant (cm^-1), which accounts for both KCl and DI water conductivities.
     """
     cond = unit_conversion(conductance_measured, default_unit='uS')
-    di_cond = unit_conversion(di_water_conductivity, default_unit='uS')
+    di_cond = unit_conversion(di_water_conductivity, default_unit='uS/cm')
     temp = unit_conversion(temperature, default_unit='K')
     return (get_kcl_conductivity(temp) + di_cond) / cond
 

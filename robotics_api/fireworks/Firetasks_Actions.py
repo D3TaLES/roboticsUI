@@ -108,7 +108,7 @@ class DispenseLiquid(RoboticsBase):
         self.setup_task(fw_spec)
         solvent = ReagentStatus(_id=self.get("start_uuid"))
         volume = self.get("volume", 0)
-        if solvent.type != "solvent":
+        if solvent.type != "solvent" and solvent.type != "solution":
             raise TypeError(f"DispenseLiquid task requires a solvent start_uuid. The start_uuid is type {solvent.type}")
 
         if self.exp_vial.check_addition_id(self.ftask_id):  # Check if addition has already been made

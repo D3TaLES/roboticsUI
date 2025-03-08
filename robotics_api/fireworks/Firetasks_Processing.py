@@ -198,7 +198,7 @@ class ProcessBase(RoboticsBase, ABC):
     @property
     def plot_name(self):
         return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)} " \
-                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
+               f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
 
     def process_cv_data(self, raw_data, insert=True, title_tag="", plot_dir=False):
         """
@@ -307,7 +307,8 @@ class ProcessBase(RoboticsBase, ABC):
                                               a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
-                dirty = dirty_calc.calculate(p_data, max_current_range=self.instrument.settings("dirty_electrode_current"))
+                dirty = dirty_calc.calculate(p_data,
+                                             max_current_range=self.instrument.settings("dirty_electrode_current"))
                 if dirty:
                     raise SystemError("WARNING! Electrode may be dirty!")
             print(f"Solvent {d} processed.")
@@ -464,9 +465,11 @@ class DataProcessorCV(ProcessBase):
             # CV Meta Properties
             print("Calculating metadata...")
             if self.mol_id:
-                metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
-                                              micro_electrodes=self.instrument.micro_electrode,
-                                              max_scan_rate=self.instrument.settings("max_scan_rate")).meta_dict)
+                metadata_dict.update(
+                    CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
+                             micro_electrodes=self.instrument.micro_electrode,
+                             macro_cathodic_peak_is_max=self.instrument.settings("cathodic_peak_is_max", False),
+                             max_scan_rate=self.instrument.settings("max_scan_rate")).meta_dict)
 
         self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data)
         return FWAction(update_spec=self.updated_specs(), propagate=True)
@@ -644,6 +647,7 @@ class EndWorkflow(FiretaskBase):
     This task checks the current contents of the robot's grip, ensures that the vial (if any) is returned to its home
     position, and triggers the final data snapshots to be moved to their designated locations.
     """
+
     def run_task(self, fw_spec):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:

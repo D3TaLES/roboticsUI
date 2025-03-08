@@ -35,6 +35,18 @@ def sig_figs(number: float or str, num_sig_figs=5):
     return float(f"{rounded:.{num_sig_figs - 1}e}")
 
 
+def is_mass_unit(unit):
+    # Check if a unit is a unit of mass
+    ureg = pint.UnitRegistry()
+    if isinstance(unit, pint.Unit):
+        ureg_unit = unit
+    elif isinstance(unit, str):
+        ureg_unit = ureg(unit)
+    else:
+        raise ValueError(f"Cannot determine if datatype {type(unit)} is a mass unit. ")
+    return ureg_unit.dimensionality == ureg.kilogram.dimensionality
+
+
 def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):
     """
     Convert a measurement into a default unit using pint.

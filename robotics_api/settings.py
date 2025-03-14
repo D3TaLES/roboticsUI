@@ -11,14 +11,16 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = True
-DISPENSE = True
-STIR = True
-WEIGH = True
-PIPETTE = True
-RUN_ROBOT = True
-MOVE_ELEVATORS = True
+RUN_POTENT = False
+DISPENSE = False
+STIR = False
+WEIGH = False
+PIPETTE = False
+RUN_ROBOT = False
+MOVE_ELEVATORS = False
 POT_DELAY = 2  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
+TEST_VIAL_MASS = 20  # testing vial mass in g
+TEST_SOLN_DENSITY = 786  # testing solution density in g/L
 
 # ---------  OPERATION SETTING -------------
 WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation

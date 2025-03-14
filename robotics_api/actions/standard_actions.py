@@ -386,13 +386,13 @@ class LiquidStation(StationStatus):
         # Pre dispense weighing
         balance = BalanceStation(vial.current_location) if "balance" in vial.current_location else BalanceStation(
             StationStatus().get_first_available("balance"))
-        pre_mass = balance.existing_weight(vial)
+        pre_mass = balance.existing_weight(vial, testing_mass=TEST_VIAL_MASS)
 
         # Dispense liquid
         self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
 
         # Post dispense weighing
-        post_mass = balance.weigh(vial)
+        post_mass = balance.weigh(vial, testing_mass=get_testing_mass(pre_mass, volume))
         final_mass = post_mass - pre_mass
 
         # Update vial contents
@@ -594,13 +594,14 @@ class BalanceStation(StationStatus):
 
         return success
 
-    def existing_weight(self, vial: VialMove, raise_error=True):
+    def existing_weight(self, vial: VialMove, raise_error=True, testing_mass=0):
         """
         Returns the current weight of a vial if available, or weighs the vial.
 
         Args:
             vial (VialMove): The vial whose weight is to be measured.
             raise_error (bool): Whether to raise an error if weighing fails (default is True).
+            testing_mass (float): Mass to return if WEIGH is false. ONLY FOR TESTING.
 
         Returns:
             float: The current weight of the vial.
@@ -608,9 +609,9 @@ class BalanceStation(StationStatus):
         if vial.current_weight:
             print("CURRENT WEIGHT: ", vial.current_weight)
             return vial.current_weight
-        return self.weigh(vial, raise_error=raise_error)
+        return self.weigh(vial, raise_error=raise_error, testing_mass=testing_mass)
 
-    def weigh(self, vial: VialMove, raise_error=True, max_balance_reads=MAX_BALANCE_READS):
+    def weigh(self, vial: VialMove, raise_error=True, max_balance_reads=MAX_BALANCE_READS, testing_mass=0):
         """
         Weighs a vial by taring the balance and placing the vial on the station.
 
@@ -618,12 +619,13 @@ class BalanceStation(StationStatus):
             vial (VialMove): The vial to be weighed.
             raise_error (bool): Whether to raise an error if weighing fails (default is True).
             max_balance_reads (int): Maximum number of balance reads
+            testing_mass (float): Mass to return if WEIGH is false. ONLY FOR TESTING.
 
         Returns:
             float: The weight of the vial.
         """
         if not WEIGH:
-            return 0
+            return testing_mass
         if self.current_content == vial.id:
             vial.retrieve()
         self.tare()

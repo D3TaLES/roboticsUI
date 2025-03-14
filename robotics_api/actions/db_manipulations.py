@@ -5,8 +5,8 @@ import warnings
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
-from robotics_api.utils.base_utils import unit_conversion, is_mass_unit
 from robotics_api.utils.mongo_dbs import RobotStatusDB, MongoDatabase
+from robotics_api.utils.base_utils import unit_conversion, is_mass_unit, rdkit_smiles
 
 
 class VialStatus(RobotStatusDB):
@@ -606,7 +606,8 @@ def test_soln_reagent(reagent):
                              f"the number of component mass ratios ({ratio_list}).")
         for smiles, ratio in zip(smiles_list, ratio_list):
             component_reagent = ReagentStatus(r_smiles=smiles)
-            print(f"Successfully found reagent {component_reagent.name}")
+            print(f"Successfully found reagent {component_reagent.name} with ratio amount {ratio} for solution "
+                  f"{soln_reagent.name}.")
     return True
 
 
@@ -621,13 +622,13 @@ def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOL
     """
     # Check reagent locations 1-to-1 status
     reagent_locs = [r.get("location") for r in reagents_list]
-    duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent"])
+    duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent", "in_solution"])
     if duplicate_reagents:
         raise ValueError("More than one reagent is assigned the same station: " + duplicate_reagents)
 
     ReagentStatus().coll.delete_many({})
     for r in reagents_list:
-        smiles = r.get("smiles", "")
+        smiles = rdkit_smiles(r.get("smiles", ""))
         r.update({"current_wflow_name": current_wflow_name,
                   "density": unit_conversion(solvent_densities.get(smiles), default_unit=DENSITY_UNIT),
                   "formal_potential": unit_conversion(potentials_dict.get(smiles), default_unit=POTENTIAL_UNIT)})

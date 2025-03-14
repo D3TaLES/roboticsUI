@@ -22,7 +22,7 @@ def vial_location_options():
 
 
 def reagent_location_options():
-    return ["experiment_vial"] + DISPENSE_STATIONS
+    return ["experiment_vial", "in_solution"] + DISPENSE_STATIONS
 
 
 def assign_locations(reagent_dict, exp_dict, experiment_data):

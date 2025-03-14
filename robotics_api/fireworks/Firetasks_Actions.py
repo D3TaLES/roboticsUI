@@ -201,11 +201,11 @@ class MeasureDensity(RoboticsBase):
         bal_station = BalanceStation(StationStatus().get_first_available("balance"))
         pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
         # Get initial mass
-        initial_mass = bal_station.existing_weight(self.exp_vial)
+        initial_mass = bal_station.existing_weight(self.exp_vial, testing_mass=TEST_VIAL_MASS)
         # Extract solution
         pipette_station.pipette(volume=volume, vial=self.exp_vial)
         # Get final mass
-        final_mass = bal_station.weigh(self.exp_vial)
+        final_mass = bal_station.weigh(self.exp_vial, testing_mass=get_testing_mass(initial_mass, volume, adding=False))
 
         # Calculate solution density
         extracted_mass = initial_mass - final_mass
@@ -240,7 +240,7 @@ class Extract(RoboticsBase):
             pipette_station = PipetteStation(StationStatus().get_first_available("pipette"))
 
             # Extract solution
-            initial_mass = bal_station.existing_weight(self.exp_vial)
+            initial_mass = bal_station.existing_weight(self.exp_vial, testing_mass=TEST_VIAL_MASS)
             while volume > 0:
                 pipette_volume = MAX_PIPETTE_VOL if volume > MAX_PIPETTE_VOL else volume
                 print("PIPETTING VOLUME ", pipette_volume)
@@ -249,7 +249,7 @@ class Extract(RoboticsBase):
                 volume -= pipette_volume
 
             # Find extracted mass
-            final_mass = bal_station.weigh(self.exp_vial)
+            final_mass = bal_station.weigh(self.exp_vial, testing_mass=get_testing_mass(initial_mass, volume, adding=False))
             extracted_mass = initial_mass - final_mass
 
             # Update vial contents
@@ -532,7 +532,7 @@ class RunCA(RoboticsBase):
         # Run CA experiment
         potent = CAPotentiostatStation(self.metadata.get("ca_potentiostat"))
         potent.initiate_pot(vial=self.metadata.get("active_vial_id"))
-        collection_time = str(datetime.now())
+        collection_time = str(datetime.now() if RUN_POTENT else datetime(2025, 1, 1).strftime("%Y-%m-%d %H:%M:%S.%f"))
         self.success &= potent.run_ca(data_path=data_path, voltage_sequence=voltage_sequence, si=sample_interval,
                                       pw=pulse_width, sens=sens, steps=steps)
         # [os.remove(os.path.join(data_dir, f)) for f in os.listdir(data_dir) if f.endswith(".bin")]

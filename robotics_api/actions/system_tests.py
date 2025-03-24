@@ -244,7 +244,7 @@ if __name__ == "__main__":
     # ca_potent.place_vial(test_vial)
     # ca_potent.move_elevator(endpoint="down")
     # ca_potent.move_elevator(endpoint="up")
-    # cvUM_potent.move_elevator(endpoint="up")
+    cvUM_potent.move_elevator(endpoint="up")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # print("Resistance: ", resistance)
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,

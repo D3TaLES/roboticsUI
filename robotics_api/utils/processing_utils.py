@@ -53,7 +53,6 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
     solute_mass = sum([ureg(u) for u in solute_masses])
     solv_amt = sum([ureg(u) for u in solv_amounts])
     solute_mw = float(ReagentStatus(_id=solute_id).molecular_weight) * ureg('g/mol')
-    solv_density = f"{ReagentStatus(_id=solv_id).density}{DENSITY_UNIT}"
 
     if mol_fraction:
         solute_mols = solute_mass / solute_mw
@@ -74,9 +73,12 @@ def get_concentration(vial_content, solute_id, solv_id, soln_density=None, preci
         if soln_density and ureg(soln_density).magnitude:
             soln_volume = unit_conversion(total_mass, default_unit="L", density=soln_density) * ureg.liter
         else:
-            warnings.warn("No solution density provided. The solution volume is assumed to be the solvent volume. "
-                          "This may not be accurate if volume expansion is present. ")
-            soln_volume = unit_conversion(solv_amt, default_unit="L", density=solv_density) * ureg.liter
+            print("WARNING! No solution density provided. The solution volume is assumed to be the solvent volume. "
+                  "This may not be accurate if volume expansion is present. ")
+            solv_density = ReagentStatus(_id=solv_id).density
+            if not solv_density:
+                raise Exception(f"No density found for solvent {solv_id}")
+            soln_volume = unit_conversion(solv_amt, default_unit="L", density=f"{solv_density}{DENSITY_UNIT}") * ureg.liter
         if not soln_volume:
             if FIZZLE_CONCENTRATION_FAILURE:
                 raise Exception(f"Concentration calculation did not work because solution volume was 0..check all "

@@ -235,13 +235,15 @@ class PushToDB(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
+        self.exp_tag = tk.StringVar()
+        self.exp_tag.set("")
         self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
         self.design_frame()
 
     def design_frame(self):
         frame = tk.Canvas(self, width=100, height=200)
-        frame.grid(columnspan=2, rowspan=3)
+        frame.grid(columnspan=2, rowspan=4)
 
         tk_logo = ImageTk.PhotoImage(logo_small)
         self.iconphoto(False, tk_logo)
@@ -259,23 +261,29 @@ class PushToDB(tk.Toplevel):
         dropdown.config(font=("Raleway", 12), bg=theme_color_3, fg='white', height=1, width=45)
         dropdown.grid(column=1, row=1)
 
+        # Dropdown
+        self.exp_tag = tk.StringVar()
+        self.exp_tag.set("")
+        tk.Label(self, text="Experiment Name Tag", font=("Raleway", 14), fg=theme_color_2).grid(column=0, row=2)
+        tk.Entry(self, textvariable=self.exp_tag, font=("Raleway", 16, 'bold'), width=30, fg=theme_color_2).grid(
+            column=1, row=2, pady=30)
+
         # Button
         tk.Button(self, text="Push data from workflow", command=self.select_wf,
                   font=("Raleway", 16), bg=theme_color_1, fg='white', height=2,
-                  width=45).grid(columnspan=2, column=0, row=2)
+                  width=45).grid(columnspan=2, column=0, row=3)
 
     def select_wf(self):
-        window = PushToDB_Exp(self, self.workflow.get())
+        window = PushToDB_Exp(self, self.workflow.get(), self.exp_tag.get())
         window.grab_set()
 
 
 class PushToDB_Exp(tk.Toplevel):
-    def __init__(self, parent, wflow_name):
+    def __init__(self, parent, wflow_name, exp_tag=""):
         super().__init__(parent)
 
         self.title('Push data to DB')
-        self.workflow = tk.StringVar()
-        self.workflow.set("")
+        self.exp_tag = exp_tag
         self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
         workflow_nodes = self.lpad.workflows.find_one({"name": wflow_name}).get("nodes")
         self.processing_fws = self.get_processing_fws(workflow_nodes)
@@ -308,7 +316,7 @@ class PushToDB_Exp(tk.Toplevel):
             self.push_dict[fw_id] = push_var
 
         # Button
-        tk.Button(self, text="Push selected data to Master DB".format(self.workflow), command=self.push_wf,
+        tk.Button(self, text="Push selected data to Master DB", command=self.push_wf,
                   font=("Raleway", 16), bg=theme_color_1, fg='white', height=2, width=45).grid(columnspan=3, column=0,
                                                                                                row=rowspan - 1)
 

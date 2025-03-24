@@ -11,7 +11,7 @@ Copyright 2024, University of Kentucky, Rebekah Duke-Crockett
 """
 
 # ---------  TESTING OPERATION SETTINGS -------------
-RUN_POTENT = False
+RUN_POTENT = True
 DISPENSE = False
 STIR = False
 WEIGH = False

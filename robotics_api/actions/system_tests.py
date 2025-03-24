@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import pandas as pd
 
+from d3tales_api.Calculators.calculators import *
+from d3tales_api.Calculators.plotters import CVPlotter
+from d3tales_api.Processors.parser_echem import ProcessChiCV
+
 
 def check_usb():
     # list connection ports
@@ -89,7 +93,8 @@ def generate_calibration_curve(calibration_df: pd.DataFrame, plot: bool = False)
     if plot:
         plt.figure(figsize=(8, 6))
         plt.scatter(expected_volumes, extracted_volumes, label="Calibration Data")
-        plt.plot(expected_volumes * (1/correction_factor), expected_volumes, label="Best Fit", linestyle="--", color="red")
+        plt.plot(expected_volumes * (1 / correction_factor), expected_volumes, label="Best Fit", linestyle="--",
+                 color="red")
         plt.xlabel("Expected Volume (L)")
         plt.ylabel("Extracted Volume (L)")
         plt.title("Pipette Calibration Curve")
@@ -141,6 +146,70 @@ def pipette_calibration(test_vols: list, expected_density: float,
     return correction_factor, result_df if return_dataframe else correction_factor
 
 
+def macro_diff_test(potent: CVPotentiostatStation, voltage_sequence="0, 0.7, 0V", scan_rates=None, num_electrons=1,
+                    redox_concentration="0", curve_type="cathodic", run_cvs=True, resistance=0,
+                    out_dir=TEST_DATA_DIR / "cv_testing/diffusion_test"):
+    os.makedirs(out_dir, exist_ok=True)
+    if not resistance and run_cvs:
+        resistance = potent.run_ircomp_test(out_dir / "CV_ircomp.txt")
+    print("Resistance: ", resistance)
+    temp = TemperatureStation().temperature()
+    print("Temperature: ", temp)
+    scan_rates = scan_rates or [0.025, 0.05, 0.075, 0.1, 0.2, 0.3, 0.4, 0.5]
+    cv_entries = []
+    for scan_rate in scan_rates:
+        cv_loc = out_dir / f"CV_{int(scan_rate * 1000):03d}ScanRate.txt"
+        if run_cvs:
+            potent.run_cv(cv_loc, voltage_sequence=voltage_sequence,
+                          scan_rate=scan_rate, resistance=resistance)
+
+        data = ProcessChiCV(cv_loc, _id="test", submission_info={}, micro_electrodes=False,
+                            metadata={"redox_mol_concentration": redox_concentration, "temperature": temp,
+                                      "working_electrode_radius": potent.settings("working_electrode_radius")},
+                            ).data_dict
+        CVPlotter(connector={"scan_data": "data.middle_sweep", "we_surface_area": "data.conditions.working_electrode_surface_area"}
+                  ).live_plot(data, fig_path=str(cv_loc).replace(".txt", ".png"), xlabel=CV_PLOT_XLABEL,
+                              ylabel=CV_PLOT_YLABEL, title=f"CV Plot {int(scan_rate * 1000):03d}ScanRate")
+        data.update({"num_electrons": num_electrons})
+        cv_entries.append(data)
+
+    connector = {
+        "n": "n",
+        "X": "data.peak_splittings.{}".format(num_electrons - 1),
+        "i_p": "{}_peak_currents.{}".format(curve_type, num_electrons - 1),
+        "v": "data.conditions.scan_rate",
+        "T": "data.conditions.temperature",
+        "C": "data.conditions.redox_mol_concentration",
+        "A": "data.conditions.working_electrode_surface_area",
+        "we_surface_area": "data.conditions.working_electrode_surface_area",
+
+        "D": "diffusion",
+        "scan_data": "data.middle_sweep",
+    }
+
+    CVPlotter(connector={"scan_data": "data.scan_data",
+                         "variable_prop": "data.conditions.scan_rate.value",
+                         "we_surface_area": "data.conditions.working_electrode_surface_area"}
+              ).live_plot_multi(cv_entries, fig_path=out_dir / "multi_plot.png",
+                                title=f"Multi CV Plot",
+                                xlabel=CV_PLOT_XLABEL,
+                                ylabel=CV_PLOT_YLABEL, legend_title=CV_PLOT_LEGEND,
+                                current_density=PLOT_CURRENT_DENSITY, a_to_ma=CONVERT_A_TO_MA)
+
+    diffusion_cal = CVDiffusionCalculator(connector=connector)
+    diffusion = diffusion_cal.calculate(cv_entries, sci_notation=True, cathodic_anodic=curve_type, )
+    print("Fitted diffusion: ", diffusion[1])
+    print("Average diffusion: ", diffusion[0])
+
+    # Calculate charge transfer rates
+    [d.update({"diffusion": float(diffusion[1])}) for d in cv_entries]
+    transfer_cal = CVChargeTransferCalculator(connector=connector)
+    transfer_rate = transfer_cal.calculate(cv_entries, sci_notation=True)
+    print("Charge transfer rate: ", transfer_rate)
+
+    return diffusion, transfer_rate
+
+
 if __name__ == "__main__":
     """
     The code below contains test functions for all stations. To implement a test, uncomment the line with 
@@ -177,10 +246,13 @@ if __name__ == "__main__":
     # ca_potent.move_elevator(endpoint="up")
     # cvUM_potent.move_elevator(endpoint="up")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
+    # print("Resistance: ", resistance)
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
     #                  resistance=resistance)
-    # cvUM_potent.run_cv(TEST_DATA_DIR/"cv_testing/CVUM_Fc_test01.csv", voltage_sequence="0, 0.5, -0.2V", scan_rate=0.1)
+    # cvUM_potent.run_cv(TEST_DATA_DIR/"cvUM_testing/robot2_TEMPO050mM.txt", voltage_sequence="0, 0.7, 0V", scan_rate=0.1)
     # ca_potent.run_ca(os.path.join(TEST_DATA_DIR, "CA_Test_43.csv"))
+    # macro_diff_test(cv_potent, voltage_sequence="0, 0.7, 0V", out_dir=TEST_DATA_DIR / "cv_testing/robot2_TEMPO050mM/trial2",
+    #                 redox_concentration="0.05M")  # , run_cvs=False, curve_type="anodic")
 
     # SOLVENT TESTING
     # vol = test_solv.dispense_volume(test_vial, 0)

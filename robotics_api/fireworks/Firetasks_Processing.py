@@ -197,8 +197,8 @@ class ProcessBase(RoboticsBase, ABC):
 
     @property
     def plot_name(self):
-        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)} " \
-               f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
+        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)}M " \
+               f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)}M SE"
 
     def process_cv_data(self, raw_data, insert=True, title_tag="", plot_dir=False):
         """
@@ -246,7 +246,6 @@ class ProcessBase(RoboticsBase, ABC):
                                           title=f"{title_tag} CV Plot for {self.plot_name}",
                                           xlabel=CV_PLOT_XLABEL,
                                           ylabel=CV_PLOT_YLABEL,
-                                          current_density=False if ume else PLOT_CURRENT_DENSITY,
                                           a_to_ma=False if ume else CONVERT_A_TO_MA)
 
         return p_data
@@ -303,7 +302,6 @@ class ProcessBase(RoboticsBase, ABC):
                                               title=f"CV Plot for Solvent",
                                               xlabel=CV_PLOT_XLABEL,
                                               ylabel=CV_PLOT_YLABEL,
-                                              current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})

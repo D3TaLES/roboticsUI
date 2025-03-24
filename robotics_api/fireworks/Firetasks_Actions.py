@@ -167,7 +167,11 @@ class Stir(RoboticsBase):
         stir_time = self.get("time")
 
         if stir_time:
-            stir_station = StirStation(StationStatus().get_first_available("stir"))
+            first_stir_station = StirStation("stir_01")  # TODO change if more stir stations added
+            if first_stir_station.current_content == self.exp_vial.id:
+                stir_station = first_stir_station
+            else:
+                stir_station = StirStation(StationStatus().get_first_available("stir"))
             self.success &= stir_station.stir_vial(self.exp_vial, stir_time=stir_time)
         else:
             print(f"WARNING. HEAT_STIR action skipped because stir time was {stir_time}.")

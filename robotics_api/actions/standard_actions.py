@@ -387,6 +387,7 @@ class LiquidStation(StationStatus):
         balance = BalanceStation(vial.current_location) if "balance" in vial.current_location else BalanceStation(
             StationStatus().get_first_available("balance"))
         pre_mass = balance.existing_weight(vial, testing_mass=TEST_VIAL_MASS)
+        balance.tare(max_balance_read_time=10)  # Test to make sure the balance is on before dispensing
 
         # Dispense liquid
         self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
@@ -416,7 +417,7 @@ class PipetteStation(StationStatus):
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
 
-    def __init__(self, _id, raise_amount: float = -0.05, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.055, correction_factor=PIPETTE_CORR_FACTOR, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -435,6 +436,7 @@ class PipetteStation(StationStatus):
             raise Exception(f"Station {self.id} is not a pipette.")
         self.raise_amount = raise_amount
         self.serial_name = "P{:01d}".format(int(self.id.split("_")[-1]))
+        self.correction_factor = correction_factor or PIPETTE_CORR_FACTOR
 
     def place_vial(self, vial: VialMove, raise_error=True):
         """
@@ -508,9 +510,9 @@ class PipetteStation(StationStatus):
         if RUN_ROBOT:
             perturb_angular(reverse=False, **joint_deltas)
 
-    def _pipette_vol(self, volume: float, correction_factor=PIPETTE_CORR_FACTOR):
-        print("CORRECTION FACTOR: ", correction_factor)
-        send_arduino_cmd(self.serial_name, volume*correction_factor)
+    def _pipette_vol(self, volume: float):
+        print("CORRECTION FACTOR: ", self.correction_factor)
+        send_arduino_cmd(self.serial_name, volume*self.correction_factor)
 
 
 class BalanceStation(StationStatus):
@@ -636,7 +638,7 @@ class BalanceStation(StationStatus):
         vial.update_status(mass, "weight")
         return mass
 
-    def read_mass(self, max_balance_reads=MAX_BALANCE_READS):
+    def read_mass(self, max_balance_reads=MAX_BALANCE_READS, **kwargs):
         """
         Trt to read the mass from the balance via serial communication.
 
@@ -646,7 +648,7 @@ class BalanceStation(StationStatus):
         balance_reads = 0
         while True:
             try:
-                result_txt = self._send_command(write_txt="S\n", read_response=True)
+                result_txt = self._send_command(write_txt="S\n", read_response=True, **kwargs)
                 result_list = result_txt.split(" ")
                 response_status = result_list[1]
                 if response_status == "S":
@@ -660,7 +662,7 @@ class BalanceStation(StationStatus):
                 balance_reads += 1
                 time.sleep(10)
 
-    def tare(self, max_balance_reads=MAX_BALANCE_READS):
+    def tare(self, max_balance_reads=MAX_BALANCE_READS, **kwargs):
         """
         Trt to tare the balance via serial communication.
 
@@ -670,7 +672,7 @@ class BalanceStation(StationStatus):
         balance_reads = 0
         while True:
             try:
-                response = self._send_command(write_txt="T\n", read_response=True)
+                response = self._send_command(write_txt="T\n", read_response=True, **kwargs)
                 if "S" in response:
                     print(f"Balance {self} tared.")
                     return True
@@ -683,7 +685,7 @@ class BalanceStation(StationStatus):
                 balance_reads += 1
                 time.sleep(10)
 
-    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=100):
+    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=60):
         """
         Sends a command to the balance via serial communication and optionally reads the response.
 
@@ -806,7 +808,8 @@ class StirStation(StationStatus):
         """
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None):
+    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None, min_stir_time=MIN_STIR_TIME,
+             user_confirm_stir=USER_CONFIRM_STIR):
         """
         Operates the stirring mechanism.
 
@@ -815,7 +818,9 @@ class StirStation(StationStatus):
             stir_cmd (str, optional): Command for stir plate; only used if stir_time is None.
                                       Can be 'on'/'off' or 1/0 (default is 'off').
             move_sleep (float, optional): Time in seconds for robot to sleep between stirring moves (default is 3).
+            min_stir_time (float, optional): Minimum accepted stir time (s)
             joint_deltas (dict, optional): Key word arguments
+            user_confirm_stir (bool, optional): If True, user must confirm that a solution is mixed after a stir action.
 
         Returns:
             bool: True if the stir action was successful, False otherwise.
@@ -825,6 +830,7 @@ class StirStation(StationStatus):
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
+            seconds = max(seconds, min_stir_time)
             success = False
             success &= send_arduino_cmd(self.serial_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
@@ -833,13 +839,26 @@ class StirStation(StationStatus):
             end_time = time.time()
             while (end_time - start_time) < seconds:
                 # Move vial around stir plate center
-                joint_deltas = joint_deltas or dict(j6=7)
+                joint_deltas = dict(j6=8) if joint_deltas is None else joint_deltas
                 perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=0, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()
             success &= send_arduino_cmd(self.serial_name, 0) if STIR else True
+
+            if user_confirm_stir:
+                user_response = input("\n\n\nATTENTION!!!\n\n\nIs the solution fully mixed? (Y/N)")
+                if user_response.lower() == "y":
+                    pass
+                elif user_response.lower() == "n":
+                    tilting = input("Would you like to continue tilting? (Y/N)")
+                    deltas = joint_deltas if "y" in tilting.lower() else {}
+                    self.stir(stir_time=stir_time, stir_cmd=stir_cmd, move_sleep=move_sleep, joint_deltas=deltas,
+                              min_stir_time=min_stir_time, user_confirm_stir=user_confirm_stir)
+                else:
+                    raise ValueError(f"Response {user_response} is not valid. Must respond with 'y' or 'n'.")
+
             return success
 
         # If stir_time not provided, default to implementing stir_cmd

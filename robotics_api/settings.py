@@ -32,8 +32,10 @@ EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment b
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
 MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
 MAX_PIPETTE_VOL = 0.6  # Maximum volume in mL the pipette can extract
-PIPETTE_CORR_FACTOR = 1.019  # Pipette volume factor
+PIPETTE_CORR_FACTOR = 0.9754  # Pipette volume factor
 DISCARD_DENSITY_SOLN = True  # Discard solution extracted for density measurement if True
+MIN_STIR_TIME = 80  # Minimum amount of stir time accepted in s
+USER_CONFIRM_STIR = True  # If True, robotic technician must confirm that a solution is mixed after a stir action.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -102,7 +104,7 @@ POTENTIOSTAT_SETTINGS = {
         dirty_electrode_current=1e-5,  # max current allowed (A) for a clean electrode
 
         # Default CV settings
-        scan_rate=0.1,  # V/s
+        scan_rate=0.2,  # V/s
         voltage_sequence="0.5, -0.2, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-3,  # A/V, current sensitivity

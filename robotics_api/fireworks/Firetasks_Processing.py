@@ -359,6 +359,7 @@ class ProcessCVBenchmarking(ProcessBase):
             else:
                 descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
                 peaks_dict = descriptor_cal.peaks(p_data)
+                print("PEAKS: ", peaks_dict)
                 forward_peak = max(peaks_dict.get("forward", []), key=lambda x: x[1])[0]
                 reverse_peak = min(peaks_dict.get("reverse", []), key=lambda x: x[1])[0]
         except Exception as e:

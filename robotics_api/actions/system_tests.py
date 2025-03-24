@@ -52,9 +52,9 @@ def flush_solvent(volume, vial_id="S_01", solv_id="solvent_01", go_home=True):
         vial.place_home()
 
 
-def density_test(volume, pipette_id="pipette_01", vial_id="S_01", return_mass=False):
+def density_test(volume, pipette_id="pipette_01", vial_id="S_01", return_mass=False, **pipette_kwargs):
     bal_station = BalanceStation(StationStatus().get_first_available("balance"))
-    pipette_station = PipetteStation(pipette_id)
+    pipette_station = PipetteStation(pipette_id, **pipette_kwargs)
     vial = VialMove(_id=vial_id)
 
     # Get initial mass
@@ -107,7 +107,7 @@ def generate_calibration_curve(calibration_df: pd.DataFrame, plot: bool = False)
 
 def pipette_calibration(test_vols: list, expected_density: float,
                         trials_per_vol: int = 6, pipette_id="pipette_01", vial_id="S_01",
-                        return_dataframe: bool = True):
+                        return_dataframe: bool = True, manual_corr_factor=None):
     """
     Perform a calibration for a pipette and return a correction factor.
     Optionally, return all calibration data as a pandas DataFrame.
@@ -118,15 +118,17 @@ def pipette_calibration(test_vols: list, expected_density: float,
     :param pipette_id: Identifier for the pipette
     :param vial_id: Identifier for the vial
     :param return_dataframe: Whether to return calibration data as a DataFrame
+    :param manual_corr_factor: Pipette correction factor
     :return: Correction factor (float) or calibration data (DataFrame)
     """
     result_data = []
     for vol in test_vols:
-        for _ in range(0, trials_per_vol):
+        for i in range(0, trials_per_vol):
             expected_mass = vol * expected_density
-            soln_density, extracted_mass = density_test(vol, pipette_id=pipette_id, vial_id=vial_id, return_mass=True)
-            print(f"\n\n\n DONE. Tried to extract {vol}. Expected mass was {expected_mass}, while extracted mass was "
-                  f"{extracted_mass}. Calculated solution density was {soln_density}. \n\n\n")
+            soln_density, extracted_mass = density_test(vol, pipette_id=pipette_id, vial_id=vial_id, return_mass=True,
+                                                        correction_factor=manual_corr_factor)
+            print(f"\n\n\n DONE. Tried to extract {vol} for trial {i+1}. Expected mass was {expected_mass}, while "
+                  f"extracted mass was {extracted_mass}. Calculated solution density was {soln_density}. \n\n\n")
             measurement_data = {
                 "date_collected": datetime.now().strftime('%Y_%m_%d'),  # Day
                 "Expected Volume (L)": vol,
@@ -141,7 +143,7 @@ def pipette_calibration(test_vols: list, expected_density: float,
     result_df = pd.DataFrame(result_data)
     result_df.to_csv(TEST_DATA_DIR / "pipette_calibration.csv")
     correction_factor = generate_calibration_curve(result_df, plot=True)
-    print("CALCULATED CORRECTION FACTOR: ", correction_factor)
+    print("CALCULATED CORRECTION FACTOR (for code): ", correction_factor)
 
     return correction_factor, result_df if return_dataframe else correction_factor
 
@@ -243,8 +245,8 @@ if __name__ == "__main__":
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
     # ca_potent.move_elevator(endpoint="down")
-    # ca_potent.move_elevator(endpoint="up")
-    cvUM_potent.move_elevator(endpoint="up")
+    # cv_potent.move_elevator(endpoint="up")
+    # cvUM_potent.move_elevator(endpoint="down")
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # print("Resistance: ", resistance)
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
@@ -267,7 +269,7 @@ if __name__ == "__main__":
     # test_pip.pipette(volume=0)  # mL
     # test_pip.pipette(volume=0.5)  # mL
     # print(density_test(0.5, pipette_id="pipette_01", vial_id="B_02"))
-    # pipette_calibration([0.5], trials_per_vol=4, expected_density=0.786, vial_id="A_01")
+    # pipette_calibration([0.5], trials_per_vol=2, expected_density=0.786, vial_id="S_01")
     # test_stir.stir(stir_time=15)
     # print(test_bal.read_mass())
     # test_bal.weigh(test_vial)

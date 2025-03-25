@@ -841,7 +841,7 @@ class StirStation(StationStatus):
                 # Move vial around stir plate center
                 joint_deltas = dict(j6=8) if joint_deltas is None else joint_deltas
                 perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
-                perturb_angular(reverse=True, wait_time=0, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=2, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()

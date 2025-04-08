@@ -4,21 +4,27 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.582,
-            "y": 0.264,
-            "z": 0.22599999999999998,
+            "x": 0.511,
+            "y": 0.348,
+            "z": 0.074,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 130
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
-        "name": "VHome_S_02"
+        "name": "CV UM Elevator"
       }
     ]
   }

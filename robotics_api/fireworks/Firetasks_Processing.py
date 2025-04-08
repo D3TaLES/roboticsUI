@@ -43,7 +43,7 @@ class InitializeRobot(FiretaskBase):
         # Test Balance connection
         if WEIGH:
             for balance in [b for b in MEASUREMENT_STATIONS if "balance" in b]:
-                mass = BalanceStation(balance).try_read_mass()
+                mass = BalanceStation(balance).read_mass()
                 print(f"Successfully read mass {mass} from balance {balance}!")
 
         reset_stations()
@@ -197,8 +197,8 @@ class ProcessBase(RoboticsBase, ABC):
 
     @property
     def plot_name(self):
-        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)} " \
-                    f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)} SE"
+        return f"{self.full_name}, {sig_figs(self.metadata.get('redox_mol_concentration') or 0)}M " \
+               f"redox, {sig_figs(self.metadata.get('electrolyte_concentration') or 0)}M SE"
 
     def process_cv_data(self, raw_data, insert=True, title_tag="", plot_dir=False):
         """
@@ -246,7 +246,6 @@ class ProcessBase(RoboticsBase, ABC):
                                           title=f"{title_tag} CV Plot for {self.plot_name}",
                                           xlabel=CV_PLOT_XLABEL,
                                           ylabel=CV_PLOT_YLABEL,
-                                          current_density=False if ume else PLOT_CURRENT_DENSITY,
                                           a_to_ma=False if ume else CONVERT_A_TO_MA)
 
         return p_data
@@ -303,11 +302,11 @@ class ProcessBase(RoboticsBase, ABC):
                                               title=f"CV Plot for Solvent",
                                               xlabel=CV_PLOT_XLABEL,
                                               ylabel=CV_PLOT_YLABEL,
-                                              current_density=PLOT_CURRENT_DENSITY,
                                               a_to_ma=CONVERT_A_TO_MA)
             if FIZZLE_DIRTY_ELECTRODE:
                 dirty_calc = DirtyElectrodeDetector(connector={"scan_data": "data.scan_data"})
-                dirty = dirty_calc.calculate(p_data, max_current_range=self.instrument.settings("dirty_electrode_current"))
+                dirty = dirty_calc.calculate(p_data,
+                                             max_current_range=self.instrument.settings("dirty_electrode_current"))
                 if dirty:
                     raise SystemError("WARNING! Electrode may be dirty!")
             print(f"Solvent {d} processed.")
@@ -360,6 +359,7 @@ class ProcessCVBenchmarking(ProcessBase):
             else:
                 descriptor_cal = CVDescriptorCalculator(connector={"scan_data": "data.scan_data"})
                 peaks_dict = descriptor_cal.peaks(p_data)
+                print("PEAKS: ", peaks_dict)
                 forward_peak = max(peaks_dict.get("forward", []), key=lambda x: x[1])[0]
                 reverse_peak = min(peaks_dict.get("reverse", []), key=lambda x: x[1])[0]
         except Exception as e:
@@ -464,9 +464,11 @@ class DataProcessorCV(ProcessBase):
             # CV Meta Properties
             print("Calculating metadata...")
             if self.mol_id:
-                metadata_dict.update(CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
-                                              micro_electrodes=self.instrument.micro_electrode,
-                                              max_scan_rate=self.instrument.settings("max_scan_rate")).meta_dict)
+                metadata_dict.update(
+                    CV2Front(backend_data=processed_data, run_anodic=RUN_ANODIC, insert=False,
+                             micro_electrodes=self.instrument.micro_electrode,
+                             macro_cathodic_peak_is_max=self.instrument.settings("cathodic_peak_is_max", False),
+                             max_scan_rate=self.instrument.settings("max_scan_rate")).meta_dict)
 
         self.record_metadata(metadata_dict=metadata_dict, processed_data=processed_data)
         return FWAction(update_spec=self.updated_specs(), propagate=True)
@@ -644,6 +646,7 @@ class EndWorkflow(FiretaskBase):
     This task checks the current contents of the robot's grip, ensures that the vial (if any) is returned to its home
     position, and triggers the final data snapshots to be moved to their designated locations.
     """
+
     def run_task(self, fw_spec):
         robot_content = StationStatus('robot_grip').current_content
         if robot_content:

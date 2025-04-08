@@ -19,6 +19,8 @@ PIPETTE = True
 RUN_ROBOT = True
 MOVE_ELEVATORS = True
 POT_DELAY = 2  # seconds to delay in place of potentiostat measurement when RUN_POTENT is false.
+TEST_VIAL_MASS = 20  # testing vial mass in g
+TEST_SOLN_DENSITY = 786  # testing solution density in g/L
 
 # ---------  OPERATION SETTING -------------
 WEIGH_SOLVENTS = True  # Perform mass measurement of solvent instead of relying on dispense volume estimation
@@ -27,12 +29,13 @@ FIZZLE_CONCENTRATION_FAILURE = False  # FIZZLE a processing job if concentration
 CHECK_CLEAN_ELECTRODES = True  # Check stations database for electrode cleanliness
 FIZZLE_DIRTY_ELECTRODE = True  # FIZZLE a blank scan instrument job if the blank scan implied the electrode is dirty
 EXIT_ZERO_VOLUME = True  # If a liquid dispense job adds 0 mL, exit experiment by skipping all children Fireworks
-WAIT_FOR_BALANCE = True  # If balance connection fails, wait and try again
 MAX_DB_WAIT_TIME = 10  # Maximum seconds to wait for database response
 MAX_BALANCE_READS = 5  # Maximum number of times to attempt to read the balance.
 MAX_PIPETTE_VOL = 0.6  # Maximum volume in mL the pipette can extract
-PIPETTE_CORR_FACTOR = 1.019  # Pipette volume factor
+PIPETTE_CORR_FACTOR = 0.9649  # 0.9754 Pipette volume factor
 DISCARD_DENSITY_SOLN = True  # Discard solution extracted for density measurement if True
+MIN_STIR_TIME = 60  # Minimum amount of stir time accepted in s
+USER_CONFIRM_STIR = True  # If True, robotic technician must confirm that a solution is mixed after a stir action.
 
 # ---------  DEFAULT CONDITIONS -------------
 DEFAULT_TEMPERATURE = None  # "293K"
@@ -56,7 +59,7 @@ ZONE_DIVIDERS = [30, 180, 328]
 # ---------  INSTRUMENT SETTINGS -------------
 ULTRA_MICRO_ELECTRODES_MAX_RADIUS = 0.01  # max radius of a ultra micro electrode, cm
 
-# NOTE: A potentiostat setting cannot be None
+# NOTE: A potentiostat setting cannot
 POTENTIOSTAT_SETTINGS = {
     "cvUM_potentiostat_A_01": dict(
         address="COM6",
@@ -68,14 +71,16 @@ POTENTIOSTAT_SETTINGS = {
         electrode_reference="Ag/Ag+ reference",
         dirty_electrode_current=1e-8,  # max current allowed (A) for a clean electrode
 
-        # Default CV settings
+        # Default CV settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
+        # DefaultConditions class in processing_utils.py.
         scan_rate=0.01,  # V/s
-        voltage_sequence="0.5, -0.2, 0V",
+        voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-4,  # A/V, current sensitivity
         quiet_time=2,  # s
 
-        # IR Compensation settings
+        # IR Compensation settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
+        # DefaultConditions class in processing_utils.py.
         ir_comp=False,  # Perform IR Compensation
         rcomp_level=0.85,  # percentage as decimal of solution resistance to use
         low_freq=10000,
@@ -100,14 +105,16 @@ POTENTIOSTAT_SETTINGS = {
         electrode_reference="Ag/Ag+ reference",
         dirty_electrode_current=1e-5,  # max current allowed (A) for a clean electrode
 
-        # Default CV settings
-        scan_rate=0.1,  # V/s
-        voltage_sequence="0.5, -0.2, 0V",
+        # Default CV settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
+        # DefaultConditions class in processing_utils.py.
+        scan_rate=0.2,  # V/s
+        voltage_sequence="0, 0.7, 0V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-3,  # A/V, current sensitivity
         quiet_time=2,  # s
 
-        # IR Compensation settings
+        # IR Compensation settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
+        # DefaultConditions class in processing_utils.py.
         ir_comp=True,  # Perform IR Compensation
         rcomp_level=0.85,  # percentage as decimal of solution resistance to use
         low_freq=10000,
@@ -120,13 +127,15 @@ POTENTIOSTAT_SETTINGS = {
         cut_end=0.0,  # percentage as decimal of end of CV to cut
         benchmark_buffer=0.4,  # volts, buffer used in setting voltage range from benchmark peaks
         max_scan_rate=0,  # max scan rate to use in meta calc processing
+        cathodic_peak_is_max=False,
 
     ),
     "ca_potentiostat_C_01": dict(
         address="COM7",
         exe_path=r"C:\Users\Lab\Desktop\chi604d.exe",
 
-        # Default CA settings
+        # Default CA settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
+        # DefaultConditions class in processing_utils.py.
         quiet_time=60,  # s
         sample_interval=1e-6,  # seconds
         sensitivity=1e-4,  # A/V, current sensitivity
@@ -151,7 +160,7 @@ PEAK_WIDTH = 0.5
 
 # ---------  CALIBRATION SETTINGS -------------
 KCL_CALIB = True
-DI_WATER_COND = 10
+DI_WATER_COND = 10  # uS/cm
 CA_CALIB_STDS = {  # True conductivity (S/m) at 25 C
     "11JNLU": 1.299,  # KCl
     "06IGCB": 0,  # H2O

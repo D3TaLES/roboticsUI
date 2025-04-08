@@ -235,13 +235,15 @@ class PushToDB(tk.Toplevel):
         self.title('Push data to DB')
         self.workflow = tk.StringVar()
         self.workflow.set("")
+        self.exp_tag = tk.StringVar()
+        self.exp_tag.set("")
         self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
 
         self.design_frame()
 
     def design_frame(self):
         frame = tk.Canvas(self, width=100, height=200)
-        frame.grid(columnspan=2, rowspan=3)
+        frame.grid(columnspan=2, rowspan=4)
 
         tk_logo = ImageTk.PhotoImage(logo_small)
         self.iconphoto(False, tk_logo)
@@ -259,31 +261,37 @@ class PushToDB(tk.Toplevel):
         dropdown.config(font=("Raleway", 12), bg=theme_color_3, fg='white', height=1, width=45)
         dropdown.grid(column=1, row=1)
 
+        # Dropdown
+        self.exp_tag = tk.StringVar()
+        self.exp_tag.set("")
+        tk.Label(self, text="Experiment Name Tag", font=("Raleway", 14), fg=theme_color_2).grid(column=0, row=2)
+        tk.Entry(self, textvariable=self.exp_tag, font=("Raleway", 16, 'bold'), width=30, fg=theme_color_2).grid(
+            column=1, row=2, pady=30)
+
         # Button
         tk.Button(self, text="Push data from workflow", command=self.select_wf,
                   font=("Raleway", 16), bg=theme_color_1, fg='white', height=2,
-                  width=45).grid(columnspan=2, column=0, row=2)
+                  width=45).grid(columnspan=2, column=0, row=3)
 
     def select_wf(self):
-        window = PushToDB_Exp(self, self.workflow.get())
+        window = PushToDB_Exp(self, self.workflow.get(), self.exp_tag.get())
         window.grab_set()
 
 
 class PushToDB_Exp(tk.Toplevel):
-    def __init__(self, parent, wflow_name):
+    def __init__(self, parent, wflow_name, exp_tag=""):
         super().__init__(parent)
 
         self.title('Push data to DB')
-        self.workflow = tk.StringVar()
-        self.workflow.set("")
+        self.exp_tag = exp_tag
         self.lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
-        workflow_nodes = self.lpad.workflows.find_one({"name": wflow_name}).get("nodes")
-        self.processing_fws = self.get_processing_fws(workflow_nodes)
+        self.workflow_nodes = self.lpad.workflows.find_one({"name": wflow_name}).get("nodes")
 
         self.design_frame()
 
     def design_frame(self):
-        rowspan = len(self.processing_fws) + 3
+        experiment_names = self.get_exp_names(self.workflow_nodes)
+        rowspan = len(experiment_names) + 3
         frame = tk.Canvas(self, width=400, height=600)
         frame.grid(columnspan=2, rowspan=rowspan)
 
@@ -297,18 +305,18 @@ class PushToDB_Exp(tk.Toplevel):
         tk.Label(self, text="Select Experiment Fireworks to Push: ", justify="center", font=("Raleway", 16,),
                  fg=theme_color_2).grid(column=0, row=1)
         self.push_dict = {}
-        for i, fw_id in enumerate(self.processing_fws.keys()):
+        for i, exp_name in enumerate(experiment_names.keys()):
             push_var = tk.BooleanVar()
-            checkbox = tk.Checkbutton(self, text=self.processing_fws[fw_id], variable=push_var, onvalue=True,
+            checkbox = tk.Checkbutton(self, text=experiment_names[exp_name], variable=push_var, onvalue=True,
                                       offvalue=False, justify="left")
             checkbox.grid(column=0, row=i + 2)
             button = tk.Button(self, text="View Data", fg=theme_color_3, font=("Raleway", 9, "bold"),
-                               command=lambda: self.dir_open(fw_id))
+                               command=lambda: self.dir_open(exp_name))
             button.grid(column=1, row=i + 2)
-            self.push_dict[fw_id] = push_var
+            self.push_dict[exp_name] = push_var
 
         # Button
-        tk.Button(self, text="Push selected data to Master DB".format(self.workflow), command=self.push_wf,
+        tk.Button(self, text="Push selected data to Master DB", command=self.push_wf,
                   font=("Raleway", 16), bg=theme_color_1, fg='white', height=2, width=45).grid(columnspan=3, column=0,
                                                                                                row=rowspan - 1)
 
@@ -321,48 +329,55 @@ class PushToDB_Exp(tk.Toplevel):
         os.system("explorer {}".format(exp_dir))
 
     def push_wf(self):
-        fw_ids = [i for i, b in self.push_dict.items() if b.get()]
-        launch_ids = []
-        [launch_ids.extend(l.get("launches")) for l in
-         self.lpad.fireworks.find({'fw_id': {"$in": fw_ids}}, {"launches": 1})]
-        launches = [self.lpad.launches.find_one({'launch_id': l_id}, {"action.update_spec": 1}) for l_id in launch_ids]
-        for launch in launches:
-            p_ids = launch.get("action", {}).get("update_spec", {}).get("processing_data", {}).get("processing_ids")
-            m_id = launch.get("action", {}).get("update_spec", {}).get("processing_data", {}).get("metadata_id")
-            meta_dict = MongoDatabase(database="robotics", collection_name="metadata"
-                                      ).coll.find_one({"_id": m_id}).get("metadata")
-            mol_id = None
+        exp_names = [i for i, b in self.push_dict.items() if b.get()]
+        for exp_name in exp_names:
+            queries = self.lpad.fireworks.find({'fw_id': {"$in": self.workflow_nodes},
+                                               'name': {'$regex': exp_name + '_process_.*data'},
+                                               "state": "COMPLETED"}, {"fw_id": 1})
+            fw_ids = [q.get("fw_id") for q in queries]
+            for fw_id in fw_ids:
+                launch_ids = self.lpad.fireworks.find_one({'fw_id': fw_id}, {"launches": 1}).get("launches")
+                for l_id in launch_ids:
+                    launch = self.lpad.launches.find_one({'launch_id': l_id}, {"action.update_spec": 1})
+                    p_ids = launch.get("action", {}).get("update_spec", {}).get("processing_data", {}).get("processing_ids")
+                    m_id = launch.get("action", {}).get("update_spec", {}).get("processing_data", {}).get("metadata_id")
+                    meta_dict = MongoDatabase(database="robotics", collection_name="metadata"
+                                              ).coll.find_one({"_id": m_id}).get("metadata")
+                    mol_id = None
 
-            for p_id in p_ids:
-                p_data = MongoDatabase(database="robotics", collection_name="experimentation").coll.find_one(
-                    {"_id": p_id})
-                MongoDatabase(database="robotics_master", collection_name="backend",
-                              instance=p_data, validate_schema=False).insert(p_data["_id"])
-                mol_id = p_data["mol_id"]  # TODO if > 1 mol id is ever in an experiment, this will need to change
+                    for p_id in p_ids:
+                        p_data = MongoDatabase(database="robotics", collection_name="experimentation").coll.find_one(
+                            {"_id": p_id})
+                        p_data["experiment_tag"] = self.exp_tag
+                        p_data["submission_info"]["source"] = exp_name
+                        p_data["submission_info"]["processing_id"] = fw_id
+                        MongoDatabase(database="robotics_master", collection_name="backend",
+                                      instance=p_data, validate_schema=False).insert(p_data["_id"])
+                        mol_id = p_data["mol_id"]  # TODO if > 1 mol id is ever in an exp, this will need to change
 
-            # Insert frontend data
-            frontend_db = MongoDatabase(database="robotics_master", collection_name="frontend", validate_schema=False)
-            if not frontend_db.coll.find_one({"_id": mol_id}):
-                response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info=1".format(mol_id),
-                                   url="https://d3tales.as.uky.edu", return_json=True).response
-                if not response:
-                    raise Exception(f"Error finding D3TaLES database entry for id {mol_id}.")
-                mol_info = response[0].get("mol_info", {})
-                frontend_db.coll.insert_one({"_id": mol_id, "mol_info": mol_info})
-            frontend_db.insert(mol_id, nested=True, instance={
-                "mol_characterization": meta_dict,
-                "experiment_ids": p_ids
-            })
+                    # Insert frontend data
+                    frontend_db = MongoDatabase(database="robotics_master", collection_name="frontend", validate_schema=False)
+                    if not frontend_db.coll.find_one({"_id": mol_id}):
+                        response = RESTAPI(method='get', endpoint="restapi/molecules/_id={}/mol_info=1".format(mol_id),
+                                           url="https://d3tales.as.uky.edu", return_json=True).response
+                        if not response:
+                            raise Exception(f"Error finding D3TaLES database entry for id {mol_id}.")
+                        mol_info = response[0].get("mol_info", {})
+                        frontend_db.coll.insert_one({"_id": mol_id, "mol_info": mol_info})
+                    frontend_db.insert(mol_id, nested=True, override_lists=False, instance={
+                        "mol_characterization": meta_dict,
+                        "experiment_ids": p_ids
+                    })
 
         AlertDialog(self, alert_msg="All data has been pushed for experiments {}!".format(
-            ", ".join([self.processing_fws[i] for i in fw_ids])))
+            ", ".join(exp_names)))
 
-    def get_processing_fws(self, workflow_nodes):
+    def get_exp_names(self, workflow_nodes):
         query = self.lpad.fireworks.find({'fw_id': {"$in": workflow_nodes},
                                           'name': {'$regex': '_process_.*data'},
                                           "state": "COMPLETED"}, {"fw_id": 1, "name": 1})
-        fw_dict = {q.get("fw_id"): q.get("name") for q in query}
-        return OrderedDict(sorted(fw_dict.items(), key=lambda x: x[1]))
+        exp_names = set([q.get("name").split("_process_")[0] for q in query if q.get("name")])
+        return OrderedDict(sorted({e: e for e in exp_names}.items(), key=lambda x: x[1]))
 
 
 class ManageJobs(tk.Toplevel):
@@ -388,7 +403,7 @@ class ManageJobs(tk.Toplevel):
 
         tk_logo = ImageTk.PhotoImage(logo_small)
         self.iconphoto(False, tk_logo)
-        
+
         # Text
         tk.Label(self, text="Manage Fireworks", font=("Raleway", 24, 'bold'), fg=theme_color_2).grid(column=0, row=0,
                                                                                                      columnspan=2,

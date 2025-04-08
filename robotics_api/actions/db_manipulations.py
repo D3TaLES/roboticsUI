@@ -5,8 +5,8 @@ import warnings
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import CalcExactMolWt
 from robotics_api.settings import *
-from robotics_api.utils.base_utils import unit_conversion
 from robotics_api.utils.mongo_dbs import RobotStatusDB, MongoDatabase
+from robotics_api.utils.base_utils import unit_conversion, is_mass_unit, rdkit_smiles
 
 
 class VialStatus(RobotStatusDB):
@@ -75,7 +75,7 @@ class VialStatus(RobotStatusDB):
         Returns:
             str: The current location.
         """
-        return self.get_prop("current_location") or []
+        return self.get_prop("current_location") or ""
 
     @property
     def location_history(self):
@@ -129,6 +129,24 @@ class VialStatus(RobotStatusDB):
         """Clear the vial content."""
         self.insert(self.id, override_lists=True, instance={"vial_content": []})
 
+    def add_solution(self, reagent, amount, default_unit, addition_id=None):
+        if not is_mass_unit(default_unit):
+            raise ValueError(f"Cannot add a solution with amount units {default_unit}. Solution component ratio"
+                             f"is given as a mass ratio, so the solution amount must be a mass. ")
+        soln_reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+        smiles_list = [s.strip() for s in soln_reagent.smiles.strip().split(",")]
+        ratio_list = [float(r.strip()) for r in soln_reagent.purity.strip().split(",")]
+        if len(smiles_list) != len(ratio_list):
+            raise ValueError(f"Error adding solution. The number of component smiles ({smiles_list}) is not equal to "
+                             f"the number of component mass ratios ({ratio_list}).")
+        for smiles, ratio in zip(smiles_list, ratio_list):
+            component_reagent = ReagentStatus(r_smiles=smiles)
+            component_mass = amount * (ratio/sum(ratio_list))
+            self.add_reagent(component_reagent, component_mass, default_unit=default_unit, addition_id=addition_id)
+            print(f"Successfully added {component_mass} {default_unit} for {component_reagent.name} "
+                  f"part of the added solution.")
+        return None
+
     def add_reagent(self, reagent, amount, default_unit, addition_id=None):
         """
         Add a reagent to the vial content.
@@ -144,6 +162,8 @@ class VialStatus(RobotStatusDB):
         """
         # Check if reagent exists
         reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+        if reagent.type == "solution":
+            return self.add_solution(reagent=reagent, amount=amount, default_unit=default_unit, addition_id=addition_id)
         if not reagent:
             raise NameError("No reagent {} exists in the reagent database.".format(reagent))
 
@@ -576,6 +596,21 @@ def check_duplicates(test_list, exemptions=None):
         return ", ".join(duplicates)
 
 
+def test_soln_reagent(reagent):
+    soln_reagent = ReagentStatus(_id=reagent) if isinstance(reagent, str) else reagent
+    if soln_reagent.type == "solution":
+        smiles_list = [s.strip() for s in soln_reagent.smiles.strip().split(",")]
+        ratio_list = [float(r.strip()) for r in soln_reagent.purity.strip().split(",")]
+        if len(smiles_list) != len(ratio_list):
+            raise ValueError(f"Error adding solution. The number of component smiles ({smiles_list}) is not equal to "
+                             f"the number of component mass ratios ({ratio_list}).")
+        for smiles, ratio in zip(smiles_list, ratio_list):
+            component_reagent = ReagentStatus(r_smiles=smiles)
+            print(f"Successfully found reagent {component_reagent.name} with ratio amount {ratio} for solution "
+                  f"{soln_reagent.name}.")
+    return True
+
+
 def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOLVENT_DENSITIES, potentials_dict=FORMAL_POTENTIALS):
     """
     Reset the reagent database with the provided list of reagents.
@@ -587,17 +622,20 @@ def reset_reagent_db(reagents_list, current_wflow_name="", solvent_densities=SOL
     """
     # Check reagent locations 1-to-1 status
     reagent_locs = [r.get("location") for r in reagents_list]
-    duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent"])
+    duplicate_reagents = check_duplicates(reagent_locs, exemptions=["experiment_vial", "solvent", "in_solution"])
     if duplicate_reagents:
         raise ValueError("More than one reagent is assigned the same station: " + duplicate_reagents)
 
     ReagentStatus().coll.delete_many({})
     for r in reagents_list:
-        smiles = r.get("smiles", "")
+        smiles = rdkit_smiles(r.get("smiles", ""))
         r.update({"current_wflow_name": current_wflow_name,
                   "density": unit_conversion(solvent_densities.get(smiles), default_unit=DENSITY_UNIT),
                   "formal_potential": unit_conversion(potentials_dict.get(smiles), default_unit=POTENTIAL_UNIT)})
         ReagentStatus(instance=r)
+
+    # Test for appropriately added solution reagents
+    [test_soln_reagent(r["_id"]) for r in reagents_list]
 
 
 def reset_station_db(current_wflow_name=""):

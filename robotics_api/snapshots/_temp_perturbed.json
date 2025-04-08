@@ -4,21 +4,37 @@
       {
         "reachPose": {
           "targetPose": {
+<<<<<<< HEAD
             "x": 0.545,
             "y": 0.164,
             "z": 0.181,
+=======
+            "x": 0.511,
+            "y": 0.348,
+            "z": 0.074,
+>>>>>>> reb_dev
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 130
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",
         "handle": {
-          "identifier": 10011,
+          "identifier": 10003,
           "permission": 7,
           "actionType": 6
         },
+<<<<<<< HEAD
         "name": "VHome_A_01"
+=======
+        "name": "CV UM Elevator"
+>>>>>>> reb_dev
       }
     ]
   }

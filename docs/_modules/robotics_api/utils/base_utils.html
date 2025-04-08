@@ -96,12 +96,13 @@
 <span></span><span class="kn">import</span> <span class="nn">pint</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">MolToSmiles</span>
 <span class="kn">from</span> <span class="nn">robotics_api.settings</span> <span class="kn">import</span> <span class="o">*</span>
 
 
 <div class="viewcode-block" id="sig_figs">
 <a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.base_utils.sig_figs">[docs]</a>
-<span class="k">def</span> <span class="nf">sig_figs</span><span class="p">(</span><span class="n">number</span><span class="p">:</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_sig_figs</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sig_figs</span><span class="p">(</span><span class="n">number</span><span class="p">:</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_sig_figs</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Round a number to the specified number of significant figures.</span>
 
@@ -130,6 +131,21 @@
 
     <span class="c1"># Avoid floating-point representation issues by formatting</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rounded</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">num_sig_figs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_mass_unit">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.base_utils.is_mass_unit">[docs]</a>
+<span class="k">def</span> <span class="nf">is_mass_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+    <span class="c1"># Check if a unit is a unit of mass</span>
+    <span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">pint</span><span class="o">.</span><span class="n">Unit</span><span class="p">):</span>
+        <span class="n">ureg_unit</span> <span class="o">=</span> <span class="n">unit</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">ureg_unit</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot determine if datatype </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span><span class="si">}</span><span class="s2"> is a mass unit. &quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ureg_unit</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">==</span> <span class="n">ureg</span><span class="o">.</span><span class="n">kilogram</span><span class="o">.</span><span class="n">dimensionality</span></div>
 
 
 
@@ -183,6 +199,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">test_files</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;CV.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;cvUM&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;CVUM.txt&quot;</span><span class="p">),</span>
         <span class="s2">&quot;ca&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;CA.txt&quot;</span><span class="p">),</span>
         <span class="s2">&quot;ircomp&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;standard_data&quot;</span><span class="p">,</span> <span class="s2">&quot;iRComp.txt&quot;</span><span class="p">),</span>
     <span class="p">}</span>
@@ -249,6 +266,27 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ARDUINO ABORT MESSAGE: &quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># strip out the old lines</span>
                 <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_testing_mass">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.base_utils.get_testing_mass">[docs]</a>
+<span class="k">def</span> <span class="nf">get_testing_mass</span><span class="p">(</span><span class="n">init_mass</span><span class="p">,</span> <span class="n">added_volume</span><span class="p">,</span> <span class="n">soln_density</span><span class="o">=</span><span class="n">TEST_SOLN_DENSITY</span><span class="p">,</span> <span class="n">adding</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">init_mass_g</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">init_mass</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+    <span class="n">added_vol_L</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">added_volume</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">)</span>
+    <span class="n">soln_density_g_L</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="p">(</span><span class="n">soln_density</span><span class="p">,</span> <span class="n">default_unit</span><span class="o">=</span><span class="s2">&quot;g/L&quot;</span><span class="p">)</span>
+    <span class="n">mass_change</span> <span class="o">=</span> <span class="n">added_vol_L</span> <span class="o">*</span> <span class="n">soln_density_g_L</span>
+    <span class="k">return</span> <span class="n">init_mass_g</span> <span class="o">+</span> <span class="n">mass_change</span> <span class="k">if</span> <span class="n">adding</span> <span class="k">else</span> <span class="n">init_mass_g</span> <span class="o">-</span> <span class="n">mass_change</span></div>
+
+
+
+<div class="viewcode-block" id="rdkit_smiles">
+<a class="viewcode-back" href="../../../robotics_api.utils.html#robotics_api.utils.base_utils.rdkit_smiles">[docs]</a>
+<span class="k">def</span> <span class="nf">rdkit_smiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">MolToSmiles</span><span class="p">(</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">smiles</span></div>
 
 </pre></div>
 

@@ -95,7 +95,7 @@ class VialMove(VialStatus):
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
                 # success &= snapshot_move(SNAPSHOT_HOME)
-            else:
+            elif self.current_location:
                 station = station_from_name(self.current_location)
                 print(f"Retrieving vial from station {station}...")
                 success &= station._retrieve_vial(self)
@@ -386,13 +386,14 @@ class LiquidStation(StationStatus):
         # Pre dispense weighing
         balance = BalanceStation(vial.current_location) if "balance" in vial.current_location else BalanceStation(
             StationStatus().get_first_available("balance"))
-        pre_mass = balance.existing_weight(vial)
+        pre_mass = balance.existing_weight(vial, testing_mass=TEST_VIAL_MASS)
+        balance.tare(max_balance_read_time=10)  # Test to make sure the balance is on before dispensing
 
         # Dispense liquid
         self._dispense_to_vial(vial=vial, volume=volume, raise_error=raise_error)
 
         # Post dispense weighing
-        post_mass = balance.weigh(vial)
+        post_mass = balance.weigh(vial, testing_mass=get_testing_mass(pre_mass, volume))
         final_mass = post_mass - pre_mass
 
         # Update vial contents
@@ -416,7 +417,7 @@ class PipetteStation(StationStatus):
         pipette(volume, vial=None, raise_error=True): Pipettes a specified volume of liquid, optionally into a vial.
     """
 
-    def __init__(self, _id, raise_amount: float = -0.05, **kwargs):
+    def __init__(self, _id, raise_amount: float = -0.055, correction_factor=PIPETTE_CORR_FACTOR, **kwargs):
         """
         Initializes a PipetteStation instance with an ID and raise amount.
 
@@ -435,6 +436,7 @@ class PipetteStation(StationStatus):
             raise Exception(f"Station {self.id} is not a pipette.")
         self.raise_amount = raise_amount
         self.serial_name = "P{:01d}".format(int(self.id.split("_")[-1]))
+        self.correction_factor = correction_factor or PIPETTE_CORR_FACTOR
 
     def place_vial(self, vial: VialMove, raise_error=True):
         """
@@ -508,9 +510,9 @@ class PipetteStation(StationStatus):
         if RUN_ROBOT:
             perturb_angular(reverse=False, **joint_deltas)
 
-    def _pipette_vol(self, volume: float, correction_factor=PIPETTE_CORR_FACTOR):
-        print("CORRECTION FACTOR: ", correction_factor)
-        send_arduino_cmd(self.serial_name, volume*correction_factor)
+    def _pipette_vol(self, volume: float):
+        print("CORRECTION FACTOR: ", self.correction_factor)
+        send_arduino_cmd(self.serial_name, volume*self.correction_factor)
 
 
 class BalanceStation(StationStatus):
@@ -594,13 +596,14 @@ class BalanceStation(StationStatus):
 
         return success
 
-    def existing_weight(self, vial: VialMove, raise_error=True):
+    def existing_weight(self, vial: VialMove, raise_error=True, testing_mass=0):
         """
         Returns the current weight of a vial if available, or weighs the vial.
 
         Args:
             vial (VialMove): The vial whose weight is to be measured.
             raise_error (bool): Whether to raise an error if weighing fails (default is True).
+            testing_mass (float): Mass to return if WEIGH is false. ONLY FOR TESTING.
 
         Returns:
             float: The current weight of the vial.
@@ -608,9 +611,9 @@ class BalanceStation(StationStatus):
         if vial.current_weight:
             print("CURRENT WEIGHT: ", vial.current_weight)
             return vial.current_weight
-        return self.weigh(vial, raise_error=raise_error)
+        return self.weigh(vial, raise_error=raise_error, testing_mass=testing_mass)
 
-    def weigh(self, vial: VialMove, raise_error=True, max_balance_reads=MAX_BALANCE_READS):
+    def weigh(self, vial: VialMove, raise_error=True, max_balance_reads=MAX_BALANCE_READS, testing_mass=0):
         """
         Weighs a vial by taring the balance and placing the vial on the station.
 
@@ -618,23 +621,24 @@ class BalanceStation(StationStatus):
             vial (VialMove): The vial to be weighed.
             raise_error (bool): Whether to raise an error if weighing fails (default is True).
             max_balance_reads (int): Maximum number of balance reads
+            testing_mass (float): Mass to return if WEIGH is false. ONLY FOR TESTING.
 
         Returns:
             float: The weight of the vial.
         """
         if not WEIGH:
-            return 0
+            return testing_mass
         if self.current_content == vial.id:
             vial.retrieve()
         self.tare()
         self.place_vial(vial, raise_error=raise_error)
-        mass = self.try_read_mass(max_balance_reads=max_balance_reads)
+        mass = self.read_mass(max_balance_reads=max_balance_reads)
         time.sleep(1)
         self._retrieve_vial(vial)
         vial.update_status(mass, "weight")
         return mass
 
-    def try_read_mass(self, max_balance_reads=MAX_BALANCE_READS):
+    def read_mass(self, max_balance_reads=MAX_BALANCE_READS, **kwargs):
         """
         Trt to read the mass from the balance via serial communication.
 
@@ -644,8 +648,13 @@ class BalanceStation(StationStatus):
         balance_reads = 0
         while True:
             try:
-                mass = self.read_mass()
-                return mass
+                result_txt = self._send_command(write_txt="S\n", read_response=True, **kwargs)
+                result_list = result_txt.split(" ")
+                response_status = result_list[1]
+                if response_status == "S":
+                    return float(result_list[-2])
+                else:
+                    raise SystemError(f"Balance reading returned {result_txt}")
             except Exception as e:
                 if balance_reads > max_balance_reads:
                     raise e
@@ -653,45 +662,30 @@ class BalanceStation(StationStatus):
                 balance_reads += 1
                 time.sleep(10)
 
-    def read_mass(self):
+    def tare(self, max_balance_reads=MAX_BALANCE_READS, **kwargs):
         """
-        Reads the mass from the balance via serial communication.
+        Trt to tare the balance via serial communication.
 
         Returns:
-            float: The mass read from the balance.
-
-        Raises:
-            SystemError: If the balance reading fails.
+            bool: True if taring successful
         """
-        result_txt = self._send_command(write_txt="S\n", read_response=True)
-        result_list = result_txt.split(" ")
-        response_status = result_list[1]
-        if response_status == "S":
-            return float(result_list[-2])
-        else:
-            raise SystemError(f"Balance reading returned {result_txt}")
-
-    def tare(self):
-        """
-        Tares the balance, resetting the weight measurement to zero.
-
-        Returns:
-            bool: True if the taring was successful.
-
-        Raises:
-            SystemError: If taring fails and the balance does not respond correctly.
-        """
+        balance_reads = 0
         while True:
-            response = self._send_command(write_txt="T\n", read_response=True)
-            if "S" in response:
-                print(f"Balance {self} tared.")
-                return True
-            elif not WAIT_FOR_BALANCE:
-                raise SystemError(f"Balance reading returned {response}")
-            print(f"WARNING! Balance returned {response}! Trying again...")
-            time.sleep(1)
+            try:
+                response = self._send_command(write_txt="T\n", read_response=True, **kwargs)
+                if "S" in response:
+                    print(f"Balance {self} tared.")
+                    return True
+                else:
+                    raise SystemError(f"Balance reading returned {response}")
+            except Exception as e:
+                if balance_reads > max_balance_reads:
+                    raise e
+                print(f"WARNING. Balance taring {balance_reads} ended in error: ", e)
+                balance_reads += 1
+                time.sleep(10)
 
-    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=100):
+    def _send_command(self, write_txt=None, read_response=False, max_balance_read_time=60):
         """
         Sends a command to the balance via serial communication and optionally reads the response.
 
@@ -814,7 +808,8 @@ class StirStation(StationStatus):
         """
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None):
+    def stir(self, stir_time=None, stir_cmd="off", move_sleep=4, joint_deltas=None, min_stir_time=MIN_STIR_TIME,
+             user_confirm_stir=USER_CONFIRM_STIR):
         """
         Operates the stirring mechanism.
 
@@ -823,7 +818,9 @@ class StirStation(StationStatus):
             stir_cmd (str, optional): Command for stir plate; only used if stir_time is None.
                                       Can be 'on'/'off' or 1/0 (default is 'off').
             move_sleep (float, optional): Time in seconds for robot to sleep between stirring moves (default is 3).
+            min_stir_time (float, optional): Minimum accepted stir time (s)
             joint_deltas (dict, optional): Key word arguments
+            user_confirm_stir (bool, optional): If True, user must confirm that a solution is mixed after a stir action.
 
         Returns:
             bool: True if the stir action was successful, False otherwise.
@@ -833,6 +830,7 @@ class StirStation(StationStatus):
         """
         if stir_time:
             seconds = unit_conversion(stir_time, default_unit='s') if STIR else 5
+            seconds = max(seconds, min_stir_time)
             success = False
             success &= send_arduino_cmd(self.serial_name, 1) if STIR else True
             print(f"Stirring for {seconds} seconds...")
@@ -841,13 +839,26 @@ class StirStation(StationStatus):
             end_time = time.time()
             while (end_time - start_time) < seconds:
                 # Move vial around stir plate center
-                joint_deltas = joint_deltas or dict(j6=7)
+                joint_deltas = dict(j6=8) if joint_deltas is None else joint_deltas
                 perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=0, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()
             success &= send_arduino_cmd(self.serial_name, 0) if STIR else True
+
+            if user_confirm_stir:
+                user_response = input("\n\n\nATTENTION!!!\n\n\nIs the solution fully mixed? (Y/N)")
+                if user_response.lower() == "y":
+                    pass
+                elif user_response.lower() == "n":
+                    tilting = input("Would you like to continue tilting? (Y/N)")
+                    deltas = joint_deltas if "y" in tilting.lower() else {}
+                    self.stir(stir_time=stir_time, stir_cmd=stir_cmd, move_sleep=move_sleep, joint_deltas=deltas,
+                              min_stir_time=min_stir_time, user_confirm_stir=user_confirm_stir)
+                else:
+                    raise ValueError(f"Response {user_response} is not valid. Must respond with 'y' or 'n'.")
+
             return success
 
         # If stir_time not provided, default to implementing stir_cmd

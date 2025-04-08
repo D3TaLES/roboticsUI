@@ -1,6 +1,7 @@
 import pint
 import time
 import serial
+from rdkit.Chem import MolFromSmiles, MolToSmiles
 from robotics_api.settings import *
 
 
@@ -33,6 +34,18 @@ def sig_figs(number: float or str, num_sig_figs=5):
 
     # Avoid floating-point representation issues by formatting
     return float(f"{rounded:.{num_sig_figs - 1}e}")
+
+
+def is_mass_unit(unit):
+    # Check if a unit is a unit of mass
+    ureg = pint.UnitRegistry()
+    if isinstance(unit, pint.Unit):
+        ureg_unit = unit
+    elif isinstance(unit, str):
+        ureg_unit = ureg(unit)
+    else:
+        raise ValueError(f"Cannot determine if datatype {type(unit)} is a mass unit. ")
+    return ureg_unit.dimensionality == ureg.kilogram.dimensionality
 
 
 def unit_conversion(measurement, default_unit: str, density=None, return_dict=False):
@@ -80,6 +93,7 @@ def write_test(file_path, test_type=""):
     """
     test_files = {
         "cv": os.path.join(TEST_DATA_DIR, "standard_data", "CV.txt"),
+        "cvUM": os.path.join(TEST_DATA_DIR, "standard_data", "CVUM.txt"),
         "ca": os.path.join(TEST_DATA_DIR, "standard_data", "CA.txt"),
         "ircomp": os.path.join(TEST_DATA_DIR, "standard_data", "iRComp.txt"),
     }
@@ -143,3 +157,18 @@ def send_arduino_cmd(station: str, command: str or float, address: str = ARDUINO
                 print("ARDUINO ABORT MESSAGE: ", data.decode().strip())  # strip out the old lines
                 raise KeyboardInterrupt
             time.sleep(1)
+
+
+def get_testing_mass(init_mass, added_volume, soln_density=TEST_SOLN_DENSITY, adding=True):
+    init_mass_g = unit_conversion(init_mass, default_unit="g")
+    added_vol_L = unit_conversion(added_volume, default_unit="L")
+    soln_density_g_L = unit_conversion(soln_density, default_unit="g/L")
+    mass_change = added_vol_L * soln_density_g_L
+    return init_mass_g + mass_change if adding else init_mass_g - mass_change
+
+
+def rdkit_smiles(smiles):
+    try:
+        return MolToSmiles(MolFromSmiles(smiles))
+    except Exception:
+        return smiles

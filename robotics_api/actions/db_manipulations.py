@@ -75,7 +75,7 @@ class VialStatus(RobotStatusDB):
         Returns:
             str: The current location.
         """
-        return self.get_prop("current_location") or []
+        return self.get_prop("current_location") or ""
 
     @property
     def location_history(self):

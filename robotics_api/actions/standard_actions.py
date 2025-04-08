@@ -95,7 +95,7 @@ class VialMove(VialStatus):
                 print("Retrieving vial from home...")
                 success &= get_place_vial(self, action_type='get', raise_error=raise_error)
                 # success &= snapshot_move(SNAPSHOT_HOME)
-            else:
+            elif self.current_location:
                 station = station_from_name(self.current_location)
                 print(f"Retrieving vial from station {station}...")
                 success &= station._retrieve_vial(self)
@@ -808,7 +808,7 @@ class StirStation(StationStatus):
         """
         return vial.go_to_station(self, raise_error=raise_error)
 
-    def stir(self, stir_time=None, stir_cmd="off", move_sleep=1, joint_deltas=None, min_stir_time=MIN_STIR_TIME,
+    def stir(self, stir_time=None, stir_cmd="off", move_sleep=4, joint_deltas=None, min_stir_time=MIN_STIR_TIME,
              user_confirm_stir=USER_CONFIRM_STIR):
         """
         Operates the stirring mechanism.
@@ -841,7 +841,7 @@ class StirStation(StationStatus):
                 # Move vial around stir plate center
                 joint_deltas = dict(j6=8) if joint_deltas is None else joint_deltas
                 perturb_angular(reverse=False, wait_time=move_sleep, **joint_deltas)
-                perturb_angular(reverse=True, wait_time=2, **joint_deltas)
+                perturb_angular(reverse=True, wait_time=0, **joint_deltas)
                 perturb_angular(reverse=True, wait_time=move_sleep, **joint_deltas)
                 perturb_angular(reverse=False, wait_time=0, **joint_deltas)
                 end_time = time.time()

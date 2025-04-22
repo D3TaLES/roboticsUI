@@ -292,6 +292,6 @@ if __name__ == "__main__":
     # cv_potent.move_elevator(endpoint="down")
     # cvUM_potent.move_elevator(endpoint="down")
     # flush_solvent(8, vial_id="A_03", solv_id="solvent_02", go_home=True)
-    # pipette_calibration([0.5], trials_per_vol=1, expected_density=0.786, vial_id="S_01", go_home=True)
+    # pipette_calibration([0.5], trials_per_vol=2, expected_density=0.786, vial_id="S_01", go_home=True)
 
     # 742 g/L

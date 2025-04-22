@@ -25,13 +25,16 @@ def reagent_location_options():
     return ["experiment_vial", "in_solution"] + DISPENSE_STATIONS
 
 
-def assign_locations(reagent_dict, exp_dict, experiment_data):
+def assign_locations(reagent_dict, exp_dict, experiment_data, purity_dict):
     # get experiment reagents
     reagent_dict = json.loads((json.dumps(reagent_dict)))
     orig_reagents = [e.get("reagents") for e in experiment_data.get("experiments")]
     reagents = list(itertools.chain(*orig_reagents))
     for r in reagents:
         r["location"] = reagent_dict.get(r.get("smiles"))
+        purity = purity_dict.get(r.get("smiles"))
+        if purity:
+            r["purity"] = purity
 
     # clean exp data
     exp_dict = json.loads((json.dumps(exp_dict)))

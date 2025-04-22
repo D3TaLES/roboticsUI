@@ -416,14 +416,20 @@ class DefaultConditions:
     @property
     def sensitivity(self):
         if self.method == "cv":
-            redox_conc = (self.redox_mol_concentration or 0) * 1000  # Concentration in mM
-            if 0 < redox_conc < 19:
+            redox_conc = (self.redox_mol_concentration or 0)  # Concentration in M
+            se_conc = (self.electrolyte_concentration or 0)  # Concentration in M
+            solute_conc = redox_conc + se_conc
+            if 0 < redox_conc < 0.019:
                 return 1e-4  # A/V, current sensitivity
-            else:
+            elif 0.019 <= redox_conc < 0.200:
+                if se_conc > 0.200:
+                    return 1e-2  # A/V, current sensitivity
                 return 1e-3  # A/V, current sensitivity
+            else:
+                return 1e-2  # A/V, current sensitivity
         elif self.method == "cvUM":
-            redox_conc = (self.redox_mol_concentration or 0) * 1000  # Concentration in mM
-            if 0 < redox_conc <= 11:
+            redox_conc = (self.redox_mol_concentration or 0)   # Concentration in M
+            if 0 < redox_conc <= 0.011:
                 return 1e-6  # A/V, current sensitivity
             else:
                 return 1e-4  # A/V, current sensitivity
@@ -438,7 +444,46 @@ class DefaultConditions:
 
 
 if __name__ == "__main__":
-    meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
-                 "working_electrode_radius": 0.007}
-    cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
-    processing_test(cv_dir, metadata=meta_data)
+    # meta_data = {"redox_mol_concentration": DEFAULT_CONCENTRATION, "temperature": DEFAULT_TEMPERATURE,
+    #              "working_electrode_radius": 0.007}
+    # cv_dir = "C:\\Users\\Lab\\D3talesRobotics\\data\\8CVCollect_BenchmarkCV_test1_trial2\\20230525\\exp06_06QGQH"
+    # processing_test(cv_dir, metadata=meta_data)
+
+    # Edit fireworks
+    acn_ratio = 6.539
+    teabf4_ratio = 1
+    from fireworks import LaunchPad
+    lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
+    query = []  # lpad.fireworks.find({"state": "READY"}, {'spec.collection_data': 1, "fw_id": 1})
+    for fw in query:
+        fw_id = fw.get("fw_id")
+        coll_data = fw.get("spec", {}).get("collection_data", [])
+        new_coll = []
+        for d in coll_data:
+            vial_contents = d.get("vial_contents", {})
+            acn = [r for r in vial_contents if r.get("reagent_uuid")=="4ee8ce7f-8b0f-4632-b600-cc6be2035050"][0]
+            teabf4 = [r for r in vial_contents if r.get("reagent_uuid")=="ba9ec488-d0cc-4362-82a1-4bda88224387"][0]
+            tempo = [r for r in vial_contents if r.get("reagent_uuid")=="e181fe53-4e05-4f0d-ac8a-f3a303083ae4"][0]
+            if "mg" in acn.get("amount"):
+                print(f"Firework {fw_id} has already been modified")
+                break
+            acn_mass = float(acn.get("amount").strip("g"))
+            teabf4_mass = float(teabf4.get("amount").strip("g"))
+            total_mass = acn_mass + teabf4_mass
+
+            new_acn_mass = total_mass * acn_ratio/(acn_ratio+teabf4_ratio)*1000
+            new_teabf4_mass = total_mass * teabf4_ratio/(acn_ratio+teabf4_ratio)*1000
+            print(f"ACN {acn_mass:.2f}g --> {new_acn_mass/1000:.2f}g \t TEABF4 {teabf4_mass:.2f}g --> {new_teabf4_mass/1000:.2f}g")
+
+            acn["amount"] = f"{new_acn_mass}mg"
+            teabf4["amount"] = f"{new_teabf4_mass}mg"
+            d["vial_contents"] = [acn, teabf4, tempo]
+            new_coll.append(d)
+
+        if new_coll:
+            lpad.fireworks.find_one_and_update(
+                {"fw_id": fw_id},
+                {"$set": {"spec.collection_data": new_coll}},
+            )
+            print(f"New data inserted for {fw_id}")
+            # break

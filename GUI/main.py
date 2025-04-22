@@ -76,70 +76,74 @@ class SetLocations(tk.Toplevel):
         self.reagent_options = reagent_location_options()
         self.vial_options = vial_location_options()
         self.reagents_dict = {}
+        self.purity_dict = {}
         self.exp_dict = {}
 
         self.design_frame()
 
     def design_frame(self):
-        rowspan = max([len(self.reagents), len(self.experiments)]) + 3
-        frame = tk.Canvas(self, width=400, height=300)
-        frame.grid(columnspan=4, rowspan=rowspan)
-
-        tk_logo = ImageTk.PhotoImage(logo_small)
-        self.iconphoto(False, tk_logo)
+        rowspan = max([len(self.reagents), len(self.experiments)]) + 4
+        frame = tk.Canvas(self, width=600, height=300)  # adjust width
+        frame.grid(columnspan=5, rowspan=rowspan)
 
         # Text
         tk.Label(self, text="Set Locations", font=("Raleway", 36, 'bold'), fg=theme_color_2).grid(column=0, row=0,
-                                                                                                  columnspan=4)
+                                                                                                  columnspan=5)
         tk.Label(self, text="Set Reagent Locations", font=("Raleway", 24, 'bold'), fg=theme_color_2).grid(column=0,
                                                                                                           row=2,
-                                                                                                          columnspan=2)
-        tk.Label(self, text="Select the starting position for each reagent.", font=("Raleway", 16, 'bold'), pady=10,
-                 wraplength=600, fg=theme_color_2).grid(column=0, row=2, columnspan=2)
+                                                                                                          columnspan=3)
         tk.Label(self, text="Set Experiment Vial Locations", font=("Raleway", 24, 'bold'), fg=theme_color_2).grid(
-            column=2,
+            column=3,
             row=2,
             columnspan=2)
         tk.Label(self, text="Select the starting vial home position for each experiment. The selected position"
                             "specifies the column then the row (e.g., A_03 is column A, row 03).",
-                 font=("Raleway", 16, 'bold'), pady=10, wraplength=600, fg=theme_color_2).grid(column=2, row=2,
-                                                                                               columnspan=2)
+                 font=("Raleway", 16, 'bold'), padx=20, pady=10, wraplength=600).grid(column=3, row=3, columnspan=2)
+        # Header labels for the reagent section
+        tk.Label(self, text="Reagent", font=("Raleway", 16, 'bold')).grid(column=0, row=3)
+        tk.Label(self, text="Starting Location", font=("Raleway", 16, 'bold')).grid(column=1, row=3)
+        tk.Label(self, text="Purity (%)", font=("Raleway", 16, 'bold')).grid(column=2, row=3)  # new label
 
         # Ragent location Dropdowns
         for i, reagent in enumerate(self.reagents):
-            tk.Label(self, text="{}\n{}".format(reagent[0], reagent[1]), justify="center", font=("Raleway", 16,),
-                     fg=theme_color_2).grid(column=0, row=i + 3)
+            tk.Label(self, text="{}\n{}".format(reagent[0], reagent[1]), justify="center",
+                     font=("Raleway", 16,), fg=theme_color_2).grid(column=0, row=i + 4)
+
             dropdown_txt = tk.StringVar()
             dropdown_txt.set(self.reagent_options[0])
             dropdown = tk.OptionMenu(self, dropdown_txt, *self.reagent_options)
             dropdown.config(font=("Raleway", 14), bg=theme_color_3, fg='white', height=2, width=15)
-            dropdown.grid(column=1, row=i + 3)
+            dropdown.grid(column=1, row=i + 4)
             self.reagents_dict[reagent[1]] = dropdown_txt
+
+            purity_entry = tk.Entry(self, font=("Raleway", 14), width=10)
+            purity_entry.grid(column=2, row=i + 4)
+            self.purity_dict[reagent[1]] = purity_entry
 
         # Vial location Dropdowns
         for i, exp in enumerate(self.experiments):
             tk.Label(self, text="{}".format(exp), justify="center", font=("Raleway", 16,),
-                     fg=theme_color_2).grid(column=2, row=i + 3)
+                     fg=theme_color_2).grid(column=3, row=i + 4)
             dropdown_txt = tk.StringVar()
             dropdown_txt.set(self.vial_options[i])
             dropdown = tk.OptionMenu(self, dropdown_txt, *self.vial_options)
             dropdown.config(font=("Raleway", 14), bg=theme_color_3, fg='white', height=2, width=10)
-            dropdown.grid(column=3, row=i + 3)
+            dropdown.grid(column=4, row=i + 4)
             self.exp_dict[exp] = dropdown_txt
 
         # button
         self.run_txt = tk.StringVar()
         self.run_txt.set("Set Locations and Add Workflow")
         tk.Button(self, textvariable=self.run_txt, font=("Raleway", 14), bg=theme_color_1, command=self.set_parameters,
-                  fg='white', height=2, width=30).grid(column=1, row=rowspan, columnspan=2, pady=10)
-
-        tk.Canvas(self, width=400, height=50 + 10 * rowspan).grid(columnspan=2)
+                  fg='white', height=2, width=30).grid(column=0, row=rowspan, columnspan=5, pady=10)
 
     def set_parameters(self):
         self.run_txt.set("adding workflow...")
+        purity_vals = {r: entry.get() for r, entry in self.purity_dict.items()}
         exp_params = assign_locations({r: dt.get() for r, dt in self.reagents_dict.items()},
                                       {r: dt.get() for r, dt in self.exp_dict.items()},
-                                      self.experiment_data)
+                                      self.experiment_data,
+                                      purity_vals)
         self.parent.EXP_PARAMS = exp_params
         self.destroy()
 

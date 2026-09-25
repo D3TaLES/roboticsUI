@@ -4,9 +4,9 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.403,
-            "y": -0.293,
-            "z": 0.072,
+            "x": 0.408,
+            "y": -0.29,
+            "z": 0.07,
             "thetaX": 90,
             "thetaY": 0,
             "thetaZ": 63

@@ -74,9 +74,9 @@ POTENTIOSTAT_SETTINGS = {
         # Default CV settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
         # DefaultConditions class in processing_utils.py.
         scan_rate=0.01,  # V/s
-        voltage_sequence="0, 0.7, 0V",
-        sample_interval=0.01,  # Volts
-        sensitivity=1e-4,  # A/V, current sensitivity
+        voltage_sequence="0, 0.8, 0V",
+        sample_interval=0.001,  # Volts
+        sensitivity=1e-6,  # A/V, current sensitivity 1e-5
         quiet_time=2,  # s
 
         # IR Compensation settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
@@ -108,7 +108,7 @@ POTENTIOSTAT_SETTINGS = {
         # Default CV settings  NOTE: These conditions will be overridden by (1) ExpFlow settings and (2) the
         # DefaultConditions class in processing_utils.py.
         scan_rate=0.2,  # V/s
-        voltage_sequence="0, 0.7, 0V",
+        voltage_sequence="-0.05, 0.7, -0.05V",
         sample_interval=0.01,  # Volts
         sensitivity=1e-3,  # A/V, current sensitivity
         quiet_time=2,  # s

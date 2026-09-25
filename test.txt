@@ -1,0 +1,1625 @@
+DRY RUN WORKFLOW REPORT
+=======================
+
+Workflow name from JSON: recess_benchmark1
+Number of experiments in JSON: 4
+Number of generated FireWorks: 122
+
+RAW JSON VALIDATION
+-------------------
+No raw JSON errors found.
+No raw JSON warnings found.
+
+GENERATED FIREWORKS VALIDATION
+------------------------------
+No generated FireWorks errors found.
+No generated FireWorks warnings found.
+
+GENERATED FIREWORKS
+-------------------
+
+FW 1: init_recess_benchmark1_dryrun
+  exp_name: None
+  full_name: None
+  mol_id: None
+  rom_id: None
+  rom_name: None
+  solv_id: None
+  elect_id: None
+  is_blank: None
+  experiment_kind: None
+  tasks:
+    - InitializeRobot
+    - InitializeStatusDB
+
+FW 2: exp04_blank_no_redox_transfer_liquid
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DispenseLiquid
+
+FW 3: exp04_blank_no_redox_setup_cv
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupCVPotentiostat
+
+FW 4: exp04_blank_no_redox_collect_cv_benchmark_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 5: exp04_blank_no_redox_process_cv_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DataProcessorCV
+
+FW 6: exp04_blank_no_redox_finish_cv
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 7: exp04_blank_no_redox_setup
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 8: exp04_blank_no_redox_rinse_electrode
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RinseElectrode
+
+FW 9: exp04_blank_no_redox_finish
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 10: exp04_blank_no_redox_setup_ca
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupCAPotentiostat
+
+FW 11: exp04_blank_no_redox_collect_ca_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RunCA
+
+FW 12: exp04_blank_no_redox_process_ca_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DataProcessorCA
+
+FW 13: exp04_blank_no_redox_finish_ca
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 14: exp04_blank_no_redox_setup
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 15: exp04_blank_no_redox_rinse_electrode
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RinseElectrode
+
+FW 16: exp04_blank_no_redox_finish
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 17: exp04_blank_no_redox_transfer_liquid
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DispenseLiquid
+
+FW 18: exp04_blank_no_redox_setup_cv
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupCVPotentiostat
+
+FW 19: exp04_blank_no_redox_collect_cv_benchmark_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 20: exp04_blank_no_redox_process_cv_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DataProcessorCV
+
+FW 21: exp04_blank_no_redox_finish_cv
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 22: exp04_blank_no_redox_setup
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 23: exp04_blank_no_redox_rinse_electrode
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RinseElectrode
+
+FW 24: exp04_blank_no_redox_finish
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 25: exp04_blank_no_redox_setup_ca
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupCAPotentiostat
+
+FW 26: exp04_blank_no_redox_collect_ca_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RunCA
+
+FW 27: exp04_blank_no_redox_process_ca_data
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - DataProcessorCA
+
+FW 28: exp04_blank_no_redox_finish_ca
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 29: exp04_blank_no_redox_setup
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 30: exp04_blank_no_redox_rinse_electrode
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - RinseElectrode
+
+FW 31: exp04_blank_no_redox_finish
+  exp_name: exp04
+  full_name: exp04_blank_no_redox
+  mol_id: blank_no_redox
+  rom_id: no_redox_mol
+  rom_name: blank_no_redox
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: True
+  experiment_kind: blank
+  tasks:
+    - FinishPotentiostat
+
+FW 32: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_transfer_solid
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseSolid
+    - DispenseLiquid
+
+FW 33: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup_cv
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 34: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_collect_cv_benchmark_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 35: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_process_cv_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 36: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish_cv
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 37: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 38: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_rinse_electrode
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 39: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 40: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup_ca
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 41: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_collect_ca_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 42: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_process_ca_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 43: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish_ca
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 44: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 45: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_rinse_electrode
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 46: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 47: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_transfer_liquid
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseLiquid
+
+FW 48: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup_cv
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 49: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_collect_cv_benchmark_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 50: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_process_cv_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 51: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish_cv
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 52: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 53: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_rinse_electrode
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 54: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 55: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup_ca
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 56: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_collect_ca_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 57: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_process_ca_data
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 58: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish_ca
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 59: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_setup
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 60: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_rinse_electrode
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 61: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14_finish
+  exp_name: exp03
+  full_name: exp03_O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  mol_id: O=S(=O)([O-])c1cc2[n+]3c(c1)-c1cccc[n+]1[Co+2]314([n+]3ccccc3-2)[n+]2ccccc2-c2cc(S(=O)(=O)[O-])cc([n+]21)-c1cccc[n+]14
+  rom_id: 1ad093c8-88da-4bdb-98a1-72c511831f50
+  rom_name: Co(II) Soterpy
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 62: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_transfer_solid
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseSolid
+    - DispenseLiquid
+
+FW 63: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup_cv
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 64: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_collect_cv_benchmark_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 65: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_process_cv_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 66: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish_cv
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 67: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 68: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_rinse_electrode
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 69: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 70: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup_ca
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 71: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_collect_ca_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 72: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_process_ca_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 73: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish_ca
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 74: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 75: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_rinse_electrode
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 76: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 77: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_transfer_liquid
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseLiquid
+
+FW 78: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup_cv
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 79: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_collect_cv_benchmark_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 80: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_process_cv_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 81: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish_cv
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 82: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 83: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_rinse_electrode
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 84: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 85: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup_ca
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 86: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_collect_ca_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 87: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_process_ca_data
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 88: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish_ca
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 89: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_setup
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 90: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_rinse_electrode
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 91: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13_finish
+  exp_name: exp02
+  full_name: exp02_F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  mol_id: F[P-](F)(F)(F)(F)F.F[P-](F)(F)(F)(F)F.c1cc[n+]2c(c1)-c1cccc[n+]1[Co+2]213([n+]2ccccc2-c2cccc[n+]21)[n+]1ccccc1-c1cccc[n+]13
+  rom_id: e181fe53-4e05-4f0d-ac8a-f3a303083ae4
+  rom_name: Tris(2,2'-bipyridine)cobalt(II) Bis(hexafluorophosphate)
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 92: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_transfer_solid
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseSolid
+    - DispenseLiquid
+
+FW 93: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup_cv
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 94: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_collect_cv_benchmark_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 95: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_process_cv_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 96: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish_cv
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 97: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 98: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_rinse_electrode
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 99: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 100: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup_ca
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 101: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_collect_ca_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 102: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_process_ca_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 103: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish_ca
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 104: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 105: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_rinse_electrode
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 106: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 107: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_transfer_liquid
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DispenseLiquid
+
+FW 108: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup_cv
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCVPotentiostat
+
+FW 109: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_collect_cv_benchmark_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - BenchmarkCV
+    - ProcessCVBenchmarking
+    - RunCV
+
+FW 110: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_process_cv_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCV
+
+FW 111: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish_cv
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 112: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 113: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_rinse_electrode
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 114: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 115: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup_ca
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupCAPotentiostat
+
+FW 116: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_collect_ca_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RunCA
+
+FW 117: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_process_ca_data
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - DataProcessorCA
+
+FW 118: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish_ca
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 119: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_setup
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - SetupRinsePotentiostat
+
+FW 120: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_rinse_electrode
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - RinseElectrode
+
+FW 121: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1_finish
+  exp_name: exp01
+  full_name: exp01_[Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  mol_id: [Fe+2].c1cc[cH-]c1.c1cc[cH-]c1
+  rom_id: 5464f545-dd0b-4ae2-add3-d7157818e5f4
+  rom_name: ferrocene
+  solv_id: 4ee8ce7f-8b0f-4632-b600-cc6be2035050
+  elect_id: ba9ec488-d0cc-4362-82a1-4bda88224387
+  is_blank: False
+  experiment_kind: redox
+  tasks:
+    - FinishPotentiostat
+
+FW 122: end_workflow
+  exp_name: None
+  full_name: None
+  mol_id: None
+  rom_id: None
+  rom_name: None
+  solv_id: None
+  elect_id: None
+  is_blank: None
+  experiment_kind: None
+  tasks:
+    - EndWorkflow

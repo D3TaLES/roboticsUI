@@ -1,0 +1,31 @@
+{
+  "poses": {
+    "pose": [
+      {
+        "reachPose": {
+          "targetPose": {
+            "x": 0.429,
+            "y": 0.446,
+            "z": 0.044,
+            "thetaX": 90,
+            "thetaY": 0,
+            "thetaZ": 135
+          },
+          "constraint": {
+            "speed": {
+              "translation": 0.3,
+              "orientation": 0
+            }
+          }
+        },
+        "applicationData": "{\"kinova\":{\"color\":0}}",
+        "handle": {
+          "identifier": 10003,
+          "permission": 7,
+          "actionType": 6
+        },
+        "name": "CV Elevator"
+      }
+    ]
+  }
+}

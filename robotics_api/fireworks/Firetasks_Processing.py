@@ -373,7 +373,8 @@ class ProcessCVBenchmarking(ProcessBase):
                                                             reverse_peak - buffer)
         print("BENCHMARKED VOLTAGE SEQUENCE: ", voltage_sequence)
 
-        return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))
+        #return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  original output, modified to the following line on 07/30/26 by S.M. to suppress voltage sequence alteration
+        return FWAction(update_spec=self.updated_specs())
 
 
 # noinspection PyTypeChecker

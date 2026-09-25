@@ -358,6 +358,31 @@ def processing_test(cv_loc_dir="C:\\Users\\Lab\\D3talesRobotics\\data\\cv_exp01_
     # p = print_cv_analysis(processed_data, metadata_dict)
     # print(p)
 
+def concentration_to_molar_or_none(conc, label="concentration"):
+    """
+    Convert a concentration-like value to molar magnitude.
+
+    Returns None if conc is None or empty.
+    Raises a clearer error if the value is dimensionless or malformed.
+    """
+    if conc is None or conc == "":
+        return None
+
+    ureg = pint.UnitRegistry()
+
+    try:
+        q = ureg(conc)
+    except Exception as exc:
+        raise ValueError(
+            f"Could not parse {label}={conc!r}. Expected values like '0.01M', '100mM', or '0.005mol/L'."
+        ) from exc
+
+    if q.dimensionless:
+        raise ValueError(
+            f"{label}={conc!r} is dimensionless. Expected concentration units like '0.01M' or '100mM'."
+        )
+
+    return q.to("M").magnitude
 
 class DefaultConditions:
 
@@ -373,19 +398,45 @@ class DefaultConditions:
         active_vial_id = firetask_obj.metadata.get("active_vial_id")
         self.vial_contents = VialStatus(active_vial_id).vial_content
 
+    # @property
+    # def redox_mol_concentration(self):
+    #     conc = get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
+    #                              soln_density=self.soln_density)
+    #     ureg = pint.UnitRegistry()
+    #     return ureg(conc).to("M").magnitude
+
     @property
     def redox_mol_concentration(self):
-        conc = get_concentration(self.vial_contents, solute_id=self.rom_id, solv_id=self.solv_id,
-                                 soln_density=self.soln_density)
-        ureg = pint.UnitRegistry()
-        return ureg(conc).to("M").magnitude
+        if self.rom_id in (None, "", "no_redox_mol"):
+            return None
+
+        conc = get_concentration(
+            self.vial_contents,
+            solute_id=self.rom_id,
+            solv_id=self.solv_id,
+            soln_density=self.soln_density
+        )
+        return concentration_to_molar_or_none(conc, "redox_mol_concentration")
+
+    # @property
+    # def electrolyte_concentration(self):
+    #     conc = get_concentration(self.vial_contents, self.elect_id, self.solv_id,
+    #                              soln_density=self.soln_density)
+    #     ureg = pint.UnitRegistry()
+    #     return ureg(conc).to("M").magnitude
 
     @property
     def electrolyte_concentration(self):
-        conc = get_concentration(self.vial_contents, self.elect_id, self.solv_id,
-                                 soln_density=self.soln_density)
-        ureg = pint.UnitRegistry()
-        return ureg(conc).to("M").magnitude
+        if self.elect_id in (None, "", "no_electrolyte"):
+            return None
+
+        conc = get_concentration(
+            self.vial_contents,
+            self.elect_id,
+            self.solv_id,
+            soln_density=self.soln_density
+        )
+        return concentration_to_molar_or_none(conc, "electrolyte_concentration")
 
     @property
     def redox_mol_fraction(self):
@@ -413,26 +464,65 @@ class DefaultConditions:
     def sample_interval(self):
         return None
 
+    # @property
+    # def sensitivity(self):
+    #     if self.method == "cv":
+    #         redox_conc = (self.redox_mol_concentration or 0)  # Concentration in M
+    #         se_conc = (self.electrolyte_concentration or 0)  # Concentration in M
+    #         solute_conc = redox_conc + se_conc
+    #         if 0 < redox_conc < 0.019:
+    #             return 1e-4  # A/V, current sensitivity
+    #         elif 0.019 <= redox_conc < 0.200:
+    #             if se_conc > 0.200:
+    #                 return 1e-2  # A/V, current sensitivity
+    #             return 1e-3  # A/V, current sensitivity
+    #         else:
+    #             return 1e-2  # A/V, current sensitivity
+    #     elif self.method == "cvUM":
+    #         redox_conc = (self.redox_mol_concentration or 0)   # Concentration in M
+    #         if 0 < redox_conc <= 0.011:
+    #             return 1e-6  # A/V, current sensitivity
+    #         else:
+    #             return 1e-4  # A/V, current sensitivity
+
     @property
     def sensitivity(self):
         if self.method == "cv":
-            redox_conc = (self.redox_mol_concentration or 0)  # Concentration in M
-            se_conc = (self.electrolyte_concentration or 0)  # Concentration in M
-            solute_conc = redox_conc + se_conc
+            redox_conc = self.redox_mol_concentration
+            se_conc = self.electrolyte_concentration or 0
+
+            # Blank, rinse, solvent-only, or parser failed to identify redox molecule.
+            # Use instrument default instead of trying to infer from redox concentration.
+            if redox_conc is None:
+                pot_id = self.firetask_obj.metadata.get("cv_potentiostat")
+                if pot_id and pot_id in POTENTIOSTAT_SETTINGS:
+                    return POTENTIOSTAT_SETTINGS[pot_id].get("sensitivity")
+                return 1e-3
+
             if 0 < redox_conc < 0.019:
-                return 1e-4  # A/V, current sensitivity
+                return 1e-4
             elif 0.019 <= redox_conc < 0.200:
                 if se_conc > 0.200:
-                    return 1e-2  # A/V, current sensitivity
-                return 1e-3  # A/V, current sensitivity
+                    return 1e-2
+                return 1e-3
             else:
-                return 1e-2  # A/V, current sensitivity
+                return 1e-2
+
         elif self.method == "cvUM":
-            redox_conc = (self.redox_mol_concentration or 0)   # Concentration in M
-            if 0 < redox_conc <= 0.011:
-                return 1e-6  # A/V, current sensitivity
+            redox_conc = self.redox_mol_concentration
+
+            if redox_conc is None:
+                pot_id = self.firetask_obj.metadata.get("cvUM_potentiostat")
+                if pot_id and pot_id in POTENTIOSTAT_SETTINGS:
+                    return POTENTIOSTAT_SETTINGS[pot_id].get("sensitivity")
+                return 1e-4
+
+            if 0 < redox_conc <= 0.25:
+                return 1e-6
             else:
-                return 1e-4  # A/V, current sensitivity
+                return 1e-4
+
+        return None
 
     @property
     def pulse_width(self):

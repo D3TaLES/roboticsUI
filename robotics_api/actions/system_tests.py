@@ -1,8 +1,12 @@
-from robotics_api.actions.standard_actions import *
-import matplotlib.pyplot as plt
-from datetime import datetime
 import pandas as pd
+from datetime import datetime
+import matplotlib.pyplot as plt
+from fireworks import LaunchPad
+from robotics_api.utils.kinova_utils import DeviceConnection
+from kortex_api.autogen.client_stubs.BaseCyclicClientRpc import BaseCyclicClient
 
+from robotics_api.settings import *
+from robotics_api.actions.standard_actions import *
 from d3tales_api.Calculators.calculators import *
 from d3tales_api.Calculators.plotters import CVPlotter
 from d3tales_api.Processors.parser_echem import ProcessChiCV
@@ -216,6 +220,40 @@ def macro_diff_test(potent: CVPotentiostatStation, voltage_sequence="0, 0.7, 0V"
     return diffusion, transfer_rate
 
 
+def initialize_workflow(init_fw_id):
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+    # Create connection to the device and get the router
+    if RUN_ROBOT:
+        connector = Namespace(ip=KINOVA_01_IP, username="admin", password="admin")
+        with DeviceConnection.createTcpConnection(connector) as router:
+            BaseClient(router)
+            BaseCyclicClient(router)
+
+    reset_stations()
+
+    # Test Balance connection
+    if WEIGH:
+        for balance in [b for b in MEASUREMENT_STATIONS if "balance" in b]:
+            mass = BalanceStation(balance).read_mass()
+            print(f"Successfully read mass {mass} from balance {balance}!")
+
+    # Initialize Status DB
+    lpad = LaunchPad().from_file(os.path.abspath(LAUNCHPAD.as_posix()))
+    fw_spec = lpad.fireworks.find_one({"fw_id": init_fw_id}).get("spec", {})
+    reagents = fw_spec.get("reagents") or {}
+    experiments = fw_spec.get("experiment_vials") or {}
+    wflow_name = fw_spec.get("wflow_name") or "unknown_wflow"
+    print("REAGENTS: ", reagents)
+    print("EXPS: ", experiments)
+    # Setup standard_data databases
+    reset_reagent_db(reagents, current_wflow_name=wflow_name)
+    reset_vial_db(experiments, current_wflow_name=wflow_name)
+    reset_station_db(current_wflow_name=wflow_name)
+
+    print(f"Successfully initialized workflow {wflow_name}")
+
+
 if __name__ == "__main__":
     """
     The code below contains test functions for all stations. To implement a test, uncomment the line with 
@@ -241,16 +279,16 @@ if __name__ == "__main__":
     # VIAL TESTING
     # test_bal.place_vial(test_vial)
     # test_vial.place_home()
-    # vial_col_test("B", vial_id="A_02")
+    # vial_col_test("A", vial_id="B_04")
     # test_vial.retrieve()
-    # get_place_vial(VialMove(_id="S_02"), action_type='get', raise_error=True)
+    # get_place_vial(VialMove(_id="S_01"), action_type='get', raise_error=True)
     # test_vial.extract_soln(extracted_mass=0.506)
 
     # POTENTIOSTAT TESTING
     # ca_potent.place_vial(test_vial)
-    # ca_potent.move_elevator(endpoint="down")
-    # ca_potent.move_elevator(endpoint="up")
-    # cvUM_potent.move_elevator(endpoint="down")
+    # ca_potent.move_elevator(endpoint="up")  #Elevator 3
+    # cv_potent.move_elevator(endpoint="down")  #Elevator 2
+    # cvUM_potent.move_elevator(endpoint="down")  #Elevator 1
     # resistance = cv_potent.run_ircomp_test(TEST_DATA_DIR / "cv_testing/CV_ircomp_tempo_test03.csv")
     # print("Resistance: ", resistance)
     # cv_potent.run_cv(TEST_DATA_DIR / "cv_testing/CV_tempo_test03.csv", voltage_sequence="0, 0.7, 0V", scan_rate=0.1,
@@ -264,17 +302,17 @@ if __name__ == "__main__":
     # vol = test_solv.dispense_volume(test_vial, 0)
     # mass = test_solv.dispense_mass(test_vial, 5)
     # flush_solvent(8, vial_id="A_04", solv_id="solvent_02", go_home=True)
-    # LiquidStation("solvent_02").dispense_only(1)
+    #LiquidStation("solvent_01").dispense_only(1)
 
     # OTHER STATION TESTING
     # print(send_arduino_cmd("P1", "0", address=ARDUINO_PORT, return_txt=True))
     # print(TemperatureStation().temperature())
-    # test_pip.pipette(volume=0.5, vial=test_vial)  # mL
+    #test_pip.pipette(volume=0.5, vial=test_vial)  # mL
     # test_pip.pipette(volume=0)  # mL
-    # test_pip.pipette(volume=0.5)  # mL
+    # test_pip.pipette(volume=0.2)  # mL
     # print(density_test(0.5, pipette_id="pipette_01", vial_id="B_02"))
     # pipette_calibration([0.5], trials_per_vol=2, expected_density=0.786, vial_id="S_01")
-    # test_stir.stir(stir_time=15)
+    # test_stir.stir(stir_time=1)
     # print(test_bal.read_mass())
     # test_bal.weigh(VialMove("A_04"))
     # test_vial.update_weight(14.0)
@@ -286,12 +324,11 @@ if __name__ == "__main__":
     # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
     # perturb_angular(reverse=True, wait_time=1, **joint_deltas)
     # perturb_angular(reverse=False, wait_time=1, **joint_deltas)
-
     # PRE_WORKFLOW COMMANDS
-    # ca_potent.move_elevator(endpoint="down")
-    # cv_potent.move_elevator(endpoint="down")
-    # cvUM_potent.move_elevator(endpoint="down")
-    # flush_solvent(8, vial_id="A_03", solv_id="solvent_02", go_home=True)
-    # pipette_calibration([0.5], trials_per_vol=2, expected_density=0.786, vial_id="S_01", go_home=True)
 
-    # 742 g/L
+    #ca_potent.move_elevator(endpoint="up")
+    cv_potent.move_elevator(endpoint="down")
+    #cvUM_potent.move_elevator(endpoint="up")
+    #flush_solvent(8, vial_id="S_04", solv_id="solvent_01", go_home=True)
+    #pipette_calibration([0.5], trials_per_vol=3, expected_density=0.778, vial_id="S_04", go_home=True)
+    #initialize_workflow(init_fw_id=3992)

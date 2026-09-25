@@ -4,12 +4,12 @@
       {
         "reachPose": {
           "targetPose": {
-            "x": 0.655,
-            "y": 0.164,
-            "z": 0.197,
+            "x": 0.673,
+            "y": 0.2,
+            "z": 0.195,
             "thetaX": 90,
             "thetaY": 0,
-            "thetaZ": 103
+            "thetaZ": 90
           }
         },
         "applicationData": "{\"kinova\":{\"color\":0}}",

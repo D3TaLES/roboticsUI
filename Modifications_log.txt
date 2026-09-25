@@ -1,0 +1,16 @@
+07/30/2026; by S.M.; on file: Firetasks_Processing.py; at line: 376
+
+Original line:
+return FWAction(update_spec=self.updated_specs(voltage_sequence=voltage_sequence))  
+
+New line:
+return FWAction(update_spec=self.updated_specs())
+
+Note:
+original output was modified to suppress voltage sequence alteration based on benchmarkCV 
+________________________________________________
+
+07/31/2026; by S.M.; on file: processing_utils.py; at line: 520
+
+Changed the max cutoff threshold of concentration from 0.011 M to 0.25 M. 
+We wanted the sensitivity to be set to 1e-6 regardless of concentration values because we saw an offset current of around 50nA when running cvUM on TEMPO-TEATFSI in the range of E=0 to around E=0.2 (V)

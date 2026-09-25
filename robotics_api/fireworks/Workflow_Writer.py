@@ -10,7 +10,113 @@ from d3tales_api.Processors.expflow_parser import ProcessExperimentRun, get_id
 
 from robotics_api.fireworks.Fireworks import *
 from robotics_api.fireworks.Firetasks_Actions import *
+from collections import Counter
 
+def validate_unique_experiment_ids(expflow_wf):
+    experiments = expflow_wf.get("experiments", []) or []
+    ids = [exp.get("_id") or exp.get("uuid") for exp in experiments]
+
+    missing = [i for i, x in enumerate(ids, start=1) if not x]
+    duplicates = [x for x, n in Counter(ids).items() if x and n > 1]
+
+    if missing:
+        raise ValueError(f"Experiments missing _id/uuid at positions: {missing}")
+
+    if duplicates:
+        raise ValueError(f"Duplicate experiment _id/uuid values found: {duplicates}")
+
+def _get_field(obj, key, default=None):
+    """
+    Read a field from either a dict-like ExpFlow object or an object-style parser result.
+    """
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
+def _is_true_blank_experiment(expflow_obj):
+    """
+    A true blank experiment has:
+      - no redox_molecule reagent
+      - no transfer_solid action whose start_type is redox_molecule
+
+    This distinguishes a real blank from a malformed redox experiment.
+    """
+    reagents = _get_field(expflow_obj, "reagents", []) or []
+    workflow = _get_field(expflow_obj, "workflow", []) or []
+
+    redox_reagents = [
+        r for r in reagents
+        if _get_field(r, "type") == "redox_molecule"
+    ]
+
+    redox_transfers = [
+        t for t in workflow
+        if _get_field(t, "name") == "transfer_solid"
+        and _get_field(t, "start_type") == "redox_molecule"
+    ]
+
+    return len(redox_reagents) == 0 and len(redox_transfers) == 0
+
+
+def _validate_redox_structure(expflow_obj, exp_name):
+    """
+    Validate redox/blank structure before FireWorks are generated.
+
+    Valid cases:
+      1. Normal redox experiment:
+         exactly one redox_molecule reagent
+         at least one redox_molecule transfer_solid action
+
+      2. True blank experiment:
+         zero redox_molecule reagents
+         zero redox_molecule transfer_solid actions
+
+    Invalid cases:
+      - multiple redox_molecule reagents
+      - redox transfer exists but no redox reagent
+      - redox reagent exists but no redox transfer
+    """
+    reagents = _get_field(expflow_obj, "reagents", []) or []
+    workflow = _get_field(expflow_obj, "workflow", []) or []
+
+    redox_reagents = [
+        r for r in reagents
+        if _get_field(r, "type") == "redox_molecule"
+    ]
+
+    redox_transfers = [
+        t for t in workflow
+        if _get_field(t, "name") == "transfer_solid"
+        and _get_field(t, "start_type") == "redox_molecule"
+    ]
+
+    if len(redox_reagents) == 0 and len(redox_transfers) == 0:
+        return "blank"
+
+    if len(redox_reagents) != 1:
+        raise ValueError(
+            f"{exp_name}: expected exactly 1 redox_molecule reagent for a redox experiment, "
+            f"or 0 for a true blank. Found {len(redox_reagents)}."
+        )
+
+    if len(redox_transfers) == 0:
+        raise ValueError(
+            f"{exp_name}: found a redox_molecule reagent but no transfer_solid action "
+            f"with start_type='redox_molecule'."
+        )
+
+    redox_id = _get_field(redox_reagents[0], "_id") or _get_field(redox_reagents[0], "uuid")
+
+    for transfer in redox_transfers:
+        start_uuid = _get_field(transfer, "start_uuid")
+        if redox_id and start_uuid != redox_id:
+            raise ValueError(
+                f"{exp_name}: redox transfer start_uuid={start_uuid!r} does not match "
+                f"the single redox_molecule reagent id={redox_id!r}."
+            )
+
+    return "redox"
 
 class EF2Experiment:
     """
@@ -43,27 +149,84 @@ class EF2Experiment:
 
     def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
                  wflow_name='robotic_wflow', **kwargs):
-        expflow_parser = ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False, try_restapi=True, **kwargs)
+
+        exp_kind = _validate_redox_structure(expflow_obj, exp_name)
+
+        expflow_parser = ProcessExperimentRun(
+            expflow_obj,
+            source_group,
+            redox_id_error=False,
+            try_restapi=True,
+            **kwargs
+        )
+
         self.fw_parents = fw_parents or []
         self.priority = priority if priority > 2 else 2
-        self.mol_id = expflow_parser.molecule_id or getattr(expflow_parser.redox_mol, "smiles", None)
-        self.rom_name = getattr(expflow_parser.redox_mol, "name", "no_redox_mol_name")
-        self.full_name = "{}_{}".format(exp_name, self.mol_id)
         self.wflow_name = wflow_name
 
-        self.rom_id = get_id(expflow_parser.redox_mol) or "no_redox_mol"
+        redox_mol = expflow_parser.redox_mol
+
+        if exp_kind == "blank":
+            self.mol_id = "blank_no_redox"
+            self.rom_name = "blank_no_redox"
+            self.rom_id = "no_redox_mol"
+        else:
+            self.mol_id = (
+                    expflow_parser.molecule_id
+                    or getattr(redox_mol, "smiles", None)
+                    or get_id(redox_mol)
+            )
+            self.rom_name = getattr(redox_mol, "name", "no_redox_mol_name")
+            self.rom_id = get_id(redox_mol) or "no_redox_mol"
+
+        self.full_name = "{}_{}".format(exp_name, self.mol_id)
+
         self.solv_id = get_id(expflow_parser.solvent) or "no_solvent"
         self.elect_id = get_id(expflow_parser.electrolyte) or "no_electrolyte"
         self.metadata = getattr(expflow_parser, data_type + "_metadata", {})
         self.end_exps = []
 
-        self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
-                         "mol_id": self.mol_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
-                         "elect_id": self.elect_id, "metadata": self.metadata, "rom_name": self.rom_name}
+        self.fw_specs = {
+            "full_name": self.full_name,
+            "wflow_name": self.wflow_name,
+            "exp_name": exp_name,
+            "mol_id": self.mol_id,
+            "rom_id": self.rom_id,
+            "solv_id": self.solv_id,
+            "elect_id": self.elect_id,
+            "metadata": self.metadata,
+            "rom_name": self.rom_name,
+            "is_blank": exp_kind == "blank",
+            "experiment_kind": exp_kind,
+        }
 
-        # Check for multi tasks
         self.workflow = []
         [self.workflow.extend(self.check_multi_task(t)) for t in expflow_parser.expflow_obj.workflow]
+
+    # def __init__(self, expflow_obj, source_group, fw_parents=None, priority=0, data_type=None, exp_name='exp',
+    #              wflow_name='robotic_wflow', **kwargs):
+    #     expflow_parser = ProcessExperimentRun(expflow_obj, source_group, redox_id_error=False, try_restapi=True, **kwargs)
+    #     self.fw_parents = fw_parents or []
+    #     self.priority = priority if priority > 2 else 2
+    #
+    #     self.mol_id = expflow_parser.molecule_id or getattr(expflow_parser.redox_mol, "smiles", None)
+    #     self.rom_name = getattr(expflow_parser.redox_mol, "name", "no_redox_mol_name")
+    #     self.full_name = "{}_{}".format(exp_name, self.mol_id)
+    #     self.wflow_name = wflow_name
+    #
+    #     self.rom_id = get_id(expflow_parser.redox_mol) or "no_redox_mol"
+    #     self.solv_id = get_id(expflow_parser.solvent) or "no_solvent"
+    #     self.elect_id = get_id(expflow_parser.electrolyte) or "no_electrolyte"
+    #     self.metadata = getattr(expflow_parser, data_type + "_metadata", {})
+    #     self.end_exps = []
+    #
+    #     self.fw_specs = {"full_name": self.full_name, "wflow_name": self.wflow_name, "exp_name": exp_name,
+    #                      "mol_id": self.mol_id, "rom_id": self.rom_id, "solv_id": self.solv_id,
+    #                      "elect_id": self.elect_id, "metadata": self.metadata, "rom_name": self.rom_name}
+    #
+    #     # Check for multi tasks
+    #     self.workflow = []
+    #     [self.workflow.extend(self.check_multi_task(t)) for t in expflow_parser.expflow_obj.workflow]
 
     @staticmethod
     def instrument_task(collect_task, tag="setup", default_analysis=""):
@@ -241,8 +404,16 @@ class EF2Experiment:
                 parent = fw
                 end_exp = fw
             fireworks.append(fw)
-        end_exp.spec.update({"end_experiment": True})
-        self.end_exps.append(end_exp)
+        # end_exp.spec.update({"end_experiment": True})
+        # self.end_exps.append(end_exp)
+        if end_exp is not None:
+            end_exp.spec.update({"end_experiment": True})
+            self.end_exps.append(end_exp)
+        elif fireworks:
+            fireworks[-1].spec.update({"end_experiment": True})
+            self.end_exps.append(fireworks[-1])
+        else:
+            raise ValueError(f"{self.full_name}: no FireWorks were generated.")
         return fireworks
 
     def get_firetask(self, task):
@@ -252,8 +423,12 @@ class EF2Experiment:
             raise KeyError(f"Firetask {task.name} not found in task_dictionary.")
         parameters_dict = {"firetask_id": str(uuid.uuid4()), "start_uuid": task.start_uuid, "end_uuid": task.end_uuid}
         for param in getattr(task, 'parameters', []) or []:
-            if param.value:
-                parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
+            value = param.value
+            if value is not None and str(value).strip() != "":
+                parameters_dict[param.description] = "{}{}".format(value, param.unit)
+        # for param in getattr(task, 'parameters', []) or []:
+        #     if param.value:
+        #         parameters_dict[param.description] = "{}{}".format(param.value, param.unit)
         print("Firetask {} added.".format(task.name))
         return [firetask(parameters_dict) for firetask in firetasks]
 
@@ -309,6 +484,8 @@ def run_expflow_wf(expflow_wf: dict, name_tag='', exp_params=None, **kwargs):
     Returns:
         Fireworks Workflow object
     """
+    validate_unique_experiment_ids(expflow_wf)
+
     wflow_name = expflow_wf.get("name") + "_" + name_tag.strip("_")
     f10 = InitializeWorkflow(wflow_name=wflow_name, fw_specs=exp_params)
     fws = [f10]

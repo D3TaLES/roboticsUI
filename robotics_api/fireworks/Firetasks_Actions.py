@@ -8,6 +8,24 @@ from robotics_api.actions.standard_actions import *
 from robotics_api.actions.db_manipulations import *
 from robotics_api.utils.processing_utils import DefaultConditions
 
+_MISSING = object()
+
+def get_param_lazy(firetask_obj, fw_spec, key, default_factory):
+    """
+    Get a FireTask parameter from fw_spec first, then from the FireTask object,
+    then lazily compute a default.
+
+    Treat None and empty strings as missing.
+    Do not treat 0 or 0.0 as missing.
+    """
+    if key in fw_spec and fw_spec[key] not in (None, ""):
+        return fw_spec[key]
+
+    value = firetask_obj.get(key, _MISSING)
+    if value is not _MISSING and value not in (None, ""):
+        return value
+
+    return default_factory()
 
 @add_metaclass(abc.ABCMeta)
 class RoboticsBase(FiretaskBase):
@@ -426,10 +444,14 @@ class BenchmarkCV(RoboticsBase):
 
         # CV parameters and keywords
         defaults = DefaultConditions(self, fw_spec, method=self.method)
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
-        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
+        voltage_sequence = get_param_lazy(self, fw_spec, "voltage_sequence", lambda: defaults.voltage_sequence)
+        scan_rate = get_param_lazy(self, fw_spec, "scan_rate", lambda: defaults.scan_rate)
+        sample_interval = get_param_lazy(self, fw_spec, "sample_interval", lambda: defaults.sample_interval)
+        sens = get_param_lazy(self, fw_spec, "sensitivity", lambda: defaults.sensitivity)
+        # voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        # scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
+        # sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        # sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
 
         # Prep output file info
         active_vial_id = self.metadata.get("active_vial_id")
@@ -466,10 +488,14 @@ class RunCVBase(RoboticsBase):
         # CV parameters and keywords
         defaults = DefaultConditions(self, fw_spec, method=self.method)
         resistance = self.metadata.get("resistance", 0)
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
-        scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
+        voltage_sequence = get_param_lazy(self, fw_spec, "voltage_sequence", lambda: defaults.voltage_sequence)
+        scan_rate = get_param_lazy(self, fw_spec, "scan_rate", lambda: defaults.scan_rate)
+        sample_interval = get_param_lazy(self, fw_spec, "sample_interval", lambda: defaults.sample_interval)
+        sens = get_param_lazy(self, fw_spec, "sensitivity", lambda: defaults.sensitivity)
+        # voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        # scan_rate = fw_spec.get("scan_rate") or self.get("scan_rate", defaults.scan_rate)
+        # sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        # sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")
@@ -519,11 +545,16 @@ class RunCA(RoboticsBase):
 
         # CA parameters and keywords
         defaults = DefaultConditions(self, fw_spec, method="ca")
-        voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
-        sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
-        pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", defaults.pulse_width)
-        sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
-        steps = fw_spec.get("steps") or self.get("steps", defaults.steps)
+        voltage_sequence = get_param_lazy(self, fw_spec, "voltage_sequence", lambda: defaults.voltage_sequence)
+        sample_interval = get_param_lazy(self, fw_spec, "sample_interval", lambda: defaults.sample_interval)
+        pulse_width = get_param_lazy(self, fw_spec, "pulse_width", lambda: defaults.pulse_width)
+        sens = get_param_lazy(self, fw_spec, "sensitivity", lambda: defaults.sensitivity)
+        steps = get_param_lazy(self, fw_spec, "steps", lambda: defaults.steps)
+        # voltage_sequence = fw_spec.get("voltage_sequence") or self.get("voltage_sequence", defaults.voltage_sequence)
+        # sample_interval = fw_spec.get("sample_interval") or self.get("sample_interval", defaults.sample_interval)
+        # pulse_width = fw_spec.get("pulse_width") or self.get("pulse_width", defaults.pulse_width)
+        # sens = fw_spec.get("sensitivity") or self.get("sensitivity", defaults.sensitivity)
+        # steps = fw_spec.get("steps") or self.get("steps", defaults.steps)
 
         # Prep output data file info
         collect_tag = self.metadata.get("collect_tag")

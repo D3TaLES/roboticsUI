@@ -433,7 +433,7 @@ class BenchmarkCV(RoboticsBase):
 
         # Prep output file info
         active_vial_id = self.metadata.get("active_vial_id")
-        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
+        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name[:EXP_PATH_NAME_LIM])
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"benchmark_%H_%M_%S.txt"))
 
@@ -475,7 +475,7 @@ class RunCVBase(RoboticsBase):
         collect_tag = self.metadata.get("collect_tag")
         active_vial_id = self.metadata.get("active_vial_id")
         cv_idx = self.metadata.get(f"{self.method}_idx", 1)
-        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
+        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name[:EXP_PATH_NAME_LIM])
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{cv_idx:02d}_%H_%M_%S.txt"))
 
@@ -529,7 +529,7 @@ class RunCA(RoboticsBase):
         collect_tag = self.metadata.get("collect_tag")
         active_vial_id = self.metadata.get("active_vial_id")
         ca_idx = self.metadata.get("ca_idx", 1)
-        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name)
+        data_dir = os.path.join(Path(DATA_DIR) / self.wflow_name / time.strftime("%Y%m%d") / self.full_name[:EXP_PATH_NAME_LIM])
         os.makedirs(data_dir, exist_ok=True)
         data_path = os.path.join(data_dir, time.strftime(f"{collect_tag}{ca_idx:02d}_%H_%M_%S.txt"))
 

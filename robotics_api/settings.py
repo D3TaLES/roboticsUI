@@ -198,6 +198,7 @@ RINSE_VIALS = {"cvUM_potentiostat_A_01": "S_01", "cv_potentiostat_B_01": "S_02",
 ELEVATOR_DICT = {"A_01": 1, "B_01": 2, "C_01": 3}
 
 # ---------  PATH VARIABLES -------------
+EXP_PATH_NAME_LIM = 10
 HOME_DIR = Path(__file__).resolve().parent.parent
 PARENT_DIR = HOME_DIR.parent
 DATA_DIR = PARENT_DIR / "data"

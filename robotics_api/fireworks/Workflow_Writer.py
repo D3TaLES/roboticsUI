@@ -179,7 +179,23 @@ class EF2Experiment:
             self.rom_name = getattr(redox_mol, "name", "no_redox_mol_name")
             self.rom_id = get_id(redox_mol) or "no_redox_mol"
 
-        self.full_name = "{}_{}".format(exp_name, self.mol_id)
+        # self.full_name = "{}_{}".format(exp_name, self.mol_id)   <<<<<<< old naming scheme
+
+        # New naming scheme: Generate a safe, shortened experiment folder name
+        raw_full_name = f"{exp_name}_{self.rom_name}"
+
+        # Replace characters that are invalid in Windows filenames with underscores
+        invalid_chars = '<>:"/\\|?*'
+        safe_full_name = "".join(
+            "_" if char in invalid_chars or ord(char) < 32 else char
+            for char in raw_full_name
+        )
+
+        # Remove trailing spaces and periods
+        safe_full_name = safe_full_name.strip(" .")
+
+        # Limit the entire name to 40 characters
+        self.full_name = safe_full_name[:40].rstrip(" .")
 
         self.solv_id = get_id(expflow_parser.solvent) or "no_solvent"
         self.elect_id = get_id(expflow_parser.electrolyte) or "no_electrolyte"

@@ -326,8 +326,8 @@ if __name__ == "__main__":
     # perturb_angular(reverse=False, wait_time=1, **joint_deltas)
     # PRE_WORKFLOW COMMANDS
 
-    #ca_potent.move_elevator(endpoint="up")
-    cv_potent.move_elevator(endpoint="down")
+    ca_potent.move_elevator(endpoint="up")
+    #cv_potent.move_elevator(endpoint="up")
     #cvUM_potent.move_elevator(endpoint="up")
     #flush_solvent(8, vial_id="S_04", solv_id="solvent_01", go_home=True)
     #pipette_calibration([0.5], trials_per_vol=3, expected_density=0.778, vial_id="S_04", go_home=True)
